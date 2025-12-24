@@ -1,7 +1,11 @@
 <?php
 
 namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\URL;
+
 use App\Services\CustomCaptcha;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Config\Repository;
@@ -9,7 +13,6 @@ use Intervention\Image\ImageManager;
 use Illuminate\Session\Store;                 
 use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Str;
-use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton('captcha', function ($app) {
+       $this->app->singleton('captcha', function ($app) {
         return new CustomCaptcha(
             $app->make(Filesystem::class),
             $app->make(Repository::class),
@@ -35,7 +38,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-      \URL::forceScheme('https');       
-               
+        if (app()->environment('production')) {
+            URL::forceScheme('https');
+        }
+        Paginator::useBootstrapFive();
+        Paginator::useBootstrapFour();
     }
 }

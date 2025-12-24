@@ -31,9 +31,11 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    // 'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => env('SESSION_LIFETIME', 60), // Set 60 in minutes for more sefer session
 
-    'expire_on_close' => false,
+    // 'expire_on_close' => false,
+    'expire_on_close' => true, // Set is to True for more sefer session
 
     /*
     |--------------------------------------------------------------------------
@@ -128,7 +130,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
+        Str::slug(env('APP_NAME', 'laravel'), '_') . '_session'
     ),
 
     /*
@@ -142,7 +144,7 @@ return [
     |
     */
 
-    'path' => '/admin',
+    'path' => '/',
 
     /*
     |--------------------------------------------------------------------------
@@ -196,6 +198,7 @@ return [
     |
     */
 
-    'same_site' => 'lax',
+    // 'same_site' => 'lax', Comment for Session Hijacking Attack - Lalit Tiwari (05/May/2025)
+    'same_site' => 'strict', // or 'lax' for less strict sites
 
 ];

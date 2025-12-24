@@ -8,6 +8,7 @@
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
@@ -17,9 +18,4 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
-
-    # CORS Headers
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, DELETE, PUT, PATCH"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
 </IfModule>

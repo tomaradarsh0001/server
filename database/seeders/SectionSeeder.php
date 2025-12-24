@@ -5,33 +5,65 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class SectionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
-    public function run()
+    public function run(): void
     {
-        //
-        $data=[
-            ['created_at'=> now(), 'created_by'=>'2','is_active' => '1', 'name_eng' =>'L&DO Office','name_hin' => 'एलएंडडीओ कार्यालय', 'short_name' => 'L&DO Office', 'sort_order'=>'1', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Admin Section','name_hin' => 'प्रशासन खंड', 'short_name' => 'Admin', 'sort_order'=>'2', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Property Section-I','name_hin' => 'संपत्ति खंड-I', 'short_name' => 'PS-I', 'sort_order'=>'3', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Property Section-II','name_hin' => 'संपत्ति खंड-II', 'short_name' => 'PS-II', 'sort_order'=>'4','updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Property Section-III','name_hin' => 'संपत्ति खंड-III', 'short_name' => 'PS-III', 'sort_order'=>'5', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Lease - I Section', 'name_hin' => 'लीज - I खंड', 'short_name' => 'L-I', 'sort_order'=>'6', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Lease - II(A) Section', 'name_hin' => 'लीज - II(अ) खंड', 'short_name' => 'L-II(A)', 'sort_order'=>'7','updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2','is_active' => '1', 'name_eng' =>'Lease - II(B) Section','name_hin' => 'लीज - II(ब) खंड', 'short_name' => 'L-II(B)', 'sort_order'=>'8', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Lease - IV Section','name_hin' => 'लीज - IV खंड', 'short_name' => 'L-IV', 'sort_order'=>'9', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Lease - V Section','name_hin' => 'लीज - V खंड', 'short_name' => 'L-V', 'sort_order'=>'10', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Vigilance Section','name_hin' => 'सतर्कता खंड', 'short_name' => 'Vigilance', 'sort_order'=>'11','updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'IAC Section','name_hin' => 'आईएसी खंड', 'short_name' => 'IAC', 'sort_order'=>'12', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'RP Cell', 'name_hin' => 'आरपी सेल', 'short_name' => 'RP Cell', 'sort_order'=>'13', 'updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Technical Section', 'name_hin' => 'तकनीकी खंड', 'short_name' => 'Technical', 'sort_order'=>'14','updated_at'=>now(),'updated_by'=>'2'],
-            ['created_at'=> now(), 'created_by'=>'2', 'is_active' => '1', 'name_eng' =>'Accounts Section', 'name_hin' => 'लेखा खंड', 'short_name' => 'Account', 'sort_order'=>'14','updated_at'=>now(),'updated_by'=>'2'],
+        // Disable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('sections')->truncate();
+        $sections = [
+            ['section_code' => 'LDO', 'name' => 'Land and Development Office', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LDOPS', 'name' => 'L&amp;DO Personnal Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'DYLDO1', 'name' => 'Deputy L&amp;DO-I', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'DYLDO2', 'name' => 'Deputy L&amp;DO-II', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'DYLDO3', 'name' => 'Deputy L&amp;DO-III', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'DYLDO4', 'name' => 'Deputy L&amp;DO-IV', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'DYLDO5', 'name' => 'Deputy L&amp;DO-V', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'DYLDO6', 'name' => 'Deputy L&amp;DO-VI', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'DYLDO7', 'name' => 'Deputy L&amp;DO-VII', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'ADMN', 'name' => 'Administration Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PERS', 'name' => 'Personal Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'VIG', 'name' => 'Vigilance Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PLCY', 'name' => 'Policy Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'CDN', 'name' => 'Coordination Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'REC', 'name' => 'Record Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LIT', 'name' => 'Litigation Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'ENF', 'name' => 'Enforcement Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'HPIL', 'name' => 'HPIL', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'HINDI', 'name' => 'Hindi Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'DESP', 'name' => 'Dispatch Section', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PRO', 'name' => 'Public Relation Officer', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'CCELL', 'name' => 'Conveyance Cell', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PCELL', 'name' => 'Project Cell', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PGCEL', 'name' => 'Public Grievances Cell', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LEG', 'name' => 'Legal Cell', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'RPC', 'name' => 'R P Cell', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'ESO', 'name' => 'Estate Officer Court', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'ESO1', 'name' => 'Estate Officer Court-I', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'ESO2', 'name' => 'Estate Officer Court-II', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LS1', 'name' => 'Lease Section-I', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LS2A', 'name' => 'Lease Section-II A', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LS2B', 'name' => 'Lease Section-II B', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LS3', 'name' => 'Lease Section-III', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LS4', 'name' => 'Lease Section-IV', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LS5', 'name' => 'Lease Section-V', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LS5A', 'name' => 'Lease Section-V A', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'LS5B', 'name' => 'Lease Section-V B', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PS1', 'name' => 'Property Section-I', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PS2', 'name' => 'Property Section-II', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PS3', 'name' => 'Property Section-III', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'PS4', 'name' => 'Property Section-IV', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'IFC', 'name' => 'Information Facilitation Centre', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['section_code' => 'ITC', 'name' => 'IT Cell', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ];
-
-        DB::table('sections')->insert($data);
+        DB::table('sections')->insert($sections);
+        // Enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

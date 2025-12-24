@@ -12,11 +12,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $this->call([
+            // RoleSeeder::class,
+            // PermissionSeeder::class,
+            // RolePermissionSeeder::class,
+            // UserSeeder::class
+            // ModulesTableSeeder::class,
+            // DesignationSeeder::class,
+            // SectionSeeder::class,
+            // ConfigurationSeeder::class,
+            // MessageTemplateSeeder::class,
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+            /**Seeders added by Nitin */
+            // ConversionChargesSeeder::class,
+            // ConversionPermissionSeeder::class,
+            // LandUSeChangeMatrixSeeder::class,
+            // LandUseChangeCalculationPermissionSeeder::class,
+            //GroupItemSeeder::class,
+            // ActivateApplicantType::class,
+            // CountriesSeeder::class,
+            // StatesTableSeeder::class,
+            // CitiesTableSeeder::class,
+            // CitiesTableChunkTwoSeeder::class,
+            // CitiesTableChunkThreeSeeder::class,
+            // CitiesTableChunkFourSeeder::class,
+            // CitiesTableChunkFiveSeeder::class,
+            // UpdateOldColoniesSeeder::class,
+            // HolidaysTableSeeder::class
+            
+        ]);
     }
 }

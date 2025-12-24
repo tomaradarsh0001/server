@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Auth;
+
 class AdminMiddleware
 {
     /**
@@ -17,7 +18,7 @@ class AdminMiddleware
     {
         if(Auth::check()){
             $user = Auth::user();
-            if($user->hasRole(['SuperAdmin|Admin'])){
+            if($user->hasRole(['super-admin|admin'])){
                 return $next($request);
             } else {
                 return redirect()->back()->with('failure',"You don't have permission to access this");

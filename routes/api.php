@@ -1,18 +1,17 @@
 <?php
 
-use App\Http\Controllers\ComponentController;
-use App\Http\Controllers\OfficeDocsController;
-use App\Http\Controllers\MenuController;
-use App\Http\Controllers\NewsController;
-use App\Http\Controllers\DirectoryController;
-use App\Http\Controllers\EsoCourtController;
-use App\Http\Controllers\IpLoggingController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\FaqController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VisitorController;
-use App\Http\Controllers\UpdateTimeController;
-use App\Http\Controllers\ScreenReaderController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ItemsListController;
+use App\Http\Controllers\Api\PublicGrievanceController;
+use App\Http\Controllers\Api\ColonyController;
+use App\Http\Controllers\Api\RequestController;
+use App\Http\Controllers\FirebaseNotificationController;
+use App\Http\Controllers\Api\PropertyCountController;
+use App\Http\Controllers\Api\ClubMembershipController;
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,48 +23,46 @@ use App\Http\Controllers\ScreenReaderController;
 |
 */
 
-/* Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-}); */
-
-
- Route::get('test', function () {
-    return response()->json([
-        'message' => 'API is working!',
-        'status' => 200
-    ]);
 });
 
-Route::controller(MenuController::class)->group(function () {
-    Route::get('headerMenu/{lang?}', 'apiHeaderMenu');
-    Route::get('footerMenu/{lang?}', 'apiFooterMenu');
+//Route for login api Swati Mishra
+Route::post('/login', [AuthController::class, 'login']);
+
+//Route for frontend Public Grievance Post Api 
+Route::post('/public-grievances', [PublicGrievanceController::class, 'store']);
+
+//Routes for logistic apis for logistic app Swati Mishra 20-01-2025
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('items/details', [ItemsListController::class, 'getItemsDetails']);
+    Route::post('logistic/user-request-store', [RequestController::class, 'store']);
+    Route::post('logistic/user-request-update/{requestId}', [RequestController::class, 'update']);
+    Route::get('logistic/user-history', [RequestController::class, 'requestHistory']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    
 });
+Route::get('/colonylist', [ColonyController::class, 'getAllcolonies'])->name('colonylist');
 
-Route::controller(NewsController::class)->group(function () {
-    Route::get('headerNews/{lang?}', 'apiHeaderNews');
-    Route::get('newsDescription/{lang?}', 'apiNewsDescription');
-    Route::get('newsDescriptionById/{id}/{lang?}', 'newsDescriptionById');
-});
+Route::post('/send-notification', [FirebaseNotificationController::class, 'sendNotification']);
 
-Route::controller(ComponentController::class)->group(function () {
-    Route::get('componentData/{componentName}/{lang?}', 'getComponentData');
-    Route::get('servicesData/{lang?}',  'getServiceComponentData');
-});
+// Route for fetching property summary for website Swati Mishra 20-01-2025
+Route::get('/property-count/summary', [PropertyCountController::class, 'propertyCountSummary']); 
 
-Route::get('officeDocs/{categoryId}/{lang?}', [OfficeDocsController::class, 'getOfficeData']);
+//Post Api for posting club membership form of IHC and DGC (website) Swati Mishra 26-01-2025
+Route::post('/club-memberships/club_type={club_type}', [ClubMembershipController::class, 'store']);
+//Get Api for Club Membership listings on the basis of status by Swati Mishra on 29-01-2025
+Route::get('/membership/{club_type}/{status_name}', [ClubMembershipController::class, 'index']);
+//Post api for upload document of Club Membership by Swati Mishra on 02-02-2025
+Route::post('/upload-document/{club_type}/{membership_app_id}', [ClubMembershipController::class, 'uploadDocument']);
+//Get Api for club membership table data for a particular record by Swati Mishra on 03-02-2025
+Route::get('/download-pdf/{membership_id}', [ClubMembershipController::class, 'downloadMembershipPdf']);
+//Post Api Category Filter Api for club membership listing by Swati Mishra on 04-02-2025
+Route::post('/membership/filter', [ClubMembershipController::class, 'filterByClubStatusCategory']);
+//added new api for fetching record by unique_id on 29052025
+Route::get('/club-memberships/{unique_id}', [ClubMembershipController::class, 'showByUniqueId']);
+Route::put('club-memberships/update/{id}', [ClubMembershipController::class, 'update']);
 
-Route::get('directory/{lang?}', [DirectoryController::class, 'apiDirectory']);
-Route::get('esocourt/{lang?}', [EsoCourtController::class, 'apiEsoCourt']);
-
-Route::get('/store-visitor-ip', [VisitorController::class, 'store']);
-Route::get('/visitor-count', [VisitorController::class, 'getVisitorCount']);
 
 
-//FAQ Api Swati Mishra 19-03-2025
-Route::get('faqs/{relatedTo}/{lang?}', [FaqController::class, 'getFaqData']);
 
-// Last updated API for LNDO Website by Adarsh
-Route::get('/latest-timestamp', [UpdateTimeController::class, 'latestUpdate']);
-
-// Screen Readers API for LNDO Website by Adarsh
-Route::apiResource('/screen-readers-access', ScreenReaderController::class);
