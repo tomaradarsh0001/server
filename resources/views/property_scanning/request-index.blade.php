@@ -25,7 +25,7 @@
         div.dt-buttons {
             width:100%;
         }
-        
+
         div.dt-buttons.btn-group {
             flex-direction: column;
             align-items: flex-start;

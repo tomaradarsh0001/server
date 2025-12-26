@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Colonywise Property Data')
+@section('title', 'Colony-Wise Property Data')
 
 @section('content')
 
@@ -16,9 +16,9 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                 </li>
-                <li class="breadcrumb-item" aria-current="page">Colonywise Property List</li>
+                <li class="breadcrumb-item" aria-current="page">Colony-Wise Property List</li>
 
             </ol>
         </nav>
@@ -29,7 +29,7 @@
 <hr>
 <div class="card">
     <div class="card-header">
-        <h4>Colonywise Proeprty Details</h4>
+        <h4>Colony-Wise Propery Details</h4>
     </div>
     <div class="card-body">
         <table id="example" class="table table-striped display nowrap" style="width:100%">
@@ -37,7 +37,7 @@
                 <tr>
                     <th>S.No</th>
                     <th>Colony</th>
-                    <th>No of Porperties</th>
+                    <th>No of Properties</th>
                 </tr>
             </thead>
             <tbody>

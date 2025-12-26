@@ -26,35 +26,6 @@
             border-radius: 4px;
         }
 
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
-        .loader {
-            width: 48px;
-            height: 48px;
-            border:6px solid #FFF;
-            border-radius: 50%;
-            position: relative;
-            transform:rotate(45deg);
-            box-sizing: border-box;
-        }
-        .loader::before {
-            content: "";
-            position: absolute;
-            box-sizing: border-box;
-            inset:-7px;
-            border-radius: 50%;
-            border:8px solid #116d6e;
-            animation: prixClipFix 2s infinite linear;
-        }
-
-        @keyframes prixClipFix {
-            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
-            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
-            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
-            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
-            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
-        }
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
-
         /* Ensure responsiveness on smaller screens */
         @media (max-width: 768px) {
             div.dt-buttons {
@@ -84,6 +55,46 @@
             white-space: normal !important;
             word-wrap: break-word;
         }
+        #spinnerOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            /* Ensure it covers other content */
+        }
+        .loader {
+            width: 48px;
+            height: 48px;
+            border:6px solid #FFF;
+            border-radius: 50%;
+            position: relative;
+            transform:rotate(45deg);
+            box-sizing: border-box;
+        }
+        .loader::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            inset:-7px;
+            border-radius: 50%;
+            border:8px solid #116d6e;
+            animation: prixClipFix 2s infinite linear;
+        }
+
+        @keyframes prixClipFix {
+            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+        }
+        /* commented and adeed by anil for replace the new loader on 08-08-2025  */
     </style>
 
     <div id="flash-message" style="display: none;" class="alert alert-danger text-white">No data available to export.
@@ -91,9 +102,18 @@
     {{-- <link rel="stylesheet" href="{{asset('assets/css/rgr.css')}}"> --}}
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Reports</div>
-        @include('include.partials.breadcrumbs')
+    <div class="breadcrumb-title pe-3">Reports</div>
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Reports</li>
+                <li class="breadcrumb-item active" aria-current="page">Customized Report</li>
+            </ol>
+        </nav>
     </div>
+</div>
     <!--breadcrumb-->
     <!--end breadcrumb-->
     <hr>
@@ -168,8 +188,7 @@
         </div>
 
     </div>
-
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
     <!-- <div id="spinnerOverlay" style="display:none;">
         <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
     </div> -->
@@ -177,7 +196,7 @@
         <span class="loader"></span>
         <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
     </div>
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
 @endsection
 
 @section('footerScript')

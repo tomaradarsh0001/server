@@ -6,14 +6,7 @@ use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Http;
 use App\Models\Configuration;
 use App\Models\Template;
-use App\Models\Application;
 use Illuminate\Support\Facades\Log;
-use App\Mail\CommonMail;
-use App\Models\CommunicationTracking;
-use App\Events\MailSentSuccess;
-use Illuminate\Support\Facades\Mail;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class CommunicationService
 {
@@ -24,7 +17,7 @@ class CommunicationService
     }
 
     //to send whatsapp message
-    public function sendWhatsAppMessage($data,$number,$action,$communicationTrackingId = null, $countryCode = null)
+    public function sendWhatsAppMessage($data,$number,$action, $countryCode = null)
     {
         $sameConfiguration = Configuration::where('type', 'whatsapp')
         ->where('action', $action)
@@ -37,17 +30,7 @@ class CommunicationService
             $configuration = $defaultConfiguration;
         }
         if ($configuration) {
-            $data = $this->getTemplate($data,'whatsapp',$action);
-            $message = $data['message'];
-            $templateId = $data['template_id'];
-            
-            //added to store the message for tracking - SOURAV CHAUHAN (27/March/2025)
-            if (!is_null($communicationTrackingId)) {
-                $communicationTracking = CommunicationTracking::where('id',$communicationTrackingId)->first();
-                $communicationTracking->message = $message;
-                $communicationTracking->save();
-            }
-
+            $message = $this->getTemplate($data,'whatsapp',$action);
             $key = $configuration->key;
             $token = $configuration->auth_token;
             $whatsAppFrom = $configuration->whatsapp_number;
@@ -96,7 +79,7 @@ class CommunicationService
     }
 
     //to send text sms
-    public function sendSmsMessage($data,$number,$action, $communicationTrackingId = null,$countryCode = null)
+    public function sendSmsMessage($data,$number,$action, $countryCode = null)
     {
         $sameConfiguration = Configuration::where('type', 'sms')
         ->where('action', $action)
@@ -109,25 +92,32 @@ class CommunicationService
             $configuration = $defaultConfiguration;
         }
         if ($configuration) {
-            $data = $this->getTemplate($data,'sms',$action);
-            $message = $data['message'];
-            $templateId = $data['template_id'];
-
-            //added to store the message for tracking - SOURAV CHAUHAN (27/March/2025)
-            if (!is_null($communicationTrackingId)) {
-                $communicationTracking = CommunicationTracking::where('id',$communicationTrackingId)->first();
-                $communicationTracking->message = $message;
-                $communicationTracking->save();
-            }
-
+           
+            $templateData = $this->getTemplate($this->shrinkForSms($data), 'sms', $action);
+                    Log::info("Preparing SMS template.", [
+                'action'       => $action,
+                'templateData' => $templateData,
+            ]);
+            $message = $templateData['message'];
+              
+           $templateId = $templateData['template_id'];
             $key = $configuration->key;
             $token = $configuration->auth_token;
             $smsFrom = $configuration->sms_number;
             $baseUrl = $configuration->api;
             $vendor = $configuration->vendor;
-
-
-            switch ($vendor) {
+    //    dd($baseUrl, $key, $token, $message, $number, $smsFrom, $templateId); 
+    // Request Params
+                    /*Log::info("Request Params", [
+                        'baseUrl'   => $baseUrl,
+                        'key'   => $key,
+                        'token'   => $token,
+                        'message' => $message,
+                        'number' => $number,
+                        'smsFrom' => $smsFrom,
+                        'templateId' => $templateId,
+                    ]);*/
+          switch ($vendor) {
                 case 'Twilio':
                     $response = Http::withBasicAuth($key, $token)
                         ->asForm()
@@ -149,31 +139,47 @@ class CommunicationService
                         'api_secret' => $token
                     ]);
                     break;
-
-                case 'AirtelDLT':
-                    $response = Http::asForm()->post($baseUrl, [
+            case 'AirtelDLT':
+                // Log response
+                    /*Log::info("Request Before Send HTTP Request.", [
+                        'baseUrl'   =>$baseUrl,
                         'username'         => $key,
                         'pin'              => $token,
-                        'message'          => $message,
+                        'message'   =>   $message,  
+                        'mnumber'          => $number,
+                        'signature'        => 'LDODPT',
+                        'dlt_entity_id'    => $smsFrom,
+                        'dlt_template_id'  => $templateId,
+                    ]);*/
+   
+                $response = Http::withoutVerifying()->asForm()->post($baseUrl, [
+                        'username'         => $key,
+                        'pin'              => $token,
+                        'message'   =>   $message,  
                         'mnumber'          => $number,
                         'signature'        => 'LDODPT',
                         'dlt_entity_id'    => $smsFrom,
                         'dlt_template_id'  => $templateId,
                     ]);
-                    break;
-            
+                    // Log response
+                    /*Log::info("Response After Send HTTP Request.", [
+                        'action'   => $action,
+                        'mobile'   => $number,
+                        'status'   => $response->status(),
+                        'response' => $response->body(),
+                    ]);*/
+//dd($response);
+                break;
                 default:
                     // Handle unsupported vendor or throw an exception
                     throw new \Exception("Unsupported vendor: {$vendor}");
-                }
-                if ($response->successful()) {
-                Log::info("sms service response ".$response);
+            }
+            
+            if ($response->successful()) {
                 return true;
             } elseif ($response->failed()) {
-                Log::info("sms service response ".$response);
                 return false;
             } else {
-                Log::info("sms service response ".$response);
                 return false;
             }
         }
@@ -185,141 +191,26 @@ class CommunicationService
                         ->where('type', $type)
                         ->where('status', 1)
                         ->first();
-        $smsData = [];               
-
-        $smsData['message'] = $this->createTemplate($template['template'],$data);
+//dd($template);
+        $smsData = [];
+        $smsData['message'] = $this->createTemplate($template['template'],$data);   
         $smsData['template_id'] = $template['template_id'];
-        return $smsData;
+       return $smsData;
     }
 
 
-    // public function createTemplate($template,$data)
-    // {
-    //     foreach ($data as $key => $value) {
-    //         $template = str_replace("{{$key}}", $value, $template);
-    //     }
-    //     return $template;
-    // }
-
-    // For replacing the string with @[] in email tempates - SOURAV CHAUHAN (30/Dec/2024)
-    public function createTemplate($template, $data)
+    public function createTemplate($template,$data)
     {
         foreach ($data as $key => $value) {
             $template = str_replace("@[{$key}]", $value, $template);
         }
-        return $template;
+	$message = str_replace(['\n', '%0A'],"\n",$template);
+        return $message;
     }
-
-    //For sending email with communication tracking
-    public function sendMailWithTracking($action,$data,$user,$type){
-        $template = Template::where('type', $type)->where('action', $action)->where('status', 1)->first();
-        if(isset($data['application_no'])){
-            $communicationTracking = CommunicationTracking::updateOrCreate(
-                ['application_no' => $data['application_no'], 'email_subject' => $template->subject],
-                [
-                    'communication_for' => 'application',
-                    'communication_type' => $type,
-                    'send_by_user' => Auth::id(),
-                    'send_to_user' => $user['id'],
-                    'sent_at' => Carbon::now(),
-                    'message' => '',
-                    'email' => $user['email'],
-                ]
-            );
-            $communicationTrackingId = $communicationTracking->id;
-        } else {
-            $communicationTrackingId = null;
-        }
-
-        /** code modified with error handling -  code modified by Nitin 09Dec2924 */
-        try {
-            if($action == "APP_APR"){
-                $application = Application::where('application_no', $data['application_no'])->first();
-                $signedLetter = storage_path('app/public/' . $application->Signed_letter);
-                $mail = new CommonMail($data, $action,$communicationTrackingId);
-                $mail->attach($signedLetter, [
-                    'as' => 'SignedLetter.pdf',
-                    'mime' => 'application/pdf',
-                ]);
-                Mail::to($user['email'])->send($mail);
-            } else {
-                Mail::to($user['email'])->send(new CommonMail($data, $action,$communicationTrackingId));
-            }
-            event(new MailSentSuccess(
-                    $communicationTrackingId,
-                    true,                             
-                    'Email sent successfully!'
-                ));
-            $mailSent = true;
-        }  catch (\Exception $e) {
-            event(new MailSentSuccess(
-                $communicationTrackingId,
-                false,                             
-                'Email sent successfully!'
-            ));
-            Log::error("Failed to send email to {$user['email']}: " . $e->getMessage());
-            $mailSent = false;
-        }
-
-        if($action != "OTP_VALID"){
-            $mobileNo = $user['mobile_no'];
-            $checkSmsTemplateExists = checkTemplateExists('sms', $action);
-            // dd($checkSmsTemplateExists);
-            $communicationService = new CommunicationService;
-            if (!empty($checkSmsTemplateExists)) {
-                $communicationTracking = CommunicationTracking::create(
-                    [
-                        'application_no' => isset($data['application_no'])?$data['application_no']:null,
-                        'communication_for' => 'application',
-                        'communication_type' => 'sms',
-                        'send_by_user' => Auth::id(),
-                        'send_to_user' => $user['id'],
-                        'sent_at' => Carbon::now(),
-                        'mobile' => $user['mobile_no'],
-                    ]
-                );
-                $communicationTrackingId = $communicationTracking->id;
-                $response = $communicationService->sendSmsMessage($data, $mobileNo, $action,$communicationTrackingId);
-                if($response){
-                    $communicationTracking->status = 1;
-                    $communicationTracking->save();
-                } else {
-                    $communicationTracking->status = 0;
-                    $communicationTracking->save();
-                    Log::info($response);
-                }
-            }
-            $checkWhatsappTemplateExists = checkTemplateExists('whatsapp', $action);
-            if (!empty($checkWhatsappTemplateExists)) {
-                $communicationTracking = CommunicationTracking::create(
-                    [
-                        'application_no' => isset($data['application_no'])?$data['application_no']:null,
-                        'communication_for' => 'application',
-                        'communication_type' => 'whatsapp',
-                        'send_by_user' => Auth::id(),
-                        'send_to_user' => $user['id'],
-                        'sent_at' => Carbon::now(),
-                        'mobile' => $user['mobile_no'],
-                    ]
-                );
-                $communicationTrackingId = $communicationTracking->id;
-                $response = $communicationService->sendWhatsAppMessage($data, $mobileNo, $action,$communicationTrackingId);
-                if($response){
-                    $communicationTracking->status = 1;
-                    $communicationTracking->save();
-                } else {
-                    $communicationTracking->status = 0;
-                    $communicationTracking->save();
-                    Log::info($response);
-                }
-            }
-        }
-    }
-
-    /**
+  /**
      * Multibyte-safe trim for SMS, appends "..." only if needed.
      */
-    private function smsTrim(?string $value, int $limit = 30): string
+    private function smsTrim(?string $value, int $limit = 40): string
     {
         $value = trim((string) $value);
         if (function_exists('mb_strlen') && function_exists('mb_substr')) {

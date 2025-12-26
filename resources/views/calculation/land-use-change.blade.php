@@ -23,15 +23,14 @@
 </style>
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Calculator</div>
+    <div class="breadcrumb-title pe-3">Calculation for Land Use Change Charges</div>
     <div class="ps-3">
         <nav aria-label="breadcrumb">
-            <!-- breadcrumb correction by Swati Mishra on 20-03-2025 -->
             <ol class="breadcrumb mb-0 p-0">
                 <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
                 </li>
-                <!-- <li class="breadcrumb-item"><a href="javascript:;">Utilities</a> -->
-                <!-- </li> -->
+                <li class="breadcrumb-item"><a href="javascript:;">Utilities</a>
+                </li>
                 <li class="breadcrumb-item" aria-current="page">Calculator</li>
                 <li class="breadcrumb-item active" aria-current="page">Land Use Change Charges</li>
             </ol>
@@ -66,12 +65,12 @@
                     <td> <span id="area_numeric"></span></td>
                 </tr>
                 <tr>
-                    <th>Land Rate (per Sqm.)</th>
-                    <td class="money"> <span id="land_rate_numeric"></span></td>
-                </tr>
-                <tr>
                     <th>Area (Sq. Yard)</th>
                     <td> <span id="area1_numeric"></span></td>
+                </tr>
+                <tr>
+                    <th>Land Rate (per Sqm.)</th>
+                    <td class="money"> <span id="land_rate_numeric"></span></td>
                 </tr>
                 <tr>
                     <th>Land Value </th>
@@ -151,7 +150,7 @@ function sqmToSqyard(sqm) {
     function getPropertyLandUseChangeOptions(propertyId) {
         $.ajax({
             type: 'get',
-            url: "{{url('land-use-change/property-type-options')}}" + '/' + propertyId,
+            url: "{{ route('propertyTypeOptions', ':propertyId') }}".replace(':propertyId', propertyId),
 
             success: response => {
                 $('#change-to-select').toggleClass('d-none', response.status !== 'success');
@@ -169,13 +168,16 @@ function sqmToSqyard(sqm) {
                         target = $('#' + key);
                        
                         if (target.length > 0) {
+                        if(key === 'area'){
+                                		$("#area1_numeric").html(customNumFormat(sqmToSqyard(response[key]).toFixed(2)));
+                                	}
                             target.html(propertyDetails[key]);
                         }
                         else{
                             target = $('#' + key+ '_numeric');
                             if (target.length > 0) {
-                            	if(key === 'area'){
-                                		$("#area1_numeric").html(customNumFormat(sqmToSqyard(propertyDetails[key]).toFixed(3)));
+                            if(key === 'area'){
+                                		$("#area1_numeric").html(customNumFormat(sqmToSqyard(propertyDetails[key]).toFixed(2)));
                                 	}
                                 target.html(customNumFormat(propertyDetails[key]));
                             }

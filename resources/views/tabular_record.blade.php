@@ -1,13 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Tabular Record')
+@section('title', 'All Property Details')
 
 @section('content') 
- <!--breadcrumb-->
- <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Reports</div>
-        @include('include.partials.breadcrumbs')
-    </div>
     <div class="d-flex justify-content-end">
         <button class="btn btn-primary" onclick="printSection('sectionToPrint')">Print Property Data</button>
     </div>

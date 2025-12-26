@@ -68,9 +68,18 @@
 
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Public Services</div>
-        @include('include.partials.breadcrumbs')
+    <div class="breadcrumb-title pe-3">Public Services</div>
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Public Services</li>
+                <li class="breadcrumb-item active" aria-current="page">Appointments</li>
+            </ol>
+        </nav>
     </div>
+</div>
+
 <div class="card">
     <div class="card-body">
         <div class="d-flex justify-content-end">
@@ -81,12 +90,12 @@
                 </li>
             </ul>
         </div>
-         <!-- added appointment-table class by anil for break td long text on 17-09-2025  -->
+        <!-- added appointment-table class by anil for break td long text on 17-09-2025  -->
         <table id="example" class="display appointment-table" style="width:100%">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>S.No</th>
-                    <th>ID</th>
                     <th>Name</th>
                     <th>Address</th>
                     <th>Meeting Purpose</th>
@@ -155,7 +164,7 @@
     });
 
     function updateStatus(appointmentId, status, reason) {
-        fetch(`/appointments/update-status/${appointmentId}`, {
+        fetch(getBaseURL() + `/appointments/update-status/${appointmentId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -184,7 +193,7 @@
         var table = $('#example').DataTable({
             processing: true,
             serverSide: true,
-            // responsive: true,
+          //  responsive: true,
             order: [[1, 'desc']],
             ajax: {
                 url: "{{ route('get.appointments') }}",
@@ -296,6 +305,7 @@
                     data: 'action',
                     name: 'action',
                     orderable: false,
+                    
                     searchable: false
                 }
             ],
@@ -359,23 +369,75 @@
     });
 
     // AJAX function to handle attendance update
-    function updateAttendanceStatus(appointmentId, isAttended, remark = '') {
+ /*    function updateAttendanceStatus(appointmentId, isAttended, remark = '') {
+        let url = "{{ route('appointments.updateAttendance', ['id' => ':id']) }}".replace(':id', appointmentId);
+
         $.ajax({
-            url: `/appointments/update-attendance/${appointmentId}`,
+            url: url,
             method: 'PATCH',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             data: { 
                 is_attended: isAttended,
-                remark: remark // Optional remark
+                remark: remark
             },
             success: function(response) {
                 if (response.success) {
-                    // Reload the table to reflect the new status
                     $('#example').DataTable().ajax.reload();
                 } else {
-                    alert(response.message); // Handle any error messages
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                alert('Error updating attendance status.');
+            }
+        });
+    }  
+  function updateAttendanceStatus(appointmentId, isAttended, remark = '') {
+        let url = "{{ route('appointments.updateAttendance', ':id') }}".replace(':id', appointmentId);
+
+        $.ajax({
+            url: url,
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: {
+                is_attended: isAttended,
+                remark: remark
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#example').DataTable().ajax.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function(xhr) {
+                alert('Error updating attendance status.');
+            }
+        });
+    }*/
+ function updateAttendanceStatus(appointmentId, isAttended, remark = '') {
+        let url = "{{ route('appointments.updateAttendance', ['id' => '__ID__']) }}";
+        url = url.replace('__ID__', appointmentId); // Replace placeholder with real ID
+
+        $.ajax({
+            url: url,
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            data: {
+                is_attended: isAttended,
+                remark: remark
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#example').DataTable().ajax.reload();
+                } else {
+                    alert(response.message);
                 }
             },
             error: function() {

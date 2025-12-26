@@ -16,7 +16,7 @@
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Properties</li>
                     <li class="breadcrumb-item active" aria-current="page">View</li>
-                    <li class="breadcrumb-item active" aria-current="page">Vacant</li>
+                    <li class="breadcrumb-item active" aria-current="page">Properties Outside Delhi</li>
                     <li class="breadcrumb-item active" aria-current="page">Details</li>
                 </ol>
             </nav>

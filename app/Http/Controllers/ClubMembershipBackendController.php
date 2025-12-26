@@ -194,10 +194,11 @@ class ClubMembershipBackendController extends Controller
             $nestedData['updated_by'] = $clubMembership->updated_by;
             $nestedData['created_at'] = $clubMembership->created_at->format('d/m/Y H:i:s'); */
 
-            if ($user->hasPermissionTo('club.membership.view')) {
-                $actionBtnHtml .= '<a href="' . url('club-membership/details/' . $clubMembership->id) . '"><button type="button" class="btn btn-primary px-3 mr-2">View</button></a>';
-            }
-
+           if ($user->hasPermissionTo('club.membership.view')) {
+                    $actionBtnHtml .= '<a href="' . route('getClubMembershipDetails', ['id' => $clubMembership->id]) . '">
+                        <button type="button" class="btn btn-primary px-3 mr-2">View</button>
+                    </a>';
+}
             /* if ($user->hasPermissionTo('club.membership.update')) {
                 $itemCode = getServiceCodeById($clubMembership->status);
                 if ($itemCode != 'CM_APP' && $itemCode != 'CM_REJ') {
@@ -383,12 +384,17 @@ class ClubMembershipBackendController extends Controller
             $class = $statusClasses[$clubMembership->item_code] ?? 'text-secondary bg-light';
             $nestedData['status'] = '<span class="theme-badge ' . $class . '">' . ucwords($clubMembership->status_name) . '</span>';
             if ($user->hasPermissionTo('club.membership.view')) {
-                $actionBtnHtml .= '<a href="' . url('club-membership/details/' . $clubMembership->id) . '"><button type="button" class="btn btn-primary px-3 mr-2">View</button></a>';
+                $actionBtnHtml .= '<a href="' . route('getClubMembershipDetails', ['id' => $clubMembership->id]) . '">
+                <button type="button" class="btn btn-primary px-3 mr-2">View</button>
+            </a>';
+
             }
             if ($user->hasPermissionTo('club.membership.update')) {
                 $itemCode = getServiceCodeById($clubMembership->status);
                 if ($itemCode != 'CM_APP' && $itemCode != 'CM_REJ' && $itemCode != 'CM_INP') {
-                    $actionBtnHtml .= '<a href="' . url('club-membership/edit/' . $clubMembership->id) . '"><button type="button" class="btn btn-secondary px-3">Edit</button></a>';
+                $actionBtnHtml .= '<a href="' . route('editClubMembershipDetails', ['id' => $clubMembership->id]) . '">
+                    <button type="button" class="btn btn-secondary px-3">Edit</button>
+                </a>';
                 }
             }
             $nestedData['action'] = $actionBtnHtml;
@@ -612,15 +618,86 @@ class ClubMembershipBackendController extends Controller
 
             $action = 'CLUB_MEM_NEW';
 
-            $this->settingsService->applyMailSettings($action);
-            Mail::to($membership->email)->send(new CommonMail($notificationData, $action));
-            $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
-            $this->communicationService->sendWhatsAppMessage($notificationData, $membership->mobile, $action);
+            // $this->settingsService->applyMailSettings($action);
+            // Mail::to($membership->email)->send(new CommonMail($notificationData, $action));
+            // --- EMAIL ---
+                try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($membership->email, $mailSettings);
 
-            return redirect('public-services/club-membership/received-applications')->with('success', 'Club Membership application submitted successfully.');
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $membership->email,
+                        'data'   => $notificationData,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $membership->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+            // $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
+            try {
+                        $isSmsSuccess = $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
+
+                        if ($isSmsSuccess) {
+                            \Log::info("SMS sent successfully.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            ]);
+                        } else {
+                            Log::warning("SMS sending failed.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("SMS sending threw exception.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
+            // $this->communicationService->sendWhatsAppMessage($notificationData, $membership->mobile, $action);
+            // --- WHATSAPP ---
+                try {
+                    $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                        $notificationData,
+                        $membership->mobile,
+                        $action
+                    );
+
+                    if ($isWhatsAppSuccess) {
+                        Log::info("WhatsApp sent successfully.", [
+                            'mobile'      => $membership->mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                        ]);
+                    } else {
+                        Log::warning("WhatsApp sending failed.", [
+                            'mobile'      => $membership->mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("WhatsApp sending threw exception.", [
+                        'mobile'      => $membership->mobile,
+                        // 'countryCode' => $appointment->country_code,
+                        'action'      => $action,
+                        'error'       => $e->getMessage(),
+                    ]);
+                }
+
+            return redirect()->route('club.membership.received.index')->with('success', 'Club Membership application submitted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect('public-services/club-membership/received-applications')->with('success', 'Club Membership application submitted successfully.');
+            return redirect()->route('club.membership.received.index')->with('success', 'Club Membership application submitted successfully.');
             Log::error('Club membership creation failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
@@ -638,7 +715,7 @@ class ClubMembershipBackendController extends Controller
                     $getItemCode = getServiceCodeById($request->status);
                     if ($getItemCode === 'CM_INP') {
                         // $action = 'CLUB_MEM_NEW';
-                        $action = 'CLUB_MEM_WAIT'; // on dated 18/sep/2025 as per new mail template
+                        $action = 'CLUB_MEM_WAIT';
                         // Notification: Setup data and action by Swati on 29052025
                         $notificationData = [
                             'unique_id' => $club->unique_id,
@@ -662,10 +739,80 @@ class ClubMembershipBackendController extends Controller
                         ];
                     }
 
-                    $this->settingsService->applyMailSettings($action);
-                    Mail::to($club->email)->send(new CommonMail($notificationData, $action));
-                    $this->communicationService->sendSmsMessage($notificationData, $club->mobile, $action);
-                    $this->communicationService->sendWhatsAppMessage($notificationData, $club->mobile, $action);
+                    // $this->settingsService->applyMailSettings($action);
+                    // Mail::to($club->email)->send(new CommonMail($notificationData, $action));
+                    try {
+                        $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                        $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                        $mailResponse = $mailer->send($club->email, $mailSettings);
+
+                        Log::info("Email sent successfully.", [
+                            'action' => $action,
+                            'email'  => $club->email,
+                            'data'   => $notificationData,
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error("Email sending failed.", [
+                            'action' => $action,
+                            'email'  => $club->email,
+                            'error'  => $e->getMessage(),
+                        ]);
+                    }
+                    // $this->communicationService->sendSmsMessage($notificationData, $club->mobile, $action);
+                    try {
+                        $isSmsSuccess = $this->communicationService->sendSmsMessage($notificationData, $club->mobile, $action);
+
+                        if ($isSmsSuccess) {
+                            \Log::info("SMS sent successfully.", [
+                            'mobile'      => $club->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            ]);
+                        } else {
+                            Log::warning("SMS sending failed.", [
+                            'mobile'      => $club->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("SMS sending threw exception.", [
+                            'mobile'      => $club->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
+                    // $this->communicationService->sendWhatsAppMessage($notificationData, $club->mobile, $action);
+                    // --- WHATSAPP ---
+                    try {
+                        $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                            $notificationData,
+                            $club->mobile,
+                            $action
+                        );
+
+                        if ($isWhatsAppSuccess) {
+                            Log::info("WhatsApp sent successfully.", [
+                                'mobile'      => $club->mobile,
+                                // 'countryCode' => $appointment->country_code,
+                                'action'      => $action,
+                            ]);
+                        } else {
+                            Log::warning("WhatsApp sending failed.", [
+                                'mobile'      => $club->mobile,
+                                // 'countryCode' => $appointment->country_code,
+                                'action'      => $action,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("WhatsApp sending threw exception.", [
+                            'mobile'      => $club->mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
                 }
             }
             return response()->json(['status' => true, 'message' => 'Club membership status successfully updated.', 'redirect_url' => route('club.membership.received.index')]);
@@ -730,10 +877,81 @@ class ClubMembershipBackendController extends Controller
             ];
         }
 
-        $this->settingsService->applyMailSettings($action);
-        Mail::to($club->email)->send(new CommonMail($notificationData, $action));
-        $this->communicationService->sendSmsMessage($notificationData, $club->mobile, $action);
-        $this->communicationService->sendWhatsAppMessage($notificationData, $club->mobile, $action);
+        // $this->settingsService->applyMailSettings($action);
+        // Mail::to($club->email)->send(new CommonMail($notificationData, $action));
+        // --- EMAIL ---
+        try {
+            $mailSettings = app(SettingsService::class)->getMailSettings($action);
+            $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+            $mailResponse = $mailer->send($club->email, $mailSettings);
+
+            Log::info("Email sent successfully.", [
+                'action' => $action,
+                'email'  => $club->email,
+                'data'   => $notificationData,
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Email sending failed.", [
+                'action' => $action,
+                'email'  => $club->email,
+                'error'  => $e->getMessage(),
+            ]);
+        }
+        // $this->communicationService->sendSmsMessage($notificationData, $club->mobile, $action);
+        try {
+                $isSmsSuccess = $this->communicationService->sendSmsMessage($notificationData, $club->mobile, $action);
+
+                if ($isSmsSuccess) {
+                    \Log::info("SMS sent successfully.", [
+                    'mobile'      => $club->mobile,
+                    'action'      => $action,
+                    'notificationData'      => $notificationData,
+                    ]);
+                } else {
+                    Log::warning("SMS sending failed.", [
+                    'mobile'      => $club->mobile,
+                    'action'      => $action,
+                    'notificationData'      => $notificationData,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error("SMS sending threw exception.", [
+                    'mobile'      => $club->mobile,
+                    'action'      => $action,
+                    'notificationData'      => $notificationData,
+                    'error'       => $e->getMessage(),
+                ]);
+            }
+        // $this->communicationService->sendWhatsAppMessage($notificationData, $club->mobile, $action);
+        // --- WHATSAPP ---
+        try {
+            $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                $notificationData,
+                $club->mobile,
+                $action
+            );
+
+            if ($isWhatsAppSuccess) {
+                Log::info("WhatsApp sent successfully.", [
+                    'mobile'      => $club->mobile,
+                    // 'countryCode' => $appointment->country_code,
+                    'action'      => $action,
+                ]);
+            } else {
+                Log::warning("WhatsApp sending failed.", [
+                    'mobile'      => $club->mobile,
+                    // 'countryCode' => $appointment->country_code,
+                    'action'      => $action,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error("WhatsApp sending threw exception.", [
+                'mobile'      => $club->mobile,
+                // 'countryCode' => $appointment->country_code,
+                'action'      => $action,
+                'error'       => $e->getMessage(),
+            ]);
+        }
 
 
         return response()->json([
@@ -947,7 +1165,7 @@ class ClubMembershipBackendController extends Controller
                 }
             }
             DB::commit();
-            return redirect('public-services/club-membership/received-applications')->with('success', 'Club Membership application updated successfully.');
+            return redirect()->route('club.membership.received.index')->with('success', 'Club Membership application updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Club membership creation failed: ' . $e->getMessage());
@@ -986,12 +1204,84 @@ class ClubMembershipBackendController extends Controller
                     : 'CLUB_MEM_WDRW'; // You may update this logic later if needed
 
                 // Apply mail settings
-                $this->settingsService->applyMailSettings($action);
+                // $this->settingsService->applyMailSettings($action);
 
-                // Send Email, SMS, WhatsApp
-                Mail::to($member->email)->send(new CommonMail($notificationData, $action));
-                $this->communicationService->sendSmsMessage($notificationData, $member->mobile, $action);
-                $this->communicationService->sendWhatsAppMessage($notificationData, $member->mobile, $action);
+                // // Send Email, SMS, WhatsApp
+                // Mail::to($member->email)->send(new CommonMail($notificationData, $action));
+                // --- EMAIL ---
+                try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($member->email, $mailSettings);
+
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $member->email,
+                        'data'   => $notificationData,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $member->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+
+                // $this->communicationService->sendSmsMessage($notificationData, $member->mobile, $action);
+            try {
+                    $isSmsSuccess = $this->communicationService->sendSmsMessage($notificationData, $member->mobile, $action);
+
+                    if ($isSmsSuccess) {
+                        \Log::info("SMS sent successfully.", [
+                        'mobile'      => $member->mobile,
+                        'action'      => $action,
+                        'notificationData'      => $notificationData,
+                        ]);
+                    } else {
+                        Log::warning("SMS sending failed.", [
+                        'mobile'      => $member->mobile,
+                        'action'      => $action,
+                        'notificationData'      => $notificationData,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("SMS sending threw exception.", [
+                        'mobile'      => $member->mobile,
+                        'action'      => $action,
+                        'notificationData'      => $notificationData,
+                        'error'       => $e->getMessage(),
+                    ]);
+                }
+                // $this->communicationService->sendWhatsAppMessage($notificationData, $member->mobile, $action);
+                 // --- WHATSAPP ---
+        try {
+            $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                $notificationData,
+                $member->mobile,
+                $action
+            );
+
+            if ($isWhatsAppSuccess) {
+                Log::info("WhatsApp sent successfully.", [
+                    'mobile'      => $member->mobile,
+                    // 'countryCode' => $appointment->country_code,
+                    'action'      => $action,
+                ]);
+            } else {
+                Log::warning("WhatsApp sending failed.", [
+                    'mobile'      => $member->mobile,
+                    // 'countryCode' => $appointment->country_code,
+                    'action'      => $action,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error("WhatsApp sending threw exception.", [
+                'mobile'      => $member->mobile,
+                // 'countryCode' => $appointment->country_code,
+                'action'      => $action,
+                'error'       => $e->getMessage(),
+            ]);
+        }
             }
             return response()->json(['status' => 'success', 'message' => 'Emails sent successfully']);
         } catch (\Exception $e) {
@@ -1001,27 +1291,27 @@ class ClubMembershipBackendController extends Controller
         }
     }
 
-    //     public function viewMembershipPdf()
-    // {
-    //     $membership_id = 'CMA0000014';
+//     public function viewMembershipPdf()
+// {
+//     $membership_id = 'CMA0000014';
 
-    //     // Fetch membership with club_type
-    //     $membership = ClubMembership::where('unique_id', $membership_id)->first();
+//     // Fetch membership with club_type
+//     $membership = ClubMembership::where('unique_id', $membership_id)->first();
 
-    //     if (!$membership) {
-    //         abort(404, 'Membership not found');
-    //     }
+//     if (!$membership) {
+//         abort(404, 'Membership not found');
+//     }
 
-    //     // Determine relation dynamically
-    //     $relation = $membership->club_type == 'IHC' ? 'ihcDetails' : ($membership->club_type == 'DGC' ? 'dgcDetails' : null);
+//     // Determine relation dynamically
+//     $relation = $membership->club_type == 'IHC' ? 'ihcDetails' : ($membership->club_type == 'DGC' ? 'dgcDetails' : null);
 
-    //     if ($relation) {
-    //         $membership->load($relation);
-    //     }
+//     if ($relation) {
+//         $membership->load($relation);
+//     }
 
-    //     // Generate PDF using Blade template
-    //     $pdf = \PDF::loadView('club_membership.download_pdf', ['membership' => $membership]);
+//     // Generate PDF using Blade template
+//     $pdf = \PDF::loadView('club_membership.download_pdf', ['membership' => $membership]);
 
-    //     return $pdf->stream("Membership_{$membership_id}.pdf");
-    // }
+//     return $pdf->stream("Membership_{$membership_id}.pdf");
+// }
 }

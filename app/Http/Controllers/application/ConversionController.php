@@ -23,15 +23,15 @@ class ConversionController extends Controller
         // dd($request->all());
 
         $messages = [
-            'statusofapplicant.required' => 'Please select the applicant status',
-            'convNameAsOnLease.required' => 'Executed in favour of is required',
-            'convExecutedOnAsOnLease.required' => 'Executed on is required',
-            'convRegnoAsOnLease.required' => 'Registration No. is required',
-            'convBooknoAsOnLease.required' => 'Book No. is required',
-            'convVolumenoAsOnLease.required' => 'Volume No. is required',
-            'convPagenoFrom.required' => 'Page No. From is required',
-            'convPagenoTo.required' => 'Page No.  To is required',
-            'convRegdateAsOnLease.required' => 'Registration Date is required',
+            'statusofapplicant.required' => 'Please select the applicant status.',
+            'convNameAsOnLease.required' => 'Executed in favour of is required.',
+            'convExecutedOnAsOnLease.required' => 'Executed on is required.',
+            'convRegnoAsOnLease.required' => 'Registration no. is required.',
+            'convBooknoAsOnLease.required' => 'Book No. is required.',
+            'convVolumenoAsOnLease.required' => 'Volume no. is required.',
+            'convPagenoFrom.required' => 'Page no. from is required.',
+            'convPagenoTo.required' => 'Page no.  to is required.',
+            'convRegdateAsOnLease.required' => 'Registration Date. is required.',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -314,17 +314,17 @@ class ConversionController extends Controller
             $updated = $conversion->update(['consent' => $request->applicantConsent ? 1 : 0]);
             if ($updated) {
                 $tempModelName = config('applicationDocumentType.CONVERSION.TempModelName');
-                /* $encodedModelName = base64_encode($tempModelName);
+                $encodedModelName = base64_encode($tempModelName);
                 $encodedModelId = base64_encode($conversion->id);
                 // redirect to payemnt page after data saved
                 $redirectUrl = route('applicationPayment', [$encodedModelName, $encodedModelId]);
                 // return redirect()->route('applicationPayment', [$encodedModelName, $encodedModelId]);
-                return response()->json(['status' => 'success', 'url' => $redirectUrl]); */
-                $paymentComplete = GeneralFunctions::paymentComplete($conversion->id, $tempModelName);
-                if ($paymentComplete) {
+                return response()->json(['status' => 'success', 'url' => $redirectUrl]);
+                /*$paymentComplete = GeneralFunctions::paymentComplete($conversion->id, $tempModelName);
+                 if ($paymentComplete) {
                     $submitted = GeneralFunctions::convertTempAppToFinal($conversion->id, $tempModelName, $paymentComplete);
                     return $submitted;
-                }
+                } */
             } else {
                 return response()->json(['status' => 'error', 'message' => ('messages.general.error.tryAgain')]);
             }

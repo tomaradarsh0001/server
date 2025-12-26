@@ -116,7 +116,7 @@
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
                     </li>
                     {{-- <li class="breadcrumb-item">Other</li> --}}
                     <li class="breadcrumb-item active" aria-current="page">Property Details</li>
@@ -208,7 +208,7 @@
 
                                         <th>Email:</th>
                                         <td>
-                                            @php
+                                              @php
                                                 if ($data['details']->user->email) {
                                                     $useremail = $data['details']->user->email;
                                                     $position = strpos($useremail, '@');
@@ -521,19 +521,19 @@
                                             id="SuggestedPropertyID" placeholder="Suggested Property ID"
                                             value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
                                         <!-- <div class="w-25">
-                                                                                                                                                                                                                                                                                                                        <div class="d-flex justify-space-between items-end">
-                                                                                                                                                                                                                                                                                                                            <label for="PropertyID" class="form-label">Suggested Property ID</label>
-                                                                                                                                                                                                                                                                                                                            <a href="javascript:void(0);" id="PropertyIDSearchBtn"
-                                                                                                                                                                                                                                                                                                                                class="pl-2 pr-4 fs-2 text-decoration-none d-flex flex-column align-items-center justify-content-end"
-                                                                                                                                                                                                                                                                                                                                data-toggle="tooltip" title="View Scanned Files"
-                                                                                                                                                                                                                                                                                                                                data-bs-toggle="modal" data-bs-target="#viewScannedFiles">
-                                                                                                                                                                                                                                                                                                                                <i class='bx bxs-file-pdf text-danger'></i>
-                                                                                                                                                                                                                                                                                                                            </a>
-                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                        <input type="text" name="suggestedPropertyId" class="form-control"
-                                                                                                                                                                                                                                                                                                                            id="SuggestedPropertyID" placeholder="Suggested Property ID"
-                                                                                                                                                                                                                                                                                                                            value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
-                                                                                                                                                                                                                                                                                                                    </div> -->
+                                                                                                                        <div class="d-flex justify-space-between items-end">
+                                                                                                                            <label for="PropertyID" class="form-label">Suggested Property ID</label>
+                                                                                                                            <a href="javascript:void(0);" id="PropertyIDSearchBtn"
+                                                                                                                                class="pl-2 pr-4 fs-2 text-decoration-none d-flex flex-column align-items-center justify-content-end"
+                                                                                                                                data-toggle="tooltip" title="View Scanned Files"
+                                                                                                                                data-bs-toggle="modal" data-bs-target="#viewScannedFiles">
+                                                                                                                                <i class='bx bxs-file-pdf text-danger'></i>
+                                                                                                                            </a>
+                                                                                                                        </div>
+                                                                                                                        <input type="text" name="suggestedPropertyId" class="form-control"
+                                                                                                                            id="SuggestedPropertyID" placeholder="Suggested Property ID"
+                                                                                                                            value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
+                                                                                                                    </div> -->
                                         <table class="table table-bordered property-table-infos mb-0 verticle-middle">
                                             <tr>
                                                 <td><strong>Block:</strong> {{ $data['details']->block ?? '' }}</td>
@@ -1115,6 +1115,7 @@
         // Event delegation for dynamically added elements by lalit on 01/08-2024 for remarks validation
         $(document).on('click', '.confirm-reject-btn', function(event) {
             event.preventDefault();
+
             var form = $(this).closest('form');
             var remarksInput = form.find('textarea[name="remarks"]');
             // var remarksValue = remarksInput.val().trim();

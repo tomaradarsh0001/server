@@ -3,26 +3,13 @@
 @section('title', 'Add Permission')
 
 @section('content') 
-    <!--Breadcrumb-->
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Settings</div>
-    <div class="ps-3">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
-                <li class="breadcrumb-item">Application Configuration</li>
-                <li class="breadcrumb-item">Permissions</li>
-                <li class="breadcrumb-item active" aria-current="page">Add Permission</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-<!-- End -->
+    
     <div>
             <div class="col pt-3">
                 <div class="card">
                     <div class="card-body">
-                            <form action="{{url('permissions')}}" method="POST" >
+                        <h6 class="mb-0 text-uppercase tabular-record_font pb-4">Add permission details</h6>
+                            <form action="{{route('permissions.store') }}" method="POST" >
                                 @csrf
                                 <div class="row align-items-end">
                                         <div class="col-12 col-lg-4">

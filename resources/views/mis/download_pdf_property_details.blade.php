@@ -59,26 +59,11 @@
         }
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            position:relative;
-            margin: 0;
-            padding: 0;
         }
-        .watermark {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(-45deg); /* Centered and rotated */
-        font-size: 50px;
-        color: rgba(0, 0, 0, 0.1); /* Light gray and transparent */
-        z-index: -1; /* Ensure it stays in the background */
-        white-space: nowrap; /* Prevent text wrapping */
-        pointer-events: none; /* Prevent interaction */
-    }
     </style>
 </head>
 <body>
 
-    <div class="watermark">Land and Development Office</div>
     @if ($viewDetails->is_joint_property == NULL && $viewDetails->status != 1476)
 
         <!-- Emblem Image -->
@@ -341,108 +326,44 @@
                 </div>   
             </div>
 
-        <!-- <div class="part-title">
-            INSPECTION & DEMAND DETAILS
-        </div>
-        <div class="part-details">
-            <div class="container-fluid">
-                <table class="table table-bordered">
-                    <tbody>
-                        @if ($viewDetails->propertyInspectionDemandDetail)
-                            <tr>
-                                <td colspan="2"><b>Date of Last Inspection Report:</b>
-                                    @if ($viewDetails->propertyInspectionDemandDetail->last_inspection_ir_date)
+            <div class="part-title">
+                INSPECTION & DEMAND DETAILS
+            </div>
+            <div class="part-details">
+                <div class="container-fluid">
+                    <table class="table table-bordered">
+                        <tbody>
+                            {{-- Only inspection report from local --}}
+                            @if($viewDetails->propertyInspectionDemandDetail && $viewDetails->propertyInspectionDemandDetail->last_inspection_ir_date)
+                                <tr>
+                                    <td colspan="2"><b>Date of Last Inspection Report:</b>
                                         {{ \Carbon\Carbon::parse($viewDetails->propertyInspectionDemandDetail->last_inspection_ir_date)->format('d-m-Y') }}
-                                    @else
-                                        NA
-                                    @endif
-                                </td>
-
-                            </tr>
-                            @if ($viewDetails->propertyInspectionDemandDetail->last_demand_letter_date)
-                                <tr>
-                                    <td><b>Date of Last Demand Letter:</b>
-                                        {{ \Carbon\Carbon::parse($viewDetails->propertyInspectionDemandDetail->last_demand_letter_date)->format('d-m-Y') }}
                                     </td>
-                                    <td><b>Demand ID:</b>
-                                        {{ $viewDetails->propertyInspectionDemandDetail->last_demand_id ?? 'NA' }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2"><b>Amount of Last Demand Letter:</b>
-                                        ₹ {{ $viewDetails->propertyInspectionDemandDetail->last_demand_amount ?? 0 }}
-                                    </td>
-                                </tr>
-                                @else
-                                <tr>
-                                    <td colspan="2"><b>Date of Last Demand Letter:</b> NA</td>
                                 </tr>
                             @endif
-
-                            <tr>
-                                <td><b>Last Amount Received:</b>
-                                    @if ($viewDetails->propertyInspectionDemandDetail->last_amount_received)
-                                        ₹ {{ $viewDetails->propertyInspectionDemandDetail->last_amount_received }}
-                                    @else
-                                        ₹ 0
-                                    @endif
-                                </td>
-                                <td><b>Date of Last Amount Received:</b>
-                                    @if ($viewDetails->propertyInspectionDemandDetail->last_amount_received_date)
-                                        {{ \Carbon\Carbon::parse($viewDetails->propertyInspectionDemandDetail->last_amount_received_date)->format('d-m-Y') }}
-                                    @else
-                                        NA
-                                    @endif
-                                </td>
-
-                            </tr>
-                        @else
-                            <p class="font-weight-bold">No Records Available</p>
-                        @endif
-                    </tbody>
-                </table>
+    
+                            {{-- API-based demand display --}}
+                            @if($demandFallback)
+                                <tr>
+                                    <td><b>Date of Last Demand Letter:</b>
+                                        {{ \Carbon\Carbon::parse($demandFallback->last_demand_letter_date)->format('d-m-Y') }}
+                                    </td>
+                                    <td><b>Demand ID:</b> {{ $demandFallback->last_demand_id }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"><b>Amount of Last Demand Letter:</b> ₹ {{ $demandFallback->last_demand_amount }}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Last Amount Received:</b> ₹ {{ $demandFallback->last_amount_received }}</td>
+                                    <td><b>Date of Last Amount Received:</b> {{ $demandFallback->last_amount_received_date }}</td>
+                                </tr>
+                            @else
+                                <p class="font-weight-bold">No Records Available</p>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div> -->
-
-        <div class="part-title">
-            INSPECTION & DEMAND DETAILS
-        </div>
-        <div class="part-details">
-            <div class="container-fluid">
-                <table class="table table-bordered">
-                    <tbody>
-                        {{-- Only inspection report from local --}}
-                        @if($viewDetails->propertyInspectionDemandDetail && $viewDetails->propertyInspectionDemandDetail->last_inspection_ir_date)
-                            <tr>
-                                <td colspan="2"><b>Date of Last Inspection Report:</b>
-                                    {{ \Carbon\Carbon::parse($viewDetails->propertyInspectionDemandDetail->last_inspection_ir_date)->format('d-m-Y') }}
-                                </td>
-                            </tr>
-                        @endif
-
-                        {{-- API-based demand display --}}
-                        @if($demandFallback)
-                            <tr>
-                                <td><b>Date of Last Demand Letter:</b>
-                                    {{ \Carbon\Carbon::parse($demandFallback->last_demand_letter_date)->format('d-m-Y') }}
-                                </td>
-                                <td><b>Demand ID:</b> {{ $demandFallback->last_demand_id }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"><b>Amount of Last Demand Letter:</b> ₹ {{ $demandFallback->last_demand_amount }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Last Amount Received:</b> ₹ {{ $demandFallback->last_amount_received }}</td>
-                                <td><b>Date of Last Amount Received:</b> {{ $demandFallback->last_amount_received_date }}</td>
-                            </tr>
-                        @else
-                            <p class="font-weight-bold">No Records Available</p>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
 
         <!-- <h5 class="mb-4 pt-3 text-decoration-underline">MISCELLANEOUS DETAILS</h5> -->
         <div class="part-title">

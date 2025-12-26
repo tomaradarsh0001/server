@@ -37,8 +37,7 @@ class DatabaseSeeder extends Seeder
             // CitiesTableChunkThreeSeeder::class,
             // CitiesTableChunkFourSeeder::class,
             // CitiesTableChunkFiveSeeder::class,
-            // UpdateOldColoniesSeeder::class,
-            // HolidaysTableSeeder::class
+            // UpdateOldColoniesSeeder::class
             
         ]);
     }

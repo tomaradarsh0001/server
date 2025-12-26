@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Whatsapp')
+@section('title', 'Edit Whatsapp Settings')
 
 @section('content')
 <style>
@@ -9,24 +9,30 @@
         margin-top: 3px;
     }
 </style>
-<!--Breadcrumb-->
+<!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
     <div class="breadcrumb-title pe-3">Settings</div>
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
-                <li class="breadcrumb-item">Application Configuration</li>
-                <li class="breadcrumb-item">WhatsApp</li>
-                <li class="breadcrumb-item active" aria-current="page">Edit WhatsApp</li>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Whatsapp</li>
+                <li>
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item">
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit Whatsapp</li>
+                    </ol>
+                </li>
             </ol>
 
         </nav>
     </div>
 </div>
+<!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
+
 <hr>
-<!-- End Breadcrumb -->
- 
 <div class="card">
     <div class="card-body">
         <div class="d-flex justify-content-between pb-5">

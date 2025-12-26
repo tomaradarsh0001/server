@@ -27,7 +27,7 @@
                         <input type="date" id="nocDateOfBirthApp" name="nocDateOfBirthApp" max="{{ date('Y-m-d') }}"
                             class="form-control" readonly />
                         <div class="age-box">
-                            <h4>Age: </h4>
+                            <h4>Age (in years): </h4>
                             <input type="text" id="nocAgeApp" name="nocAgeApp" class="form-control" placeholder="0"
                                 readonly />
                         </div>
@@ -42,24 +42,24 @@
                         placeholder="Full Name*" readonly>
                 </div>
             </div>
+
             <input type="hidden" id="isApplicantIndian" name="isApplicantIndian"
                 value="{{ $userDetails->applicantUserDetails->isIndian ?? '' }}">
             @if (!empty($userDetails->applicantUserDetails->isIndian) && $userDetails->applicantUserDetails->isIndian == 1)
                 <div class="col-lg-4">
-                    <div class="form-group">
-                        <label for="nocAadharApp" class="form-label">Aadhaar Number</label>
-                        <input type="text" name="nocAadharApp" class="form-control numericOnly" id="nocAadharApp"
-                            maxlength="12" placeholder="Aadhaar Number" readonly>
-                    </div>
+                <div class="form-group">
+                    <label for="nocAadharApp" class="form-label">Aadhaar Number</label>
+                    <input type="text" name="nocAadharApp" class="form-control numericOnly" id="nocAadharApp"
+                        maxlength="12" placeholder="Aadhaar Number" readonly>
                 </div>
-                <div class="col-lg-4">
-                    <div class="form-group">
-                        <label for="nocPanApp" class="form-label">PAN Number</label>
-                        <input type="text" name="nocPanApp"
-                            class="form-control pan_number_format text-transform-uppercase" id="nocPanApp"
-                            maxlength="10" placeholder="PAN Number" readonly>
-                    </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="nocPanApp" class="form-label">PAN Number</label>
+                    <input type="text" name="nocPanApp" class="form-control pan_number_format text-transform-uppercase" id="nocPanApp"
+                        maxlength="10" placeholder="PAN Number" readonly>
                 </div>
+            </div>
             @else
                 <div class="col-lg-4">
                     <div class="form-group">
@@ -75,9 +75,9 @@
                             id="nocdocTypeNumber" maxlength="10" placeholder="PAN Number" readonly>
                     </div>
                 </div>
-            @endif
+            @endif    
 
-
+            
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="nocMobilenumberApp" class="form-label">Mobile Number</label>
@@ -102,7 +102,7 @@
                             class="text-danger">*</span></label>
                     <input type="text" name="conveyanceDeedName" class="form-control alpha-only"
                         id="conveyanceDeedName" placeholder="Executed in Favour of"
-                        value="{{ isset($application) ? $application->name_as_per_noc_conv_deed : '' }}" readonly>
+                        value="{{ isset($application) ? $application->name_as_per_noc_conv_deed : '' }}">
                     <div id="conveyanceDeedNameError" class="text-danger text-left"></div>
                 </div>
             </div>
@@ -113,7 +113,7 @@
                     <input type="date" name="conveyanceExecutedOn" class="form-control" id="conveyanceExecutedOn"
                         placeholder="Executed on"
                         value="{{ isset($application) ? $application->executed_on_as_per_noc_conv_deed : '' }}"
-                        readonly>
+                        >
                     <div id="conveyanceExecutedOnError" class="text-danger text-left"></div>
                 </div>
             </div>
@@ -122,7 +122,7 @@
                     <label for="conveyanceRegnoDeed" class="form-label">Registration Number<span
                             class="text-danger">*</span></label>
                     <i class="bi bi-info-circle-fill text-primary qmark" data-toggle="tooltip" data-placement="top"
-                        title="Registration No. as per registration details"
+                        title="Registration No. as per registration details."
                         data-bs-custom-class="tooltip-info">
                         <span class="qmark">&#8505;</span>
                     </i>
@@ -137,7 +137,7 @@
                     <label for="conveyanceBookNoDeed" class="form-label">Book Number<span
                             class="text-danger">*</span></label>
                     <i class="bi bi-info-circle-fill text-primary qmark" data-toggle="tooltip" data-placement="top"
-                        title="Book No. as per registration details"
+                        title="Book No. as per registration details."
                         data-bs-custom-class="tooltip-info">
                         <span class="qmark">&#8505;</span>
                     </i>
@@ -152,7 +152,7 @@
                     <label for="conveyanceVolumeNo" class="form-label">Volume Number<span
                             class="text-danger">*</span></label>
                     <i class="bi bi-info-circle-fill text-primary qmark" data-toggle="tooltip" data-placement="top"
-                        title="Volume No. as per registration details"
+                        title="Volume No. as per registration details."
                         data-bs-custom-class="tooltip-info">
                         <span class="qmark">&#8505;</span>
                     </i>
@@ -177,7 +177,7 @@
                     <label for="conveyancePageNo" class="form-label">Page Number<span
                             class="text-danger">*</span></label>
                     <i class="bi bi-info-circle-fill text-primary qmark" data-toggle="tooltip" data-placement="top"
-                        title=" Page Nos. as per registration details"
+                        title=" Page Nos. as per registration details."
                         data-bs-custom-class="tooltip-info">
                         <span class="qmark">&#8505;</span>
                     </i>

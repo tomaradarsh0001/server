@@ -11,8 +11,18 @@
 </style>
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Reports</div>
-    @include('include.partials.breadcrumbs')
+   <div class="breadcrumb-title pe-3">Reports</div>
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                </li>
+                 <li class="breadcrumb-item active" aria-current="page">Reports</li>
+                <li class="breadcrumb-item active" aria-current="page">Detailed Report</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
 </div>
 <!--breadcrumb-->
 <!--end breadcrumb-->
@@ -86,7 +96,7 @@
                                 <select class="selectpicker" multiple aria-label="Search by section" data-live-search="true" title="Section" id="section_filter" name="section_id[]">
                                     <option value="">All</option>
                                     @foreach ($sections as $section)
-                                    <option value="{{$section->id}}" {{(isset($filters['section_id'] ) && in_array($section->id, $filters['section_id'] )) ? 'selected':''}}><?= $section->name ?></option>
+                                    <option value="{{$section->section_code}}" {{(isset($filters['section_id'] ) && in_array($section->section_code, $filters['section_id'] )) ? 'selected':''}}><?= $section->name ?></option>
                                     @endforeach
                                 </select>
                                 <button type="button" class="input-reset-icon" data-targets="#section_filter"><i class="lni lni-cross-circle"></i></button>
@@ -130,18 +140,12 @@
                             </div>
                         </div>
                 </form>
-                <style>
-                    .location_icon {
-                        margin-right: 0px;
-                        padding: 2px;
-                    }
-                </style>
+
                 <div class="table-responsive mt-2">
-                    <table id="examplemy" class="display nowrap">
+                    <table id="example" class="display nowrap" style="width:100%">
                         <thead>
                             <tr>
                                 <th>S. No.</th>
-                                <th>Action</th>
                                 <th>Property Id</th>
                                 <th>Known as</th>
                                 <!-- <th>File Number</th> -->
@@ -157,7 +161,7 @@
                                 <th>Date Of Execution</th>
                                 <th>Current Lessee Name</th>
                                 <th>Joint Property</th>
-
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -167,14 +171,6 @@
                             @forelse($properties as $prop)
                             <tr>
                                 <td>{{$loop->iteration + $startNum}}</td>
-                                <td>
-                                    <a href="{{ route('download.pdf', ['property' => $prop->id]) }}">
-                                        <i class="lni lni-cloud-download text-primary" data-toggle="tooltip" title="Download Property Details" style="font-size:25px; vertical-align: middle;"></i>
-                                    </a>
-                                    <span class="location_icon" data-bs-toggle="modal" data-bs-target="#viewMapModal" onclick="locate('{{$prop->old_propert_id}}')"><i class="lni lni-map-marker text-danger" data-toggle="tooltip" title="View Mapview" style="font-size:25px; vertical-align: middle;"></i></span>
-                                    <a href="/streetview/{{$prop->old_propert_id}}" target="_blank" data-toggle="tooltip" title="View Streetview"><span class="location_icon"> <img src="{{ asset('assets/images/street-view.svg') }}" class="map-marker-icon" style="width:28px;" /> </span></a>
-                                    <a href="{{route('viewPropertyDetails',$prop->id)}}" class="btn btn-sm btn-flat btn-primary" target="_blank">View More</a>
-                                </td>
                                 <td>{{$prop->unique_propert_id}} <br> {{' ('.$prop->old_propert_id.')'}}</td>
                                 <td>{{$prop->address}}</td>
                                 {{-- <td>$prop->file_no</td> --}}
@@ -187,15 +183,12 @@
                                 {{--<td>$prop->premium.'.'.$prop->premium_in_paisa</td>--}}
                                 {{--<td>$prop->ground_rent</td>--}}
                                 <td>{{date('d-m-Y', strtotime($prop->doe))}}</td>
-                                <td>@if(!is_null($prop->current_lesse_name) && $prop->current_lesse_name != "")
-                                    @foreach(explode(',', $prop->current_lesse_name) as $name)
-                                    {{ trim($name) }}<br>
-                                    @endforeach
-                                    @else
-                                    NA
-                                    @endif
-                                </td>
+                                <td>{{(!is_null($prop->current_lesse_name) && $prop->current_lesse_name !="") ? $prop->current_lesse_name :  'NA'}}</td>
                                 <td>{{$prop->child_prop_id ?? 'No'}}</td>
+                                <td>
+                                    <span class="location_icon" data-bs-toggle="modal" data-bs-target="#viewMapModal" onclick="locate('{{$prop->old_propert_id}}')"><i class="lni lni-map-marker text-danger" data-toggle="tooltip" title="View Mapview"></i></span><a href="/streetview/{{$prop->old_propert_id}}" target="_blank" data-toggle="tooltip" title="View Streetview"><span class="location_icon"> <img src="{{ asset('assets/images/street-view.svg') }}" class="map-marker-icon" /> </span></a>
+                                    <a href="{{route('viewPropertyDetails',$prop->id)}}" class="btn btn-primary" target="_blank">View More</a>
+                                </td>
                             </tr>
                             @empty
                             <tr>
@@ -241,15 +234,12 @@
     </div>
 </div>
 
-@include('include.alerts.ajax-alert')
 @endsection
 
 @section('footerScript')
 <script src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script>
 <script src="{{ asset('assets/js/property-type-subtype-dropdown.js') }}"></script>
 <script src="{{ asset('assets/js/map.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css" />
-<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 <!-- use version 0.20.3 -->
 <script lang="javascript" src="{{asset('assets/js/xlsx.full.min.js')}}"></script>
 <script>
@@ -265,7 +255,7 @@
         $('#spinnerOverlay').show();
         const formArray = $(document.querySelector('#filter-form')).serializeArray();
         const data = {};
-        console.log(formArray);
+        console.log(formArray)
         formArray.forEach(({
             name,
             value
@@ -320,17 +310,16 @@
     function appendToexcel(item) {
         if (wsData.length == 0) {
             wsData.push([
-                /* 'Property Id', */
-                'PID - Old',
-                'PID - New',
-                'PID - Sub-ID (Child)',
+
+                'Property Id',
+                'Old Property Id',
+                'Child Property Id',
                 'File Number',
                 'Old File Number',
-                'Land (Nazul/Rehab)',
-                'Land Use Type',
-                'Land Use Sub-type',
+                'Land Type',
                 'Property Status',
-                'Colony',
+                'Property Type',
+                'Property SubType',
                 'Is Land Use Changed',
                 'Latest Property Type',
                 'Latest Property SubType',
@@ -339,54 +328,44 @@
                 'Premium (₹)',
                 'Ground Rent (₹)',
                 'Area',
-                'Unit',
-                'unitType',
                 'Area in Sqm',
-                'Land Value',
+                'Colony',
                 'Block',
                 'Plot',
                 'Presently Known As',
                 'Lease Type',
-                'Lease Tenure (Years)',
                 'Date Of Allotment',
                 'Date Of Execution',
                 'Date Of Expiration',
                 'Start Date Of GR',
                 'RGR Duration',
                 'First RGR Due On',
-                'Is Re-Entered',
-                'Re-Entered Date',
                 'Last Inspection Date',
                 'Last Demand Letter Date',
                 'Last Demand Id',
                 'Last Demand Amount',
                 'Last Amount Received',
                 'Last Amount Received Date',
-                'Outstanding',
-                'Original Lessee Name',
-                'Current Lessee Name',
+                'Total Dues',
+                'Latest Lessee Name',
                 'Lessee Address',
                 'Lessee Phone',
                 'Lessee Email',
-                'Remarks',
                 'Entry By',
                 'Entry At'
             ]);
         }
 
         wsData.push(
-            [
-                //item.unique_propert_id ?? '',
+            [item.unique_propert_id ?? '',
                 item.old_propert_id ?? '',
-                item.unique_propert_id ?? '',
                 item.child_prop_id ?? '',
                 item.unique_file_no ?? '',
                 item.file_no ?? '',
                 item.landType ?? '',
+                item.propertyStatus ?? '',
                 item.propertyType ?? '',
                 item.propertySubtype ?? '',
-                item.colony ?? '',
-                item.propertyStatus ?? '',
                 item.is_land_use_changed,
                 item.presentPropertyType,
                 item.presentPropertySubtype,
@@ -395,23 +374,17 @@
                 item.premium + '.' + item.premium_in_paisa ?? '',
                 item.ground_rent ?? '',
                 item.area ?? '',
-                item.unit ?? '',
-                item.unitType ?? '',
                 item.area_in_sqm ?? '',
-                item.land_value ?? '',
-                item.block ?? '',
+                item.colony ?? '', item.block ?? '',
                 item.plot_no ?? '',
                 item.presently_known_as ?? '',
                 item.leaseDeed ?? '',
-                item.lease_tenure ?? '',
                 item.date_of_allotment ? displayDateTime(item.date_of_allotment) : '',
                 item.date_of_execution ? displayDateTime(item.date_of_execution) : '',
                 item.date_of_expiration ? displayDateTime(item.date_of_expiration) : '',
                 item.start_date_of_gr ? displayDateTime(item.start_date_of_gr) : '',
                 item.rgr_duration ?? '',
                 item.first_rgr_due_on ? displayDateTime(item.first_rgr_due_on) : '',
-                item.reentered ? item.reentered : '',
-                item.reentered ? displayDateTime(item.reentereddate) : '',
                 item.last_inspection_ir_date ? displayDateTime(item.last_inspection_ir_date) : '',
                 item.last_demand_letter_date ? displayDateTime(item.last_demand_letter_date) : '',
                 item.last_demand_id ?? '',
@@ -419,14 +392,13 @@
                 item.last_amount_received ?? '',
                 item.last_amount_received_date ? displayDateTime(item.last_amount_received_date) : '',
                 item.total_dues ?? '',
-                item.original_lessee_name ?? '',
                 item.current_lesse_name ?? '',
                 item.lessee_address ?? '',
                 item.lessee_phone ?? '',
                 item.lessee_email ?? '',
-                item.remarks ?? '',
                 item.created_by ?? '',
                 displayDateTime(item.created_at)
+
             ]);
     }
 
@@ -474,51 +446,13 @@
         })
         $('button[type="submit"]').click();
     }
-    var commonExportOptions = {
-        columns: function(idx, data, node) {
-            return idx !== 1; // Exclude first column (index 0)
-        }
-    };
 
     $(document).ready(function() {
-        var table = $('#examplemy').DataTable({
+        var table = $('#example').DataTable({
             responsive: false,
-            searching: true,
+            searching: false,
             paging: false,
-            info: false,
-            dom: 'Bfrtip', // Buttons ke liye yeh zaroori hai
-            buttons: [{
-                    extend: 'excelHtml5',
-                    exportOptions: commonExportOptions
-                },
-                {
-                    extend: 'csvHtml5',
-                    exportOptions: commonExportOptions
-                },
-                {
-                    extend: 'pdfHtml5',
-                    orientation: 'landscape',
-                    pageSize: 'A4',
-                    exportOptions: commonExportOptions,
-                    customize: function(doc) {
-                        doc.defaultStyle.fontSize = 8;
-                        doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
-                        doc.content[1].table.body.forEach(function(row) {
-                            row.forEach(function(cell) {
-                                cell.margin = [2, 2, 2, 2];
-                            });
-                        });
-                    }
-                }
-            ],
-            fixedColumns: {
-                leftColumns: 4
-            },
-            columnDefs: [{
-                    orderable: true,
-                    targets: '_all'
-                } // Disable sorting for all columns
-            ]
+            info: false
         });
     });
 </script>

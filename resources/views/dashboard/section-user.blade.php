@@ -50,28 +50,33 @@
             padding: 5px 15px;
             box-shadow: 5px 2px 8px -2px #00000066;
         }
+        .sections-wise-property-main-div{
+            height:335px !important;
+            overflow-y:scroll !important;
+        }
+
     </style>
     <div class="container-fluid">
-        <!-- @if (Auth::user()->hasAnyRole('section-officer'))
-    <form action="{{ route('switch.user') }}" method="POST" id="switchUserForm">
-     @csrf
-     <div class="row mb-2">
-      <div class="col-md-3"></div>
-      <div class="col-md-2">
-       <select  class="form-select" name="section" required>
-        <option  value="">--Select Section name--</option>
-        @foreach ($sections as $section)
-    <option value="{{ $section->id }}">{{ $section->name }}</option>
-    @endforeach
-       </select>
-      </div>
-      <div class="col-md-2">
-       <button type="submit" class="btn btn-warning">Switch to CDV User</button>
-      </div>
-      <div class="clearfix"></div>
-     </div>
-    </form>
-    @endif  -->
+         <!-- @if(Auth::user()->hasAnyRole('section-officer'))      
+ <form action="{{ route('switch.user') }}" method="POST" id="switchUserForm">
+	@csrf
+	<div class="row mb-2">
+	<div class="col-md-3"></div>
+	<div class="col-md-2">
+		<select  class="form-select" name="section" required>
+			<option  value="">--Select section name--</option>
+			@foreach ($sections as $section)
+			<option value="{{$section->id}}">{{$section->name}}</option>
+			@endforeach
+	</select>
+	</div>
+	<div class="col-md-2">
+		<button type="submit" class="btn btn-warning">Switch to CDV User</button>
+	</div>
+	<div class="clearfix"></div>
+	</div>
+</form> 
+@endif  -->
         <div class="row justify-content-between mb-3">
             <div class="col-lg-6">
                 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
@@ -90,24 +95,24 @@
                 </div>
             </div>
 
-            @if (Auth::user()->hasAnyRole('section-officer'))
+            @if(Auth::user()->hasAnyRole('section-officer'))
                 <div class="col-lg-6 mb-3">
                     <form action="{{ route('switch.user') }}" method="POST" id="switchUserForm">
                         @csrf
                         <div class="switch-userwrap">
                             <div class="switch-select">
-                                <select class="form-select" name="section" required>
-                                    <option value="">--Select Section name--</option>
+                                <select  class="form-select" name="section" required>
+                                    <option  value="">--Select Section name--</option>
                                     @foreach ($sections as $section)
-                                        <option value="{{ $section->id }}">{{ $section->name }}</option>
+                                    <option value="{{$section->id}}">{{$section->name}}</option>
                                     @endforeach
-                                </select>
+                                </select>                            
                             </div>
                             <button type="submit" class="btn btn-warning">Switch to CDV User</button>
                         </div>
                     </form>
                 </div>
-            @endif
+                @endif 
 
             <div class="col-lg-6 ms-auto">
                 <div class="colony-dropdown ms-auto">
@@ -209,8 +214,7 @@
                                                     <div class="widget-media-body">
                                                         <span class="m-0">Rejected</span>
                                                         <h4 class="mb-0 counter">
-                                                            <span
-                                                                id="reg-rejCount">{{ $registrations['rejCount'] }}</span>
+                                                            <span id="reg-rejCount">{{ $registrations['rejCount'] }}</span>
                                                         </h4>
                                                         <i class="fa-solid fa-trash-arrow-up"></i>
                                                     </div>
@@ -219,7 +223,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
+                                {{-- <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
                                     <div class="card o-hidden border-0 h-100 w-100">
                                         <div class="bg-yellow b-r-4 card-body">
                                             <a
@@ -239,10 +243,10 @@
                                                 </div>
                                             </a>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
-                                    <div class="card o-hidden border-0 h-100 w-100">
+                                    </div> 
+                                </div>--}}
+                                {{-- <div class="col-sm-6 col-xl-4 col-lg-6">
+                                    <div class="card o-hidden border-0">
                                         <div class="bg-dark-orange b-r-4 card-body">
                                             <a
                                                 href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_REW')]) }}">
@@ -262,7 +266,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                </div>
+                                </div>--}}
                             </div>
                         </div>
                     </div>
@@ -274,8 +278,9 @@
                                 <a href="{{ route('admin.applications') }}">Total Applications:
                                     <span id="totalAppCount">{{ $totalAppCount }}</span>
                                 </a>
-                            </h5>
+                                </h2>
                         </div>
+
                         <div class="card-body">
                             <div class="row">
                                 @foreach ($statusList as $i => $status)
@@ -286,9 +291,9 @@
                                         $color = !is_null($additionalData) ? $additionalData->color : '';
                                         $icon = !is_null($additionalData) ? $additionalData->icon : '';
                                     @endphp
-                                    @continue(in_array($status->item_code, ['APP_PEN', 'APP_OBJ', 'APP_HOLD', 'APP_CAN']))
+                                    @continue(in_array($status->item_code, ['APP_PEN','APP_OBJ','APP_HOLD', 'APP_CAN']))
                                     <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
-                                        <div class="card o-hidden border-0 h-100 w-100">
+                                    <div class="card o-hidden border-0 h-100 w-100">
                                             <div class="{{ $color }} b-r-4 card-body">
                                                 <a
                                                     href="{{ $status->item_name == 'Disposed' ? route('applications.disposed') : route('admin.applications', ['status' => Crypt::encrypt(" $status->item_code")]) }}">
@@ -312,7 +317,8 @@
                                 <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
                                     <div class="card o-hidden border-0 h-100 w-100">
                                         <div class="bg-assigned b-r-4 card-body">
-                                            <a href="{{ route('admin.myapplications') }}">
+                                            <a
+                                                href="{{ route('admin.myapplications')}}">
                                                 <div class="widget-media">
                                                     <div class="align-self-center text-center widget-media-icon">
                                                         <i class="fa-solid fa-tasks"></i>
@@ -328,12 +334,13 @@
                                             </a>
                                         </div>
                                     </div>
-                                </div>
+                                </div>        
 
                                 <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
                                     <div class="card o-hidden border-0 h-100 w-100">
                                         <div class="bg-info b-r-4 card-body">
-                                            <a href="{{ route('admin.forwardedApplications') }}">
+                                            <a
+                                                href="{{ route('admin.forwardedApplications')}}">
                                                 <div class="widget-media">
                                                     <div class="align-self-center text-center widget-media-icon">
                                                         <i class="fa-solid fa-forward"></i>
@@ -349,14 +356,14 @@
                                             </a>
                                         </div>
                                     </div>
-                                </div>
+                                </div>                                                                                                                                                                                                          
                             </div>
                         </div>
 
                     </div>
                 </div>
-                <div class="col-lg-4 col-12 order-lg-2 mb-4">
-                    <div class="card public_service service-seclist">
+                <div class="col-lg-4 col-12 order-lg-2">
+                    <div class="card public_service service-seclist sections-wise-property-main-div">
                         {{-- <h4 class="pubser-title">Section{{ $sections->count() == 1 ? '' : 's' }}</h4> --}}
                         <!-- <h4 class="pubser-title">Properties in Section</h4> -->
                         <div class="card-header text-center">
@@ -364,7 +371,7 @@
                         </div>
                         <div class="card-body">
                             <div class="dashboard-card-view">
-                                @foreach ($sections->sortBy('name') as $section)
+                               @foreach ($sections->sortBy('name') as $section)
                                     <div class="grievance-card-item">
                                         <a href="{{ route('colonywiseSectionReport', [$section->id]) }}" target="_blank">
                                             <div class="public-services-content">
@@ -438,100 +445,100 @@
             <div class="row">
                 <!-- commeted by anil for new UI on 04-06-2025 -->
                 <!-- <div class="col-lg-8 col-12">
-                                                                                                                                                                                                                                                            <div class="col-lg-12 col-12" style="margin-bottom: 0px;">
-                                                                                                                                                                                                                                                                <div class="card skybluecard totalrgn">
-                                                                                                                                                                                                                                                                    <div class="card-body">
-                                                                                                                                                                                                                                                                        <div class="dashboard-card-view" id="registrationData">
-                                                                                                                                                                                                                                                                            <h4><a href="{{ route('regiserUserListings') }}" style="color: inherit">Total
-                                                                                                                                                                                                                                                                                    Registrations:
-                                                                                                                                                                                                                                                                                    <span id="reg-totalCount">{{ $registrations['totalCount'] }}</span></a></h4>
-                                                                                                                                                                                                                                                                            <div class="container-fluid">
-                                                                                                                                                                                                                                                                                <div class="row separate-col-border">
-                                                                                                                                                                                                                                                                                    <div class="custom-col-col col-4 col-lg-2">
-                                                                                                                                                                                                                                                                                        <a
-                                                                                                                                                                                                                                                                                            href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_NEW')]) }}"><span
-                                                                                                                                                                                                                                                                                                class="dashboard-label">New:</span>
-                                                                                                                                                                                                                                                                                            <span id="reg-newCount"> {{ $registrations['newCount'] }}</span>
-                                                                                                                                                                                                                                                                                        </a>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="custom-col-col col-4 col-lg-2">
-                                                                                                                                                                                                                                                                                        <a
-                                                                                                                                                                                                                                                                                            href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_PEN')]) }}"><span
-                                                                                                                                                                                                                                                                                                class="dashboard-label">Pending:</span>
-                                                                                                                                                                                                                                                                                            <span id="reg-penCount"> {{ $registrations['penCount'] }} </span>
-                                                                                                                                                                                                                                                                                        </a>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="custom-col-col col-4 col-lg-2">
-                                                                                                                                                                                                                                                                                        <a
-                                                                                                                                                                                                                                                                                            href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_UREW')]) }}"><span
-                                                                                                                                                                                                                                                                                                class="dashboard-label">Under Review:</span>
-                                                                                                                                                                                                                                                                                            <span id="reg-urewCount"> {{ $registrations['urewCount'] }}
-                                                                                                                                                                                                                                                                                            </span>
-                                                                                                                                                                                                                                                                                        </a>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="custom-col-col col-4 col-lg-2">
-                                                                                                                                                                                                                                                                                        <a
-                                                                                                                                                                                                                                                                                            href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_REW')]) }}"><span
-                                                                                                                                                                                                                                                                                                class="dashboard-label">Reviewed:</span>
-                                                                                                                                                                                                                                                                                            <span id="reg-urewCount"> {{ $registrations['rewCount'] }}
-                                                                                                                                                                                                                                                                                            </span>
-                                                                                                                                                                                                                                                                                        </a>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="custom-col-col col-4 col-lg-2">
-                                                                                                                                                                                                                                                                                        <a
-                                                                                                                                                                                                                                                                                            href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_APP')]) }}"><span
-                                                                                                                                                                                                                                                                                                class="dashboard-label">Approved:</span><span id="reg-appCount">
-                                                                                                                                                                                                                                                                                                {{ $registrations['appCount'] }}</span></a>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                    <div class="custom-col-col col-4 col-lg-2">
-                                                                                                                                                                                                                                                                                        <a
-                                                                                                                                                                                                                                                                                            href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_REJ')]) }}"><span
-                                                                                                                                                                                                                                                                                                class="dashboard-label">Rejected:</span> <span
-                                                                                                                                                                                                                                                                                                id="reg-rejCount">{{ $registrations['rejCount'] }}</span></a>
-                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                    <div class="col-lg-12 col-12" style="margin-bottom: 0px;">
+                                                                                                                                                                                                                                                        <div class="card skybluecard totalrgn">
+                                                                                                                                                                                                                                                            <div class="card-body">
+                                                                                                                                                                                                                                                                <div class="dashboard-card-view" id="registrationData">
+                                                                                                                                                                                                                                                                    <h4><a href="{{ route('regiserUserListings') }}" style="color: inherit">Total
+                                                                                                                                                                                                                                                                            Registrations:
+                                                                                                                                                                                                                                                                            <span id="reg-totalCount">{{ $registrations['totalCount'] }}</span></a></h4>
+                                                                                                                                                                                                                                                                    <div class="container-fluid">
+                                                                                                                                                                                                                                                                        <div class="row separate-col-border">
+                                                                                                                                                                                                                                                                            <div class="custom-col-col col-4 col-lg-2">
+                                                                                                                                                                                                                                                                                <a
+                                                                                                                                                                                                                                                                                    href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_NEW')]) }}"><span
+                                                                                                                                                                                                                                                                                        class="dashboard-label">New:</span>
+                                                                                                                                                                                                                                                                                    <span id="reg-newCount"> {{ $registrations['newCount'] }}</span>
+                                                                                                                                                                                                                                                                                </a>
+                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                            <div class="custom-col-col col-4 col-lg-2">
+                                                                                                                                                                                                                                                                                <a
+                                                                                                                                                                                                                                                                                    href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_PEN')]) }}"><span
+                                                                                                                                                                                                                                                                                        class="dashboard-label">Pending:</span>
+                                                                                                                                                                                                                                                                                    <span id="reg-penCount"> {{ $registrations['penCount'] }} </span>
+                                                                                                                                                                                                                                                                                </a>
+                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                            <div class="custom-col-col col-4 col-lg-2">
+                                                                                                                                                                                                                                                                                <a
+                                                                                                                                                                                                                                                                                    href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_UREW')]) }}"><span
+                                                                                                                                                                                                                                                                                        class="dashboard-label">Under Review:</span>
+                                                                                                                                                                                                                                                                                    <span id="reg-urewCount"> {{ $registrations['urewCount'] }}
+                                                                                                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                                                                                                </a>
+                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                            <div class="custom-col-col col-4 col-lg-2">
+                                                                                                                                                                                                                                                                                <a
+                                                                                                                                                                                                                                                                                    href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_REW')]) }}"><span
+                                                                                                                                                                                                                                                                                        class="dashboard-label">Reviewed:</span>
+                                                                                                                                                                                                                                                                                    <span id="reg-urewCount"> {{ $registrations['rewCount'] }}
+                                                                                                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                                                                                                </a>
+                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                            <div class="custom-col-col col-4 col-lg-2">
+                                                                                                                                                                                                                                                                                <a
+                                                                                                                                                                                                                                                                                    href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_APP')]) }}"><span
+                                                                                                                                                                                                                                                                                        class="dashboard-label">Approved:</span><span id="reg-appCount">
+                                                                                                                                                                                                                                                                                        {{ $registrations['appCount'] }}</span></a>
+                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                            <div class="custom-col-col col-4 col-lg-2">
+                                                                                                                                                                                                                                                                                <a
+                                                                                                                                                                                                                                                                                    href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_REJ')]) }}"><span
+                                                                                                                                                                                                                                                                                        class="dashboard-label">Rejected:</span> <span
+                                                                                                                                                                                                                                                                                        id="reg-rejCount">{{ $registrations['rejCount'] }}</span></a>
+                                                                                                                                                                                                                                                                            </div>
 
 
-                                                                                                                                                                                                                                                                                    {{-- <div class="custom-col-col col-4 col-lg-2">
+                                                                                                                                                                                                                                                                            {{-- <div class="custom-col-col col-4 col-lg-2">
                                             <a
                                                 href="{{ route('regiserUserListings', ['status' => Crypt::encrypt('RS_REW')]) }}"><span
                                                     class="dashboard-label">Review:</span> {{ $registrations['rewCount']
                                                 }}</a>
                                         </div> --}}
-                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                            </div>
                                                                                                                                                                                                                                                                         </div>
                                                                                                                                                                                                                                                                     </div>
                                                                                                                                                                                                                                                                 </div>
                                                                                                                                                                                                                                                             </div>
-                                                                                                                                                                                                                                                            <div class="col-lg-12 col-12" style="margin-bottom: 0px;">
-                                                                                                                                                                                                                                                                <div class="card offorangecard totalApp" style="margin-bottom: 0px;">
-                                                                                                                                                                                                                                                                    <div class="card-body">
-                                                                                                                                                                                                                                                                        <div class="dashboard-card-view">
-                                                                                                                                                                                                                                                                            <h4><a href="{{ route('admin.applications') }}" style="color: inherit">Total
-                                                                                                                                                                                                                                                                                    Applications:
-                                                                                                                                                                                                                                                                                    <span id="totalAppCount">{{ $totalAppCount }}</span></a></h4>
-                                                                                                                                                                                                                                                                            <div class="container-fluid">
-                                                                                                                                                                                                                                                                                <div class="row separate-col-border">
-                                                                                                                                                                                                                                                                                    @foreach ($statusList as $i => $status)
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                    <div class="col-lg-12 col-12" style="margin-bottom: 0px;">
+                                                                                                                                                                                                                                                        <div class="card offorangecard totalApp" style="margin-bottom: 0px;">
+                                                                                                                                                                                                                                                            <div class="card-body">
+                                                                                                                                                                                                                                                                <div class="dashboard-card-view">
+                                                                                                                                                                                                                                                                    <h4><a href="{{ route('admin.applications') }}" style="color: inherit">Total
+                                                                                                                                                                                                                                                                            Applications:
+                                                                                                                                                                                                                                                                            <span id="totalAppCount">{{ $totalAppCount }}</span></a></h4>
+                                                                                                                                                                                                                                                                    <div class="container-fluid">
+                                                                                                                                                                                                                                                                        <div class="row separate-col-border">
+                                                                                                                                                                                                                                                                            @foreach ($statusList as $i => $status)
     <div class="custom-col-col col-4 col-lg-2">
-                                                                                                                                                                                                                                                                                            @if ($status->item_name == 'Disposed')
+                                                                                                                                                                                                                                                                                    @if ($status->item_name == 'Disposed')
     <a href="{{ route('applications.disposed') }}">
-                                                                                                                                                                                                                                                                                                    <span class="dashboard-label">{{ $status->item_name }}:</span>
-                                                                                                                                                                                                                                                                                                    <span
-                                                                                                                                                                                                                                                                                                        id="total-{{ $status->item_code }}">{{ isset($statusWiseCounts[$status->item_code]) ? $statusWiseCounts[$status->item_code] : 0 }}</span></a>
+                                                                                                                                                                                                                                                                                            <span class="dashboard-label">{{ $status->item_name }}:</span>
+                                                                                                                                                                                                                                                                                            <span
+                                                                                                                                                                                                                                                                                                id="total-{{ $status->item_code }}">{{ isset($statusWiseCounts[$status->item_code]) ? $statusWiseCounts[$status->item_code] : 0 }}</span></a>
 @else
     <a
-                                                                                                                                                                                                                                                                                                    href="{{ route('admin.applications', ['status' => Crypt::encrypt(" $status->item_code")]) }}">
-                                                                                                                                                                                                                                                                                                    <span class="dashboard-label">{{ $status->item_name }}:</span>
-                                                                                                                                                                                                                                                                                                    <span
-                                                                                                                                                                                                                                                                                                        id="total-{{ $status->item_code }}">{{ isset($statusWiseCounts[$status->item_code]) ? $statusWiseCounts[$status->item_code] : 0 }}</span></a>
+                                                                                                                                                                                                                                                                                            href="{{ route('admin.applications', ['status' => Crypt::encrypt(" $status->item_code")]) }}">
+                                                                                                                                                                                                                                                                                            <span class="dashboard-label">{{ $status->item_name }}:</span>
+                                                                                                                                                                                                                                                                                            <span
+                                                                                                                                                                                                                                                                                                id="total-{{ $status->item_code }}">{{ isset($statusWiseCounts[$status->item_code]) ? $statusWiseCounts[$status->item_code] : 0 }}</span></a>
     @endif
-                                                                                                                                                                                                                                                                                        </div>
-    @endforeach
                                                                                                                                                                                                                                                                                 </div>
-                                                                                                                                                                                                                                                                            </div>
+    @endforeach
                                                                                                                                                                                                                                                                         </div>
-                                                                                                                                                                                                                                                                        {{-- <div class="row mt-4">
+                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                {{-- <div class="row mt-4">
                                 @foreach ($statusList as $status)
                                 <div class="custom-col-col col-4 col-lg-2">
                                     <span class="status_name">{{$status->item_name}}</span> <span
@@ -540,10 +547,10 @@
                                 </div>
                                 @endforeach
                             </div> --}}
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                </div>
                                                                                                                                                                                                                                                             </div>
-                                                                                                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                </div> -->
                 <!-- commeted end by anil for new UI on 04-06-2025 -->
                 {{-- <div class="col-lg-4 col-12">
                 <div class="card redcard">
@@ -562,33 +569,33 @@
 
                 <!-- commeted by anil for new UI on 04-06-2025 -->
                 <!-- <div class="col-lg-4 col-12">
-                                                                                                                                                                                                                                                            <div class="col-lg-12 col-12" style="margin-bottom: 0px; height:100%">
-                                                                                                                                                                                                                                                                <div class="card purplecard public_service" style="margin-bottom: 0px;">
-                                                                                                                                                                                                                                                                    {{-- <h4 class="pubser-title">Section{{ $sections->count() == 1 ? '' : 's' }}</h4> --}}
-                                                                                                                                                                                                                                                                    <h4 class="pubser-title">Properties in Section</h4>
-                                                                                                                                                                                                                                                                    <div class="card-body">
-                                                                                                                                                                                                                                                                        <div class="dashboard-card-view">
-                                                                                                                                                                                                                                                                            @foreach ($sections as $section)
+                                                                                                                                                                                                                                                    <div class="col-lg-12 col-12" style="margin-bottom: 0px; height:100%">
+                                                                                                                                                                                                                                                        <div class="card purplecard public_service" style="margin-bottom: 0px;">
+                                                                                                                                                                                                                                                            {{-- <h4 class="pubser-title">Section{{ $sections->count() == 1 ? '' : 's' }}</h4> --}}
+                                                                                                                                                                                                                                                            <h4 class="pubser-title">Properties in Section</h4>
+                                                                                                                                                                                                                                                            <div class="card-body">
+                                                                                                                                                                                                                                                                <div class="dashboard-card-view">
+                                                                                                                                                                                                                                                                    @foreach ($sections as $section)
     <div class="grievance-card-item">
-                                                                                                                                                                                                                                                                                    <a href="{{ route('colonywiseSectionReport', [$section->id]) }}"
-                                                                                                                                                                                                                                                                                        target="_blank">
-                                                                                                                                                                                                                                                                                        <div class="public-services-content">
-                                                                                                                                                                                                                                                                                            <div class="services-label">
-                                                                                                                                                                                                                                                                                                <h4>{{ $section->name }}</h4>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                            <div class="services-count">
-                                                                                                                                                                                                                                                                                                <h4 class="services_count_text"><span>{{ $section->property_count }}</span>
-                                                                                                                                                                                                                                                                                                </h4>
-                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </a>
+                                                                                                                                                                                                                                                                            <a href="{{ route('colonywiseSectionReport', [$section->id]) }}"
+                                                                                                                                                                                                                                                                                target="_blank">
+                                                                                                                                                                                                                                                                                <div class="public-services-content">
+                                                                                                                                                                                                                                                                                    <div class="services-label">
+                                                                                                                                                                                                                                                                                        <h4>{{ $section->name }}</h4>
+                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                    <div class="services-count">
+                                                                                                                                                                                                                                                                                        <h4 class="services_count_text"><span>{{ $section->property_count }}</span>
+                                                                                                                                                                                                                                                                                        </h4>
+                                                                                                                                                                                                                                                                                    </div>
                                                                                                                                                                                                                                                                                 </div>
-    @endforeach
+                                                                                                                                                                                                                                                                            </a>
                                                                                                                                                                                                                                                                         </div>
-                                                                                                                                                                                                                                                                    </div>
+    @endforeach
                                                                                                                                                                                                                                                                 </div>
                                                                                                                                                                                                                                                             </div>
-                                                                                                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                </div> -->
                 <!-- commeted end by anil for new UI on 04-06-2025 -->
                 {{-- <div class="col-lg-4 col-12">
                     <div class="card greycard submutCard">
@@ -706,22 +713,22 @@
                                     <ul class="nav nav-tabs nav-primary" role="tablist"
                                         style="display: block !important;">
                                         @foreach ($applicationData as $key => $application)
-                                            @if ($key != 'nocDataByDemand')
-                                                <li class="nav-item" role="presentation">
-                                                    <a class="nav-link {{ $loop->first ? 'active' : '' }}" href="#"
-                                                        id="v-pills-{{ $key }}-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#v-pills-{{ $key }}" type="button"
-                                                        role="tab" aria-controls="v-pills-{{ $key }}"
-                                                        aria-selected="{{ $loop->first ? 'true' : 'false' }}">
-                                                        <div class="text-center">
-                                                            <div class="tab-title">{{ $application['application_type'] }}
-                                                            </div>
-                                                            <span class="tab-total-no"
-                                                                id="{{ $key }}-total">{{ $application['total'] ?? 0 }}</span>
+                                             @if($key != 'nocDataByDemand')
+                                              <li class="nav-item" role="presentation">
+                                                <a class="nav-link {{ $loop->first ? 'active' : '' }}" href="#"
+                                                    id="v-pills-{{ $key }}-tab" data-bs-toggle="pill"
+                                                    data-bs-target="#v-pills-{{ $key }}" type="button"
+                                                    role="tab" aria-controls="v-pills-{{ $key }}"
+                                                    aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                                                    <div class="text-center">
+                                                        <div class="tab-title">{{ $application['application_type'] }}
                                                         </div>
-                                                    </a>
-                                                </li>
-                                            @endif
+                                                        <span class="tab-total-no"
+                                                            id="{{ $key }}-total">{{ $application['total'] ?? 0 }}</span>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                          @endif
                                         @endforeach
                                     </ul>
                                 </div>
@@ -729,315 +736,239 @@
                                 <div class="nav-tabs-right-aside-dashboard">
                                     <div class="tab-content py-3" id="v-pills-tabContent">
                                         @foreach ($applicationData as $key => $application)
-                                            @if ($key != 'noc' && $key != 'nocDataByDemand')
-                                                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
-                                                    id="v-pills-{{ $key }}" role="tabpanel"
-                                                    aria-labelledby="v-pills-{{ $key }}-tab">
-                                                    <div class="col-12">
-                                                        <ul class="progress-report">
-                                                            @foreach ($statusList as $i => $status)
-                                                                @php
-                                                                    $statusCount =
-                                                                        $application[$status->item_code] ?? 0;
-                                                                    $total = $application['total'] ?? 0;
-                                                                    $progress =
-                                                                        $total > 0
-                                                                            ? round(($statusCount / $total) * 100)
-                                                                            : 0;
-                                                                    if ($status->item_name == 'Disposed') {
-                                                                        $applicationRoute = route(
-                                                                            'applications.disposed',
-                                                                            [
-                                                                                'status' => Crypt::encrypt(
-                                                                                    $status->item_code,
-                                                                                ),
-                                                                                'applicationType' => $key,
-                                                                            ],
-                                                                        );
-                                                                        $applicationTypeRoute = route(
-                                                                            'applications.disposed',
-                                                                            [
-                                                                                'status' => '',
-                                                                                'applicationType' => $key,
-                                                                            ],
-                                                                        );
-                                                                    } else {
-                                                                        $applicationRoute = route(
-                                                                            'admin.applications',
-                                                                            [
-                                                                                'status' => Crypt::encrypt(
-                                                                                    $status->item_code,
-                                                                                ),
-                                                                                'applicationType' => $key,
-                                                                            ],
-                                                                        );
-                                                                        $applicationTypeRoute = route(
-                                                                            'admin.applications',
-                                                                            [
-                                                                                'status' => '',
-                                                                                'applicationType' => $key,
-                                                                            ],
-                                                                        );
-                                                                    }
-                                                                @endphp
-                                                                @if ($i === 0)
-                                                                    <li class="d-flex align-items-end w-100 mb-2">
-                                                                        <a href="{{ $applicationTypeRoute }}"
-                                                                            class="btn btn-primary ms-auto btn-sm"
-                                                                            style="float: right;">View
-                                                                            All</a>
-                                                                    </li>
-                                                                @endif
-                                                                <li>
-                                                                    <a href="{{ $applicationRoute }}">
-                                                                        <div
-                                                                            class="d-flex justify-content-between align-items-center mb-2">
-                                                                            <span
-                                                                                class="progress-title">{{ $status->item_name }}</span>
-                                                                            <span class="progress-result"
-                                                                                id="{{ $key }}-{{ $status->item_code }}">{{ $statusCount }}</span>
-                                                                        </div>
-                                                                        <div class="progress mb-4" style="height:7px;">
-                                                                            <div class="progress-bar" role="progressbar"
-                                                                                style="width: {{ $progress }}%"
-                                                                                aria-valuenow="{{ $progress }}"
-                                                                                aria-valuemin="0" aria-valuemax="100">
-                                                                            </div>
-                                                                        </div>
-                                                                    </a>
+                                           @if($key != 'noc' && $key != 'nocDataByDemand')
+                                             <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                                                id="v-pills-{{ $key }}" role="tabpanel"
+                                                aria-labelledby="v-pills-{{ $key }}-tab">
+                                                <div class="col-12">
+                                                    <ul class="progress-report">
+                                                        @foreach ($statusList as $i => $status)
+                                                            @php
+                                                                $statusCount = $application[$status->item_code] ?? 0;
+                                                                $total = $application['total'] ?? 0;
+                                                                $progress =
+                                                                    $total > 0
+                                                                        ? round(($statusCount / $total) * 100)
+                                                                        : 0;
+                                                                if ($status->item_name == 'Disposed') {
+                                                                    $applicationRoute = route('applications.disposed', [
+                                                                        'status' => Crypt::encrypt($status->item_code),
+                                                                        'applicationType' => $key,
+                                                                    ]);
+                                                                    $applicationTypeRoute = route(
+                                                                        'applications.disposed',
+                                                                        [
+                                                                            'status' => '',
+                                                                            'applicationType' => $key,
+                                                                        ],
+                                                                    );
+                                                                } else {
+                                                                    $applicationRoute = route('admin.applications', [
+                                                                        'status' => Crypt::encrypt($status->item_code),
+                                                                        'applicationType' => $key,
+                                                                    ]);
+                                                                    $applicationTypeRoute = route(
+                                                                        'admin.applications',
+                                                                        [
+                                                                            'status' => '',
+                                                                            'applicationType' => $key,
+                                                                        ],
+                                                                    );
+                                                                }
+                                                            @endphp
+                                                            @if ($i === 0)
+                                                                <li class="d-flex align-items-end w-100 mb-2">
+                                                                    <a href="{{ $applicationTypeRoute }}"
+                                                                        class="btn btn-primary ms-auto btn-sm"
+                                                                        style="float: right;">View
+                                                                        All</a>
                                                                 </li>
-                                                            @endforeach
+                                                            @endif
+                                                            <li>
+                                                                <a href="{{ $applicationRoute }}">
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center mb-2">
+                                                                        <span
+                                                                            class="progress-title">{{ $status->item_name }}</span>
+                                                                        <span class="progress-result"
+                                                                            id="{{ $key }}-{{ $status->item_code }}">{{ $statusCount }}</span>
+                                                                    </div>
+                                                                    <div class="progress mb-4" style="height:7px;">
+                                                                        <div class="progress-bar" role="progressbar"
+                                                                            style="width: {{ $progress }}%"
+                                                                            aria-valuenow="{{ $progress }}"
+                                                                            aria-valuemin="0" aria-valuemax="100">
+                                                                        </div>
+                                                                    </div>
+                                                                </a>
+                                                            </li>
+                                                        @endforeach
 
-                                                        </ul>
-                                                    </div>
+                                                    </ul>
                                                 </div>
-                                            @else
-                                                @if ($key == 'nocDataByDemand')
-                                                    @php
-                                                        $key = 'noc';
-                                                    @endphp
-                                                    <div class="tab-pane fade" id="v-pills-noc" role="tabpanel"
-                                                        aria-labelledby="v-pills-noc-tab">
-                                                        <div class="col-12">
-                                                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link active" id="pills-home-tab"
-                                                                        data-bs-toggle="pill" data-bs-target="#pills-home"
-                                                                        type="button" role="tab"
-                                                                        aria-controls="pills-home"
-                                                                        aria-selected="true">With Demand -
-                                                                        <b>{{ $application['with_demand_count'] }}</b></button>
-                                                                </li>
-                                                                <li class="nav-item" role="presentation">
-                                                                    <button class="nav-link" id="pills-profile-tab"
-                                                                        data-bs-toggle="pill"
-                                                                        data-bs-target="#pills-profile" type="button"
-                                                                        role="tab" aria-controls="pills-profile"
-                                                                        aria-selected="false">Without Demand -
-                                                                        <b>{{ $application['without_demand_count'] }}</b></button>
-                                                                </li>
-                                                            </ul>
-                                                            <div class="tab-content" id="pills-tabContent">
-                                                                <div class="tab-pane fade show active" id="pills-home"
-                                                                    role="tabpanel" aria-labelledby="pills-home-tab">
-                                                                    <ul class="progress-report">
-                                                                        @foreach ($statusList as $i => $status)
-                                                                            @php
-                                                                                $statusCount =
-                                                                                    $application[
-                                                                                        'with_demand_status_wise'
-                                                                                    ][$status->item_code] ?? 0;
-                                                                                $total =
-                                                                                    $application[
-                                                                                        'with_demand_status_wise'
-                                                                                    ]['total'] ?? 0;
-                                                                                $progress =
-                                                                                    $total > 0
-                                                                                        ? round(
-                                                                                            ($statusCount / $total) *
-                                                                                                100,
-                                                                                        )
-                                                                                        : 0;
-                                                                                if ($status->item_name == 'Disposed') {
-                                                                                    $applicationRoute = route(
-                                                                                        'applications.disposed',
-                                                                                        [
-                                                                                            'status' => Crypt::encrypt(
-                                                                                                $status->item_code,
-                                                                                            ),
-                                                                                            'applicationType' => $key,
-                                                                                            'demandType' =>
-                                                                                                'with_demand',
-                                                                                        ],
-                                                                                    );
-                                                                                    $applicationTypeRoute = route(
-                                                                                        'applications.disposed',
-                                                                                        [
-                                                                                            'status' => '',
-                                                                                            'applicationType' => $key,
-                                                                                            'demandType' =>
-                                                                                                'with_demand',
-                                                                                        ],
-                                                                                    );
-                                                                                } else {
-                                                                                    $applicationRoute = route(
-                                                                                        'admin.applications',
-                                                                                        [
-                                                                                            'status' => Crypt::encrypt(
-                                                                                                $status->item_code,
-                                                                                            ),
-                                                                                            'applicationType' => $key,
-                                                                                            'demandType' =>
-                                                                                                'with_demand',
-                                                                                        ],
-                                                                                    );
-                                                                                    $applicationTypeRoute = route(
-                                                                                        'admin.applications',
-                                                                                        [
-                                                                                            'status' => '',
-                                                                                            'applicationType' => $key,
-                                                                                            'demandType' =>
-                                                                                                'with_demand',
-                                                                                        ],
-                                                                                    );
-                                                                                }
-                                                                            @endphp
-                                                                            @if ($i === 0)
-                                                                                <li
-                                                                                    class="d-flex align-items-end w-100 mb-2">
-                                                                                    <a href="{{ $applicationTypeRoute }}"
-                                                                                        class="btn btn-primary ms-auto btn-sm"
-                                                                                        style="float: right;">View
-                                                                                        All</a>
-                                                                                </li>
-                                                                            @endif
-                                                                            <li>
-                                                                                <a href="{{ $applicationRoute }}">
-                                                                                    <div
-                                                                                        class="d-flex justify-content-between align-items-center mb-2">
-                                                                                        <span
-                                                                                            class="progress-title">{{ $status->item_name }}</span>
-                                                                                        <span class="progress-result"
-                                                                                            id="{{ $key }}-{{ $status->item_code }}">{{ $statusCount }}</span>
-                                                                                    </div>
-                                                                                    <div class="progress mb-4"
-                                                                                        style="height:7px;">
-                                                                                        <div class="progress-bar"
-                                                                                            role="progressbar"
-                                                                                            style="width: {{ $progress }}%"
-                                                                                            aria-valuenow="{{ $progress }}"
-                                                                                            aria-valuemin="0"
-                                                                                            aria-valuemax="100">
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </a>
+                                            </div>
+        @else
+                                                @if($key == 'nocDataByDemand')
+                                                @php
+                                                    $key = 'noc';
+                                                @endphp
+                                            <div class="tab-pane fade" id="v-pills-noc" role="tabpanel" aria-labelledby="v-pills-noc-tab">
+                                                <div class="col-12">
+                                                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                            <li class="nav-item" role="presentation">
+                                                                <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">With Demand -  <b>{{$application['with_demand_count']}}</b></button>
+                                                            </li>
+                                                            <li class="nav-item" role="presentation">
+                                                                <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Without Demand -  <b>{{$application['without_demand_count']}}</b></button>
+                                                            </li>
+                                                        </ul>
+                                                        <div class="tab-content" id="pills-tabContent">
+                                                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                                                <ul class="progress-report">
+                                                                    @foreach ($statusList as $i => $status)
+                                                                        @php
+                                                                            $statusCount = $application['with_demand_status_wise'][$status->item_code] ?? 0;
+                                                                            $total = $application['with_demand_status_wise']['total'] ?? 0;
+                                                                            $progress =
+                                                                                $total > 0
+                                                                                    ? round(($statusCount / $total) * 100)
+                                                                                    : 0;
+                                                                            if ($status->item_name == 'Disposed') {
+                                                                                $applicationRoute = route('applications.disposed', [
+                                                                                    'status' => Crypt::encrypt($status->item_code),
+                                                                                    'applicationType' => $key,
+                                                                                    'demandType' => 'with_demand',
+                                                                                ]);
+                                                                                $applicationTypeRoute = route(
+                                                                                    'applications.disposed',
+                                                                                    [
+                                                                                        'status' => '',
+                                                                                        'applicationType' => $key,
+                                                                                        'demandType' => 'with_demand',
+                                                                                    ],
+                                                                                );
+                                                                            } else {
+                                                                                $applicationRoute = route('admin.applications', [
+                                                                                    'status' => Crypt::encrypt($status->item_code),
+                                                                                    'applicationType' => $key,
+                                                                                    'demandType' => 'with_demand',
+                                                                                ]);
+                                                                                $applicationTypeRoute = route(
+                                                                                    'admin.applications',
+                                                                                    [
+                                                                                        'status' => '',
+                                                                                        'applicationType' => $key,
+                                                                                        'demandType' => 'with_demand',
+                                                                                    ],
+                                                                                );
+                                                                            }
+                                                                        @endphp
+                                                                        @if ($i === 0)
+                                                                            <li class="d-flex align-items-end w-100 mb-2">
+                                                                                <a href="{{ $applicationTypeRoute }}"
+                                                                                    class="btn btn-primary ms-auto btn-sm"
+                                                                                    style="float: right;">View
+                                                                                    All</a>
                                                                             </li>
-                                                                        @endforeach
-                                                                    </ul>
-                                                                </div>
-                                                                <div class="tab-pane fade" id="pills-profile"
-                                                                    role="tabpanel" aria-labelledby="pills-profile-tab">
-                                                                    <ul class="progress-report">
-                                                                        @foreach ($statusList as $i => $status)
-                                                                            @php
-                                                                                $statusCount =
-                                                                                    $application[
-                                                                                        'without_demand_status_wise'
-                                                                                    ][$status->item_code] ?? 0;
-                                                                                $total =
-                                                                                    $application[
-                                                                                        'without_demand_status_wise'
-                                                                                    ]['total'] ?? 0;
-                                                                                $progress =
-                                                                                    $total > 0
-                                                                                        ? round(
-                                                                                            ($statusCount / $total) *
-                                                                                                100,
-                                                                                        )
-                                                                                        : 0;
-                                                                                if ($status->item_name == 'Disposed') {
-                                                                                    $applicationRoute = route(
-                                                                                        'applications.disposed',
-                                                                                        [
-                                                                                            'status' => Crypt::encrypt(
-                                                                                                $status->item_code,
-                                                                                            ),
-                                                                                            'applicationType' => $key,
-                                                                                            'demandType' =>
-                                                                                                'without_demand',
-                                                                                        ],
-                                                                                    );
-                                                                                    $applicationTypeRoute = route(
-                                                                                        'applications.disposed',
-                                                                                        [
-                                                                                            'status' => '',
-                                                                                            'applicationType' => $key,
-                                                                                            'demandType' =>
-                                                                                                'without_demand',
-                                                                                        ],
-                                                                                    );
-                                                                                } else {
-                                                                                    $applicationRoute = route(
-                                                                                        'admin.applications',
-                                                                                        [
-                                                                                            'status' => Crypt::encrypt(
-                                                                                                $status->item_code,
-                                                                                            ),
-                                                                                            'applicationType' => $key,
-                                                                                            'demandType' =>
-                                                                                                'without_demand',
-                                                                                        ],
-                                                                                    );
-                                                                                    $applicationTypeRoute = route(
-                                                                                        'admin.applications',
-                                                                                        [
-                                                                                            'status' => '',
-                                                                                            'applicationType' => $key,
-                                                                                            'demandType' =>
-                                                                                                'without_demand',
-                                                                                        ],
-                                                                                    );
-                                                                                }
-                                                                            @endphp
-                                                                            @if ($i === 0)
-                                                                                <li
-                                                                                    class="d-flex align-items-end w-100 mb-2">
-                                                                                    <a href="{{ $applicationTypeRoute }}"
-                                                                                        class="btn btn-primary ms-auto btn-sm"
-                                                                                        style="float: right;">View
-                                                                                        All</a>
-                                                                                </li>
-                                                                            @endif
-                                                                            <li>
-                                                                                <a href="{{ $applicationRoute }}">
-                                                                                    <div
-                                                                                        class="d-flex justify-content-between align-items-center mb-2">
-                                                                                        <span
-                                                                                            class="progress-title">{{ $status->item_name }}</span>
-                                                                                        <span class="progress-result"
-                                                                                            id="{{ $key }}-{{ $status->item_code }}">{{ $statusCount }}</span>
+                                                                        @endif
+                                                                        <li>
+                                                                            <a href="{{ $applicationRoute }}">
+                                                                                <div
+                                                                                    class="d-flex justify-content-between align-items-center mb-2">
+                                                                                    <span
+                                                                                        class="progress-title">{{ $status->item_name }}</span>
+                                                                                    <span class="progress-result"
+                                                                                        id="{{ $key }}-{{ $status->item_code }}">{{ $statusCount }}</span>
+                                                                                </div>
+                                                                                <div class="progress mb-4" style="height:7px;">
+                                                                                    <div class="progress-bar" role="progressbar"
+                                                                                        style="width: {{ $progress }}%"
+                                                                                        aria-valuenow="{{ $progress }}"
+                                                                                        aria-valuemin="0" aria-valuemax="100">
                                                                                     </div>
-                                                                                    <div class="progress mb-4"
-                                                                                        style="height:7px;">
-                                                                                        <div class="progress-bar"
-                                                                                            role="progressbar"
-                                                                                            style="width: {{ $progress }}%"
-                                                                                            aria-valuenow="{{ $progress }}"
-                                                                                            aria-valuemin="0"
-                                                                                            aria-valuemax="100">
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </a>
+                                                                                </div>
+                                                                            </a>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                                                                <ul class="progress-report">
+                                                                    @foreach ($statusList as $i => $status)
+                                                                        @php
+                                                                            $statusCount = $application['without_demand_status_wise'][$status->item_code] ?? 0;
+                                                                            $total = $application['without_demand_status_wise']['total'] ?? 0;
+                                                                            $progress =
+                                                                                $total > 0
+                                                                                    ? round(($statusCount / $total) * 100)
+                                                                                    : 0;
+                                                                            if ($status->item_name == 'Disposed') {
+                                                                                $applicationRoute = route('applications.disposed', [
+                                                                                    'status' => Crypt::encrypt($status->item_code),
+                                                                                    'applicationType' => $key,
+                                                                                    'demandType' => 'without_demand',
+                                                                                ]);
+                                                                                $applicationTypeRoute = route(
+                                                                                    'applications.disposed',
+                                                                                    [
+                                                                                        'status' => '',
+                                                                                        'applicationType' => $key,
+                                                                                         'demandType' => 'without_demand',
+                                                                                    ],
+                                                                                );
+                                                                            } else {
+                                                                                $applicationRoute = route('admin.applications', [
+                                                                                    'status' => Crypt::encrypt($status->item_code),
+                                                                                    'applicationType' => $key,
+                                                                                     'demandType' => 'without_demand',
+                                                                                ]);
+                                                                                $applicationTypeRoute = route(
+                                                                                    'admin.applications',
+                                                                                    [
+                                                                                        'status' => '',
+                                                                                        'applicationType' => $key,
+                                                                                         'demandType' => 'without_demand',
+                                                                                    ],
+                                                                                );
+                                                                            }
+                                                                        @endphp
+                                                                        @if ($i === 0)
+                                                                            <li class="d-flex align-items-end w-100 mb-2">
+                                                                                <a href="{{ $applicationTypeRoute }}"
+                                                                                    class="btn btn-primary ms-auto btn-sm"
+                                                                                    style="float: right;">View
+                                                                                    All</a>
                                                                             </li>
-                                                                        @endforeach
-                                                                    </ul>
-                                                                </div>
+                                                                        @endif
+                                                                        <li>
+                                                                            <a href="{{ $applicationRoute }}">
+                                                                                <div
+                                                                                    class="d-flex justify-content-between align-items-center mb-2">
+                                                                                    <span
+                                                                                        class="progress-title">{{ $status->item_name }}</span>
+                                                                                    <span class="progress-result"
+                                                                                        id="{{ $key }}-{{ $status->item_code }}">{{ $statusCount }}</span>
+                                                                                </div>
+                                                                                <div class="progress mb-4" style="height:7px;">
+                                                                                    <div class="progress-bar" role="progressbar"
+                                                                                        style="width: {{ $progress }}%"
+                                                                                        aria-valuenow="{{ $progress }}"
+                                                                                        aria-valuemin="0" aria-valuemax="100">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </a>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                @endif
+                                                </div>
+                                           
+                                            @endif
                                             @endif
                                         @endforeach
+
                                     </div>
                                 </div>
 
@@ -1047,57 +978,57 @@
                 @endif
                 <!-- commeted by anil for new UI on 04-06-2025 -->
                 <!-- <div class="col-lg-3 col-12">
-                                                                                                                                                                                                                                                            <div class="col-lg-12 col-12" style="margin-bottom: 0px; height:100%">
-                                                                                                                                                                                                                                                                <div class="card purplecard public_service" style="margin-bottom: 0px;">
-                                                                                                                                                                                                                                                                    <h4 class="pubser-title"><a href="{{ route('applicantNewProperties') }}"
-                                                                                                                                                                                                                                                                            style="color: inherit">Public Services:
-                                                                                                                                                                                                                                                                            <span id="publicServiceCount">{{ $grievencesCount + $appointmentCount }}</span></a>
-                                                                                                                                                                                                                                                                    </h4>
-                                                                                                                                                                                                                                                                    <div class="card-body">
-                                                                                                                                                                                                                                                                        <div class="dashboard-card-view">
-                                                                                                                                                                                                                                                                            <div class="grievance-card-item">
-                                                                                                                                                                                                                                                                                <a href="{{ route('grievance.index') }}">
-                                                                                                                                                                                                                                                                                    <div class="public-services-content">
-                                                                                                                                                                                                                                                                                        <div class="services-label">
-                                                                                                                                                                                                                                                                                            <img src="{{ asset('assets/images/WhyGrievances.svg') }}"
-                                                                                                                                                                                                                                                                                                alt="Grievances" class="grievance-icon">
-                                                                                                                                                                                                                                                                                            <h4>Grievances</h4>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                        <div class="services-count">
-                                                                                                                                                                                                                                                                                            <h4 class="services_count_text"><span
-                                                                                                                                                                                                                                                                                                    id="appointmentCount">{{ $grievencesCount }}</span></h4>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                </a>
+                                                                                                                                                                                                                                                    <div class="col-lg-12 col-12" style="margin-bottom: 0px; height:100%">
+                                                                                                                                                                                                                                                        <div class="card purplecard public_service" style="margin-bottom: 0px;">
+                                                                                                                                                                                                                                                            <h4 class="pubser-title"><a href="{{ route('applicantNewProperties') }}"
+                                                                                                                                                                                                                                                                    style="color: inherit">Public Services:
+                                                                                                                                                                                                                                                                    <span id="publicServiceCount">{{ $grievencesCount + $appointmentCount }}</span></a>
+                                                                                                                                                                                                                                                            </h4>
+                                                                                                                                                                                                                                                            <div class="card-body">
+                                                                                                                                                                                                                                                                <div class="dashboard-card-view">
+                                                                                                                                                                                                                                                                    <div class="grievance-card-item">
+                                                                                                                                                                                                                                                                        <a href="{{ route('grievance.index') }}">
+                                                                                                                                                                                                                                                                            <div class="public-services-content">
+                                                                                                                                                                                                                                                                                <div class="services-label">
+                                                                                                                                                                                                                                                                                    <img src="{{ asset('assets/images/WhyGrievances.svg') }}"
+                                                                                                                                                                                                                                                                                        alt="Grievances" class="grievance-icon">
+                                                                                                                                                                                                                                                                                    <h4>Grievances</h4>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div class="services-count">
+                                                                                                                                                                                                                                                                                    <h4 class="services_count_text"><span
+                                                                                                                                                                                                                                                                                            id="appointmentCount">{{ $grievencesCount }}</span></h4>
+                                                                                                                                                                                                                                                                                </div>
                                                                                                                                                                                                                                                                             </div>
-                                                                                                                                                                                                                                                                            <div class="grievance-card-item">
-                                                                                                                                                                                                                                                                                <a href="{{ route('appointments.index') }}">
-                                                                                                                                                                                                                                                                                    <div class="public-services-content">
-                                                                                                                                                                                                                                                                                        <div class="services-label">
-                                                                                                                                                                                                                                                                                            <img src="{{ asset('assets/images/Schedule.svg') }}"
-                                                                                                                                                                                                                                                                                                alt="Appointments">
-                                                                                                                                                                                                                                                                                            <h4>Appointments</h4>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                        <div class="services-count">
-                                                                                                                                                                                                                                                                                            <h4 class="services_count_text"><span
-                                                                                                                                                                                                                                                                                                    id="grievencesCount">{{ $appointmentCount }}</span></h4>
-                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                </a>
+                                                                                                                                                                                                                                                                        </a>
+                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                    <div class="grievance-card-item">
+                                                                                                                                                                                                                                                                        <a href="{{ route('appointments.index') }}">
+                                                                                                                                                                                                                                                                            <div class="public-services-content">
+                                                                                                                                                                                                                                                                                <div class="services-label">
+                                                                                                                                                                                                                                                                                    <img src="{{ asset('assets/images/Schedule.svg') }}"
+                                                                                                                                                                                                                                                                                        alt="Appointments">
+                                                                                                                                                                                                                                                                                    <h4>Appointments</h4>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                <div class="services-count">
+                                                                                                                                                                                                                                                                                    <h4 class="services_count_text"><span
+                                                                                                                                                                                                                                                                                            id="grievencesCount">{{ $appointmentCount }}</span></h4>
+                                                                                                                                                                                                                                                                                </div>
                                                                                                                                                                                                                                                                             </div>
-                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                        </a>
                                                                                                                                                                                                                                                                     </div>
                                                                                                                                                                                                                                                                 </div>
                                                                                                                                                                                                                                                             </div>
-                                                                                                                                                                                                                                                        </div> -->
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                </div> -->
                 <!-- commeted end by anil for new UI on 04-06-2025 -->
-                @haspermission('view.new.added.properties')
+                 @haspermission('view.new.added.properties')
                     <div class="col-lg-6 col-12">
                         <div class="card addedproperties">
                             <div class="card-header text-center">
                                 <h4 class="mt-3">
                                     <a href="{{ route('applicantNewProperties') }}">
-                                        Added Properties:
+                                        Additional Properties:
                                         <span id="new-prop-totalCount">{{ $newProperty['totalCount'] }}</span>
                                     </a>
                                 </h4>
@@ -1136,7 +1067,7 @@
                                         </div>
 
 
-                                        <div class="item-cards-col">
+                                        {{-- <div class="item-cards-col">
                                             <div class="added-status">
                                                 <span class="status-added-color underreviewStatus"></span>
                                                 <a
@@ -1148,7 +1079,7 @@
                                                 <span
                                                     class="badge badge-underreview counter">{{ $newProperty['urewCount'] }}</span>
                                             </h3>
-                                        </div>
+                                        </div> --}}
 
 
                                         <div class="item-cards-col">
@@ -1182,7 +1113,7 @@
                                             </h3>
                                         </div>
 
-                                        <div class="item-cards-col">
+                                        {{-- <div class="item-cards-col">
                                             <div class="added-status">
                                                 <span class="status-added-color reviewedStatus"></span>
                                                 <a
@@ -1195,7 +1126,7 @@
                                                     {{ $newProperty['rewCount'] }}
                                                 </span>
                                             </h3>
-                                        </div>
+                                        </div> --}}
 
 
                                     </div>
@@ -1211,26 +1142,26 @@
     @endsection
 
     @section('footerScript')
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            document.getElementById('switchUserForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You are about to switch to act as a CDV user.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#f0ad4e', // Bootstrap warning color
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, switch user',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        this.submit(); // submit the form if confirmed
-                    }
-                });
-            });
-        </script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"> </script>
+<script>
+	document.getElementById('switchUserForm').addEventListener('submit', function (e) {
+		e.preventDefault();
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You are about to switch to act as a CDV user.",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#f0ad4e', // Bootstrap warning color
+			cancelButtonColor: '#6c757d',
+			confirmButtonText: 'Yes, switch user',
+			cancelButtonText: 'Cancel'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				this.submit(); // submit the form if confirmed
+			}
+		});
+	});
+</script>
         <script>
             $('#select-filter').change(function() {
                 let selectedOption = $(this).val();

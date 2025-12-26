@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Document;
 use App\Models\PropertyMaster;
-use App\Models\PropertyLeaseDetail;
 use App\Models\User;
 use App\Models\UserProperty;
 use App\Models\UserRegistration;
@@ -28,6 +27,7 @@ use App\Services\SettingsService;
 use App\Services\CommunicationService;
 use App\Mail\CommonMail;
 use App\Models\Flat;
+use App\Models\PropertyLeaseDetail;
 
 class UserRegistrationService
 {
@@ -80,30 +80,26 @@ class UserRegistrationService
                             'password' => $randomPassword,
                         ];
                         $action = 'REG_APP';
-
-
-                        // $this->settingsService->applyMailSettings($action);
-
-                        //For sending mail with communication tracking - SOURAV CHAUHAN (2/April/2025)
-                        $type = 'email';
-                        // $this->communicationService->sendMailWithTracking($action, $data, $user, $type);
+                        $checkEmailTemplateExists = checkTemplateExists('email', $action);
+                        if (!empty($checkEmailTemplateExists)) {
+                            // Apply the mail settings before sending the email
+                            // $this->settingsService->applyMailSettings($action);
+                            // Mail::to($getDetail->email)->send(new CommonMail($data, $action));
 
 
 
-                        // $checkEmailTemplateExists = checkTemplateExists('email', $action);
-                        // if (!empty($checkEmailTemplateExists)) {
-                        //     // Apply the mail settings before sending the email
-                        //     $this->settingsService->applyMailSettings($action);
-                        //     Mail::to($getDetail->email)->send(new CommonMail($data, $action));
-                        // }
-                        // $checkSmsTemplateExists = checkTemplateExists('sms', $action);
-                        // if (!empty($checkSmsTemplateExists)) {
-                        //     $this->communicationService->sendSmsMessage($data, $getDetail->mobile, $action, $getDetail->country_code);
-                        // }
-                        // $checkWhatsappTemplateExists = checkTemplateExists('whatsapp', $action);
-                        // if (!empty($checkWhatsappTemplateExists)) {
-                        //     $this->communicationService->sendWhatsAppMessage($data, $getDetail->mobile, $action, $getDetail->country_code);
-                        // }
+                            $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                            $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                            $mailResponse = $mailer->send($getDetail->email, $mailSettings);
+                        }
+                        $checkSmsTemplateExists = checkTemplateExists('sms', $action);
+                        if (!empty($checkSmsTemplateExists)) {
+                            $this->communicationService->sendSmsMessage($data, $getDetail->mobile, $action, $getDetail->country_code);
+                        }
+                        $checkWhatsappTemplateExists = checkTemplateExists('whatsapp', $action);
+                        if (!empty($checkWhatsappTemplateExists)) {
+                            $this->communicationService->sendWhatsAppMessage($data, $getDetail->mobile, $action, $getDetail->country_code);
+                        }
                     }
                     $transactionSuccess = true;
                 }
@@ -293,8 +289,8 @@ class UserRegistrationService
                         // Update the user registration attributes
                         $userRegistrationObj->status = getStatusName('RS_UREW');
                         $userRegistrationObj->remarks =  $request->remarks;
-                        $userRegistrationObj->action_taken_by =  'deputy-lndo';
                         // Save the changes to the database
+                       $userRegistrationObj->action_taken_by =  'deputy-lndo';
                         if ($userRegistrationObj->save()) {
                             //Get User Id which belongs to section_code from user_registration table
                             if (!empty($userRegistrationObj->section_id)) {
@@ -468,7 +464,7 @@ class UserRegistrationService
     //Add by lalit on 21/08/2024 to approve user registeration
     public function approveApplicantNewProperty(Request $request)
     {
-        try {
+        // try {
             $transactionSuccess = false;
 
             DB::transaction(function () use ($request, &$transactionSuccess) {
@@ -476,7 +472,6 @@ class UserRegistrationService
                 $property = NewlyAddedProperty::find($request->newlyAddedPropertyId);
                 if (!empty($property)) {
                     $propertyDetails = PropertyMaster::where('old_propert_id', $request->oldPropertyId)->first();
-                    // $this->createDocumentForNewProperty($property, $propertyDetails->id, $request->oldPropertyId, $property->user_id);
                     $this->createDocumentForNewProperty($property, $propertyDetails->id, $request, $property->user_id);
                     $this->mapUserWithNewProperty($property->user_id, $request, $property);
                     $this->updateApplicantNewPropertyStatus($request->newlyAddedPropertyId);
@@ -492,37 +487,36 @@ class UserRegistrationService
                         ];
                         $action = 'N_PRO_SUC';
 
-                        // $this->settingsService->applyMailSettings($action);
+                        try {
+                            $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                            $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                            $mailResponse = $mailer->send($user->email, $mailSettings);
 
-                        //For sending mail with communication tracking - SOURAV CHAUHAN (2/April/2025)
-                        $type = 'email';
-                        // $this->communicationService->sendMailWithTracking($action, $data, $user, $type);
-
-
-                        // $checkEmailTemplateExists = checkTemplateExists('email', $action);
-                        // if (!empty($checkEmailTemplateExists)) {
-                        //     // Apply the mail settings before sending the email
-                        //     $this->settingsService->applyMailSettings($action);
-                        //     Mail::to($user->email)->send(new CommonMail($data, $action));
-                        // }
-                        // $checkSmsTemplateExists = checkTemplateExists('sms', $action);
-                        // if (!empty($checkSmsTemplateExists)) {
-                        //     $this->communicationService->sendSmsMessage($data, $user->mobile_no, $action, $user->country_code);
-                        // }
-                        // $checkWhatsappTemplateExists = checkTemplateExists('whatsapp', $action);
-                        // if (!empty($checkWhatsappTemplateExists)) {
-                        //     $this->communicationService->sendWhatsAppMessage($data, $user->mobile_no, $action, $user->country_code);
-                        // }
+                            Log::info("Email sent successfully.", [
+                                'action' => $action,
+                                'email'  => $user->email,
+                                'data'   => $data,
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error("Email sending failed.", [
+                                'action' => $action,
+                                'email'  => $user->email,
+                                'error'  => $e->getMessage(),
+                            ]);
+                        }
+                        
+                        $this->communicationService->sendSmsMessage($data, $user->mobile_no, $action, $user->country_code);
+                        $this->communicationService->sendWhatsAppMessage($data, $user->mobile_no, $action, $user->country_code);
                     }
                     $transactionSuccess = true;
                 }
             });
 
             return $transactionSuccess;
-        } catch (\Exception $e) {
-            Log::info($e->getMessage());
-            return false;
-        }
+        // } catch (\Exception $e) {
+        //     Log::info($e->getMessage());
+        //     return false;
+        // }
     }
 
     protected function updateNewApplicantPropertyStatus($request)

@@ -201,71 +201,71 @@ const topLabels = {
     ctx.fillText('19', 100, 100)
   }
 }
-  // var ctx = document.getElementById("revenueINR").getContext('2d');
-  // var myChart = new Chart(ctx, {
-  //   type: 'bar',
-  //   data: {
-  //     labels: ["2019", "2020", "2021", "2022", "2023", "2024"],
-  //     datasets: [{
-  //       label: 'Ground Rent',
-  //       backgroundColor: "#2196F3",
-  //       data: [12, 59, 5, 56, 58, 12],
-  //     }, {
-  //       label: 'Conversion',
-  //       backgroundColor: "#BA68C8",
-  //       data: [12, 59, 5, 56, 58, 12],
-  //     }, {
-  //       label: 'Demand',
-  //       backgroundColor: "#81C784",
-  //       data: [12, 59, 5, 56, 58, 12],
-  //     }, {
-  //       label: 'Breaches',
-  //       backgroundColor: "#E57373",
-  //       data: [12, 59, 5, 56, 58, 12],
-  //     }, {
-  //       label: 'Interest/Penalty',
-  //       backgroundColor: "#FFB74D",
-  //       data: [12, 59, 5, 56, 58, 12],
-  //     }, {
-  //       label: 'Others',
-  //       backgroundColor: "#F06292",
-  //       data: [12, 59, 5, 56, 58, 40],
-  //     }],
-  //   },
-  //   options: {
-  //     plugins: {
-  //       datalabels: {
-  //         color: '#fff'
-  //       }
-  //     },
-  //     cornerRadius: 0,
-  //     tooltips: {
-  //       displayColors: true,
-  //       callbacks: {
-  //         mode: 'x',
-  //       },
-  //     },
-  //     scales: {
-  //       xAxes: [{
-  //         stacked: true,
-  //         gridLines: {
-  //           display: false,
-  //         }
-  //       }],
-  //       yAxes: [{
-  //         stacked: true,
-  //         ticks: {
-  //           beginAtZero: true,
-  //         },
-  //         type: 'linear',
-  //       }]
-  //     },
-  //     responsive: true,
-  //     maintainAspectRatio: false,
-  //     legend: { position: 'top' },
-  //   }
+  var ctx = document.getElementById("revenueINR").getContext('2d');
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ["2019", "2020", "2021", "2022", "2023", "2024"],
+      datasets: [{
+        label: 'Ground Rent',
+        backgroundColor: "#2196F3",
+        data: [12, 59, 5, 56, 58, 12],
+      }, {
+        label: 'Conversion',
+        backgroundColor: "#BA68C8",
+        data: [12, 59, 5, 56, 58, 12],
+      }, {
+        label: 'Demand',
+        backgroundColor: "#81C784",
+        data: [12, 59, 5, 56, 58, 12],
+      }, {
+        label: 'Breaches',
+        backgroundColor: "#E57373",
+        data: [12, 59, 5, 56, 58, 12],
+      }, {
+        label: 'Interest/Penalty',
+        backgroundColor: "#FFB74D",
+        data: [12, 59, 5, 56, 58, 12],
+      }, {
+        label: 'Others',
+        backgroundColor: "#F06292",
+        data: [12, 59, 5, 56, 58, 40],
+      }],
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          color: '#fff'
+        }
+      },
+      cornerRadius: 0,
+      tooltips: {
+        displayColors: true,
+        callbacks: {
+          mode: 'x',
+        },
+      },
+      scales: {
+        xAxes: [{
+          stacked: true,
+          gridLines: {
+            display: false,
+          }
+        }],
+        yAxes: [{
+          stacked: true,
+          ticks: {
+            beginAtZero: true,
+          },
+          type: 'linear',
+        }]
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: { position: 'top' },
+    }
     
-  // });
+  });
 
 
   // chart 2

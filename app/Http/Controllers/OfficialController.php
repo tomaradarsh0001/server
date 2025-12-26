@@ -33,11 +33,11 @@ use App\Models\Flat;
 use App\Models\FlatHistory;
 use App\Models\OldColony;
 use App\Models\PropertyLeaseDetail;
-use App\Models\PropertyMasterHistory;
+use App\Models\Section;
 use App\Models\PropertySectionMapping;
+use App\Models\PropertyMasterHistory;
 use App\Models\PropertyTransferLesseeDetailHistory;
 use App\Models\PropertyTransferredLesseeDetail;
-use App\Models\Section;
 use App\Models\SplitedPropertyDetail;
 use App\Services\ColonyService;
 use App\Services\MisService;
@@ -93,6 +93,7 @@ class OfficialController extends Controller
         if (!empty($filterPermissionArr)) {
             $items = Item::where('group_id', 17000)
                 ->whereIn('item_code', $filterPermissionArr)
+                ->where('is_active',1)
                 ->get();
         }
         return view('officials.register-users.indexDatatable', compact('items', 'getStatusId', 'user'));
@@ -100,8 +101,9 @@ class OfficialController extends Controller
 
     public function getRegisteredUsers(Request $request)
     {
+        // Get the logged-in user
         $user = Auth::user();
-        $roleName = $user->roles->pluck('name')->first();
+       $roleName = $user->roles->pluck('name')->first();
         $sections = $user->sections->pluck('id');
         // Define the query outside of the AJAX block
         $query = UserRegistration::query()
@@ -160,7 +162,7 @@ class OfficialController extends Controller
             $query->where('user_registrations.status', $request->status);
         }
 
-        $columns = ['id', 'applicant_number', 'name', 'property_details', 'flat_number', 'user_type', 'purpose_of_registation', 'section', 'activity', 'status', 'remarks', 'created_at'];
+        $columns = ['id', 'applicant_number', 'name', 'property_details','flat_number', 'user_type','purpose_of_registation','section','activity','status', 'remarks', 'created_at'];
 
         $totalData = $query->count();
         $totalFiltered = $totalData;
@@ -188,19 +190,15 @@ class OfficialController extends Controller
             });
 
             $totalFiltered = $query->count();
+ 
         }
-
-        /** code added by Nitin Implement FIFO */
-        $assignedToUSer = $earliest = null;
+            $assignedToUSer = $earliest = null;
         if ($totalFiltered > 0) {
             $assignedToUSerData = $this->getAssignedToAuthUser();
             $assignedToUSer = $assignedToUSerData['all_assigned'];
             $earliest = $assignedToUSerData['earliest'];
         }
-
-        /** End FIFO code */
-
-        $getRegistrationDetails = $query->offset($start)
+         $getRegistrationDetails = $query->offset($start)
             ->limit($limit)
             ->orderBy($order, $dir)
             ->get();
@@ -218,11 +216,15 @@ class OfficialController extends Controller
             $nestedData = [];
             // $nestedData['id'] = $getRegistrationDetail->id;
             $nestedData['id'] = $key + 1;
+           // $nestedData['applicant_number'] = $getRegistrationDetail->applicant_number;
+
             if ($getRegistrationDetail->forward_through == 'cron' && $roleName == 'deputy-lndo') {
                 $nestedData['applicant_number'] =  '<div class="d-flex gap-2 align-items-center">' . $getRegistrationDetail->applicant_number . '<div class="alertRed"></div></div><div style="color:#116d6e;">' . $autoForward . '</div>';
             } else {
                 $nestedData['applicant_number'] = $getRegistrationDetail->applicant_number;
-            }
+            } 
+           $nestedData['name'] = $getRegistrationDetail->name;
+            
             if (!Is_null($assignedToUSer)) {
                 // if ($getRegistrationDetail->applicant_number == $earliest)
                 if ((in_array($getRegistrationDetail->applicant_number, $earliest))) // code modfied by nitin on 03-09-2025
@@ -247,8 +249,7 @@ class OfficialController extends Controller
                     }
                 }
             }
-            $nestedData['name'] = $getRegistrationDetail->name;
-            if (is_null($getRegistrationDetail->locality)) {
+           if (is_null($getRegistrationDetail->locality)) {
                 $nestedData['property_details'] = ucfirst($getRegistrationDetail->block) . '/' . ucfirst($getRegistrationDetail->plot) . '/' . ucfirst($getRegistrationDetail->locality_name);
             } else {
                 $nestedData['property_details'] = ucfirst($getRegistrationDetail->block) . '/' . ucfirst($getRegistrationDetail->plot) . '/' . ucfirst($getRegistrationDetail->old_colony_name);
@@ -283,13 +284,13 @@ class OfficialController extends Controller
             ];
             $nestedData['activity'] = [
                 'mis' => !empty($getRegistrationDetail->is_mis_checked) ? $getRegistrationDetail->is_mis_checked : 'NA',
-                // 'scanned_files' => !empty($getRegistrationDetail->is_scan_file_checked) ? $getRegistrationDetail->is_scan_file_checked : 'NA',
+                'scanned_files' => !empty($getRegistrationDetail->is_scan_file_checked) ? $getRegistrationDetail->is_scan_file_checked : 'NA',
                 'uploaded_doc' => !empty($getRegistrationDetail->is_uploaded_doc_checked) ? $getRegistrationDetail->is_uploaded_doc_checked : 'NA',
                 'mis_checked_by' => !empty($getRegistrationDetail->mis_checked_by) ? $mis_checked_by->name : '',
-                // 'scan_file_checked_by' => !empty($getRegistrationDetail->scan_file_checked_by) ? $scan_file_checked_by->name : '',
+                'scan_file_checked_by' => !empty($getRegistrationDetail->scan_file_checked_by) ? $scan_file_checked_by->name : '',
                 'uploaded_doc_checked_by' => !empty($getRegistrationDetail->uploaded_doc_checked_by) ? $uploaded_doc_checked_by->name : '',
                 'mis_color_code' => !empty(getServiceTypeColorCode('MIS_CHECK')) ? getServiceTypeColorCode('MIS_CHECK') : '',
-                // 'scan_file_color_code' => !empty(getServiceTypeColorCode('SCAN_CHECK')) ? getServiceTypeColorCode('SCAN_CHECK') : '',
+                'scan_file_color_code' => !empty(getServiceTypeColorCode('SCAN_CHECK')) ? getServiceTypeColorCode('SCAN_CHECK') : '',
                 'uploaded_doc_color_code' => !empty(getServiceTypeColorCode('UP_DOC_CHE')) ? getServiceTypeColorCode('UP_DOC_CHE') : '',
             ];
 
@@ -300,20 +301,20 @@ class OfficialController extends Controller
             $statusClasses = [
                 'RS_REJ' => 'highlight_value statusRejected',
                 'RS_NEW' => 'highlight_value statusNew',
-                'RS_UREW' => 'highlight_value statusSecondary',
                 'RS_REW' => 'highlight_value statusWarning',
+                'RS_UREW' => 'highlight_value statusSecondary',
                 'RS_PEN' => 'highlight_value bg-light-info',
                 'RS_APP' => 'highlight_value landtypeFreeH',
             ];
             $class = $statusClasses[$getRegistrationDetail->item_code] ?? 'text-secondary bg-light';
             $nestedData['status'] = '<span class="' . $class . '">' . ucwords($getRegistrationDetail->item_name) . '</span>';
             $nestedData['created_at'] = Carbon::parse($getRegistrationDetail->created_at)
-                ->format('d-m-Y H:i:s');
+                                        ->format('d-m-Y H:i:s');
             if ($user->roles[0]['name'] == 'it-cell') {
-                $actionBtnHtml .= '<a href="' . url('register/user/' . $getRegistrationDetail->id . '/view/details') . '">
-                <button type="button" class="btn btn-success">View</button>
+                $actionBtnHtml .= '<a href="' . route('register.user.view.details', ['id' => $getRegistrationDetail->id]) . '">
+                    <button type="button" class="btn btn-success px-5">View</button>
                 </a>';
-                //Check if application is reject then do not show Transfer & Reject Button - Lalit (04/March/2025)
+                
                 if ($getRegistrationDetail->item_code !== 'RS_REJ') {
                     //Comment given below conditions as i discussed with Amit Mam & Swati. Transfer options also availble for normal property - Lalit Tiwari (25/02/2025)
                     // if ($getRegistrationDetail->is_property_flat === 1) {
@@ -322,20 +323,18 @@ class OfficialController extends Controller
                     $actionBtnHtml .= '<button type="button" style="margin-left:4px;" class="btn btn-secondary open-reject-modal-btn" data-bs-toggle="modal" data-bs-target="#rejectPropertyModel" data-reject-user-id="' . $getRegistrationDetail->id . '">Reject</button>';
                 }
             } else {
-                $actionBtnHtml .= '<a href="' . url('register/user/' . $getRegistrationDetail->id . '/view') . '">
-                <button type="button" class="btn btn-success px-5">View</button>
-            </a>';
+                $actionBtnHtml .= '<a href="' . route('register.user.details', ['id' => $getRegistrationDetail->id]) . '">
+                    <button type="button" class="btn btn-success px-5">View</button>
+                </a>';
             }
-            // Append Resend button only for Approved/Rejected rows added by swati mishra for resend communication on 18082025
+              // Append Resend button only for Approved/Rejected rows added by swati mishra for resend communication on 18082025
             if (in_array($getRegistrationDetail->item_code, ['RS_APP', 'RS_REJ'])) {
                 $actionBtnHtml .= ' <button type="button" class="btn btn-warning resend-comm-btn" data-id="' . $getRegistrationDetail->id . '">Resend Message</button>';
             }
-
-            // Revoke button only for Approved rows
+                // Revoke button only for Approved rows
             if ($getRegistrationDetail->item_code === 'RS_APP') {
                 $actionBtnHtml .= ' <button type="button" class="btn btn-secondary revoke-approval-btn" data-id="' . $getRegistrationDetail->id . '">Revoke Approval</button>';
             }
-
             $nestedData['action'] = $actionBtnHtml;
             $data[] = $nestedData;
         }
@@ -345,14 +344,385 @@ class OfficialController extends Controller
             "recordsTotal" => intval($totalData),
             "recordsFiltered" => intval($totalFiltered),
             "data" => $data,
-            'earliestApplication' => $earliest
         ];
 
         return response()->json($json_data);
     }
+    
+
+    
+    public function revokeApproval(Request $request, $id)
+    {
+        $request->validate([
+            'remarks' => ['required','string'], 
+        ]);
+
+        try {
+            DB::transaction(function () use ($id, $request) {
+                // registration
+                $reg = UserRegistration::findOrFail($id);
+
+                // deactivate the linked user (by email)
+                $user = User::where('email', $reg->email)->first();
+                if ($user) {
+                    $user->update([
+                        'status'     => 0,
+                        'updated_at' => now(),
+                    ]);
+                }
+
+                // flip registration to REJECTED + save remark
+                $rejStatusId = getStatusName('RS_REJ'); // or Item::where('item_code','RS_REJ')->value('id');
+                UserRegistration::where('id', $reg->id)->update([
+                    'status'     => $rejStatusId,
+                    'remarks'    => $request->remarks,
+                    'updated_at' => now(),
+                ]);
+            });
+
+            // -------- COMMUNICATION: REG_REVOKE --------
+            $reg   = UserRegistration::find($id); // refetch after commit
+            $action = 'REG_REVOKE';
+            $data = [
+                'regNo'  => $reg->applicant_number,
+                'email'  => $reg->email,
+                'reason' => $request->remarks,
+            ];
+
+            // Email
+            if (checkTemplateExists('email', $action)) {
+                 try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($reg->email, $mailSettings);
+
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $reg->email,
+                        'data'   => $data,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $reg->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            // SMS
+            if (checkTemplateExists('sms', $action)) {
+                $this->communicationService->sendSmsMessage($data, $reg->mobile, $action);
+            }
+
+            // WhatsApp
+            if (checkTemplateExists('whatsapp', $action)) {
+                $this->communicationService->sendWhatsAppMessage($data, $reg->mobile, $action);
+            }
+            // ------------------------------------------
+
+            return response()->json(['status' => 'success', 'message' => 'Approval revoked and registration set to Rejected.']);
+        } catch (\Throwable $e) {
+            \Log::error('Revoke approval failed: '.$e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to revoke approval.'], 500);
+        }
+    }
+
+     //added by swati mishra for resend communication on 18082025
+    public function resendRegistrationComms(Request $request, $id)
+    {
+        try {
+            $reg = UserRegistration::with('oldColony')->find($id);
+
+            // Resolve status code (user_registrations.status holds items.id)
+            $item = Item::select('item_code')->where('id', $reg->status)->first();
+            if (!$item) {
+                return response()->json(['status' => 'error', 'message' => 'Status not found.'], 404);
+            }
+
+            $itemCode = $item->item_code;
+
+            if (!in_array($itemCode, ['RS_APP', 'RS_REJ'])) {
+                return response()->json(['status' => 'error', 'message' => 'Resend is available only for approved/rejected records.'], 422);
+            }
+
+            if ($itemCode === 'RS_APP') {
+                $action = 'REG_APP';
+
+                // Find the applicant's user account
+                $user = User::where('email', $reg->email)->first();
+                if (!$user) {
+                    return response()->json(['status' => 'error', 'message' => 'Approved user account not found for this registration.'], 404);
+                }
+
+                // 1) Regenerate and update password
+                $newPassword = Str::random(8);
+                $user->update(['password' => Hash::make($newPassword)]);
+
+                // 2) Compose data (include new password)
+                $data = [
+                    'propertyId' => $reg->old_property_id ?? null,
+                    'regNo'      => $reg->applicant_number,
+                    'email'      => $reg->email,
+                    'password'   => $newPassword, // send new password in resend
+                ];
+
+                // 3) Send comms (email with tracking + SMS/WhatsApp if templates exist)
+                // $this->settingsService->applyMailSettings($action);
+                // Mail::to($reg->email)->send(new CommonMail($data, $action));
+                try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($reg->email, $mailSettings);
+
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $reg->email,
+                        'data'   => $data,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $reg->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+
+
+                if (checkTemplateExists('sms', $action)) {
+                    $this->communicationService->sendSmsMessage($data, $reg->mobile, $action);
+                }
+                if (checkTemplateExists('whatsapp', $action)) {
+                    $this->communicationService->sendWhatsAppMessage($data, $reg->mobile, $action);
+                }
+            }
+
+
+            if ($itemCode === 'RS_REJ') {
+                // Mirror reject flow (CommonMail + SMS/WhatsApp)
+                $action = 'REG_REJ';
+                $data = [
+                    'regNo'  => $reg->applicant_number,
+                    'email'  => $reg->email,
+                    'reason' => $reg->remarks, // or last rejection reason source
+                ];
+
+                if (checkTemplateExists('email', $action)) {
+                    // $this->settingsService->applyMailSettings($action);
+                    // Mail::to($reg->email)->send(new CommonMail($data, $action));
+                    try {
+                        $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                        $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                        $mailResponse = $mailer->send($reg->email, $mailSettings);
+
+                        Log::info("Email sent successfully.", [
+                            'action' => $action,
+                            'email'  => $reg->email,
+                            'data'   => $data,
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error("Email sending failed.", [
+                            'action' => $action,
+                            'email'  => $reg->email,
+                            'error'  => $e->getMessage(),
+                        ]);
+                    }
+                }
+                // if (checkTemplateExists('sms', $action)) {
+                //     $this->communicationService->sendSmsMessage($data, $reg->mobile, $action);
+                // }
+                if (checkTemplateExists('sms', $action)) {
+                    $smsResult = $this->communicationService->sendSmsMessage(
+                        $data,
+                        $reg->mobile, 
+                        $action
+                    );
+
+                    if ($smsResult) {
+                        \Log::info("✅ SMS sent successfully", [
+                            'action'         => $action,
+                            'application_no' => $reg->applicant_number,
+                            'mobile'         => $reg->mobile,
+                            'data'           => $data, // log what was sent
+                        ]);
+                    } else {
+                        \Log::error("❌ SMS failed", [
+                            'action'         => $action,
+                            'application_no' => $reg->applicant_number,
+                            'mobile'         => $reg->mobile,
+                            'data'           => $data,
+                        ]);
+                    }
+                }
+
+                if (checkTemplateExists('whatsapp', $action)) {
+                    $this->communicationService->sendWhatsAppMessage($data, $reg->mobile, $action);
+                }
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'Resent successfully.']);
+
+        } catch (\Throwable $e) {
+            \Log::error('Resend comms failed: '.$e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to resend communication.'], 500);
+        }
+    }
+        // private function getAssignedToAuthUser()
+        //     {
+        //         $user = Auth::user();
+
+        //         $assignedApplications = collect(); // to collect all assigned
+
+        //         if ($user->roles[0]->name == 'section-officer') {
+        //             // 1. New applications in section
+        //             $newApplications = UserRegistration::whereIn('section_id', $user->sections->pluck('id')->toArray())
+        //                 ->where('status', getServiceType('RS_NEW'))
+        //                 ->select('applicant_number', 'updated_at')
+        //                 ->get();
+
+        //             // 2. Applications forwarded to user (latest only)
+        //             $latestMovements = ApplicationMovement::select('application_no', 'updated_at', 'assigned_to')
+        //                 ->where('service_type', getServiceType('RS_NEW_REG'))
+        //                 ->whereIn('id', function ($query) {
+        //                     $query->selectRaw('MAX(id)')
+        //                         ->from('application_movements')
+        //                         ->groupBy('application_no');
+        //                 })
+        //                 ->where('assigned_to', $user->id)
+        //                 ->get();
+
+        //             // Merge both
+        //             /* $assignedApplications = $newApplications->map(function ($item) {
+        //                 return ['application_no' => $item->applicant_number, 'updated_at' => $item->updated_at];
+        //             })->merge(
+        //                 $latestMovements->map(function ($item) {
+        //                     return ['application_no' => $item->application_no, 'updated_at' => $item->updated_at];
+        //                 })
+        //             ); */
+
+        //             $assignedApplications = $newApplications->map(function ($item) {
+        //                 return [
+        //                     'application_no' => $item->applicant_number,
+        //                     'updated_at' => $item->updated_at,
+        //                 ];
+        //             })->concat(
+        //                 $latestMovements->map(function ($item) {
+        //                     return [
+        //                         'application_no' => $item->application_no,
+        //                         'updated_at' => $item->updated_at,
+        //                     ];
+        //                 })
+        //             )->values(); // reset keys
+        //         } else {
+        //             // For non-section-officer users
+        //             $assignedApplications = ApplicationMovement::select('application_no', 'updated_at')
+        //                 ->where('service_type', getServiceType('RS_NEW_REG'))
+        //                 ->whereIn('id', function ($query) {
+        //                     $query->selectRaw('MAX(id)')
+        //                         ->from('application_movements')
+        //                         ->groupBy('application_no');
+        //                 })
+        //                 ->where('assigned_to', $user->id)
+        //                 ->get()
+        //                 ->map(function ($item) {
+        //                     return ['application_no' => $item->application_no, 'updated_at' => $item->updated_at];
+        //                 });
+        //         }
+
+        //         // Remove duplicates by application_no (if any)
+        //         $uniqueApps = $assignedApplications->unique('application_no')->values();
+
+        //         // Sort by created_at to get the earliest one
+        //         $sorted = $uniqueApps->sortBy('updated_at')->values();
+
+        //         return [
+        //             'all_assigned' => $sorted->pluck('application_no')->toArray(),
+        //             'earliest' => optional($sorted->first())['application_no']
+        //         ];
+        //     }
+
+          private function getAssignedToAuthUser()
+    {
+        $user = Auth::user();
+
+        $assignedApplications = collect(); // to collect all assigned
+        $filfoLimit = $user->roles[0]->name == 'section-officer' ? 3 : 3;
+        if ($user->roles[0]->name == 'section-officer') {
+            // 1. New applications in section
+            $newApplications = UserRegistration::whereIn('section_id', $user->sections->pluck('id')->toArray())
+                ->where('status', getServiceType('RS_NEW'))
+                ->select('applicant_number', 'created_at')
+                ->get();
+
+            // 2. Applications forwarded to user (latest only)
+            $latestMovements = ApplicationMovement::select('application_no', 'created_at', 'assigned_to')
+                ->where('service_type', getServiceType('RS_NEW_REG'))
+                ->whereIn('id', function ($query) {
+                    $query->selectRaw('MAX(id)')
+                        ->from('application_movements')
+                        ->groupBy('application_no');
+                })
+                ->where('assigned_to', $user->id)
+                ->get();
+
+            // Merge both
+            /* $assignedApplications = $newApplications->map(function ($item) {
+                return ['application_no' => $item->applicant_number, 'created_at' => $item->created_at];
+            })->merge(
+                $latestMovements->map(function ($item) {
+                    return ['application_no' => $item->application_no, 'created_at' => $item->created_at];
+                })
+            ); */
+
+            $assignedApplications = $newApplications->map(function ($item) {
+                return [
+                    'application_no' => $item->applicant_number,
+                    'created_at' => $item->created_at,
+                ];
+            })->concat(
+                $latestMovements->map(function ($item) {
+                    return [
+                        'application_no' => $item->application_no,
+                        'created_at' => $item->created_at,
+                    ];
+                })
+            );
+        } else {
+            // For non-section-officer users
+            $assignedApplications = ApplicationMovement::select('application_no', 'created_at')
+                ->where('service_type', getServiceType('RS_NEW_REG'))
+                ->whereIn('id', function ($query) {
+                    $query->selectRaw('MAX(id)')
+                        ->from('application_movements')
+                        ->groupBy('application_no');
+                })
+                ->where('assigned_to', $user->id)
+                ->get()
+                ->map(function ($item) {
+                    return ['application_no' => $item->application_no, 'created_at' => $item->created_at];
+                });
+        }
+
+        // Remove duplicates by application_no (if any)
+        $uniqueApps = $assignedApplications->unique('application_no')->values();
+
+        // Sort by created_at to get the earliest one
+        $sorted = $uniqueApps->sortBy('created_at')->values();
+
+        /* return [
+            'all_assigned' => $sorted->pluck('application_no')->toArray(),
+            'earliest' => optional($sorted->first())['application_no']
+        ]; */
+
+        return [
+            'all_assigned' => $sorted->pluck('application_no')->toArray(),
+            'earliest' => $sorted->take($filfoLimit)->pluck('application_no')->toArray(),
+        ];
+    }
 
     //Add by lalit on 31/07/2024 to show register user listing
-    public function getUserRegistrations($user, $sections)
+
+  public function getUserRegistrations($user, $sections)
     {
         // Base query builder
         $query = UserRegistration::with('oldColony')
@@ -390,74 +760,6 @@ class OfficialController extends Controller
         return $dataWithPagination;
     }
 
-    /** function added by nitin */
-
-    private function getAssignedToAuthUser()
-    {
-        $user = Auth::user();
-
-        $assignedApplications = collect(); // to collect all assigned
-        $filfoLimit = $user->roles[0]->name == 'section-officer' ? 3 : 3;
-        if ($user->roles[0]->name == 'section-officer') {
-            // 1. New applications in section
-            $newApplications = UserRegistration::whereIn('section_id', $user->sections->pluck('id')->toArray())
-                ->where('status', getServiceType('RS_NEW'))
-                ->select('applicant_number', 'created_at')
-                ->get();
-
-            // 2. Applications forwarded to user (latest only)
-            $latestMovements = ApplicationMovement::select('application_no', 'created_at', 'assigned_to')
-                ->where('service_type', getServiceType('RS_NEW_REG'))
-                ->whereIn('id', function ($query) {
-                    $query->selectRaw('MAX(id)')
-                        ->from('application_movements')
-                        ->groupBy('application_no');
-                })
-                ->where('assigned_to', $user->id)
-                ->get();
-
-            // Merge both
-            $assignedApplications = $newApplications->map(function ($item) {
-                return ['application_no' => $item->applicant_number, 'created_at' => $item->created_at];
-            })->merge(
-                $latestMovements->map(function ($item) {
-                    return ['application_no' => $item->application_no, 'created_at' => $item->created_at];
-                })
-            );
-        } else {
-            // For non-section-officer users
-            $assignedApplications = ApplicationMovement::select('application_no', 'created_at')
-                ->where('service_type', getServiceType('RS_NEW_REG'))
-                ->whereIn('id', function ($query) {
-                    $query->selectRaw('MAX(id)')
-                        ->from('application_movements')
-                        ->groupBy('application_no');
-                })
-                ->where('assigned_to', $user->id)
-                ->get()
-                ->map(function ($item) {
-                    return ['application_no' => $item->application_no, 'created_at' => $item->created_at];
-                });
-        }
-
-        // Remove duplicates by application_no (if any)
-        $uniqueApps = $assignedApplications->unique('application_no')->values();
-
-        // Sort by created_at to get the earliest one
-        $sorted = $uniqueApps->sortBy('created_at')->values();
-
-        /* return [
-            'all_assigned' => $sorted->pluck('application_no')->toArray(),
-            'earliest' => optional($sorted->first())['application_no']
-        ]; */
-
-        return [
-            'all_assigned' => $sorted->pluck('application_no')->toArray(),
-            'earliest' => $sorted->take($filfoLimit)->pluck('application_no')->toArray(),
-        ];
-    }
-
-
     //Add by lalit on 31/07/2024 to update register user status
     public function updateStatus($id, Request $request)
     {
@@ -493,29 +795,33 @@ class OfficialController extends Controller
 
                     // Prepare notification data
                     $data = [
-                        'name' => $registerUser->name,
                         'email' => $registerUser->email,
                         'regNo' => $registerUser->applicant_number,
-                        'remark' => $registerUser->remarks
+                        'reason' => $registerUser->remarks
                     ];
 
                     // Action type for notifications
                     $action = 'REG_REJ';
-                    $checkEmailTemplateExists = checkTemplateExists('email', $action);
-                    if (!empty($checkEmailTemplateExists)) {
-                        // Apply mail settings and send notifications
-                        $this->settingsService->applyMailSettings($action);
-                        // Send notifications
-                        Mail::to($registerUser->email)->send(new CommonMail($data, $action));
+                    if (checkTemplateExists('email', $action)) {
+                        $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                        $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                        $mailResponse = $mailer->send($registerUser->email, $mailSettings);
                     }
-                    // $checkSmsTemplateExists = checkTemplateExists('sms', $action);
-                    // if (!empty($checkSmsTemplateExists)) {
-                    //     $this->communicationService->sendSmsMessage($data, $registerUser->mobile, $action, $registerUser->country_code);
-                    // }
-                    // $checkWhatsappTemplateExists = checkTemplateExists('whatsapp', $action);
-                    // if (!empty($checkWhatsappTemplateExists)) {
-                    //     $this->communicationService->sendWhatsAppMessage($data, $registerUser->mobile, $action, $registerUser->country_code);
-                    // }
+                
+                    if (checkTemplateExists('sms', $action)) {
+                        $smsResult = $this->communicationService->sendSmsMessage($data,$registerUser->mobile,$action);
+                        if ($smsResult) {
+                            \Log::info("✅ SMS sent successfully", ['action' => $action,'application_no' => $registerUser->applicant_number,'mobile' => $registerUser->mobile,'data' => $data]);
+                        } else {
+                            \Log::error("❌ SMS failed", ['action' => $action,'application_no' => $registerUser->applicant_number,'mobile' => $registerUser->mobile,'data' => $data,]);
+                        }
+                    }
+
+                    if (checkTemplateExists('whatsapp', $action)) {
+                        $this->communicationService->sendWhatsAppMessage($data, $registerUser->mobile, $action);
+                    }
+
+
                     return true; // Indicate success
                 });
 
@@ -543,38 +849,42 @@ class OfficialController extends Controller
                 $roles = Auth::user()->roles[0]->name;
                 $data = [];
                 $regUserDetails = UserRegistration::find($id);
-                /*code added by nitin */
-                $applicantNumber = $regUserDetails->applicant_number;
+                 $applicantNumber = $regUserDetails->applicant_number;
+                
                 $assignedToUSerData = $this->getAssignedToAuthUser();
-                // dd($assignedToUSerData);
-                $assignedToUSer = $assignedToUSerData['all_assigned'];
+                
+               $assignedToUSer = $assignedToUSerData['all_assigned'];
                 $earliest = $assignedToUSerData['earliest'];
                 if (in_array($applicantNumber, $assignedToUSer)) {
                     // if ($applicantNumber != $earliest) {
-                    if (!(in_array($applicantNumber, $earliest))) { // modifications done ny nitin on 03-09-2025
+                    //     return redirect()->back()->with('failure', 'Older registration ' . $earliest . ' is pending, please process it first.');
+                    // }
+                      if (!(in_array($applicantNumber, $earliest))) { // modifications done ny nitin on 03-09-2025
                         return redirect()->back()->with('failure', 'Older registration' . (count($earliest) > 1 ? 's ' : ' ') . implode(', ', $earliest) . ' is pending, please process ' . (count($earliest) > 1 ? 'it ' : 'them ') . ' first.');
                     }
                 }
                 $scannedFiles = [];
                 if ($regUserDetails) {
                     //Check Or Get Generated PId from User Registration Table If Property Created by IT Cell For Manual Registration - Lalit (29/Jan/2025)
-                    if (!is_null($regUserDetails->generated_pid) && isset($regUserDetails->generated_pid)) {
+                    if (!is_null($regUserDetails->generated_pid) && isset($regUserDetails->generated_pid)){
                         //Fetch Suggested Property Id from Property Master
                         $property = PropertyMaster::where('old_propert_id', $regUserDetails->generated_pid)->latest('created_at')->first();
                     } else {
                         $property = PropertyMaster::where('new_colony_name', $regUserDetails->locality)->where('block_no', $regUserDetails->block)->where('plot_or_property_no', $regUserDetails->plot)->first();
                     }
-
+                    
                     if ($property && !empty($property->id)) {
-                        if ($property->is_joint_property) {
-                            $data['splitedPropertyDetails'] =  SplitedPropertyDetail::where('property_master_id', $property->id)->get();
-                        } else {
-                            $data['splitedPropertyDetails'] = [];
-                        }
+                     if ($property->is_joint_property) {
+    $data['splitedPropertyDetails'] =  SplitedPropertyDetail::where('property_master_id', $property->id)->get();
+} else {
+    $data['splitedPropertyDetails'] = [];
+}
                         // Replace Above code by Lalit On 09/19/2024 to handle above 3rd party api https://ldo.gov.in either it works or fails.
                         // Make the request with a timeout of 10 seconds
-                        // $response = Http::timeout(10)->get('https://ldo.gov.in/eDhartiAPI/Api/GetValues/PropertyDocList?PropertyID=' . $property['old_propert_id']);
-                        $response = Http::timeout(10)->get('https://ldo.gov.in/edhartiapi/Api/PropDocs/bypropertyID?PropertyID=' . $property['old_propert_id']);
+                        $scanningLink=Config:: get('constants.propertyDocList');
+                    // dd($scanningLink);
+                    $response = Http::timeout(10)->get( $scanningLink . $property['old_propert_id']);
+                        // $response = Http::timeout(10)->get('https://ldo.gov.in/edhartiapi/Api/PropDocs/bypropertyID?PropertyID=' . $property['old_propert_id']);
 
                         // Check if the api working & giving response for scanned files
                         //Modified conditions to Check if response is set & successfull then only get executed block of code -
@@ -582,22 +892,9 @@ class OfficialController extends Controller
                             $jsonData = $response->json();
                             // Proceed if jsonData is not empty
                             if (!empty($jsonData)) {
-
                                 $scannedFiles['baseUrl'] = $jsonData[0]['Path'];
-                                $volumeNumber = 1;
                                 foreach ($jsonData[0]['ListFileName'] as $data) {
-                                    // $scannedFiles['files'][] = $data['PropertyFileName'];
-                                    
-                                    // store real filename for actual file operations
-                                    $actualFileName = $data['PropertyFileName'];
-
-                                    // display static volume name
-                                    $displayName = 'Volume-' . $volumeNumber++;
-
-                                    $scannedFiles['files'][] = [
-                                        'actual' => $actualFileName,
-                                        'display' => $displayName,
-                                    ];
+                                    $scannedFiles['files'][] = $data['PropertyFileName'];
                                 }
                             } else {
                                 // Handle case where the response is empty or not as expected
@@ -668,16 +965,17 @@ class OfficialController extends Controller
                     $regUserDetails->propertyType = getServiceNameById($regUserDetails->land_use_type);
                     $regUserDetails->propertySubType = getServiceNameById($regUserDetails->land_use_sub_type);
                     $data['details'] = $regUserDetails;
-                    // dd($data['details']);
                     $data['applicationMovementId'] = $id;
                     $checkList = ApplicationStatus::where('service_type', getServiceType('RS_NEW_REG'))->where('model_id', $id)->latest('created_at')->first();
-                    //Action Flag Set for approve user registration by lalit tiwari on 21 July 2025
+                       //Action Flag Set for approve user registration by lalit tiwari on 21 July 2025
                     $isApproved = false;
-                    if (!empty($roles) && !empty($regUserDetails->action_taken_by) && $roles == $regUserDetails->action_taken_by) {
-                        // dd($roles, $regUserDetails->action_taken_by);
-                        $isApproved = true;
+                   if ($data['details']->status != getStatusName('RS_UREW')) {
+                        if (!empty($roles) && !empty($regUserDetails->action_taken_by) && $roles == $regUserDetails->action_taken_by) {
+                            $isApproved = true;
+                        }
                     }
                     return view('officials.register-users.details', compact(['data', 'roles', 'checkList', 'scannedFiles', 'isApproved']));
+//                     return view('officials.register-users.details', compact(['data', 'roles', 'checkList', 'scannedFiles']));
                 }
             }
         } catch (RequestException $e) {
@@ -706,8 +1004,10 @@ class OfficialController extends Controller
                     $property = PropertyMaster::where('new_colony_name', $regUserDetails->locality)->where('block_no', $regUserDetails->block)->where('plot_or_property_no', $regUserDetails->plot)->first();
                     if (!empty($property['id'])) {
                         // Make the request with a timeout of 10 seconds
-                        // $response = Http::timeout(10)->get('https://ldo.gov.in/eDhartiAPI/Api/GetValues/PropertyDocList?PropertyID=' . $property['old_propert_id']);
-                        $response = Http::timeout(10)->get('https://ldo.gov.in/edhartiapi/Api/PropDocs/bypropertyID?PropertyID=' . $property['old_propert_id']);
+                        $scanningLink=Config:: get('constants.propertyDocList');
+                    // dd($scanningLink);
+                    $response = Http::timeout(10)->get( $scanningLink . $property['old_propert_id']);
+                        // $response = Http::timeout(10)->get('https://ldo.gov.in/edhartiapi/Api/PropDocs/bypropertyID?PropertyID=' . $property['old_propert_id']);
 
                         // Check if the api working & giving response for scanned files
                         //Modified conditions to Check if response is set & successfull then only get executed block of code -
@@ -795,6 +1095,7 @@ class OfficialController extends Controller
     //Add by lalit on 31/07/2024 to approve user registeration
     public function approvedUserRegistration(Request $request)
     {
+        // dd($request->all());
         if (!empty($request->registrationId) && !empty($request->suggestedPropertyId) && !empty($request->oldPropertyId) && !empty($request->emailId)) {
             //Check user email is alredy exist in user table
             $emailExists = User::where('email', $request->emailId)->exists();
@@ -841,21 +1142,33 @@ class OfficialController extends Controller
     //Add by lalit on 31/07/2024 to update register user status as rejected
     public function rejectUserRegistration($id, Request $request)
     {
+        dd("inside function");
         if (!empty($id)) {
             $getDetail = UserRegistration::find($id);
-            $updateStatus = UserRegistration::where('id', $id)->update(['status' => 'rejected', 'remarks' => $request->remarks]);
-            if ($updateStatus) {
+            // $updateStatus = UserRegistration::where('id', $id)->update(['status' => 'rejected', 'remarks' => $request->remarks]);
+            // if ($updateStatus) {
                 $data = [
                     'regNo' => $getDetail->applicant_number,
                     'email' => $getDetail->email,
                     'reason' => $request->remarks,
                 ];
                 $action = 'REG_REJ';
-                $checkEmailTemplateExists = checkTemplateExists('email', $action);
-                if (!empty($checkEmailTemplateExists)) {
-                    // Apply the mail settings before sending the email
-                    $this->settingsService->applyMailSettings($action);
-                    Mail::to($getDetail->email)->send(new CommonMail($data, $action));
+                 try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($getDetail->email, $mailSettings);
+
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $getDetail->email,
+                        'data'   => $data,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $getDetail->email,
+                        'error'  => $e->getMessage(),
+                    ]);
                 }
                 $checkSmsTemplateExists = checkTemplateExists('sms', $action);
                 if (!empty($checkSmsTemplateExists)) {
@@ -866,158 +1179,11 @@ class OfficialController extends Controller
                     $this->communicationService->sendWhatsAppMessage($data, $getDetail->mobile, $action);
                 }
                 return redirect()->route('regiserUserListings')->with('success', 'User registration rejected successfully.');
-            } else {
-                return redirect()->route('regiserUserListings')->with('failure', 'User registration does not rejected.');
-            }
+            // } else {
+            //     return redirect()->route('regiserUserListings')->with('failure', 'User registration does not rejected.');
+            // }
         }
     }
-    //added by swati mishra for resend communication on 18082025
-    public function resendRegistrationComms(Request $request, $id)
-    {
-        try {
-            $reg = UserRegistration::with('oldColony')->findOrFail($id);
-
-            // Resolve status code (user_registrations.status holds items.id)
-            $item = Item::select('item_code')->where('id', $reg->status)->first();
-            if (!$item) {
-                return response()->json(['status' => 'error', 'message' => 'Status not found.'], 404);
-            }
-
-            $itemCode = $item->item_code;
-
-            if (!in_array($itemCode, ['RS_APP', 'RS_REJ'])) {
-                return response()->json(['status' => 'error', 'message' => 'Resend is available only for approved/rejected records.'], 422);
-            }
-
-            if ($itemCode === 'RS_APP') {
-                $action = 'REG_APP';
-
-                // Find the applicant's user account
-                $user = User::where('email', $reg->email)->first();
-                if (!$user) {
-                    return response()->json(['status' => 'error', 'message' => 'Approved user account not found for this registration.'], 404);
-                }
-
-                // 1) Regenerate and update password
-                $newPassword = Str::random(8);
-                $user->update(['password' => Hash::make($newPassword)]);
-
-                // 2) Compose data (include new password)
-                $data = [
-                    'propertyId' => $reg->old_property_id ?? null,
-                    'regNo'      => $reg->applicant_number,
-                    'email'      => $reg->email,
-                    'password'   => $newPassword, // send new password in resend
-                ];
-
-                // 3) Send comms (email with tracking + SMS/WhatsApp if templates exist)
-                $this->settingsService->applyMailSettings($action);
-                // $this->communicationService->sendMailWithTracking($action, $data, $user, 'email');
-                Mail::to($reg->email)->send(new CommonMail($data, $action));
-                // $this->settingsService->applyMailSettings($action);
-                //     Mail::to($getDetail->email)->send(new CommonMail($data, $action));
-
-                if (checkTemplateExists('sms', $action)) {
-                    $this->communicationService->sendSmsMessage($data, $reg->mobile, $action);
-                }
-                if (checkTemplateExists('whatsapp', $action)) {
-                    $this->communicationService->sendWhatsAppMessage($data, $reg->mobile, $action, $reg->country_code);
-                }
-            }
-
-
-            if ($itemCode === 'RS_REJ') {
-                // Mirror reject flow (CommonMail + SMS/WhatsApp)
-                $action = 'REG_REJ';
-                $data = [
-                    'regNo'  => $reg->applicant_number,
-                    'email'  => $reg->email,
-                    'reason' => $reg->remarks, // or last rejection reason source
-                ];
-
-                if (checkTemplateExists('email', $action)) {
-                    $this->settingsService->applyMailSettings($action);
-                    Mail::to($reg->email)->send(new CommonMail($data, $action));
-                }
-                if (checkTemplateExists('sms', $action)) {
-                    $this->communicationService->sendSmsMessage($data, $reg->mobile, $action);
-                }
-                if (checkTemplateExists('whatsapp', $action)) {
-                    $this->communicationService->sendWhatsAppMessage($data, $reg->mobile, $action);
-                }
-            }
-
-            return response()->json(['status' => 'success', 'message' => 'Resent successfully.']);
-        } catch (\Throwable $e) {
-            \Log::error('Resend comms failed: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'Failed to resend communication.'], 500);
-        }
-    }
-
-
-    public function revokeApproval(Request $request, $id)
-    {
-        $request->validate([
-            'remarks' => ['required', 'string', 'min:50'],
-        ]);
-
-        try {
-            DB::transaction(function () use ($id, $request) {
-                // registration
-                $reg = UserRegistration::findOrFail($id);
-
-                // deactivate the linked user (by email)
-                $user = User::where('email', $reg->email)->first();
-                if ($user) {
-                    $user->update([
-                        'status'     => 0,
-                        'updated_at' => now(),
-                    ]);
-                }
-
-                // flip registration to REJECTED + save remark
-                $rejStatusId = getStatusName('RS_REJ'); // or Item::where('item_code','RS_REJ')->value('id');
-                UserRegistration::where('id', $reg->id)->update([
-                    'status'     => $rejStatusId,
-                    'remarks'    => $request->remarks,
-                    'updated_at' => now(),
-                ]);
-            });
-
-            // -------- COMMUNICATION: REG_REVOKE --------
-            $reg   = UserRegistration::findOrFail($id); // refetch after commit
-            $action = 'REG_REVOKE';
-            $data = [
-                'regNo'  => $reg->applicant_number,
-                'email'  => $reg->email,
-                'reason' => $request->remarks,
-            ];
-
-            // Email
-            if (checkTemplateExists('email', $action)) {
-                $this->settingsService->applyMailSettings($action);
-                Mail::to($reg->email)->send(new CommonMail($data, $action));
-            }
-
-            // SMS
-            if (checkTemplateExists('sms', $action)) {
-                $this->communicationService->sendSmsMessage($data, $reg->mobile, $action, $reg->country_code ?? null);
-            }
-
-            // WhatsApp
-            if (checkTemplateExists('whatsapp', $action)) {
-                $this->communicationService->sendWhatsAppMessage($data, $reg->mobile, $action, $reg->country_code ?? null);
-            }
-            // ------------------------------------------
-
-            return response()->json(['status' => 'success', 'message' => 'Approval revoked and registration set to Rejected.']);
-        } catch (\Throwable $e) {
-            \Log::error('Revoke approval failed: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'Failed to revoke approval.'], 500);
-        }
-    }
-
-
 
     //Add by lalit on 01/08/2024 to update register user status as under review
     public function reviewUserRegistration($id, Request $request)
@@ -1037,7 +1203,7 @@ class OfficialController extends Controller
             $result = $this->userRegistrationService->approveReviewRequest($request);
             if ($result) {
                 // return redirect()->route('reviewApplicationsListings')->with('success', 'Application request approved successfully.');
-                return redirect()->back()->with('success', 'Application request approved successfully.');
+                return redirect()->back()->with('success', 'Application reviewed successfully.');
             } else {
                 // return redirect()->route('reviewApplicationsListings')->with('failure', 'Failed approve application request.');
                 return redirect()->back()->with('failure', 'Failed approve application request.');
@@ -1227,22 +1393,22 @@ class OfficialController extends Controller
                 'assigned_by_name' => !empty($getNewPropertyDetail->assigned_by_name) ? $getNewPropertyDetail->assigned_by_name : null
             ];
             $statusClasses = [
-                'RS_REJ' => 'highlight_value statusRejected',
-                'RS_NEW' => 'highlight_value statusNew',
-                'RS_UREW' => 'highlight_value statusSecondary',
-                'RS_REW' => 'highlight_value statusWarning',
-                'RS_PEN' => 'highlight_value bg-light-info',
-                'RS_APP' => 'highlight_value landtypeFreeH',
+                'RS_REJ' => 'statusRejected',
+                'RS_NEW' => 'statusNew',
+                'RS_UREW' => 'statusSecondary',
+                'RS_REW' => 'statusWarning',
+                'RS_PEN' => 'bg-light-info',
+                'RS_APP' => 'landtypeFreeH',
             ];
             $class = $statusClasses[$getNewPropertyDetail->item_code] ?? 'text-secondary bg-light';
-            $nestedData['status'] = '<span class="' . $class . '">' . ucwords($getNewPropertyDetail->item_name) . '</span>';
+            $nestedData['status'] = '<span class="highlight_value ' . $class . '">' . ucwords($getNewPropertyDetail->item_name) . '</span>';
             $nestedData['created_at'] = $getNewPropertyDetail->created_at->format('Y-m-d H:i:s');
             if ($user->roles[0]['name'] == 'it-cell') {
-                $nestedData['action'] = '<a href="' . url('applicant/property/' . $getNewPropertyDetail->id . '/view/details') . '">
+                $nestedData['action'] = '<a href="' . url('edharti/applicant/property/' . $getNewPropertyDetail->id . '/view/details') . '">
                 <button type="button" class="btn btn-success px-5">View</button>
             </a>';
             } else {
-                $nestedData['action'] = '<a href="' . url('applicant/property/' . $getNewPropertyDetail->id . '/view') . '">
+                $nestedData['action'] = '<a href="' . url('edharti/applicant/property/' . $getNewPropertyDetail->id . '/view') . '">
                 <button type="button" class="btn btn-success px-5">View</button>
             </a>';
             }
@@ -1316,8 +1482,11 @@ class OfficialController extends Controller
                 // dd($property);
                 if (!empty($property['id'])) {
                     // Make the request with a timeout of 10 seconds
-                    // $response = Http::timeout(10)->get('https://ldo.gov.in/eDhartiAPI/Api/GetValues/PropertyDocList?PropertyID=' . $property['old_propert_id']);
-                    $response = Http::timeout(10)->get('https://ldo.gov.in/edhartiapi/Api/PropDocs/bypropertyID?PropertyID=' . $property['old_propert_id']);
+
+                    $scanningLink=Config:: get('constants.propertyDocList');
+                    // dd($scanningLink);
+                    $response = Http::timeout(10)->get( $scanningLink . $property['old_propert_id']);
+                    // $response = Http::timeout(10)->get('https://ldo.gov.in/edhartiapi/Api/PropDocs/bypropertyID?PropertyID=' . $property['old_propert_id']);
 
                     // Check if the api working & giving response for scanned files
                     //Modified conditions to Check if response is set & successfull then only get executed block of code -
@@ -1427,8 +1596,10 @@ class OfficialController extends Controller
                 // dd($property);
                 if (!empty($property['id'])) {
                     // Make the request with a timeout of 10 seconds
-                    // $response = Http::timeout(10)->get('https://ldo.gov.in/eDhartiAPI/Api/GetValues/PropertyDocList?PropertyID=' . $property['old_propert_id']);
-                    $response = Http::timeout(10)->get('https://ldo.gov.in/edhartiapi/Api/PropDocs/bypropertyID?PropertyID=' . $property['old_propert_id']);
+                    // $scanningLink=Config:: get('constants.propertyDocList');
+                    // dd($scanningLink);
+                    $response = Http::timeout(10)->get( $scanningLink . $property['old_propert_id']);
+                    // $response = Http::timeout(10)->get('https://ldo.gov.in/edhartiapi/Api/PropDocs/bypropertyID?PropertyID=' . $property['old_propert_id']);
 
                     // Check if the api working & giving response for scanned files
                     //Modified conditions to Check if response is set & successfull then only get executed block of code -
@@ -1572,16 +1743,33 @@ class OfficialController extends Controller
                     ]);
                     $getUserDetailsObj =  User::find($getPropertyDetailsObj->user_id);
                     if ($getUserDetailsObj) {
-                        $data = [
-                            'name' => $getUserDetailsObj->name,
-                            'regNo' => $getPropertyDetailsObj->applicant_number,
-                            'remark' => $request->remarks
+                         $data = [
+                            'name' => $getUserDetailsObj->name ?? '',
+                            'regNo' => $getPropertyDetailsObj->applicant_number ?? '',
+                            'reason' => $request->remarks ?? '',
+                            'property_id' => $getPropertyDetailsObj->old_property_id ?? '',
+                            'address' => $getPropertyDetailsObj->known_as ?? '',
                         ];
                         $action = 'N_PRO_REJ';
                         $checkEmailTemplateExists = checkTemplateExists('email', $action);
                         if (!empty($checkEmailTemplateExists)) {
-                            $this->settingsService->applyMailSettings($action);
-                            Mail::to($getUserDetailsObj->email)->send(new CommonMail($data, $action));
+                            try {
+                                $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                                $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                                $mailResponse = $mailer->send($getUserDetailsObj->email, $mailSettings);
+
+                                Log::info("Email sent successfully.", [
+                                    'action' => $action,
+                                    'email'  => $getUserDetailsObj->email,
+                                    'data'   => $data,
+                                ]);
+                            } catch (\Exception $e) {
+                                Log::error("Email sending failed.", [
+                                    'action' => $action,
+                                    'email'  => $getUserDetailsObj->email,
+                                    'error'  => $e->getMessage(),
+                                ]);
+                            }
                         }
                         $checkSmsTemplateExists = checkTemplateExists('sms', $action);
                         if (!empty($checkSmsTemplateExists)) {
@@ -1706,7 +1894,7 @@ class OfficialController extends Controller
                             'is_uploaded_doc_checked' => false,
                             'created_by' => Auth::user()->id,
                         ]);
-                    }
+                    } 
                 }
                 if ($applicationStatus) {
                     $sectionMisHistory = SectionMisHistory::create([
@@ -2378,7 +2566,7 @@ class OfficialController extends Controller
             // 'area' => 'required|numeric',
             // 'unit' => 'required|string|max:255',
             // 'originalBuyerName' => 'required|string|max:255',
-            // 'presentOccupantName' => 'required|string|max:255', //Commented on Dated - Lalit (06/March/2025)
+             // 'presentOccupantName' => 'required|string|max:255', //Commented on Dated - Lalit (06/March/2025)
             // 'nameofBuilder' => 'required|string|max:255', //Commented on Dated - Lalit (06/March/2025)
         ]);
 
@@ -2458,7 +2646,6 @@ class OfficialController extends Controller
         }
     }
 
-
     public function updateFlatDetails(Request $request)
     {
 
@@ -2474,7 +2661,7 @@ class OfficialController extends Controller
             // 'area' => 'required|numeric',
             // 'unit' => 'required|string|max:255',
             // 'originalBuyerName' => 'required|string|max:255',
-            // 'presentOccupantName' => 'required|string|max:255', //Commented on Dated - Lalit (06/March/2025)
+           // 'presentOccupantName' => 'required|string|max:255', //Commented on Dated - Lalit (06/March/2025)
             // 'nameofBuilder' => 'required|string|max:255', //Commented on Dated - Lalit (06/March/2025)
         ]);
         // Check Flat Number should not be duplicate for same property
@@ -2582,13 +2769,24 @@ class OfficialController extends Controller
             $nestedData['purchase_date'] = !empty($flat->purchase_date) ? Carbon::parse($flat->purchase_date)->format('d/m/Y') : '';
             $nestedData['present_occupant_name'] = $flat->present_occupant_name;
             $actionHTML = '';
+             // if (Auth::user()->can('view.flat')) {
+            //     $actionHTML .= '<a href="' . url('flat/' . $flat->id . '/view') . '">
+            //         <button type="button" class="btn btn-success px-5">View</button>
+            //     </a>';
+            // }
+            // if (Auth::user()->can('edit.flat')) {
+            //     $actionHTML .= '<a href="' . url('flat/' . $flat->id . '/edit') . '">
+            //         <button type="button" class="btn btn-primary px-5">Edit</button>
+            //     </a>';
+            // }
             if (Auth::user()->can('view.flat')) {
-                $actionHTML .= '<a href="' . url('flat/' . $flat->id . '/view') . '">
+            $actionHTML .= '<a href="' . route('viewFlatDetails', $flat->id) . '">
                     <button type="button" class="btn btn-success px-5">View</button>
                 </a>';
             }
+
             if (Auth::user()->can('edit.flat')) {
-                $actionHTML .= '<a href="' . url('flat/' . $flat->id . '/edit') . '">
+                $actionHTML .= '<a href="' . route('editFlatDetails', $flat->id) . '">
                     <button type="button" class="btn btn-primary px-5">Edit</button>
                 </a>';
             }
@@ -2873,8 +3071,6 @@ class OfficialController extends Controller
         $getFlat = Flat::where('id', $request->flatId)->first();
         return $getFlat;
     }
-
-    // Function for Reject user registered property By It Cell - Lalit (3/March/2025)
     public function rejectUserRegisteredProperty(Request $request)
     {
         try {
@@ -2916,8 +3112,8 @@ class OfficialController extends Controller
         } catch (\Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
+        
     }
-
     public function miscPropertyTransfer(ColonyService $colonyService)
     {
         //Check if Logged in user is It-Cell then access to search all section propeties otherwise based on assigned serction to user - Lalit (5/March/2025)

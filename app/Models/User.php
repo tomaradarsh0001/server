@@ -5,17 +5,17 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
-    use SoftDeletes; // ✅ Enable Soft Delete
+     use SoftDeletes; // ✅ Enable Soft Delete
     protected $dates = ['deleted_at']; // ✅ Define the soft delete column
 
     /**
@@ -31,7 +31,7 @@ class User extends Authenticatable
     //     'password',
     //     'designation_id',
     // ];
-
+    
 
     /**
      * The attributes that should be hidden for serialization.
@@ -56,7 +56,7 @@ class User extends Authenticatable
     public static function userNameById($id)
     {
         $data =  Self::select('*')->where('id', $id)->first();
-        if ($data) {
+        if($data){
             return $data['name'];
         } else {
             return null;
@@ -102,8 +102,9 @@ class User extends Authenticatable
         return $this->hasOne(EmployeeDetail::class, 'user_id');
     }
 
-    public function applications(): HasMany
+   public function applications(): HasMany
     {
         return $this->hasMany(Application::class,'created_by');
     }
-}
+}    
+

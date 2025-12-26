@@ -68,7 +68,7 @@
     </style>
     <!--breadcrumb-->
     <div class="mb-3">
-        <div class="breadcrumb-title pe-3">NOC Issued</div>
+        <div class="breadcrumb-title pe-3">Noc Issued</div>
         {{-- <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
@@ -175,12 +175,11 @@
                 <thead>
                     <tr>
                         <th>S.No</th>
-                        <th>Applicant No.</th>
+                        <th>Application No.</th>
                         <th>Property ID</th>
                         <th>Locality</th>
                         <th>Block</th>
                         <th>Plot No.</th>
-                        <th>Flat No. (ID)</th>
                         <th>Known As</th>
                         <th>Section</th>
                         <th>Dispatch Date</th>
@@ -312,10 +311,6 @@
                     {
                         data: 'plot_or_property_no',
                         name: 'plot_or_property_no'
-                    },
-                    {
-                        data: 'flat_id',
-                        name: 'flat_id'
                     },
                     {
                         data: 'presently_known_as',

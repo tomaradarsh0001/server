@@ -13,11 +13,11 @@ class PermissionController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view permission', ['only' => ['index']]);
-        $this->middleware('permission:create permission', ['only' => ['create', 'store']]);
-        $this->middleware('permission:update permission', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:create permission', ['only' => ['create','store']]);
+        $this->middleware('permission:update permission', ['only' => ['edit','update']]);
         $this->middleware('permission:delete permission', ['only' => ['destroy']]);
     }
-
+    
     /**
      * Display a listing of the resource.
      */
@@ -68,12 +68,12 @@ class PermissionController extends Controller
             $nestedData['name'] = $permission->name;
             $actionHTML = '';
             if (Auth::user()->can('update permission')) {
-                $actionHTML .= '<a href="' . url('permissions/' . $permission->id . '/edit') . '">
+                $actionHTML .= '<a href="' . url('edharti/permissions/' . $permission->id . '/edit') . '">
                     <button type="button" class="btn btn-primary px-5">Edit</button>
                 </a>';
             }
             if (Auth::user()->can('delete permission')) {
-                $actionHTML .= '<a href="' . url('permissions/' . $permission->id . '/delete') . '"> <button type="button" class="btn btn-danger px-5">Delete</button></a>';
+                $actionHTML .= '<a href="' . url('edharti/permissions/' . $permission->id . '/delete') . '"> <button type="button" class="btn btn-danger px-5">Delete</button></a>';
             }
             $nestedData['action'] = $actionHTML;
             $data[] = $nestedData;
@@ -89,13 +89,14 @@ class PermissionController extends Controller
 
         return response()->json($json_data);
     }
-
+    
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         return view('role-permissions.permissions.create');
+        
     }
 
     /**
@@ -110,17 +111,18 @@ class PermissionController extends Controller
                 'string',
                 'unique:permissions,name'
             ]
-        ]);
+            ]);
 
-        $permission =  Permission::create([
-            'name' => $request->name
-        ]);
+            $permission =  Permission::create([
+                'name' => $request->name
+            ]);
 
-        // Manage user permission create action activity lalit on 22/07/24
-        $permission_link = '<a href="' . url("/permissions") . '" target="_blank">' . $permission->name . '</a>';
-        UserActionLogHelper::UserActionLog('create', url("/permissions"), 'permissions', "New permission " . $permission_link . " has been created by " . Auth::user()->name . ".");
+            // Manage user permission create action activity lalit on 22/07/24
+            $permission_link = '<a href="' . url("/permissions") . '" target="_blank">' . $permission->name . '</a>';
+            UserActionLogHelper::UserActionLog('create', url("/permissions"), 'permissions', "New permission " . $permission_link . " has been created by " . Auth::user()->name.".");
 
-        return redirect('permissions')->with('success', 'Permission Created Successfully');
+            return redirect()->route('permissions.index')->with('success','Permission Created Successfully');
+
     }
 
     public function edit(Permission $permission)
@@ -134,7 +136,7 @@ class PermissionController extends Controller
             'name' => [
                 'required',
                 'string',
-                'unique:permissions,name,' . $permission->id
+                'unique:permissions,name,'.$permission->id
             ]
         ]);
 
@@ -144,19 +146,18 @@ class PermissionController extends Controller
 
         // Manage user permission update action activity lalit on 22/07/24
         $permission_link = '<a href="' . url("/permissions") . '" target="_blank">' . $permission->name . '</a>';
-        UserActionLogHelper::UserActionLog('update', url("/permissions"), 'permissions', "Permission " . $permission_link . " has been updated by " . Auth::user()->name . ".");
+        UserActionLogHelper::UserActionLog('update', url("/permissions"), 'permissions', "Permission " . $permission_link . " has been updated by " . Auth::user()->name.".");
 
-        return redirect('permissions')->with('success', 'Permission Updated Successfully');
+        return redirect()->route('permissions.index')->with('success','Permission Updated Successfully');
     }
-
+    
     public function destroy($permissionId)
     {
         $permission = Permission::find($permissionId);
         $permission->delete();
-
         // Manage user permission delete action activity lalit on 22/07/24
         $permission_link = '<a href="' . url("/permissions") . '" target="_blank">' . $permission->name . '</a>';
-        UserActionLogHelper::UserActionLog('delete', url("/permissions"), 'permissions', "Permission " . $permission_link . " has been deleted by " . Auth::user()->name . ".");
-        return redirect('permissions')->with('success', 'Permission Deleted Successfully');
+        UserActionLogHelper::UserActionLog('delete', url("/permissions"), 'permissions', "Permission " . $permission_link . " has been deleted by " . Auth::user()->name.".");
+        return redirect()->route('permissions.index')->with('success','Permission Deleted Successfully');
     }
 }

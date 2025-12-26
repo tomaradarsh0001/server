@@ -13,11 +13,17 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'api/send-notification',  // Your API route for sending notifications
-        '/payment-response', //Added to avoid CSRF token verification as it is redirecting from NTRP -- Amita [20-01-2025]
+         'edharti/payment-response',
+         'payment-response/',
+         'edharti/payment-response/',
+         '/edharti/payment-response',
+        'paymentResponse',
+         'payment-response', //Added to avoid CSRF token verification as it is redirecting from NTRP -- Amita [20-01-2025]
         'api/public-grievances', //for posting public grievances response added by Swati Mishra [31-01-2025]
         'api/club-memberships/*', //for posting club membership response added by Swati Mishra [31-01-2025]
         'api/upload-document/*', //for club membership upload docs
         'api/membership/*', //for club membership record for a particular id
-        'api/membership/filter'
+        'api/membership/filter',
+        
     ];
 }

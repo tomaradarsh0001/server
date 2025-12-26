@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\ConversionCharge;
 use App\Models\Item;
 use App\Models\PropertyMaster;
-use App\Models\PropertySectionMapping;
 use App\Models\SplitedPropertyDetail;
+use App\Models\PropertySectionMapping;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\ConversionCharge;
+
 
 class PropertyMasterService
 {
@@ -67,7 +68,6 @@ class PropertyMasterService
 
     public function propertyFromSelected($propertyId)
     {
-        // dd("property id = $propertyId");
         if (strpos($propertyId, '_')) {
             $id_arr = explode('_', $propertyId);
             $masterPropertyId = $id_arr[0];
@@ -114,9 +114,6 @@ class PropertyMasterService
         } else {
             $curl_output = trim(curl_exec($ch), '"');
             $response = json_decode($curl_output);
-            if (is_null($response)) {
-                return ['status' => 'failed'];
-            }
             if (isset($response->Status) && $response->Status == "True") {
                 return $response->Data;
             } else {
@@ -129,7 +126,6 @@ class PropertyMasterService
     {
         $hasAccess = false;
         $user = Auth::user();
-        // if ($user->roles[0]->name == 'lndo') {
         if (in_array($user->roles[0]->name, ['super-admin', 'admin', 'lndo'])) {
             $hasAccess = true;
         }
@@ -144,7 +140,7 @@ class PropertyMasterService
         }
         return $hasAccess;
     }
-
+    
     public function userSectionProperties()
     {
         $userSectionIds = Auth::user()->sections->pluck('id')->toArray();
@@ -161,7 +157,129 @@ class PropertyMasterService
             ->toArray();
     }
 
-    public function conversionCharges($propertyId, $remission = 0, $surcharge = 0, $chargesOnly = true)
+    /* public function conversionCharges($propertyId, $remission = 0, $chargesOnly = true)
+    {
+        if ($propertyId != "") {
+            $colonyId = $propertyTypeName = $propertyType = $area = "";
+            if (strpos($propertyId, '_')) {
+                $id_arr = explode('_', $propertyId);
+                $masterPropertyId = $id_arr[0];
+                $childPropertyId = $id_arr[1];
+                if ($masterPropertyId != "" && $childPropertyId != "") {
+                    $masterProperty = PropertyMaster::find($masterPropertyId);
+                    $childProperty = SplitedPropertyDetail::find($childPropertyId);
+                    if (!empty($masterProperty) && !empty($childProperty)) {
+                        $old_property_id = $childProperty->old_property_id;
+                        $allowAccess = userHasAccessToProperty($old_property_id);
+
+                        if (!$allowAccess) {
+                            return response()->json(['status' => 'error', 'details' => config('messages.property.error.accessDenied')]);
+                        }
+                        if ($childProperty->property_status != '951') {
+                            return response()->json(['status' => 'error', 'details' => 'Please select lease hold property']);
+                        }
+                        $colonyId = $masterProperty->old_colony_name;
+                        $propertyType = $masterProperty->property_type;
+                        $propertyTypeName = $masterProperty->propertyTypeName;
+                        $area = $childProperty->area_in_sqm;
+                    } else {
+                        return response()->json(['status' => 'error', 'details' => config('messages.property.error.invalidId')]);
+                    }
+                } else {
+                    return response()->json(['status' => 'error', 'details' => config('messages.property.error.invalidId')]);
+                }
+            } else {
+                $masterProperty = PropertyMaster::where('old_propert_id', $propertyId)->first();
+                if (empty($masterProperty)) {
+                    $childProperty = SplitedPropertyDetail::where('old_property_id', $propertyId)->first();
+                    if (empty($childProperty)) {
+                        return response()->json(['status' => 'error', 'details' => config('messages.property.error.invalidId')]);
+                    }
+                    $allowAccess = userHasAccessToProperty($childProperty->old_property_id);
+
+                    if (!$allowAccess) {
+                        return response()->json(['status' => 'error', 'details' => config('messages.property.error.accessDenied')]);
+                    }
+
+                    if ($childProperty->property_status != '951') {
+                        return response()->json(['status' => 'error', 'details' => config('messages.property.error.notLeaseHold')]);
+                    }
+                    $masterPropertyId = $childProperty->property_master_id;
+                    $masterProperty = PropertyMaster::find($masterPropertyId);
+                    $colonyId = $masterProperty->old_colony_name;
+                    $propertyType = $masterProperty->property_type;
+                    $propertyTypeName = $masterProperty->propertyTypeName;
+                    $area = $childProperty->area_in_sqm;
+                } else {
+                    $allowAccess = userHasAccessToProperty($propertyId);
+
+                    if (!$allowAccess) {
+                        return response()->json(['status' => 'error', 'details' => config('messages.property.error.accessDenied')]);
+                    }
+
+                    if ($masterProperty->status != '951') {
+                        return response()->json(['status' => 'error', 'details' => config('messages.property.error.notLeaseHold')]);
+                    }
+                    $colonyId = $masterProperty->old_colony_name;
+                    $propertyType = $masterProperty->property_type;
+                    $propertyTypeName = $masterProperty->propertyTypeName;
+                    $area = $masterProperty->propertyLeaseDetail->plot_area_in_sqm;
+                }
+            }
+            if (!isset($area) || $area <= 0) {
+                return response()->json(['status' => 'error', 'details' => config('messages.property.error.invalidArea')]);
+            }
+            $landRateType = config('constants.conversion_calculation_rate');
+            // Config::get();
+            $landRateService = new LandRateService();
+            $landRateRow = $landRateService->getLandRates($landRateType, $propertyTypeName, $colonyId, date('Y-m-d'));
+            if (isset($landRateRow['error'])) {
+                return response()->json(['status' => 'error', 'details' => config('messages.landUseChange.error.dataNotAvailable')]);
+            }
+            if (empty($landRateRow)) {
+                return response()->json(['status' => 'error', 'details' => config('messages.property.error.landRateNotFound')]);
+            }
+            $landRate = $landRateRow->land_rate;
+            $conversionFormula = $this->getConversionFormula($propertyType, $area);
+            if ($conversionFormula == 0) {
+                $conversionCharges = 0;
+                $additionalCharges = 0;
+                $total = 0;
+                $conversionFormula = '0 as area < 50 Sqm.';
+            } else {
+                $equation = str_replace(['P', 'R'], [$area, $landRate], $conversionFormula);
+                $conversionCharges = eval("return $equation;");
+                $additionalCharges = $remission == 1 ? 0.40 * $conversionCharges :  0;
+                $total = $remission == 1 ? 0.60 * $conversionCharges :  $conversionCharges;
+            }
+            if ($chargesOnly) {
+                return ['status' => 'success', 'amount' => $conversionCharges];
+            }
+            return response()->json([
+                'status' => 'success',
+                'propertyId' => isset($childProperty) ? $childProperty->old_peroperty_id : $masterProperty->old_propert_id,
+                'colonyName' => $masterProperty->oldColony->name,
+                'propertyArea' => $area,
+                'landRate' => $landRate,
+                'formula' => str_replace(['P', 'R', '*'], ['Plot Area', 'Land Rate', '&times;'], $conversionFormula),
+                'equation' => isset($equation) ? str_replace('*', '&times;', $equation) : 0,
+                'charges' => customNumFormat(round($conversionCharges, 2)),
+                "propertyType" => $masterProperty->propertyTypeName,
+                "propertySubtype" => $masterProperty->propertySubtypeName,
+                // "additionalChargesLabel" => $remission == 1 ? 'Remission for Recorded Lessee' : 'Additional charges',
+                "additionalChargesLabel" => 'Remission',
+                "remission" => customNumFormat(round(0.4 * $conversionCharges, 2)),
+                "chargesWithRemission" => customNumFormat(round(0.6 * $conversionCharges, 2)),
+                'additionalCharges' =>  customNumFormat(round($additionalCharges, 2)),
+                'additionalFormula' =>  $remission == 1 ? '40% of Conversion Charges' : 'Remission not given',
+                'total' =>  customNumFormat(round($total, 2))
+            ]);
+        } else {
+            return response()->json(['status' => 'error', 'details' => config('messages.landUseChange.error.invalidId')]);
+        }
+    } */
+
+        public function conversionCharges($propertyId, $remission = 0, $surcharge = 0, $chargesOnly = true)
     {
         // dd($propertyId, $remission, $surcharge, $chargesOnly);
         if ($propertyId != "") {

@@ -31,11 +31,15 @@ return [
     |
     */
 
-    // 'lifetime' => env('SESSION_LIFETIME', 120),
-    'lifetime' => env('SESSION_LIFETIME', 60), // Set 60 in minutes for more sefer session
+/*   'lifetime' => env('SESSION_LIFETIME', 120),
 
-    // 'expire_on_close' => false,
-    'expire_on_close' => true, // Set is to True for more sefer session
+    'expire_on_close' => false,   */
+   
+     // 'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => env('SESSION_LIFETIME', 30), // Set 60 in minutes for more sefer session
+
+    'expire_on_close' => false,
+    // 'expire_on_close' => true, // Set is to True for more sefer session 
 
     /*
     |--------------------------------------------------------------------------
@@ -130,7 +134,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug(env('APP_NAME', 'laravel'), '_') . '_session'
+        Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
     ),
 
     /*
@@ -144,7 +148,7 @@ return [
     |
     */
 
-    'path' => '/',
+    'path' => '/edharti',
 
     /*
     |--------------------------------------------------------------------------
@@ -157,7 +161,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    'domain' => env('SESSION_DOMAIN',null),
 
     /*
     |--------------------------------------------------------------------------
@@ -170,7 +174,7 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    'secure' => env('SESSION_SECURE_COOKIE', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -197,8 +201,11 @@ return [
     | Supported: "lax", "strict", "none", null
     |
     */
+/*
+    'same_site' => 'lax',
+*/
 
-    // 'same_site' => 'lax', Comment for Session Hijacking Attack - Lalit Tiwari (05/May/2025)
-    'same_site' => 'strict', // or 'lax' for less strict sites
+    'same_site' => 'lax', //Comment for Session Hijacking Attack - Lalit Tiwari (05/May/2025)
+    // 'same_site' => 'strict', // or 'lax' for less strict sites
 
 ];

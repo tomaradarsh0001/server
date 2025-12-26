@@ -8,7 +8,7 @@
                 <p class="remark-content"> {{ $latestMovement->remarks }}<span class="author-name">-
                         {{ !empty($latestMovement->assigned_by) ? getUserNamebyId($latestMovement->assigned_by) : '' }}
                         <!--(JE)--></span>, <span
-                        class="author-time">{{ date('h:i a - d/m/Y', strtotime($latestMovement->created_at)) }}</span>
+                        class="author-time">{{ date('d-m-Y h:i a', strtotime($latestMovement->created_at)) }}</span>
                 </p>
             </div>
             @if ($showRevertButton)
@@ -33,19 +33,20 @@
         <div class="col-lg-4 mt-4 text-end">
             <a href="{{ asset('storage/' . $application->Signed_letter) }}" target="_blank">View
                 Signed
-                Letter</a>
+                NOC</a>
         </div>
     @else
         @if ($application->letter)
             <div class="col-lg-4 mt-4">
                 <div class="view-generated text-end">
                     <a target="_blank" href="{{ asset('storage/' . $application->letter) }}">View
-                        Generated Draft Conveyance Deed</a>
+                        Generated Letter</a>
                 </div>
                 @if ($roles === 'deputy-lndo')
                     @if ($showUploadSignedLetter)
                         {{-- App Latest Action should not be OBJECT & REJECT_APP. It means application is Objected Or Rejected by Deptuy L&DO --}}
-                        @if ( isset($latestAppAction) &&
+                        @if (
+                            isset($latestAppAction) &&
                             $latestAppAction['latest_action'] !== 'OBJECT' &&
                                 $latestAppAction['latest_action'] !== 'REJECT_APP' &&
                                 $latestAppAction['latest_action'] !== 'APP_OBJ')
@@ -58,7 +59,7 @@
                                     name="application_no" />
                                 <div class="upload-signed-form">
                                     <div class="upload-signed-head">
-                                        <h4 class="upload-signed-title">Upload Signed Letter</h4>
+                                        <h4 class="upload-signed-title">Upload Signed NOC</h4>
                                     </div>
                                     <div class="file-upload-wrapper">
                                         <label class="file-upload-box mb-0">
@@ -105,7 +106,7 @@
                 <div class="col-lg-8 mt-4">
                     <button type="button" class="btn btn-success"
                         onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Regenerate
-                        Draft Conveyance Deed</button>
+                        Draft NOC</button>
                 </div>
             @else
                 {{-- @if ($pendingAmount > 0)
@@ -123,8 +124,8 @@
                 @else --}}
                     <div class="col-lg-8 mt-4">
                         <button type="button" class="btn btn-success"
-                            onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Generate
-                            Draft Conveyance Deed</button>
+                            onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Generate Draft
+                            NOC</button>
                     </div>
                 {{-- @endif --}}
             @endif

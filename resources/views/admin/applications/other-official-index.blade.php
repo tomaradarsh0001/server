@@ -9,6 +9,7 @@
         float: none !important;
         /* width: 19%; */
         width: 33%; /* chagned by anil on 28-08-2025 to fix in resposive */
+
     }
 
     div.dt-buttons.btn-group {
@@ -26,7 +27,7 @@
         div.dt-buttons {
             width: 100%;
         }
-
+        
         div.dt-buttons.btn-group {
             flex-direction: column;
             align-items: flex-start;
@@ -64,6 +65,47 @@
             box-shadow: 0 0 10px #007bff, 0 0 20px #007bff, 0 0 30px #007bff;
         }
     }
+    /* commented and adeed by anil for replace the new loader on 13-08-2025  */
+    #spinnerOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            /* Ensure it covers other content */
+        }
+        .loader {
+            width: 48px;
+            height: 48px;
+            border:6px solid #FFF;
+            border-radius: 50%;
+            position: relative;
+            transform:rotate(45deg);
+            box-sizing: border-box;
+        }
+        .loader::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            inset:-7px;
+            border-radius: 50%;
+            border:8px solid #116d6e;
+            animation: prixClipFix 2s infinite linear;
+        }
+
+        @keyframes prixClipFix {
+            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+        }
+        /* commented and adeed by anil for replace the new loader on 13-08-2025  */
 </style>
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
@@ -71,9 +113,9 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">Applications List</li>
+                <li class="breadcrumb-item active" aria-current="page">Applications</li>
             </ol>
         </nav>
     </div>
@@ -86,11 +128,16 @@
         <div class="d-flex justify-content-end">
             <ul class="d-flex gap-3 flex-wrap">
                 <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
+                    <div class="alertGreen"></div>
+                    <span class="text-secondary">First Actionable</span>
+                </li>
+                <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">|</li>
+                <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
                     <div class="alertDot"></div>
-                    <span class="text-secondary">Have To Take Action</span>
+                    <span class="text-secondary">Actionable</span>
                 </li>
                 <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
-                <i class="fadeIn animated bx bx-list-ul fs-5" style="color:#6610f2"></i>
+                    <i class="fadeIn animated bx bx-list-ul fs-5" style="color:#6610f2"></i>
                     <span class="text-secondary">MIS Checked</span>
                 </li>
                 <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">|</li>
@@ -165,6 +212,16 @@
 
 @include('include.alerts.application.schedule-meeting-link-application')
 @include('include.alerts.ajax-alert')
+<!-- commented and adeed by anil for replace the new loader on 13-08-2025  -->
+<!-- <div id="spinnerOverlay" style="display:none;">
+    <div class="spinner"></div>
+    <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
+</div> -->
+<div id="spinnerOverlay" style="display:none;">
+    <span class="loader"></span>
+    <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
+</div>
+<!-- commented and adeed by anil for replace the new loader on 13-08-2025  -->
 @endsection
 
 
@@ -228,10 +285,10 @@
 
                     /** code modified by Nitin to fix - viewMoreUrl containing url for only once. it was not updating for second time onwards */
                     let viewMoreUrl = "{{ route('applications.movements', ['appNo' => '__appNo__']) }}";
-                    // let viewMoreUrl = "{{ url('applications') }}" + `/${applicationNo}/movement`;
+                    
 
                     viewMoreUrl = viewMoreUrl.replace('__appNo__', applicationNo);
-                    //$('a[href=""]').attr('href', viewMoreUrl);
+                    
                     $('#fileMovementModal a').attr('href', viewMoreUrl);
 
                     $('#fileMovementModal').modal('show');
@@ -346,10 +403,10 @@
                         let uploadedDocColor = data.uploaded_doc_color_code || '';
 
                         let misHtml = mis == 1 ? `<div class="list-inline-item d-flex align-items-center">
-           <i class="fadeIn animated bx bx-list-ul fs-5" style="color:${misColor}"></i> <span class="px-2 fst-italic">${misCheckedBy}</span></div>` : '';
+            <i class="fadeIn animated bx bx-list-ul fs-5" style="color:${misColor}"></i> <span class="px-2 fst-italic">${misCheckedBy}</span></div>` : '';
 
                         let scannedFilesHtml = scannedFiles == 1 ?
-                            `<div class="list-inline-item d-flex align-items-center">
+                            `<div class="list-inline-item d-flex align-items-center pt-1">
             <i class="fadeIn animated bx bx-file-find fs-5" style="color:${scannedFilesColor}"></i><span class="px-2 fst-italic">${scanFileCheckedBy}</span></div>` : '';
 
                         let uploadedDocHtml = uploadedDoc == 1 ?
@@ -438,7 +495,7 @@
         }
     });
 
-    function handleViewApplication(applicationNo,type,applicationId){
+     function handleViewApplication(applicationNo,type,applicationId){
         const spinnerOverlay = document.getElementById('spinnerOverlay');
         if(spinnerOverlay){
             spinnerOverlay.style.display = 'flex';
@@ -454,7 +511,10 @@
                 success: function(response) {
                     console.log(response);
                     if (response.canView) {
-                        window.location.href = "{{url('applications')}}" + '/' + applicationId + '?type=' + type;
+                        // window.location.href = "{{url('applications')}}" + '/' + applicationId + '?type=' + type;
+                         const baseUrl = @json(route('applications.view', ['id' => '__ID__']));
+                        const finalUrl = baseUrl.replace('__ID__', applicationId) + '?type=' + encodeURIComponent(type);
+                        window.location.href = finalUrl;
                         spinnerOverlay.style.display = 'none';
                     } else {
                         showError(response.message);

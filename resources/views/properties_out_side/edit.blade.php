@@ -11,8 +11,8 @@
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Properties</li>
-                    <li class="breadcrumb-item active" aria-current="page">Add</li>
-                    <li class="breadcrumb-item active" aria-current="page">Vacant Land</li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                    <li class="breadcrumb-item active" aria-current="page">Properties Outside Delhi</li>
                 </ol>
             </nav>
         </div>

@@ -196,7 +196,7 @@ class AdminPublicGrievanceController extends Controller
     }
 
 
-    public function storeInitial(Request $request, CommonService $commonService)
+    public function storeInitial(Request $request, CommonService $commonService, CommunicationService $communicationService)
     {
         // Validate the initial form data without the recording
         $validatedData = $request->validate([
@@ -271,10 +271,85 @@ class AdminPublicGrievanceController extends Controller
         $action = 'N_PG_NEW';
 
         // Send notifications
-        $this->settingsService->applyMailSettings($action);
-        Mail::to($grievance->email)->send(new CommonMail($notificationData, $action));
-        $this->communicationService->sendSmsMessage($notificationData, $grievance->mobile, $action);
-        $this->communicationService->sendWhatsAppMessage($notificationData, $grievance->mobile, $action);
+        // $this->settingsService->applyMailSettings($action);
+        // Mail::to($grievance->email)->send(new CommonMail($notificationData, $action));
+        try {
+                $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                $mailResponse = $mailer->send($grievance->email, $mailSettings);
+
+                Log::info("Email sent successfully.", [
+                    'action' => $action,
+                    'email'  => $grievance->email,
+                    'data'   => $data,
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Email sending failed.", [
+                    'action' => $action,
+                    'email'  => $grievance->email,
+                    'error'  => $e->getMessage(),
+                ]);
+            }
+        // $this->communicationService->sendSmsMessage($notificationData, $grievance->mobile, $action);
+         try {
+                $isSmsSuccess = $communicationService->sendSmsMessage(
+                    $notificationData,
+                    $grievance->mobile,
+                    $action
+                );
+
+                if ($isSmsSuccess) {
+                    Log::info("SMS sent successfully.", [
+                        'mobile'      => $grievance->mobile,
+                        'countryCode' => $grievance->country_code,
+                        'action'      => $action,
+                    ]);
+                } else {
+                    Log::warning("SMS sending failed.", [
+                        'mobile'      => $grievance->mobile,
+                        'countryCode' => $grievance->country_code,
+                        'action'      => $action,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error("SMS sending threw exception.", [
+                    'mobile'      => $grievance->mobile,
+                    'countryCode' => $grievance->country_code,
+                    'action'      => $action,
+                    'error'       => $e->getMessage(),
+                ]);
+            }
+        // $this->communicationService->sendWhatsAppMessage($notificationData, $grievance->mobile, $action);
+
+        // --- WHATSAPP ---
+        try {
+            $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                $notificationData,
+                $grievance->mobile,
+                $action
+            );
+
+            if ($isWhatsAppSuccess) {
+                Log::info("WhatsApp sent successfully.", [
+                    'mobile'      => $grievance->mobile,
+                    'countryCode' => $grievance->country_code,
+                    'action'      => $action,
+                ]);
+            } else {
+                Log::warning("WhatsApp sending failed.", [
+                    'mobile'      => $grievance->mobile,
+                    'countryCode' => $grievance->country_code,
+                    'action'      => $action,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error("WhatsApp sending threw exception.", [
+                'mobile'      => $grievance->mobile,
+                'countryCode' => $grievance->country_code,
+                'action'      => $action,
+                'error'       => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('grievance.create')
                          ->with(['grievance_id' => $grievance->id,
@@ -377,14 +452,6 @@ class AdminPublicGrievanceController extends Controller
         return redirect()->route('grievance.index')->with('success', 'Grievance updated successfully.');
     }
 
-    // public function showRemarks($id)
-    // {
-    //     $grievance = AdminPublicGrievance::with('statusItem')->findOrFail($id);
-    //     $statuses = Item::where('group_id', 17004)->get();
-
-    //     return view('admin_public_grievances.remarks', compact('grievance', 'statuses'));
-    // }
-
     public function getGrievanceDetails($id)
     {
         $grievance = AdminPublicGrievance::with('statusItem')->findOrFail($id);
@@ -403,175 +470,7 @@ class AdminPublicGrievanceController extends Controller
     }
 
 
-    // public function updateRemarks(Request $request, $id)
-    // {
-    //     $grievance = AdminPublicGrievance::with('statusItem')->findOrFail($id);
-    //     $originalStatus = $grievance->statusItem->item_code;
-    
-    //     // Apply conditional validation: Status is not required if the original status is 'PG_NEW' or 'PG_REO'
-    //     $rules = ['grievance_remark' => 'required|string|max:1024'];
-    //     if (!in_array($originalStatus, ['PG_NEW', 'PG_REO', 'PG_PEN'])) {
-    //         $rules['status'] = 'required|string|exists:items,item_code';
-    //     }
-        
-    //     $validatedData = $request->validate($rules);
-    //     // $status = $request->input('status');
-
-    //     // Determine the new status based on the original status and requested status
-    // $requestedStatus = $request->input('status');
-    //     if (in_array($originalStatus, ['PG_NEW', 'PG_REO', 'PG_PEN'])) {
-    //         if ($originalStatus === $requestedStatus) {
-    //             // Enforce transition to 'PG_INP' if original and requested status are the same and fall under specified statuses
-    //             $status = 'PG_INP';
-    //         } else {
-    //             // Save the requested status if original and requested status are different
-    //             $status = $requestedStatus;
-    //         }
-    //     } else {
-    //         // For other statuses, use the requested status
-    //         $status = $requestedStatus;
-    //     }
-    
-    
-    //     // Decide the new status based on special rules
-    //     // switch ($originalStatus) {
-    //     //     case 'PG_NEW':
-    //     //         $status = 'PG_INP'; // Force transition if currently "New"
-    //     //         break;
-    //     //     case 'PG_REO':
-    //     //         $status = 'PG_INP'; // Force transition if currently "Reopen"
-    //     //         break;
-    //     //     case 'PG_PEN':
-    //     //             $status = 'PG_INP'; // Force transition if currently "Pending"
-    //     //             break;
-    //     //     default:
-    //     //         $status = $request->input('status'); // Use the provided status otherwise
-    //     //         break;
-    //     // }
-    
-    //     DB::beginTransaction();
-    //     try {
-    //         \Log::info("Updating Grievance ID: {$id}, Original Status: {$originalStatus}, Requested Status: {$request->input('status')}, Final Status: {$status}");
-    
-    //         // Update the grievance record
-    //         $grievance->remark = $validatedData['grievance_remark'];
-    //         $grievance->status = getStatusName($status);
-    //         $grievance->save();
-    
-    //         // Create a new remark entry
-    //         $newRemark = new GrievanceRemark([
-    //             'grievance_id' => $id,
-    //             'remark' => $validatedData['grievance_remark'],
-    //             'status' => getStatusName($status),
-    //             'created_by' => auth()->id(),
-    //         ]);
-    //         $newRemark->save();
-
-    //         // Add user action logs create grievances - Lalit (28/Oct/2024)
-    //         $grievances_link = '<a href="' . url("/grievances") . '" target="_blank">' . $id . '</a>';
-    //         UserActionLogHelper::UserActionLog('update', url("/grievances"), 'grievances', "grievances ".$grievances_link." status ".getServiceNameById($status)." has been updated by user " . Auth::user()->name . " with remark ".$validatedData['grievance_remark'].".");   
-            
-            // // Check specifically for a change from PG_NEW to PG_INP
-            // if ($originalStatus == 'PG_NEW' && $status == 'PG_INP') {
-            //     $notificationData = [
-            //         'name' => $grievance->name,
-            //         'ticket_id' => $grievance->unique_id
-            //     ];
-
-            //     $this->settingsService->applyMailSettings('N_PG_INP');
-            //     Mail::to($grievance->email)->send(new CommonMail($notificationData, 'N_PG_INP'));
-            //     $this->communicationService->sendSmsMessage($notificationData, $grievance->mobile, 'N_PG_INP');
-            //     $this->communicationService->sendWhatsAppMessage($notificationData, $grievance->mobile, 'N_PG_INP');
-            // }
-
-            // // Prepare notification data for other status changes
-            // $notificationData = [
-            //     'name' => $grievance->name,
-            //     'ticket_id' => $grievance->unique_id
-            // ];
-
-            // // Array of actions excluding PG_INP which is already handled above
-            // $actions = [
-            //     'PG_RES' => 'N_PG_RES',
-            //     'PG_CAN' => 'N_PG_CAN',
-            //     'PG_REO' => 'N_PG_REO'
-            // ];
-
-            // // Send notifications for other status changes
-            // if (array_key_exists($status, $actions)) {
-            //     $action = $actions[$status];
-            //     $this->settingsService->applyMailSettings($action);
-            //     Mail::to($grievance->email)->send(new CommonMail($notificationData, $action));
-            //     $this->communicationService->sendSmsMessage($notificationData, $grievance->mobile, $action);
-            //     $this->communicationService->sendWhatsAppMessage($notificationData, $grievance->mobile, $action);
-            // }
-
-
-    //         DB::commit();
-    //         // return response()->json(['success' => 'Grievance and remarks updated successfully.']);
-    //         return redirect()->back()->with('success', 'Grievance updated successfully.');
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return response()->back()->with('error', 'Grievance updation failed.');
-    //     }
-    // }
-
-
-    /*public function updateRemarks(Request $request, $id)
-    {
-        $grievance = AdminPublicGrievance::with('statusItem')->findOrFail($id);
-        $originalStatus = $grievance->statusItem->item_code;
-        $requestedStatus = $request->input('status');
-        $userRole = auth()->user()->getRoleNames()->first();
-
-        // Validation for remarks
-        $rules = ['grievance_remark' => 'required|string|max:1024'];
-        $request->validate($rules);
-
-        // Enforce role-based status change restrictions
-        if ($userRole === 'CDN') {
-            if ($requestedStatus !== 'PG_REO') {
-                return redirect()->back()->withErrors(['status' => 'Unauthorized status change for your role.']);
-            }
-        } elseif (in_array($userRole, ['section-officer', 'super-admin'])) {
-            if (in_array($requestedStatus, ['PG_NEW', 'PG_REO', 'PG_PEN'])) {
-                return redirect()->back()->withErrors(['status' => 'Cannot select this status.']);
-            }
-        }
-
-        // Determine the new status based on original and requested statuses
-        $status = ($originalStatus === $requestedStatus && in_array($originalStatus, ['PG_NEW', 'PG_REO', 'PG_PEN']))
-            ? 'PG_INP'
-            : $requestedStatus;
-
-        DB::beginTransaction();
-        try {
-            // Save remark and new status in `admin_public_grievances` table
-            $grievance->remark = $request->input('grievance_remark'); // Save latest remark
-            $grievance->status = getStatusName($status); // Update the status
-            $grievance->save();
-
-            // Create a new entry in `grievance_remarks` table
-            $newRemark = new GrievanceRemark([
-                'grievance_id' => $id,
-                'remark' => $request->input('grievance_remark'),
-                'status' => getStatusName($status),
-                'created_by' => auth()->id(),
-            ]);
-            $newRemark->save();
-
-            // Log and send notifications as needed
-            UserActionLogHelper::UserActionLog('update', url("/grievances"), 'grievances', "Grievance status updated to " . getServiceNameById($status) . " with remark.");
-
-            DB::commit();
-            return redirect()->back()->with('success', 'Grievance updated successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Grievance update failed.');
-        }
-    }*/
-
-    public function updateRemarks(Request $request, $id)
+    public function updateRemarks(Request $request, $id, CommunicationService $communicationService)
     {
         $grievance = AdminPublicGrievance::with('statusItem')->findOrFail($id);
         $originalStatus = $grievance->statusItem->item_code;
@@ -621,15 +520,89 @@ class AdminPublicGrievanceController extends Controller
             $notificationData = [
                 'name' => $grievance->name,
                 'ticket_id' => $grievance->unique_id,
-                'remark'=> $grievance->remark
+                'remark' => $grievance->remark
             ];
 
             // Check specifically for a change from PG_NEW to PG_INP
             if ($originalStatus == 'PG_NEW' && $status == 'PG_INP') {
-                $this->settingsService->applyMailSettings('N_PG_INP');
-                Mail::to($grievance->email)->send(new CommonMail($notificationData, 'N_PG_INP'));
-                $this->communicationService->sendSmsMessage($notificationData, $grievance->mobile, 'N_PG_INP');
-                $this->communicationService->sendWhatsAppMessage($notificationData, $grievance->mobile, 'N_PG_INP');
+                // $this->settingsService->applyMailSettings('N_PG_INP');
+                // Mail::to($grievance->email)->send(new CommonMail($notificationData, 'N_PG_INP'));
+                $action = 'N_PG_INP';
+            try {
+                $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                $mailResponse = $mailer->send($grievance->email, $mailSettings);
+
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $grievance->email,
+                        'data'   => $data,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $grievance->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+            try {
+                $isSmsSuccess = $communicationService->sendSmsMessage(
+                    $notificationData,
+                    $grievance->mobile,
+                    $action
+                );
+
+                if ($isSmsSuccess) {
+                    Log::info("SMS sent successfully.", [
+                        'mobile'      => $grievance->mobile,
+                        'countryCode' => $grievance->country_code,
+                        'action'      => $action,
+                    ]);
+                } else {
+                    Log::warning("SMS sending failed.", [
+                        'mobile'      => $grievance->mobile,
+                        'countryCode' => $grievance->country_code,
+                        'action'      => $action,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error("SMS sending threw exception.", [
+                    'mobile'      => $grievance->mobile,
+                    'countryCode' => $grievance->country_code,
+                    'action'      => $action,
+                    'error'       => $e->getMessage(),
+                ]);
+            }
+                // $this->communicationService->sendSmsMessage($notificationData, $grievance->mobile, 'N_PG_INP');
+                // $this->communicationService->sendWhatsAppMessage($notificationData, $grievance->mobile, 'N_PG_INP');
+            try {
+                $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                    $notificationData,
+                    $grievance->mobile,
+                    $action
+                );
+
+                if ($isWhatsAppSuccess) {
+                    Log::info("WhatsApp sent successfully.", [
+                        'mobile'      => $grievance->mobile,
+                        'countryCode' => $grievance->country_code,
+                        'action'      => $action,
+                    ]);
+                } else {
+                    Log::warning("WhatsApp sending failed.", [
+                        'mobile'      => $grievance->mobile,
+                        'countryCode' => $grievance->country_code,
+                        'action'      => $action,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error("WhatsApp sending threw exception.", [
+                    'mobile'      => $grievance->mobile,
+                    'countryCode' => $grievance->country_code,
+                    'action'      => $action,
+                    'error'       => $e->getMessage(),
+                ]);
+            }
             }
 
             // Prepare notification data for other status changes
@@ -641,10 +614,83 @@ class AdminPublicGrievanceController extends Controller
 
             if (array_key_exists($status, $actions)) {
                 $action = $actions[$status];
-                $this->settingsService->applyMailSettings($action);
-                Mail::to($grievance->email)->send(new CommonMail($notificationData, $action));
-                $this->communicationService->sendSmsMessage($notificationData, $grievance->mobile, $action);
-                $this->communicationService->sendWhatsAppMessage($notificationData, $grievance->mobile, $action);
+                // $this->settingsService->applyMailSettings($action);
+                // Mail::to($grievance->email)->send(new CommonMail($notificationData, $action));
+                try {
+                $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                $mailResponse = $mailer->send($grievance->email, $mailSettings);
+
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $grievance->email,
+                        'data'   => $data,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $grievance->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+                // $this->communicationService->sendSmsMessage($notificationData, $grievance->mobile, $action);
+                try {
+                    $isSmsSuccess = $communicationService->sendSmsMessage(
+                        $notificationData,
+                        $grievance->mobile,
+                        $action
+                    );
+
+                    if ($isSmsSuccess) {
+                        Log::info("SMS sent successfully.", [
+                            'mobile'      => $grievance->mobile,
+                            'countryCode' => $grievance->country_code,
+                            'action'      => $action,
+                        ]);
+                    } else {
+                        Log::warning("SMS sending failed.", [
+                            'mobile'      => $grievance->mobile,
+                            'countryCode' => $grievance->country_code,
+                            'action'      => $action,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("SMS sending threw exception.", [
+                        'mobile'      => $grievance->mobile,
+                        'countryCode' => $grievance->country_code,
+                        'action'      => $action,
+                        'error'       => $e->getMessage(),
+                    ]);
+                }
+                // $this->communicationService->sendWhatsAppMessage($notificationData, $grievance->mobile, $action);
+                try {
+                    $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                        $notificationData,
+                        $grievance->mobile,
+                        $action
+                    );
+
+                    if ($isWhatsAppSuccess) {
+                        Log::info("WhatsApp sent successfully.", [
+                            'mobile'      => $grievance->mobile,
+                            'countryCode' => $grievance->country_code,
+                            'action'      => $action,
+                        ]);
+                    } else {
+                        Log::warning("WhatsApp sending failed.", [
+                            'mobile'      => $grievance->mobile,
+                            'countryCode' => $grievance->country_code,
+                            'action'      => $action,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("WhatsApp sending threw exception.", [
+                        'mobile'      => $grievance->mobile,
+                        'countryCode' => $grievance->country_code,
+                        'action'      => $action,
+                        'error'       => $e->getMessage(),
+                    ]);
+                }
             }
 
             DB::commit();

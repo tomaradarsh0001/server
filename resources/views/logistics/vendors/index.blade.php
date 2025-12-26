@@ -19,20 +19,26 @@
             margin-bottom: 25px !important;
         }
     </style>
-   {{-- breadcrumb  --}}
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Logistics</div>
-        @include('include.partials.breadcrumbs')
+        <div class="breadcrumb-title pe-3">Logistic</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Vendors/Suppliers List</li>
+                </ol>
+            </nav>
+        </div>
     </div>
-
     <div class="card">
         <div class="card-body">
 
             <div class="d-flex justify-content-between py-3">
-                <a href="{{ url('logistic/vendor/add') }}">
+                <a href="{{ route('supplier.create') }}">
                     <button type="button" class="btn btn-primary px-2">+ Add Vendors</button>
                 </a>
-                <a href="{{ url('logistic/purchase') }}">
+                <a href="{{ route('purchase.index') }}">
                     <button type="button" class="btn btn-danger px-2 mx-2">← Back</button>
                 </a>
             </div>
@@ -79,9 +85,9 @@
                             <td>
                                 @can('vendors.action')
                                     <div class="d-flex gap-3">
-                                        <a href="{{ url('logistic/vendor/' . $item->id . '/edit') }}"><button type="button"
+                                        <a href="{{ route('supplier.edit', ['id' => $item->id]) }}"><button type="button"
                                                 class="btn btn-primary px-5">Edit</button></a>
-                                        {{-- <a href="{{ url('/logistic/vendor/' . $item->id . '/delete') }}"> <button type="button"
+                                        {{-- <a href="{{ route('/logistic/vendor/' . $item->id . '/delete') }}"> <button type="button"
                                             class="btn btn-danger px-5">Delete</button></a> --}}
                                     </div>
                                 @endcan
@@ -126,20 +132,24 @@
             });
         });
 
-        function statusUpdate(id) {
-            $.ajax({
-                url: `/logistic/vendor/${id}/update-status`,
-                type: 'GET',
-                data: {
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    console.log(response.message);
-                },
-                error: function(response) {
-                    console.log('Error:', response);
-                }
-            });
-        }
+          const vendorStatusUrlTemplate = "{{ route('supplier.updateStatus', ['itemId' => '__ID__']) }}";
+
+    function statusUpdate(id) {
+        const finalUrl = vendorStatusUrlTemplate.replace('__ID__', id);
+
+        $.ajax({
+            url: finalUrl,
+            type: 'GET',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                console.log(response.message);
+            },
+            error: function(response) {
+                console.log('Error:', response);
+            }
+        });
+    }
     </script>
 @endsection

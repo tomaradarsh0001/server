@@ -167,12 +167,6 @@
                 if (prop.property_type == '48') {
                     propType = 'commercial';
                 }
-                if (prop.property_type == '49') {
-                    propType = 'institutional';
-                }
-                if (prop.property_type == '469') {
-                    propType = 'industrial';
-                }
                 plotArea = parseFloat(prop.plot_area);
                 //caculate land value and RGR
                 if (data.circleRates != null && data.circleRates[propType] != null) {

@@ -20,7 +20,7 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                 </li>
                 <li class="breadcrumb-item">Filter & Search Reports</li>
                 <li class="breadcrumb-item active" aria-current="page">View Property Details</li>
@@ -324,7 +324,6 @@
                                 </table>
                             </div>
 
-
                         </div>
                         <div class="step-content" data-step="5" style="display: none;">
                            
@@ -388,11 +387,9 @@
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-xl-8">
-                                        <a href="{{ route('download.pdf', ['property' => $viewDetails->id]) }}" class="btn btn-success">
+                                    <a href="{{ route('download.pdf', ['property' => $viewDetails->id]) }}" class="btn btn-success">
                                             Download <i class='bx bxs-download'></i>
-                                        </a>
-
-                                    </div>
+                                        </a>                                    </div>
                                     <div class="col-xl-4">
                                         <div class="btn-group">
                                             <button class="btn btn-dark" type="button" data-action="prev" disabled>Previous</button>
@@ -415,7 +412,7 @@
 
 
 @section('footerScript')
-<!-- <script src="{{ asset('assets/js/jquery.min.js') }}"></script> commented by anil due to not in use date on 22-01-2025 -->
+{{-- <script src="{{ asset('assets/js/jquery.min.js') }}"></script> --}}
 <script src="{{ asset('assets/js/viewAndNext.js') }}"></script>
 @endsection
 

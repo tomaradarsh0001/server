@@ -433,6 +433,7 @@ class ApplicationController extends Controller
         // $data['applicantStatus'] = $misService->getItemsByGroupId(1002);
         $data['documentTypes'] = getItemsByGroupId(17005);
         $data['userDetails'] = $userDetails;
+
         return view('applicant.new_application', $data);
     }
 
@@ -456,14 +457,14 @@ class ApplicationController extends Controller
             $serviceType = $instance->serviceType;
             //Get status of applicant dropdown value for self application - Lalit Tiwari (01/April/2025)
             // Dynamically use the model variable instead of hardcoded "Model name like TempNoc" - Lalit Tiwari (01/April/2025)
-            if ($decodedModel == 'TempLandUseChangeApplication') {
-                $statusOfApplicant = $model::where('id', $updateId)
-                    ->select('applicant_status as status_of_applicant')
-                    ->first()
-                    ->status_of_applicant ?? null;
-            } else {
-                $statusOfApplicant = $model::where('id', $updateId)->value('status_of_applicant');
-            }
+                        if ($decodedModel == 'TempLandUseChangeApplication') {
+                 $statusOfApplicant = $model::where('id', $updateId)
+                                        ->select('applicant_status as status_of_applicant')
+                                        ->first()
+                                        ->status_of_applicant ?? null;
+                } else {
+                    $statusOfApplicant = $model::where('id', $updateId)->value('status_of_applicant');
+                }
             //Comment After discussing with Amita Mam. In Draft all options should be displayed for status of applicant - Lalit Tiwari (08/April/2025) 
             // $statusOfApplicantCode = Item::where('id', $statusOfApplicant)->first();
         }
@@ -540,11 +541,14 @@ class ApplicationController extends Controller
                 if ($items) {
                     $data['statusOfApplicationsItems'] = $statusOfApplicationsItems;
                 }
+
+                // dd($data);
                 $response = ['status' => true, 'message' => 'Provided Property is available.', 'data' => $data];
             } else {
                 $response = ['status' => false, 'message' => 'Provided Property ID is not available.', 'data' => NULL];
             }
         }
+
         return $response;
     }
 
@@ -628,9 +632,9 @@ class ApplicationController extends Controller
         $data['leaseExectionDate'] = $propertyLeaseDetail->doe;
         $data['area'] = $propertyLeaseDetail->plot_area_in_sqm;
         $data['presentlyKnownAs'] = $propertyLeaseDetail->presently_known_as;
-
-        // $data['originalArea'] = $propertyLeaseDetail->plot_area;
-        // $data['originalUnit'] = getServiceNameById($propertyLeaseDetail->unit);
+        
+        $data['originalArea'] = $propertyLeaseDetail->plot_area;
+        $data['originalUnit'] = getServiceNameById($propertyLeaseDetail->unit);
 
         $propertyTransferDetaails = $propertyMaster->propertyTransferredLesseeDetails;
         $originalLessee = $propertyTransferDetaails->where('process_of_transfer', 'Original')->first();
@@ -1023,7 +1027,7 @@ class ApplicationController extends Controller
             $model = base64_encode($application->model_name);
 
             // Prepare actions
-            $action = '<a href="' . url('applications/draft/' . $application->id) . '?type=' . $model . '"><button type="button" class="btn btn-primary px-5">Complete Application</button></a> <a href="javascript:void(0)" ><button type="button" class="btn btn-danger px-5" onclick="deleteConfirmModal(\'Are you sure to delete ' . $appliedFor . ' application?\',\'' . base64_encode($application->model_name) . '\',\'' . base64_encode($application->id) . '\')">Delete Draft</button></a>';
+            $action = '<a href="' . url('edharti/applications/draft/' . $application->id) . '?type=' . $model . '"><button type="button" class="btn btn-primary px-5">Complete Application</button></a> <a href="javascript:void(0)" ><button type="button" class="btn btn-danger px-5" onclick="deleteConfirmModal(\'Are you sure to delete ' . $appliedFor . ' application?\',\'' . base64_encode($application->model_name) . '\',\'' . base64_encode($application->id) . '\')">Delete Draft</button></a>';
             $nestedData['action'] = $action;
             $nestedData['created_at'] = Carbon::parse($application->created_at)
                 ->setTimezone('Asia/Kolkata')
@@ -1302,7 +1306,6 @@ class ApplicationController extends Controller
 
     public function getEditApplications(Request $request, $id, ColonyService $colonyService, MisService $misService)
     {
-        $getUserDetails = User::with('applicantUserDetails')->where('id', Auth::id())->first();
         $actionType = base64_decode($request->action);
         $decodedModel = base64_decode($request->type);
         if (!empty($actionType) && !empty($decodedModel)) {
@@ -1354,7 +1357,6 @@ class ApplicationController extends Controller
                 }
                 switch ($decodedModel) {
                     case 'MutationApplication':
-                        $userDetails = $getUserDetails;
                         $appliedFor = 'Mutation';
                         if ($documents->count() != 0) {
                         }
@@ -1367,7 +1369,6 @@ class ApplicationController extends Controller
                     //land use change
                     case 'LandUseChangeApplication':
                         // dd($documents, $stepSecondFinalDocuments);
-                        $userDetails = $getUserDetails;
                         $data['appliedFor'] = 'LUC';
                         $data['applicationDocumentType'] = config('applicationDocumentType.LUC.Required');
                         if (!empty($documents)) {
@@ -1382,7 +1383,7 @@ class ApplicationController extends Controller
                         $finalDocs = isset($stepSecondFinalDocuments) ? $stepSecondFinalDocuments : [];
                         // $tempCoapplicant = TempCoapplicant::where('model_name', $decodedModel)->where('model_id', $id)->get();
                     case 'DeedOfApartmentApplication':
-                        $userDetails = $getUserDetails;
+                        $userDetails = User::with('applicantUserDetails')->where('id', Auth::id())->first();
                         //second step douments ***********************************88
                         $stepSecondFilters = config('applicationDocumentType.DOA.documents');
                         $topLevelKeys = array_keys($stepSecondFilters);
@@ -1403,19 +1404,16 @@ class ApplicationController extends Controller
                             }
                         }
                     case 'ConversionApplication':
-                        $userDetails = $getUserDetails;
                         if ($documents->count() != 0) {
                         }
                         $data['tempCoapplicant'] = Coapplicant::where('model_name', $decodedModel)->where('model_id', $id)->get();
                         $data['documentTypes'] = getItemsByGroupId(17005);
                         // dd($data);
                     case 'NocApplication':
-                        $userDetails = $getUserDetails;
                         $data['tempCoapplicant'] = Coapplicant::where('model_name', $decodedModel)->where('model_id', $id)->get();
                         $data['documentTypes'] = getItemsByGroupId(17005);
                     default:
                         // Default action
-                        $userDetails = $getUserDetails;
                         break;
                 }
                 // dd($finalDocs);
@@ -1433,18 +1431,19 @@ class ApplicationController extends Controller
                 $data['userDetails'] = $userDetails;
                 $data['userProperties'] = $userProperties;
                 $data['actionType'] = $actionType;
+                // @dd($data);
                 return view('applicant.edit_application', $data);
             } else {
                 return redirect()->route('applications.history.details')->with('failure', 'Application not available!');
             }
         }
     }
-    // added by Swati Mishra to show all applications on 17-07-2025
-    public function applicationsAllDetails()
+
+public function applicationsAllDetails()
     {
         return view('application.index');
     }
-
+    
     public function getAllApplications(Request $request)
     {
         //getServiceType for Object status - Lalit tiwari (02/12/2024)
@@ -1780,7 +1779,8 @@ class ApplicationController extends Controller
                 'APP_APR' => 'landtypeFreeH',
                 'APP_OBJ' => 'statusObject',
                 'APP_HOLD' => 'statusHold',
-                'APP_WD' => 'statusWithdrawn',
+                               'APP_WD' => 'statusWithdrawn',
+
             ];
             $class = $statusClasses[$itemCode] ?? 'text-secondary bg-light';
 
@@ -1790,7 +1790,7 @@ class ApplicationController extends Controller
             $model = base64_encode($application->model_name);
             // Prepare actions
             $action =  '<div class="d-flex gap-3">';
-            $action .= '<a href="' . url('applications/' . $application->id) . '?type=' . $model . '">
+            $action .= '<a href="' . url('edharti/applications/' . $application->id) . '?type=' . $model . '">
                             <button type="button" class="btn btn-primary px-5">View</button>
                         </a>';
             if ($itemName === 'New') {
@@ -1822,7 +1822,6 @@ class ApplicationController extends Controller
 
         return response()->json($json_data);
     }
-
 
     public function applicationsHistoryDetails()
     {
@@ -2304,6 +2303,7 @@ class ApplicationController extends Controller
             //Allow edit applications - Lalit tiwari (02/12/2024)
             $editFlag = false;
             $recordExists = ApplicationAppointmentLink::where('application_no', $application->application_no)->where('is_attended', true)->exists();
+            // dd($recordExists);
             //Check applicant didn't came for proof reading. - Lalit tiwari (03/dec/2024)
             if (!$recordExists && $application->status == $objectId) {
                 $editFlag = true;
@@ -2366,20 +2366,21 @@ class ApplicationController extends Controller
             $model = base64_encode($application->model_name);
             // Prepare actions
             $action =  '<div class="d-flex gap-3">';
-            $action .= '<a href="' . url('applications/' . $application->id) . '?type=' . $model . '">
+            $action .= '<a href="' . url('edharti/applications/' . $application->id) . '?type=' . $model . '">
                             <button type="button" class="btn btn-primary px-5">View</button>
                         </a>
-                        <a href="' . url('applications/' . $application->id) . '?type=' . $model . '&downloading=1">
-                            <button type="button" class="btn btn-info px-5">Download</button>
-                        </a>
+                        
                         ';
+            // <a href="' . url('edharti/applications/' . $application->id) . '?type=' . $model . '&downloading=1">
+                        //     <button type="button" class="btn btn-info px-5">Download</button>
+                        // </a>
             if ($itemName === 'New') {
                 $action .= '
-                <button type="button" class="btn btn-danger px-3" onclick="withdrawApplication(\'' . $application->application_no . '\')">Withdraw Application</button>';
+                <button type="button" class="btn btn-danger px-3" onclick="withdrawApplication(\'' . $application->application_no . '\')">Cancel Application</button>';
             }
             if ($editFlag == true) {
                 $objectedAction = base64_encode('objectApplication');
-                $action .= '<a href="' . url('applications/edit/' . $application->id) . '?type=' . $model . '&action=' . $objectedAction . '"><button type="button" class="btn btn-primary px-3">Edit</button></a>';
+                $action .= '<a href="' . url('edharti/applications/edit/' . $application->id) . '?type=' . $model . '&action=' . $objectedAction . '"><button type="button" class="btn btn-primary px-3">Edit</button></a>';
             }
             $action .=  '</div>';
             $nestedData['action'] = $action;
@@ -3035,7 +3036,8 @@ class ApplicationController extends Controller
         }
         $tempApplication = ('App\\Models\\' . $model)::find($applicationTempId);
         if ($tempApplication) {
-            $tempApplication->{$model == 'TempLandUseChangeApplication' ? 'applicant_status' : 'status_of_applicant'} = $applicantStatus;
+                            $tempApplication->{$model == 'TempLandUseChangeApplication' ? 'applicant_status': 'status_of_applicant'} = $applicantStatus;
+
             if ($tempApplication->save()) {
                 $document = TempDocument::where('model_name', $model)->where('model_id', $applicationTempId)->where('document_type', 'documentpowerofattorney')->first();
                 if ($document) {

@@ -5,7 +5,6 @@
 
                     @php
                         $stepTwoDocs = config('applicationDocumentType.NOC.Required');
-                        $isIndian = false;
                     @endphp
                     @foreach ($stepTwoDocs as $document)
                         @php
@@ -14,27 +13,6 @@
                                 ? collect($stepSecondFinalDocuments)->where('document_type', $document['id'])->all()
                                 : [];
                         @endphp
-
-                        @if (
-                            !empty($userDetails->applicantUserDetails->isIndian) &&
-                                $userDetails->applicantUserDetails->isIndian == 1 &&
-                                ($document['id'] == 'conveyanceaadhardoc' || $document['id'] == 'conveyancepandoc'))
-                            @php
-                                $isIndian = true;
-                            @endphp
-                        @endif
-
-
-                        @if ($isIndian)
-                            @if ($document['id'] == 'nocNriUploadDocument')
-                                @continue
-                            @endif
-                        @else
-                            @if ($document['id'] == 'conveyanceaadhardoc' || $document['id'] == 'conveyancepandoc')
-                                @continue
-                            @endif
-                        @endif
-
                         <!-- Repeater Items -->
                         <div class="duplicate-field-tab">
                             @foreach ($uploadeddocsWithDocType as $i => $uploadeddocsWithDoc)
@@ -59,7 +37,7 @@
                                                             <label for="{{ $document['id'] }}"
                                                                 class="quesLabel form-label">{{ $document['label'] }}
 
-                                                                @if ($document['id'] != 'otherDocumentbyApplicant' && $document['id'] != 'conveyanceconappdoc')
+                                                                @if ($document['id'] != 'otherDocumentbyApplicant' && $document['id'] != 'conveyancedeed')
                                                                     <span class="text-danger">*</span>
                                                                 @endif
 

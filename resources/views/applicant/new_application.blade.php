@@ -22,66 +22,50 @@
 
         /* commented and adeed by anil for replace the new loader on 24-07-2025  */
         /* .spinner {
-                                                                                                                                                                            border: 8px solid rgba(255, 255, 255, 0.3);
-                                                                                                                                                                            border-radius: 50%;
-                                                                                                                                                                            border-top: 8px solid #ffffff;
-                                                                                                                                                                            width: 50px;
-                                                                                                                                                                            height: 50px;
-                                                                                                                                                                            animation: spin 1s linear infinite;
-                                                                                                                                                                        }
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 8px solid #ffffff;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
 
-                                                                                                                                                                        @keyframes spin {
-                                                                                                                                                                            0% {
-                                                                                                                                                                                transform: rotate(0deg);
-                                                                                                                                                                            }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
 
-                                                                                                                                                                            100% {
-                                                                                                                                                                                transform: rotate(360deg);
-                                                                                                                                                                            }
-                                                                                                                                                                        } */
+            100% {
+                transform: rotate(360deg);
+            }
+        } */
         .loader {
             width: 48px;
             height: 48px;
-            border: 6px solid #FFF;
+            border:6px solid #FFF;
             border-radius: 50%;
             position: relative;
-            transform: rotate(45deg);
+            transform:rotate(45deg);
             box-sizing: border-box;
         }
-
         .loader::before {
             content: "";
             position: absolute;
             box-sizing: border-box;
-            inset: -7px;
+            inset:-7px;
             border-radius: 50%;
-            border: 8px solid #116d6e;
+            border:8px solid #116d6e;
             animation: prixClipFix 2s infinite linear;
         }
 
         @keyframes prixClipFix {
-            0% {
-                clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
-            }
-
-            25% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
-            }
-
-            50% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
-            }
-
-            75% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
-            }
-
-            100% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
-            }
+            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
         }
-
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
+        /* commented and adeed by anil for replace the new loader on 07-08-2025  */
     </style>
     <!-- #Start Custom Tooltip Styles For Reg No. - Lalit Tiwari 01/May/2025 -->
     <style>
@@ -96,12 +80,6 @@
             height: 20px;
             align-items: center;
             justify-content: center;
-        }
-
-        .tooltip.tooltip-info .tooltip-inner {
-            max-width: 350px;
-            /* Change as needed */
-            white-space: normal;
         }
     </style>
     <!-- #End Custom Tooltip Styles For Reg No. - Lalit Tiwari 01/May/2025 -->
@@ -140,7 +118,7 @@
                         <div class="row">
                             <div class="col-lg-3 col-12">
                                 <div class="form-group">
-                                    <label for="gender" class="form-label">Property ID<span
+                                    <label for="gender" class="form-label">Property Detail<span
                                             class="text-danger">*</span></label>
                                     @if (isset($application))
                                         <input type="text" class="form-control alpha-only" name="propertyid"
@@ -302,8 +280,8 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
 
@@ -313,7 +291,7 @@
                             aria-labelledby="stepper3trigger3" data-applicant="MUTATION-3">
                             <!-- ADD data-applicant by anil on 21-04-2025 for attribute query selector -->
                             <h5 class="mb-1" id="finalStateTitle">Selected Documents</h5>
-                            <p class="mb-4" id="finalStateSubtitle">Please Enter Additional Details</p>
+                            <p class="mb-4" id="finalStateSubtitle">Please enter additional details.</p>
 
                             <!-- mutation step three SOURAV CHAUHAN (20/sep/2024)**********************-->
                             @include('application.mutation.include.mutation-step-three')
@@ -329,8 +307,8 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
                         </div>
@@ -409,8 +387,8 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
 
@@ -420,7 +398,7 @@
                             aria-labelledby="stepper3trigger3" data-applicant="CONVERSION-3">
                             <!-- ADD data-applicant by anil on 21-04-2025 for attribute query selector -->
                             <h5 class="mb-1" id="finalStateTitle">Selected Documents</h5>
-                            <p class="mb-4" id="finalStateSubtitle">Please Enter Additional Details</p>
+                            <p class="mb-4" id="finalStateSubtitle">Please enter additional details.</p>
 
 
                             <!-- Conversion 3 -->
@@ -438,8 +416,8 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div>
                             <!---end row-->
@@ -494,7 +472,7 @@
                             <!-- ADD data-applicant by anil on 21-04-2025 for attribute query selector -->
 
                             <h5 class="mb-1">Mandatory Documents</h5>
-                            <p class="mb-4">Please upload documents</p>
+                            <p class="mb-4">Please upload documents.</p>
 
                             <!-- =========== Begin Land Use Change Div ========== -->
                             @include('application.luc.include.step-2')
@@ -515,8 +493,8 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
 
@@ -589,8 +567,8 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
                         </div>
@@ -643,8 +621,8 @@
                             aria-labelledby="stepper3trigger2" data-applicant="NOC-2">
                             <!-- ADD data-applicant by anil on 21-04-2025 for attribute query selector -->
 
-                            <h5 class="mb-1">Mandatory Documents</h5>
-                            <p class="mb-4">Please upload documents</p>
+                            <h5 class="mb-1">Required Documents</h5>
+                            <p class="mb-4">Please upload documents.</p>
 
                             <!-- =========== Begin Deed of NOC Div ========== -->
                             @include('application.noc.include.step-2')
@@ -661,7 +639,7 @@
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
                                     <label class="note text-danger text-sm">
-                                        <strong>Note:</strong> Upload all documents in PDF format (maximum size 5 MB each).
+                                        <strong>Note<span class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).
                                     </label>
                                 </div>
                             </div><!---end row-->
@@ -675,16 +653,16 @@
         </div>
     </div>
     </div>
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 07-08-2025  -->
     <!-- <div id="spinnerOverlay" style="display:none;">
-                                                                                                                                                                        <div class="spinner"></div>
-                                                                                                                                                                        <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
-                                                                                                                                                                    </div> -->
+        <div class="spinner"></div>
+        <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
+    </div> -->
     <div id="spinnerOverlay" style="display:none;">
         <span class="loader"></span>
         <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
     </div>
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 07-08-2025  -->
 
     @include('include.alerts.application.change-property')
     @include('include.alerts.ajax-alert')
@@ -700,10 +678,6 @@
     {{-- <script src="{{ asset('assets/plugins/form-repeater/repeater.js') }}"></script> --}}
     <script src="{{ asset('assets/plugins/form-repeater/applicationRepeater.js') }}"></script>
 
-    {{-- crypto --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="{{ asset('assets/frontend/assets/js/commonFunctions.js') }}"></script>
-
     <script>
         var isEditing = "{{ isset($application) ? true : false }}";
         @if (isset($application))
@@ -713,23 +687,19 @@
         @endif
 
 
-
         window.onload = function() {
             console.log(isEditing, application);
         }
     </script>
 
-    <script>
-        const fetchUserDetailsUrl = "{{ route('fetchUserDetails') }}";
-    </script>
+<script>
+    const fetchUserDetailsUrl = "{{ route('fetchUserDetails') }}";
+</script>
     <script src="{{ asset('assets/js/newApplicant.js') }}"></script>
-    <!-- <script src="{{ asset('assets/js/nocApplicant.js') }}"></script>
-                                                                                                                                                                    <script src="{{ asset('assets/js/conversionApplicant.js') }}"></script>
-                                                                                                                                                                    <script src="{{ asset('assets/js/mutationApplicant.js') }}"></script> -->
     <script>
-        function sqmToSqyard(sqm) {
-            return sqm * 1.19599;
-        }
+                function sqmToSqyard(sqm) {
+    return sqm * 1.19599;
+}
         $('#appChangeProperty').on('hidden.bs.modal', function() {
             var lastPropertyId = $("input[name='lastPropertyId']").val();
             $('#propertyid').val(lastPropertyId);
@@ -737,10 +707,15 @@
 
         //fetch proerty details when property Id change at creation time - Sourav Chauhan 13/sep/2024
         $('#propertyid').on('change', function() {
+            const spinnerOverlay = document.getElementById('spinnerOverlay');
+            if (spinnerOverlay) {
+                spinnerOverlay.style.display = 'flex';
+            }
             var propertyId = $(this).val();
             isPropertyFree(propertyId).then(function(responseForFreeProp) {
                 if (responseForFreeProp) {
                     fetchPropertyDetails(propertyId, false);
+                    spinnerOverlay.style.display = 'none';
                 }
             }).catch(function(error) {
                 console.error("Error occurred:", error); // Handle the error here
@@ -799,8 +774,6 @@
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(response) {
-                    // console.log(response.data);
-
                     if (response.status) {
                         if (response.data.status == '952') {
                             $('#propertyStatus').val('Free Hold');
@@ -814,7 +787,7 @@
 
                         }
                         const items = response.data.items;
-                        // console.log(items);
+                        console.log(items);
 
 
                         // Clear the existing options first (if necessary)
@@ -837,31 +810,6 @@
                             $("#applicationType").prepend('<option value="" selected>Select</option>');
                         }
 
-                        //Comment After discussing with Amita Mam. In Draft all options should be displayed for status of applicant - Lalit Tiwari (08/April/2025)
-                        /* // Code added for Status Of Application - Lalit Tiwari (28/March/2025)
-                        const statusOfApplicationsItems = response.data.statusOfApplicationsItems;
-                        console.log(statusOfApplicationsItems);
-
-                        // Clear the existing options first (if necessary)
-                        $("#statusofapplicant").empty();
-
-                        // Get the number of statusOfApplicationsItems
-                        const statusOfApplicationCount = Object.keys(statusOfApplicationsItems).length;
-                        $.each(statusOfApplicationsItems, function(key, value) {
-                            $("#statusofapplicant").append('<option value="' + key + '">' + value +
-                                '</option>');
-                        });
-
-                        // Check the number of statusOfApplicationsItems
-                        if (statusOfApplicationCount == 1) {
-                            // If there's only one item, select it
-                            $("#statusofapplicant").val(Object.keys(statusOfApplicationsItems)[0])
-                                .change(); // Select the first (and only) item
-                        } else {
-                            // If there are multiple statusOfApplicationsItems, add a default "Select" option
-                            $("#statusofapplicant").prepend('<option value="" selected>Select</option>');
-                        } */
-
                         //Add After discussing with Amita Mam. In Draft all options should be displayed for status of applicant - Lalit Tiwari (08/April/2025)
                         const statusOfApplicationsItems = response.data.statusOfApplicationsItems;
                         const selectedStatus = response.data.statusOfApplicant;
@@ -882,35 +830,19 @@
                                 `<option value="${key}" ${selected}>${value}</option>`);
                         });
 
-                        console.log(response.data.propertyDetails + "------- Details of Property");
+
                         // for showing property details
                         if (response.data.propertyDetails) {
                             $('#applicationPropertyDetails').empty();
-                            var area = inFavourOf = leaseExectionDate = leaseType = propertyType =
-                                propertySubType = '';
+                            var area = inFavourOf = leaseExectionDate = leaseExectionDateNew = leaseType = propertyType =
+                                propertySubType = originalArea = originalUnit = '';
                             var propertyDetails = response.data.propertyDetails;
 
-                            area = propertyDetails.area
-                            // originalArea = propertyDetails.originalArea
-                            // originalUnit = propertyDetails.originalUnit
+                            area = propertyDetails.area 
                             inFavourOf = propertyDetails.inFavourOf
                             leaseExectionDate = propertyDetails.leaseExectionDate
-
-                            /* const dateValue = propertyDetails.leaseExectionDate;
-                            if (dateValue) {
-                                const date = new Date(dateValue);
-                                if (!isNaN(date)) {
-                                    const leaseExectionDate = date.toLocaleDateString(
-                                        'en-GB'); // gives dd/mm/yyyy
-                                } else {
-                                    console.log('Invalid date:', dateValue);
-                                }
-                            } */
-
-
-
-
-
+                            leaseExectionDateNew = formatDateToDDMMYYYY(propertyDetails.leaseExectionDate)
+                            
                             leaseType = propertyDetails.leaseType
                             propertyType = propertyDetails.propertyType
                             propertySubType = propertyDetails.propertySubType
@@ -924,7 +856,7 @@
                                 conditionalRow = `
                                     <tr>                       
                                         <td>Conveyance Deed Date: <span class="highlight_value">${formatDateToDDMMYYYY(response.data.transferDate)}</span></td>
-                                        <td style="width: 50%;">Conveyance Deed in favour of: <span class="highlight_value">${response.data.inFavourCon}</span></td>
+                                        <td style="width: 50%;">Conveyance Deed In Favour Of: <span class="highlight_value">${response.data.inFavourCon}</span></td>
                                     </tr>`;
                                 executedInFavourOf = response.data.inFavourCon;
                                 executedOn = response.data.transferDate;
@@ -932,8 +864,6 @@
                                 executedInFavourOf = inFavourOf;
                                 executedOn = leaseExectionDate;
                             }
-                            console.log(convNameAsOnLease + "------- Hello");
-
                             $('#namergapp').val(executedInFavourOf)
                             $('#mutExecutedOnAsConLease').val(executedOn)
                             $('#convNameAsOnLease').val(executedInFavourOf)
@@ -956,19 +886,16 @@
                                 leaseType +
                                 `</span></td>
                                                                     <td>Lease Executed On: <span class="highlight_value">` +
-                                leaseExectionDate +
+                                leaseExectionDateNew +
                                 `</span></td>
                                                                     <td>Original Lessee: <span class="highlight_value lessee_address">` +
                                 inFavourOf +
                                 `</span></td>
                                                                 </tr>
                                                                 <tr>
-                                                                     <td>Land Size: <span class="highlight_value" id="land-size-span">` +
-                                +Number(area).toFixed(3) +
-                                ` Sq. Mtr.</span> (` + sqmToSqyard(area).toFixed(3) +
-                                ` Sq. Yard)
-                                
-                                </td>
+                                                                    <td>Land Size: <span class="highlight_value" id="land-size-span">` +
+                                Number(area).toFixed(2) +
+                                `Sq. Mtr.</span>  (`+ sqmToSqyard(area).toFixed(2)+ ` Sq. Yard)</td>
                                                                     <td>Property Type: <span class="highlight_value">` +
                                 propertyType +
                                 `</span></td>
@@ -1068,202 +995,6 @@
                 error: function(response) {}
             })
         })
-
-        //Code for making flatNumber & buiderName readonly & vice versa.
-        /*$(document).ready(function() {
-            $('#isFlatNotInList').change(function() {
-                if ($(this).is(':checked')) {
-                    // Checkbox is checked, remove readonly attribute
-                    $('#flatNumber, #builderName').removeAttr('readonly');
-                } else {
-                    // Checkbox is unchecked, add readonly attribute back
-                    $('#flatNumber, #builderName').attr('readonly', true);
-                }
-            });
-        });*/
-
-        /*document.addEventListener('DOMContentLoaded', function() {
-            // Initial values for locality, block, plot, knownas, and flatId when editing the form
-            var initialLocality = "{{ $application->locality ?? '' }}";
-            var initialBlock = "{{ $application->block ?? '' }}";
-            var initialPlot = "{{ $application->plot ?? '' }}";
-            var initialKnownAs = "{{ $application->known_as ?? '' }}";
-            var initialFlatId = "{{ $application->flat_id ?? '' }}";
-
-            // Function to populate blocks based on locality
-            function populateBlocks(localityId, selectedBlock = null) {
-                $("#block").html('<option value="">Select</option>');
-                if (localityId) {
-                    $.ajax({
-                        url: "{{ route('localityBlocks') }}",
-                        type: "POST",
-                        data: {
-                            locality: localityId,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        dataType: 'json',
-                        success: function(result) {
-                            $.each(result, function(key, value) {
-                                let selected = selectedBlock == value.block_no ? 'selected' :
-                                    '';
-                                $("#block").append('<option value="' + value.block_no + '" ' +
-                                    selected + '>' + value.block_no + '</option>');
-                            });
-
-                            if (selectedBlock) {
-                                populatePlots(localityId, selectedBlock, initialPlot);
-                            }
-                        }
-                    });
-                }
-            }
-
-            // Function to populate plots based on block
-            function populatePlots(localityId, blockId, selectedPlot = null) {
-                $("#plot").html('<option value="">Select</option>');
-                if (localityId && blockId) {
-                    $.ajax({
-                        url: "{{ route('blockPlots') }}",
-                        type: "POST",
-                        data: {
-                            locality: localityId,
-                            block: blockId,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        dataType: 'json',
-                        success: function(result) {
-                            $.each(result, function(key, value) {
-                                let selected = selectedPlot == value ? 'selected' : '';
-                                $("#plot").append('<option value="' + value + '" ' + selected +
-                                    '>' + value + '</option>');
-                            });
-
-                            if (selectedPlot) {
-                                populateKnownAs(localityId, blockId, selectedPlot, initialKnownAs);
-                            }
-                        }
-                    });
-                }
-            }
-
-            // Function to populate knownas based on plot
-            function populateKnownAs(localityId, blockId, plotId, selectedKnownAs = null) {
-                $("#knownas").html('<option value="">Select</option>');
-                if (localityId && blockId && plotId) {
-                    $.ajax({
-                        url: "{{ route('plotKnownas') }}",
-                        type: "POST",
-                        data: {
-                            locality: localityId,
-                            block: blockId,
-                            plot: plotId,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        dataType: 'json',
-                        success: function(result) {
-                            $.each(result, function(key, value) {
-                                let selected = selectedKnownAs == value ? 'selected' : '';
-                                $("#knownas").append('<option value="' + value + '" ' +
-                                    selected + '>' + value + '</option>');
-                            });
-
-                            if (selectedKnownAs) {
-                                populateFlats(localityId, blockId, plotId, selectedKnownAs,
-                                    initialFlatId);
-                            }
-                        }
-                    });
-                }
-            }
-
-            // Function to populate flats based on knownas
-            function populateFlats(localityId, blockId, plotId, knownAsId, selectedFlatId = null) {
-                $("#flatId").html('<option value="">Select</option>');
-                if (localityId && blockId && plotId && knownAsId) {
-                    $.ajax({
-                        url: "{{ route('knownAsFlat') }}",
-                        type: "POST",
-                        data: {
-                            locality: localityId,
-                            block: blockId,
-                            plot: plotId,
-                            known_as: knownAsId,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        dataType: 'json',
-                        success: function(result) {
-                            $.each(result, function(key, value) {
-                                let selected = selectedFlatId == key ? 'selected' : '';
-                                $("#flatId").append('<option value="' + key + '" ' + selected +
-                                    '>' + value + '</option>');
-                            });
-
-                            if (selectedFlatId) {
-                                populateFlatDetails(selectedFlatId);
-                            }
-                        }
-                    });
-                }
-            }
-
-            // Function to populate flat details based on flatId
-            function populateFlatDetails(flatId) {
-                if (flatId) {
-                    $.ajax({
-                        url: "{{ route('getFlatDetails') }}",
-                        type: "POST",
-                        data: {
-                            flatId: flatId,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        dataType: 'json',
-                        success: function(result) {
-                            $('#flatNumber').val(result.flat_number || '');
-                            $('#builderName').val(result.builder_developer_name || '');
-                            $('#originalBuyerName').val(result.original_buyer_name || '');
-                            $('#presentOccupantName').val(result.present_occupant_name || '');
-                            $('#purchaseDate').val(result.purchase_date || '');
-                            $('#plotArea').val(result.area || '');
-                            $('#old_property_id').val(result.old_property_id || '');
-                            $('#property_master_id').val(result.property_master_id || '');
-                            $('#new_property_id').val(result.unique_property_id || '');
-                            $('#splited_property_detail_id').val(result.splitted_property_id || '');
-                        }
-                    });
-                }
-            }
-
-            // When locality changes, populate blocks
-            $('#locality').on('change', function() {
-                populateBlocks(this.value);
-            });
-
-            // When block changes, populate plots
-            $('#block').on('change', function() {
-                populatePlots($('#locality').val(), this.value);
-            });
-
-            // When plot changes, populate knownas
-            $('#plot').on('change', function() {
-                populateKnownAs($('#locality').val(), $('#block').val(), this.value);
-            });
-
-            // When knownas changes, populate flats
-            $('#knownas').on('change', function() {
-                populateFlats($('#locality').val(), $('#block').val(), $('#plot').val(), this.value);
-            });
-
-            // When flatId changes, populate flat details
-            $('#flatId').on('change', function() {
-                populateFlatDetails(this.value);
-            });
-
-            // If in edit mode, populate all dropdowns
-            if (initialLocality) {
-                $('#locality').val(initialLocality).trigger('change');
-                populateBlocks(initialLocality, initialBlock);
-            }
-        });*/
 
         document.addEventListener('DOMContentLoaded', function() {
             // Get the current date in YYYY-MM-DD format
@@ -1488,11 +1219,58 @@
                 }
             }
         });
+
+
+        const checkboxes = document.querySelectorAll('.documentType');
+        checkboxes.forEach((checkbox) => {
+            checkbox.addEventListener('change', function () {
+                if (!this.checked) {
+                    const uncheckedCheckboxId = this.id;
+                    const cleanedId = uncheckedCheckboxId.replace('_check', '');
+                    const updatedId = $("input[name='updateId']").val();
+                    console.log(updatedId);
+                    
+                    if(updatedId != 0){
+                        $('#' + cleanedId).val('');
+                        deleteValuesForUncheckedDocument(cleanedId,updatedId);
+                    }
+                }
+            });
+        });
+
+        function deleteValuesForUncheckedDocument(id,updatedId) {
+            if (id != '') {
+                $.ajax({
+                    url: "{{ route('applicant.deleteValuesForUncheckedDocument') }}",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        id: id,
+                        updatedId: updatedId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if(response.status != 2){
+                            if (response.status) {
+                                showSuccess(response.message)
+                            } else {
+                                showError(response.message)
+                            }
+                        }
+                    },
+                    error: function(response) {
+                        showError('File not deleted. Please try again.');
+                    }
+                });
+            } 
+        } 
+
+
     </script>
     <script src="{{ asset('assets/js/newApplicantStepper.js') }}"></script>
     <script src="{{ asset('assets/js/imgPreview.js') }}"></script>
-
-
+    <script src="{{ asset('assets/frontend/assets/js/crypto-js.min.js') }}"></script>
+    <script src="{{ asset('assets/frontend/assets/js/commonFunctions.js') }}"></script>
     <script>
         //Start Set Visiblity for Power Of Attorney Document on Status of Applicant Dropdown - Lalit Tiwari (01/April/2025)
         $("#applicationType").change(function() {

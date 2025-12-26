@@ -54,7 +54,7 @@
         <div class="col pt-3">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ url('users/' . $user->id) }}" method="POST">
+                    <form action="{{ route('users.update', ['user' => $user->id]) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="email" value="{{ $user->email }}" class="form-control"

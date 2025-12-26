@@ -12,7 +12,7 @@
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Properties</li>
                     <li class="breadcrumb-item active" aria-current="page">Add</li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('vacant.land.list')}}">Vacant Land</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Properties Outside Delhi</li>
                 </ol>
             </nav>
         </div>

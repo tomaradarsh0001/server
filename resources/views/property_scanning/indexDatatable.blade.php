@@ -36,9 +36,6 @@
             text-align: left;
         }
     }
-    #scannedFilesTable_wrapper .dataTable th:nth-child(8) .form-select{
-        min-width: 120px;
-    }
 </style>
 
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">

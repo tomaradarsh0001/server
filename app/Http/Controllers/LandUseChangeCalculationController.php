@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\LandUseChangeApplication;
 use App\Models\LandUseChangeMatrix;
+use App\Models\LandUseChangeApplication;
 use App\Services\ColonyService;
 use App\Services\LandRateService;
 use App\Services\PropertyMasterService;
@@ -114,7 +114,7 @@ class LandUseChangeCalculationController extends Controller
             return response()->json(['status' => 'error', 'details' => 'Invalid property id given']);
         }
     }
-    /* public function getCommercialLandValue($propertyId)
+  /* public function getCommercialLandValue($propertyId)
     {
         if ($propertyId != "") {
             $propertyMasterService = new PropertyMasterService();

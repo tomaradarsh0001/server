@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Console;
-
-use Illuminate\Console\Scheduling\Schedule;
 use App\Jobs\DeactivateInactiveRegisteredApplicants;
-use App\Jobs\DeactivateUsersWithInactiveApplications;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\DeactivateUsersWithInactiveApplications;
+
 
 class Kernel extends ConsoleKernel
 {
@@ -14,18 +15,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->command('clear:otps')->everyMinute();
-        $schedule->command('reset:rgr-status')
-            ->cron('0 0 1 1 *'); // At 00:00 on January 1st every year
-        $schedule->command('app:change-registration-status')->dailyAt('11:00');
-        $schedule->command('app:change-application-status')->dailyAt('11:00');
-        $schedule->command('app:change-public-grevance-status')->dailyAt('11:00');
-        $schedule->command('app:add-penalty-in-unpaid-demand')->dailyAt('11:00');
-        $schedule->job(new DeactivateInactiveRegisteredApplicants)->daily();
-        $schedule->job(new DeactivateUsersWithInactiveApplications)->daily();
-        $schedule->command('app:update-action-taken-by')->dailyAt('11:00');
-        $schedule->command('app:revert-user-registration-to-section')->dailyAt('11:00');
+        //    Log::info("Scheduler running....");
+            $schedule->command('reset:rgr-status')->cron('0 0 1 1 *'); // At 00:00 on January 1st every year
+            $schedule->command('payment-status-check')->dailyAt('12:00');
+            $schedule->job(new DeactivateInactiveRegisteredApplicants)->dailyAt('12:00');
+            $schedule->job(new DeactivateUsersWithInactiveApplications)->dailyAt('12:00');
+            $schedule->command('demand:withdraw')->dailyAt('11:00');
+            $schedule->command('app:update-action-taken-by')->dailyAt('11:00');
+            $schedule->command('app:revert-user-registration-to-section')->dailyAt('11:00');
     }
 
     /**
@@ -33,7 +30,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
     }

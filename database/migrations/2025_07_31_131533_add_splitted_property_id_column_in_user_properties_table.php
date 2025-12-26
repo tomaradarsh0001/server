@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('user_properties', function (Blueprint $table) {
-            $table->dropColumn('splitted_property_id'); //added by nitin to fix rollback issue
+            //
         });
     }
 };

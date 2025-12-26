@@ -291,7 +291,7 @@ class ColonyService
         return DB::table('property_masters as pm')
             ->join('property_lease_details as pld', 'pm.id', '=', 'pld.property_master_id')
             ->leftJoin('splited_property_details as spd', 'pm.id', '=', 'spd.property_master_id')
-            ->whereIn('pm.property_type', [47, 48, 49, 469]) //only residential and commercial are required -  added on 08072024
+            ->whereIn('pm.property_type', [47, 48]) //only residential and commercial are required -  added on 08072024
             ->where(function ($query) use ($colonyId) {
                 if (is_null($colonyId)) {
                     return $query->where([

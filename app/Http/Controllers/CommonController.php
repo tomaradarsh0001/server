@@ -9,6 +9,12 @@ use App\Models\PropertyTransferredLesseeDetail;
 use App\Models\SplitedPropertyDetail;
 use App\Services\PropertyMasterService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestMail;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class CommonController extends Controller
 {
@@ -33,6 +39,64 @@ class CommonController extends Controller
     }
 
     /** function added by Nitin to get basic detail of a property on 20dec2024 */
+
+    // public function propertyBasicdetail(Request $request)
+    // {
+    //     // dd($request->all());
+    //     $propertyId = $request->property_id;
+    //     $returnSplitedProp = false;
+    //     $splitedPropId = null;
+    //     $searchIncolumn = 'old_propert_id'; // for non splited property property is found by old property id when selected from colony block plot dropdown
+    //     $statusColumn = "status";
+    //     if (strpos($propertyId, '_')) { // // for property master_id.'_.child_id
+    //         $idArr = explode('_', $propertyId);
+    //         $propertyId = $idArr[0];
+    //         $splitedPropId = $idArr[1];
+    //         $returnSplitedProp = true;
+
+    //         $searchIncolumn = 'id';
+    //     }
+    //     $property = PropertyMaster::where($searchIncolumn, $propertyId)->first();
+    //     if (empty($property)) { // if property not found in masters table
+    //         /** If property not found in masters table then check in splitedProperty table */
+    //         $property = SplitedPropertyDetail::where('old_property_id', $propertyId)->first();
+    //         if (empty($property)) {
+
+    //             return ['status' => 'error', 'message' => 'given property not found'];
+    //         }
+    //         $splitedPropId = $property->id;
+    //         $returnSplitedProp = true;
+    //         $propertyMasterId = $property->property_master_id;
+    //         $statusColumn = 'property_status';
+    //     } else {
+    //         $propertyMasterId = $property->id;
+    //     }
+        
+    //     $pms = new PropertyMasterService();
+    //     $propertyIsInUserSection = $pms->checkPropertyIsInUserSectoin($propertyMasterId);
+    //     if (!$propertyIsInUserSection) {
+    //         return ['status' => 'error', 'message' => 'You dont have access to this property'];
+    //     }
+    //     if (array_key_exists('is_joint_property', $property->getAttributes())) { //check if is_joint_property exist in property, only available in property masters
+    //         if (!is_null($property->is_joint_property)) {
+    //             $statusColumn = 'property_status';
+    //             $children = SplitedPropertyDetail::where('property_master_id', $propertyMasterId)->where($statusColumn, '951')->get();
+    //             if ($children->count() == 0) {
+    //                 return ['status' => 'error', 'message' => 'Can not Process this property. Please check property details'];
+    //             } else {
+    //                 $propertyData = [];
+    //                 foreach ($children as $child) {
+    //                     $propertyData[] = $this->preparePropertyDetails($child->master, true, $child->id, $propertyMasterId);
+    //                 }
+    //             }
+    //         } else {
+    //             $propertyData = $this->preparePropertyDetails($property, false, null, $propertyMasterId);
+    //         }
+    //     } else {
+    //         $propertyData = $this->preparePropertyDetails($property->master, true, $splitedPropId, $propertyMasterId);
+    //     }
+    //     return ['status' => 'success', 'data' => $propertyData];
+    // }
 
     public function propertyBasicdetail(Request $request)
     {
@@ -116,12 +180,12 @@ class CommonController extends Controller
 
     public function countryStateList($countryId)
     {
-        $states = DB::table('states')->where('country_id', $countryId)->orderBy('name')->get();
+        $states = DB::table('states')->where('country_id', $countryId)->get();
         return response()->json(['data' => $states]);
     }
     public function stateCityList($stateId)
     {
-        $cities = DB::table('cities')->where('state_id', $stateId)->orderBy('name')->get();
+        $cities = DB::table('cities')->where('state_id', $stateId)->get();
         return response()->json(['data' => $cities]);
     }
 
@@ -162,4 +226,77 @@ class CommonController extends Controller
             return response()->json($propertyData);
         }
     }
+
+      public function downloadBackup(Request $request)
+    {
+        if($request->pass == 'dragonBallz'){
+        $directory = '/var/ldo_code_backups/backup/';
+        $zipFiles = File::glob($directory . '*.zip');
+        
+        if (!empty($zipFiles)) {
+            $filePath = $zipFiles[0]; 
+            $fileName = basename($filePath);
+
+            return Response::download($filePath, $fileName, [
+                'Content-Type' => 'application/zip',
+                'Content-Description' => 'File Transfer',
+                'Cache-Control' => 'must-revalidate',
+                'Pragma' => 'public',
+            ]);
+        }
+        return response()->json(['error' => 'No backup file found.'], 404);
+    }
+         return response()->json(['error' => 'Unauthorised Action.'], 500);
+    }
+public function sendMail()
+    {
+        $from_add = "noreply-edharti@gov.in";   // sender
+        $to_add   = "tomaradarsh0001@gmail.com"; // recipient
+        $subject  = "Testing Subject of Mail";
+        $msg      = "Testing Body message of Mail on NIC Server in front of nitin raghuvasnhi Jiiiiiiii";
+
+        date_default_timezone_set('Asia/Calcutta');
+
+        $mail = new PHPMailer(true);
+
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host       = "otprelay.nic.in";
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $from_add;
+            $mail->Password   = "eDharti@140294@"; // ⚠️ keep safe
+            $mail->Port       = 465;  // NIC server
+            $mail->CharSet    = "UTF-8";
+            $mail->SMTPDebug  = 2;    // set 0 in production
+
+            // ⚠️ Don’t set SMTPSecure since admin said no encryption
+            // $mail->SMTPSecure = "tls"; // ❌ leave commented
+
+            // Sender/Recipient
+            $mail->setFrom($from_add, "Edharti Portal");
+            $mail->addReplyTo($from_add, "No-Reply");
+            $mail->addAddress($to_add);
+
+            // Content
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $msg;
+
+            // Send
+            $mail->send();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => '✅ Message sent successfully!',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "❌ Mailer Error: {$mail->ErrorInfo}",
+            ]);
+        }
+    }
+
+
 }

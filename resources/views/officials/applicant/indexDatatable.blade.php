@@ -45,7 +45,7 @@
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">New Properties</li>
                 </ol>
@@ -71,9 +71,9 @@
                                 style="font-weight: bold;">
                                 <option value="">Status</option>
                                 @foreach ($items as $item)
-                                    <option class="text-capitalize" value="{{ $item->id }}"
-                                        @if ($getStatusId == $item->id) @selected(true) @endif>
-                                        {{ $item->item_name }}
+                                    <option class="text-capitalize" value="{{ $item->id }}" @if ($getStatusId == $item->id)
+                                        @selected(true)
+                                    @endif>{{ $item->item_name }}
                                     </option>
                                 @endforeach
                             </select></th>
@@ -97,7 +97,7 @@
             $('#example').DataTable({
                 processing: true,
                 serverSide: true,
-                responsive: false,
+                responsive: true,
                 ajax: {
                     url: "{{ route('get.applicant.property.listings') }}",
                     data: function(d) {
@@ -137,11 +137,10 @@
                                     let docParts = doc.split('/');
                                     let docName = docParts[docParts.length - 1];
                                     let docUrl = "{{ asset('storage/') }}/" + doc;
-
+                                    
                                     // Extract the file name without extension and the prefix
                                     let nameParts = docName.split('_');
-                                    let prefix = nameParts[
-                                        0]; // The part before the underscore
+                                    let prefix = nameParts[0]; // The part before the underscore
                                     let displayName = '';
 
                                     // Use a switch statement to map prefixes to display names
@@ -191,30 +190,17 @@
                         data: 'remark',
                         name: 'remark',
                         render: function(data, type, row) {
-                            // Check if both remark and assigned_by_name are empty
-                            if (!data.remark) {
-                                return '<span>NA</span>';
-                            }
-
-                            // Escape remark and assigned_by_name
-                            let escapedRemark = $('<div>').text(data.remark || '').html();
-                            let assignedByName = data.assigned_by_name ?
-                                $('<span>').text(' (' + data.assigned_by_name + ')')
+                            let escapedData = $('<div>').text(data.remark).html();
+                            escapedData += $('<span>').text(' (' + data.assigned_by_name + ')')
                                 .css({
                                     'font-size': '13px',
                                     'color': '#7e7e7ea1',
                                     'font-weight': '700'
-                                }).html() :
-                                '';
+                                }).html();
 
-                            // Combine escaped remark and assigned_by_name
-                            let escapedData = escapedRemark + assignedByName;
-
-                            // Truncate if too long
                             let shortRemark = escapedData.length > 30 ? escapedData.substring(0,
                                 30) + '...' : escapedData;
 
-                            // Return formatted HTML
                             return `<div class="text-wrap custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" title="${escapedData}">${shortRemark}</div>`;
                         }
                     },

@@ -1,38 +1,25 @@
 @extends('layouts.app')
 
-@section('title', 'User')
+@section('title', 'Users List')
 
-@section('content')
-<!--Breadcrumb-->
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Settings</div>
-    <div class="ps-3">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
-                </li>
-                <li class="breadcrumb-item">Application Configuration</li>
-                <li class="breadcrumb-item">User</li>
-                <li class="breadcrumb-item active" aria-current="page">Add</li>
-            </ol>
-        </nav>
-    </div>
-</div>
-<!-- End -->
+@section('content') 
     <div>
             <div class="col pt-3">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex pb-5 justify-content-between">
-                            <a href="{{ url('users/create') }}"><button class="btn btn-primary">+ Add User</button></a>
-                            <div class="d-flex gap-3">
+                            <a href="{{ route('users.create') }}" class="btn btn-primary">+ Add User</a>
+
+                            <div class="d-flex gap-3 mt-2">
                                 @haspermission('view role')
-                                    <a href="{{ url('roles') }}"><button class="btn btn-info">Roles</button></a>
+                                    <a href="{{ route('roles.index') }}" class="btn btn-info">Roles</a>
                                 @endhaspermission
+                                
                                 @haspermission('view permission')
-                                    <a href="{{ url('permissions') }}"><button class="btn btn-warning">Permissions</button></a>
+                                    <a href="{{ route('permissions.index') }}" class="btn btn-warning">Permissions</a>
                                 @endhaspermission
                             </div>
+                            
                         </div>
                         <h6 class="mb-0 text-uppercase tabular-record_font pb-4">Users</h6>
                         <table class="table mb-0">
@@ -41,9 +28,8 @@
 											<th scope="col">#</th>
 											<th scope="col">Name</th>
 											<th scope="col">Email</th>
-                                            {{-- <th scope="col">Permissions</th> --}}
-                                            <th scope="col">Status</th>
 											<th scope="col">Roles</th>
+                                            <th scope="col">Status</th>
 											<th scope="col">Action</th>
 										</tr>
 									</thead>
@@ -53,14 +39,13 @@
 											<th scope="row">{{$key+1}}</th>
 											<td>{{$user->name}}</td>
 											<td>{{$user->email}}</td>
-                                            {{-- <td>
-                                                @if (!empty($user->getDirectPermissions()))
-                                                    @foreach ($user->getDirectPermissions() as $permission)
-                                                        <span class="badge text-sm bg-info text-dark">{{ $permission->name }}</span>
-                                                    @endforeach
-                                                    
-                                                @endif
-                                            </td> --}}
+                                            <td>
+                                            @if (!empty($user->getRoleNames()))
+                                            @foreach ($user->getRoleNames() as $rolename)
+                                                <label class="badge bg-primary mx-1">{{ $rolename }}</label>
+                                            @endforeach
+                                        @endif
+                                            </td>
                                             <td>
                                                 @if(auth()->user()->can('status.user'))
                                                     @if($user->status == 1)
@@ -76,22 +61,17 @@
                                                     @endif
                                                 @endif
                                             </td>
-                                            <td>
-                                            @if (!empty($user->getRoleNames()))
-                                            @foreach ($user->getRoleNames() as $rolename)
-                                                <label class="badge bg-primary mx-1">{{ $rolename }}</label>
-                                            @endforeach
-                                        @endif
-                                            </td>
 											<td>
                                                 <div class="d-flex gap-3">
-                                                @haspermission('update user')
-                                                    <a href="{{ url('users/'.$user->id.'/edit') }}"><button type="button" class="btn btn-primary px-5">Edit</button></a>
-                                                @endhaspermission
-                                                @haspermission('delete user')
-                                                    <a href="{{ url('users/'.$user->id.'/delete') }}"> <button type="button" class="btn btn-danger px-5">Delete</button></a>
-                                                @endhaspermission
+                                                    @haspermission('update user')
+                                                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary px-5">Edit</a>
+                                                    @endhaspermission
+                                                
+                                                    @haspermission('delete user')
+                                                        <a href="{{ route('users.delete', $user->id) }}" class="btn btn-danger px-5">Delete</a>
+                                                    @endhaspermission
                                                 </div>
+                                                
                                             </td>
 										</tr>
 										@endforeach

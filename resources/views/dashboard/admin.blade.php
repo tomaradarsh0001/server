@@ -9,9 +9,9 @@ $layout = $isPublic ? 'layouts.public.app' : 'layouts.app';
 
 @section('title', 'Dashboard')
 @section('content')
-@if ($isPublic || (Auth::check() && Auth::user()->hasPermissionTo('view dashboard')))
+@if($isPublic ||( Auth::check() && Auth::user()->hasPermissionTo('view dashboard')))
 
-@if ($isPublic)
+@if($isPublic)
 <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/css/bootstrap-extended.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-select.min.css') }}">
@@ -62,53 +62,50 @@ $number_of_colonies = getMisDoneColoniesCount();
         color: #fff !important;
     }
 
-            .view-list {
-                cursor: pointer;
-            }
-            @media (max-width: 767px) {
-                .colony-dropdown{
-                    margin:0 auto!important;
-                    width: 80% !important;
-                }
-            }
-        </style>
-        <!--breadcrumb-->
-        <div class="container-fluid">
-            <div class="row justify-content-between mb-3">
-                <div class="col-lg-6">
-                    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-                        <div class="breadcrumb-title pe-3">Dashboard</div>
-                        <div class="ps-3">
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb mb-0 p-0">
-                                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i
-                                                class="bx bx-home-alt"></i></a>
-                                    </li>
-                                    <li class="breadcrumb-item">Dashboards</li>
-                                    @if (Auth::user()->hasRole('super-admin'))
+    .view-list {
+        cursor: pointer;
+    }
+</style>
+<!--breadcrumb-->
+<div class="container-fluid">
+    <div class="row justify-content-between mb-3">
+        <div class="col-lg-6">
+            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                <div class="breadcrumb-title pe-3">Dashboard</div>
+                <div class="ps-3">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0 p-0">
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                            </li>
+                            <li class="breadcrumb-item">Dashboards</li>
+                           @if (Auth::user()->hasRole('super-admin'))
                                         <li class="breadcrumb-item active" aria-current="page">My Dashboard</li>
                                     @else
                                         <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                                     @endif
-                                </ol>
-                            </nav>
-                        </div>
-                    </div>
+                        </ol>
+                    </nav>
                 </div>
-                <div class="col-lg-6">
-                    <div class="colony-dropdown ms-auto">
-                        <select id="colony-filter" class="selectpicker" data-live-search="true">
-                            <option value="">Filter by Colony ({{ $number_of_colonies }})</option>
-                            @foreach ($colonies as $colony)
-                                <option value="{{ $colony->id }}">{{ $colony->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="colony-dropdown ms-auto">
+                <select id="colony-filter" class="selectpicker" data-live-search="true">
+                    <option value="">Filter by Colony ({{$number_of_colonies}})</option>
+                    @foreach($colonies as $colony)
+                    <option value="{{$colony->id}}">{{$colony->name}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
 
 
     </div>
+   
 </div>
+
+
+
 
 <div class="container-fluid">
     <div class="row row-cols-2 row-cols-md-2 row-cols-xl-4 custom_card_container">
@@ -117,13 +114,11 @@ $number_of_colonies = getMisDoneColoniesCount();
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/properties-icon-hand-Total.svg') }}" alt="properties">
+                                src="{{asset('assets/images/properties-icon-hand-Total.svg')}}" alt="properties">
                         </div>
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark view-list" id="tile_total_count"
-                                data-original="{{ customNumFormat($totalCount) }}">
-                                {{ customNumFormat($totalCount) }}
-                            </h4>
+                                data-original="{{customNumFormat($totalCount)}}">{{customNumFormat($totalCount)}}</h4>
                             <p class="mb-0 text-secondary">Total No. of Properties in Delhi</p>
                         </div>
                     </div>
@@ -135,13 +130,13 @@ $number_of_colonies = getMisDoneColoniesCount();
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #FFF3E0;"><img
-                                src="{{ asset('assets/images/pageless-Total.svg') }}" alt="Pageless">
+                            style="background-color: #FFF3E0;"><img src="{{asset('assets/images/pageless-Total.svg')}}"
+                                alt="Pageless">
                         </div>
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark" id="tile_total_area_formatted"
-                                data-original="{{ customNumFormat(round($totalArea)) }}">
-                                {{ customNumFormat(round($totalArea)) }}
+                                data-original="{{customNumFormat(round($totalArea))}}">
+                                {{customNumFormat(round($totalArea))}}
                             </h4>
                             <p class="mb-0 text-secondary">Total Area (Sqm)</p>
                         </div>
@@ -149,40 +144,40 @@ $number_of_colonies = getMisDoneColoniesCount();
                 </div>
             </div>
         </div>
-        <div class="col hoverable" title="₹{{ customNumFormat($totalLdoValue) }}" id="tile_total_land_value_ldo"
-            data-original="₹{{ customNumFormat($totalLdoValue) }}">
+        <div class="col hoverable" title="₹{{customNumFormat($totalLdoValue)}}" id="tile_total_land_value_ldo"
+            data-original="₹{{customNumFormat($totalLdoValue)}}">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #F3E5F5;"><img
-                                src="{{ asset('assets/images/sell-Total.svg') }}" alt="Land Value">
+                            style="background-color: #F3E5F5;"><img src="{{asset('assets/images/sell-Total.svg')}}"
+                                alt="Land Value">
                         </div>
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark" id="tile_total_land_value_ldo_formatted"
-                                data-original="₹{{ customNumFormat(round($totalLdoValue / 10000000)) }} Cr.">
-                                ₹{{ customNumFormat(round($totalLdoValue / 10000000)) }} Cr.</h4>
-                            <p class="mb-0 text-secondary">Total Land Value (L&DO)
+                                data-original="₹{{customNumFormat(round($totalLdoValue/10000000))}} Cr.">
+                                ₹{{customNumFormat(round($totalLdoValue/10000000))}} Cr.</h4>
+                            <p class="mb-0 text-secondary">Total Land Value (L&DO land rates)
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col hoverable" title="₹{{ customNumFormat($totalCircleValue) }}"
-            id="tile_total_land_value_circle" data-original="₹{{ customNumFormat($totalCircleValue) }}">
+        <div class="col hoverable" title="₹{{customNumFormat($totalCircleValue)}}" id="tile_total_land_value_circle"
+            data-original="₹{{customNumFormat($totalCircleValue)}}">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #E0F2F1;"><img
-                                src="{{ asset('assets/images/payments-Total.svg') }}" alt="properties">
+                            style="background-color: #E0F2F1;"><img src="{{asset('assets/images/payments-Total.svg')}}"
+                                alt="properties">
                         </div>
                         <div>
                             <h4 class="my-1 text-dark grid-icons-size" id="tile_total_land_value_circle_formatted"
-                                data-original="₹{{ customNumFormat(round($totalCircleValue / 10000000)) }} Cr.">
-                                ₹{{ customNumFormat(round($totalCircleValue / 10000000)) }} Cr.</h4>
-                            <p class="mb-0 text-secondary">Total Land Value (Circle rate)
+                                data-original="₹{{customNumFormat(round($totalCircleValue/10000000))}} Cr.">
+                                ₹{{customNumFormat(round($totalCircleValue/10000000))}} Cr.</h4>
+                            <p class="mb-0 text-secondary">Total Land Value (Circle rates)
 
                             </p>
                         </div>
@@ -197,13 +192,13 @@ $number_of_colonies = getMisDoneColoniesCount();
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/properties-icon-hand-LH.svg') }}" alt="properties">
+                                src="{{asset('assets/images/properties-icon-hand-LH.svg')}}" alt="properties">
                         </div>
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark view-list" id="tile_lease_hold_count"
-                                data-original="{{ customNumFormat($statusCount['lease_hold']) }}"
+                                data-original="{{customNumFormat($statusCount['lease_hold'])}}"
                                 data-filter-name="property_status" data-filter-value="951">
-                                {{ customNumFormat($statusCount['lease_hold']) }}
+                                {{customNumFormat($statusCount['lease_hold'])}}
                             </h4>
                             <p class="mb-0 text-secondary">Total No. of LH Properties in Delhi</p>
                         </div>
@@ -216,13 +211,13 @@ $number_of_colonies = getMisDoneColoniesCount();
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #FFF3E0;"><img
-                                src="{{ asset('assets/images/pageless-LH.svg') }}" alt="Pageless">
+                            style="background-color: #FFF3E0;"><img src="{{asset('assets/images/pageless-LH.svg')}}"
+                                alt="Pageless">
                         </div>
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark" id="tile_lease_hold_area"
-                                data-original="{{ customNumFormat(round($statusArea['lease_hold'])) }}">
-                                {{ customNumFormat(round($statusArea['lease_hold'])) }}
+                                data-original="{{customNumFormat(round($statusArea['lease_hold']))}}">
+                                {{customNumFormat(round($statusArea['lease_hold']))}}
                             </h4>
                             <p class="mb-0 text-secondary">Total Area of LH Properties (Sqm)</p>
                         </div>
@@ -230,44 +225,41 @@ $number_of_colonies = getMisDoneColoniesCount();
                 </div>
             </div>
         </div>
-        <div class="col hoverable" title="₹{{ customNumFormat($statusLdoValue['lease_hold']) }}"
-            id="tile_lease_hold_land_value_ldo"
-            data-original="₹{{ customNumFormat($statusLdoValue['lease_hold']) }}">
+        <div class="col hoverable" title="₹{{customNumFormat($statusLdoValue['lease_hold'])}}"
+            id="tile_lease_hold_land_value_ldo" data-original="₹{{customNumFormat($statusLdoValue['lease_hold'])}}">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #F3E5F5;"><img
-                                src="{{ asset('assets/images/sell-LH.svg') }}" alt="Land Value">
+                            style="background-color: #F3E5F5;"><img src="{{asset('assets/images/sell-LH.svg')}}"
+                                alt="Land Value">
                         </div>
                         <div>
-                            <h4 class="my-1 grid-icons-size text-dark"
-                                id="tile_lease_hold_land_value_ldo_formatted"
-                                data-original="₹{{ customNumFormat(round($statusLdoValue['lease_hold'] / 10000000)) }} Cr.">
-                                ₹{{ customNumFormat(round($statusLdoValue['lease_hold'] / 10000000)) }} Cr.</h4>
-                            <p class="mb-0 text-secondary">Total LH Land Value (L&DO)
+                            <h4 class="my-1 grid-icons-size text-dark" id="tile_lease_hold_land_value_ldo_formatted"
+                                data-original="₹{{customNumFormat(round($statusLdoValue['lease_hold']/10000000))}} Cr.">
+                                ₹{{customNumFormat(round($statusLdoValue['lease_hold']/10000000))}} Cr.</h4>
+                            <p class="mb-0 text-secondary">Total LH Land Value (L&DO land rates)
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col hoverable" title="₹{{ customNumFormat($statusCircleValue['lease_hold']) }}"
+        <div class="col hoverable" title="₹{{customNumFormat($statusCircleValue['lease_hold'])}}"
             id="tile_lease_hold_land_value_circle"
-            data-original="₹{{ customNumFormat($statusCircleValue['lease_hold']) }}">
+            data-original="₹{{customNumFormat($statusCircleValue['lease_hold'])}}">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #E0F2F1;"><img
-                                src="{{ asset('assets/images/payments-LH.svg') }}" alt="properties">
+                            style="background-color: #E0F2F1;"><img src="{{asset('assets/images/payments-LH.svg')}}"
+                                alt="properties">
                         </div>
                         <div>
-                            <h4 class="my-1 text-dark grid-icons-size"
-                                id="tile_lease_hold_land_value_circle_formatted"
-                                data-original="₹{{ customNumFormat(round($statusCircleValue['lease_hold'] / 10000000)) }} Cr.">
-                                ₹{{ customNumFormat(round($statusCircleValue['lease_hold'] / 10000000)) }} Cr.</h4>
-                            <p class="mb-0 text-secondary">Total LH Land Value (Circle rate)</p>
+                            <h4 class="my-1 text-dark grid-icons-size" id="tile_lease_hold_land_value_circle_formatted"
+                                data-original="₹{{customNumFormat(round($statusCircleValue['lease_hold']/10000000))}} Cr.">
+                                ₹{{customNumFormat(round($statusCircleValue['lease_hold']/10000000))}} Cr.</h4>
+                            <p class="mb-0 text-secondary">Total LH Land Value (Circle rates)</p>
                         </div>
                     </div>
                 </div>
@@ -281,13 +273,13 @@ $number_of_colonies = getMisDoneColoniesCount();
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/properties-icon-hand-FH.svg') }}" alt="properties">
+                                src="{{asset('assets/images/properties-icon-hand-FH.svg')}}" alt="properties">
                         </div>
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark view-list" id="tile_free_hold_count"
-                                data-original="{{ customNumFormat($statusCount['free_hold']) }}"
+                                data-original="{{customNumFormat($statusCount['free_hold'])}}"
                                 data-filter-name="property_status" data-filter-value="952">
-                                {{ customNumFormat($statusCount['free_hold']) }}
+                                {{customNumFormat($statusCount['free_hold'])}}
                             </h4>
                             <p class="mb-0 text-secondary">Total No. of FH Properties in Delhi</p>
                         </div>
@@ -300,13 +292,13 @@ $number_of_colonies = getMisDoneColoniesCount();
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #FFF3E0;"><img
-                                src="{{ asset('assets/images/pageless-FH.svg') }}" alt="Pageless">
+                            style="background-color: #FFF3E0;"><img src="{{asset('assets/images/pageless-FH.svg')}}"
+                                alt="Pageless">
                         </div>
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_area"
-                                data-original="{{ customNumFormat(round($statusArea['free_hold'])) }}">
-                                {{ customNumFormat(round($statusArea['free_hold'])) }}
+                                data-original="{{customNumFormat(round($statusArea['free_hold']))}}">
+                                {{customNumFormat(round($statusArea['free_hold']))}}
                             </h4>
                             <p class="mb-0 text-secondary">Total Area of FH Properties (Sqm)</p>
                         </div>
@@ -314,43 +306,39 @@ $number_of_colonies = getMisDoneColoniesCount();
                 </div>
             </div>
         </div>
-        <div class="col hoverable" title="₹{{ customNumFormat($statusLdoValue['free_hold']) }}"
-            id="tile_free_hold_land_value_ldo"
-            data-original="₹{{ customNumFormat($statusLdoValue['free_hold']) }}">
+        <div class="col hoverable" title="₹{{customNumFormat($statusLdoValue['free_hold'])}}"
+            id="tile_free_hold_land_value_ldo" data-original="₹{{customNumFormat($statusLdoValue['free_hold'])}}">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #F3E5F5;"><img
-                                src="{{ asset('assets/images/sell-FH.svg') }}" alt="Land Value">
+                            style="background-color: #F3E5F5;"><img src="{{asset('assets/images/sell-FH.svg')}}"
+                                alt="Land Value">
                         </div>
                         <div>
-                            <h4 class="my-1 grid-icons-size text-dark"
-                                id="tile_free_hold_land_value_ldo_formatted"
-                                data-original="₹{{ customNumFormat(round($statusLdoValue['free_hold'] / 10000000)) }} Cr.">
-                                ₹{{ customNumFormat(round($statusLdoValue['free_hold'] / 10000000)) }} Cr.</h4>
-                            <p class="mb-0 text-secondary">Total FH Land Value (L&DO)</p>
+                            <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_land_value_ldo_formatted"
+                                data-original="₹{{customNumFormat(round($statusLdoValue['free_hold']/10000000))}} Cr.">
+                                ₹{{customNumFormat(round($statusLdoValue['free_hold']/10000000))}} Cr.</h4>
+                            <p class="mb-0 text-secondary">Total FH Land Value (L&DO land rates)</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col hoverable" title="₹{{ customNumFormat($statusCircleValue['free_hold']) }}"
-            id="tile_free_hold_land_value_circle"
-            data-original="₹{{ customNumFormat($statusCircleValue['free_hold']) }}">
+        <div class="col hoverable" title="₹{{customNumFormat($statusCircleValue['free_hold'])}}"
+            id="tile_free_hold_land_value_circle" data-original="₹{{customNumFormat($statusCircleValue['free_hold'])}}">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
-                            style="background-color: #E0F2F1;"><img
-                                src="{{ asset('assets/images/payments-FH.svg') }}" alt="properties">
+                            style="background-color: #E0F2F1;"><img src="{{asset('assets/images/payments-FH.svg')}}"
+                                alt="properties">
                         </div>
                         <div>
-                            <h4 class="my-1 text-dark grid-icons-size"
-                                id="tile_free_hold_land_value_circle_formatted"
-                                data-original="₹{{ customNumFormat(round($statusCircleValue['free_hold'] / 10000000)) }} Cr.">
-                                ₹{{ customNumFormat(round($statusCircleValue['free_hold'] / 10000000)) }} Cr.</h4>
-                            <p class="mb-0 text-secondary">Total FH Land Value (Circle rate)
+                            <h4 class="my-1 text-dark grid-icons-size" id="tile_free_hold_land_value_circle_formatted"
+                                data-original="₹{{customNumFormat(round($statusCircleValue['free_hold']/10000000))}} Cr.">
+                                ₹{{customNumFormat(round($statusCircleValue['free_hold']/10000000))}} Cr.</h4>
+                            <p class="mb-0 text-secondary">Total FH Land Value (Circle rates)
 
                             </p>
                         </div>
@@ -368,15 +356,13 @@ $number_of_colonies = getMisDoneColoniesCount();
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/properties-icon-hand.svg') }}" alt="properties">
+                                src="{{asset('assets/images/properties-icon-hand.svg')}}" alt="properties">
                         </div>
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark view-list" id="tile_unallotted_count"
-                                data-original="{{ customNumFormat($statusCount['unallotted']) }}"
-                                data-filter-name="property_status" data-filter-value="unalloted">
-                                {{ customNumFormat($statusCount['unallotted']) }}
-                            </h4>
-                            <p class="mb-0 text-secondary">Total No. of Unallotted Properties</p>
+                                data-original="{{customNumFormat($statusCount['unallotted'])}}" data-filter-name="property_status"
+                                data-filter-value="unalloted">{{customNumFormat($statusCount['unallotted'])}}</h4>
+                            <p class="mb-0 text-secondary">Total No. of Unallotted Properties in Delhi</p>
                         </div>
                     </div>
                 </div>
@@ -386,14 +372,14 @@ $number_of_colonies = getMisDoneColoniesCount();
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
-                        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/pageless.svg') }}" alt="Pageless">
+                        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img src="{{asset('assets/images/pageless.svg')}}"
+                                alt="Pageless">
                         </div>
 
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark" id="tile_unallotted_area"
-                                data-original=" {{ customNumFormat(round($statusArea['unallotted'])) }}">
-                                {{ customNumFormat(round($statusArea['unallotted'])) }}
+                                data-original=" {{customNumFormat(round($statusArea['unallotted']))}}">
+                                {{customNumFormat(round($statusArea['unallotted']))}}
                             </h4>
                             <p class="mb-0 text-secondary">Total Area of Unallotted Properties (Sqm)</p>
                         </div>
@@ -403,21 +389,19 @@ $number_of_colonies = getMisDoneColoniesCount();
                 </div>
             </div>
         </div>
-        <div class="col hoverable" title="₹{{ customNumFormat($statusLdoValue['unallotted']) }}"
-            id="tile_unallotted_land_value_ldo"
-            data-original="₹{{ customNumFormat($statusLdoValue['unallotted']) }}">
+        <div class="col hoverable" title="₹{{customNumFormat($statusLdoValue['unallotted'])}}" id="tile_unallotted_land_value_ldo"
+            data-original="₹{{customNumFormat($statusLdoValue['unallotted'])}}">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
-                        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/sell.svg') }}" alt="Land Value">
+                        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img src="{{asset('assets/images/sell.svg')}}"
+                                alt="Land Value">
                         </div>
                         <div>
-                            <h4 class="my-1 grid-icons-size text-dark"
-                                id="tile_unallotted_land_value_ldo_formatted"
-                                data-original="₹{{ customNumFormat(round($statusLdoValue['unallotted'] / 10000000)) }} Cr.">
-                                ₹{{ customNumFormat(round($statusLdoValue['unallotted'] / 10000000)) }} Cr.</h4>
-                            <p class="mb-0 text-secondary">Total Unallotted Land Value (L&DO)</p>
+                            <h4 class="my-1 grid-icons-size text-dark" id="tile_unallotted_land_value_ldo_formatted"
+                                data-original="₹{{customNumFormat(round($statusLdoValue['unallotted']/10000000))}} Cr.">
+                                ₹{{customNumFormat(round($statusLdoValue['unallotted']/10000000))}} Cr.</h4>
+                            <p class="mb-0 text-secondary">Total Unallotted Land Value (L&DO land rates)</p>
                         </div>
                     </div>
 
@@ -425,21 +409,19 @@ $number_of_colonies = getMisDoneColoniesCount();
                 </div>
             </div>
         </div>
-        <div class="col hoverable" title="₹{{ customNumFormat($statusCircleValue['unallotted']) }}"
-            id="tile_unallotted_land_value_circle"
-            data-original="₹{{ customNumFormat($statusCircleValue['unallotted']) }}">
+        <div class="col hoverable" title="₹{{customNumFormat($statusCircleValue['unallotted'])}}" id="tile_unallotted_land_value_circle"
+            data-original="₹{{customNumFormat($statusCircleValue['unallotted'])}}">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
-                        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/payments.svg') }}" alt="properties">
+                        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img src="{{asset('assets/images/payments.svg')}}"
+                                alt="properties">
                         </div>
                         <div>
-                            <h4 class="my-1 text-dark grid-icons-size"
-                                id="tile_unallotted_land_value_circle_formatted"
-                                data-original="₹{{ customNumFormat(round($statusCircleValue['unallotted'] / 10000000)) }} Cr.">
-                                ₹{{ customNumFormat(round($statusCircleValue['unallotted'] / 10000000)) }} Cr.</h4>
-                            <p class="mb-0 text-secondary">Total Unallotted Land Value (Circle rate)
+                            <h4 class="my-1 text-dark grid-icons-size" id="tile_unallotted_land_value_circle_formatted"
+                                data-original="₹{{customNumFormat(round($statusCircleValue['unallotted']/10000000))}} Cr.">
+                                ₹{{customNumFormat(round($statusCircleValue['unallotted']/10000000))}} Cr.</h4>
+                            <p class="mb-0 text-secondary">Total Unallotted Land Value (Circle rates)
 
                             </p>
                         </div>
@@ -448,17 +430,18 @@ $number_of_colonies = getMisDoneColoniesCount();
             </div>
         </div>
     </div>
-    <div class="row row-cols-2 row-cols-md-2 row-cols-xl-4 custom_card_container  outside-tiles">
+<div class="row row-cols-2 row-cols-md-2 row-cols-xl-4 custom_card_container  outside-tiles">
         <div class="col">
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
                         <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/properties-icon-hand-OD.svg') }}" alt="properties">
+                                src="{{asset('assets/images/properties-icon-hand-OD.svg')}}" alt="properties">
                         </div>
                         <div>
-                            <h4 class="my-1 grid-icons-size text-dark view-list" id="outside_count"
-                                data-filter-value="vaccant">{{ customNumFormat($outsideProperty['count']) }}</h4>
+                          
+                           <h4 class="my-1 grid-icons-size text-dark view-list" id="outside_count"
+                                data-filter-value="vaccant">{{customNumFormat($outsideProperty['count'])}}</h4>
                             <p class="mb-0 text-secondary">Total No. of Properties Outside Delhi</p>
                         </div>
                     </div>
@@ -469,159 +452,291 @@ $number_of_colonies = getMisDoneColoniesCount();
             <div class="card radius-10 border-start border-0">
                 <div class="card-body">
                     <div class="d-flex align-items-center dashboard-cards">
-                        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img
-                                src="{{ asset('assets/images/pageless-OD.svg') }}" alt="Pageless">
+                        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"><img src="{{asset('assets/images/pageless-OD.svg')}}"
+                                alt="Pageless">
                         </div>
 
                         <div>
                             <h4 class="my-1 grid-icons-size text-dark" id="outside_area">
-                                {{ customNumFormat(round($outsideProperty['total_area'])) }}
+                                {{customNumFormat(round($outsideProperty['total_area']))}}
                             </h4>
-                            <p class="mb-0 text-secondary">Total Area of Properties Outside Delhi(Sqm)</p>
+                            <p class="mb-0 text-secondary">Total Area of Properties Outside Delhi (Sqm)</p>
                         </div>
 
 
                     </div>
                 </div>
             </div>
-        </div>
+        </div>        
     </div>
 
-    <!-- Flats-->
 
-    <div class="row row-cols-2 row-cols-md-2 row-cols-xl-6 custom_card_container">
-
+    <!-- ---------------------------------------------------------------------------- -->
+    {{-- <div class="row row-cols-1 row-cols-xl-2 custom_card_container">
         <div class="col">
-            <div class="card radius-10 border-start border-0">
-                <div class="card-body">
-                    <div class="text-center">
-                        <div class="widgets-icons-2 rounded-circle text-white m-auto"
-                            style="background-color: #E0F2F1;"><img
-                                src="{{ asset('assets/images/residential.svg') }}" alt="properties">
-                        </div>
-                        <div>
-                            <h4 class="my-1 text-dark view-list" id="residential_count"
-                                data-original="{{ customNumFormat($propertyTypeCount['Residential']) }}"
-                                data-filter-name="property_type" data-filter-value="47">
-                                {{ customNumFormat($propertyTypeCount['Residential']) }}
-                            </h4>
-                            <p class="mb-0 text-secondary">Residential</p>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card radius-10 border-start border-0">
-                <div class="card-body">
-                    <div class="text-center">
-                        <div class="widgets-icons-2 rounded-circle text-white m-auto"
-                            style="background-color: #FFF3E0;"><img
-                                src="{{ asset('assets/images/commercial.svg') }}" alt="properties">
-                        </div>
-                        <div>
-                            <h4 class="my-1 text-dark view-list" id="commercial_count"
-                                data-original="{{ customNumFormat($propertyTypeCount['Commercial']) }}"
-                                data-filter-name="property_type" data-filter-value="48">
-                                {{ customNumFormat($propertyTypeCount['Commercial']) }}
-                            </h4>
-                            <p class="mb-0 text-secondary">Commercial</p>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card radius-10 border-start border-0">
-                <div class="card-body">
-                    <div class="text-center">
-                        <div class="widgets-icons-2 rounded-circle text-white m-auto"
-                            style="background-color:#fde7e6;"> <!-- added bg color by anil on 24-03-2025 -->
-                            <img src="{{ asset('assets/images/factory.svg') }}" alt="Industrial">
-                        </div>
-                        <div>
-                            <h4 class="my-1 text-dark view-list" id="industrial_count"
-                                data-original="{{ customNumFormat($propertyTypeCount['Industrial']) }}"
-                                data-filter-name="property_type" data-filter-value="469">
-                                {{ customNumFormat($propertyTypeCount['Industrial']) }}
-                            </h4>
-                            <p class="mb-0 text-secondary">Industrial</p>
-
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card radius-10 border-start border-0">
-                <div class="card-body">
-                    <div class="text-center">
-                        <div class="widgets-icons-2 rounded-circle text-white m-auto"
-                            style="background-color:#e2eff5;"> <!-- added bg color by anil on 24-03-2025 -->
-                            <img src="{{ asset('assets/images/institute-Inst.svg') }}" alt="properties">
-                        </div>
-                        <div>
-                            <h4 class="my-1 text-dark view-list" id="institutional_count"
-                                data-original="{{ customNumFormat($propertyTypeCount['Institutional']) }}"
-                                data-filter-name="property_type" data-filter-value="49">
-                                {{ customNumFormat($propertyTypeCount['Institutional']) }}
-                            </h4>
-                            <p class="mb-0 text-secondary">Institutional</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card radius-10 border-start border-0">
-                <div class="card-body">
-                    <div class="text-center">
-                        <div class="widgets-icons-2 rounded-circle text-white m-auto"
-                            style="background-color: #d6eff1;"> <!-- added bg color by anil on 24-03-2025 -->
-                            <img src="{{ asset('assets/images/institute-Mix.svg') }}" alt="properties">
-                        </div>
-                        <div>
-                            <h4 class="my-1 text-dark view-list" id="mixed_count"
-                                data-original="{{ customNumFormat($propertyTypeCount['Mixed']) }}"
-                                data-filter-name="property_type" data-filter-value="72">
-                                {{ customNumFormat($propertyTypeCount['Mixed']) }}
-                            </h4>
-                            <p class="mb-0 text-secondary">Mixed</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card radius-10 border-start border-0">
-                <div class="card-body">
-                    <div class="text-center">
-                        <div class="widgets-icons-2 rounded-circle text-white m-auto"
-                            style="background-color: #f5e2d5;"> <!-- added bg color by anil on 24-03-2025 -->
-                            <img src="{{ asset('assets/images/institute-Other.svg') }}" alt="properties">
-                        </div>
-                        <div>
-                            <h4 class="my-1 text-dark view-list" id="others_count"
-                                data-original="{{ customNumFormat($propertyTypeCount['Others']) }}"
-                                data-filter-name="property_type" data-filter-value="1353">
-                                {{ customNumFormat($propertyTypeCount['Others']) }}
-                            </h4>
-                            <p class="mb-0 text-secondary">Others</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-    <!--end row-->
-
+            <div class="card green-gradient">
+                <div class="container-fluid">
+                    <div class="row row-cols-xl-2 row-cols-1">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center dashboard-cards">
+                                <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
+                                    style="background-color: #fff;"><img
+                                        src="{{asset('assets/images/properties-icon-hand.svg')}}" alt="properties">
+</div>
+<div>
+    <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_count"
+        data-original="">7,864</h4>
+    <p class="mb-0 text-secondary">Total No. of Transferred Land Parcels</p>
+</div>
+</div>
 </div>
 
+<div class="card-body">
+    <div class="d-flex align-items-center dashboard-cards">
+        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
+            style="background-color: #fff;"><img
+                src="{{asset('assets/images/properties-icon-hand.svg')}}" alt="properties">
+        </div>
+        <div>
+            <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_count"
+                data-original="">7,864</h4>
+            <p class="mb-0 text-secondary">No. of Transferred land to DDA</p>
+        </div>
+    </div>
+</div>
 
+<div class="card-body">
+    <div class="d-flex align-items-center dashboard-cards">
+        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
+            style="background-color: #fff;"><img src="{{asset('assets/images/payments.svg')}}"
+                alt="properties">
+        </div>
+        <div>
+            <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_count"
+                data-original="">₹8,234 Cr.</h4>
+            <p class="mb-0 text-secondary">No. of Transferred Land to MCD/NDMC</p>
+        </div>
+    </div>
+</div>
+
+<div class="card-body">
+    <div class="d-flex align-items-center dashboard-cards">
+        <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
+            style="background-color: #fff;"><img src="{{asset('assets/images/payments.svg')}}"
+                alt="properties">
+        </div>
+        <div>
+            <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_count"
+                data-original="">7,864</h4>
+            <p class="mb-0 text-secondary">No. of Land Transferred from NAC</p>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col">
+    <div class="container-fluid govt_land_col">
+        <div class="row row-cols-xl-2 row-cols-1">
+            <div class="col" style="padding-left: 0px">
+                <div class="card blue-gradient mb-1">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center dashboard-cards">
+                            <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
+                                style="background-color: #fff;"><img
+                                    src="{{asset('assets/images/properties-icon-hand.svg')}}" alt="properties">
+                            </div>
+                            <div>
+                                <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_count"
+                                    data-original="">7,864</h4>
+                                <p class="mb-0 text-secondary">Total No. of Govt. Land Parcels</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="padding-right: 0px">
+                <div class="card blue-gradient mb-1">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center dashboard-cards">
+                            <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
+                                style="background-color: #fff;"><img
+                                    src="{{asset('assets/images/properties-icon-hand.svg')}}" alt="properties">
+                            </div>
+                            <div>
+                                <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_count"
+                                    data-original="">7,864</h4>
+                                <p class="mb-0 text-secondary">Total No. of Alloted Land</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="padding-left: 0px">
+                <div class="card blue-gradient">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center dashboard-cards">
+                            <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
+                                style="background-color: #fff;"><img
+                                    src="{{asset('assets/images/properties-icon-hand.svg')}}" alt="properties">
+                            </div>
+                            <div>
+                                <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_count"
+                                    data-original="">7,864</h4>
+                                <p class="mb-0 text-secondary">Total Available Land in Delhi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="padding-right: 0px">
+                <div class="card blue-gradient">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center dashboard-cards">
+                            <div class="widgets-icons-2 rounded-circle text-white mr-icons-margin"
+                                style="background-color: #fff;"><img
+                                    src="{{asset('assets/images/properties-icon-hand.svg')}}" alt="properties">
+                            </div>
+                            <div>
+                                <h4 class="my-1 grid-icons-size text-dark" id="tile_free_hold_count"
+                                    data-original="">7,864</h4>
+                                <p class="mb-0 text-secondary">Total Available Land Outside Delhi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--------------------------------------------------------------------------------------------------------->
+</div> --}}
+<div class="row row-cols-2 row-cols-md-2 row-cols-xl-6 custom_card_container">
+
+    <div class="col">
+        <div class="card radius-10 border-start border-0">
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="widgets-icons-2 rounded-circle text-white m-auto"
+                        style="background-color: #E0F2F1;"><img src="{{asset('assets/images/residential.svg')}}"
+                            alt="properties">
+                    </div>
+                    <div>
+                        <h4 class="my-1 text-dark view-list" id="residential_count"
+                            data-original="{{customNumFormat($propertyTypeCount['Residential'])}}"
+                            data-filter-name="property_type" data-filter-value="47">
+                            {{customNumFormat($propertyTypeCount['Residential'])}}
+                        </h4>
+                        <p class="mb-0 text-secondary">Residential</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card radius-10 border-start border-0">
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="widgets-icons-2 rounded-circle text-white m-auto"
+                        style="background-color: #FFF3E0;"><img src="{{asset('assets/images/commercial.svg')}}"
+                            alt="properties">
+                    </div>
+                    <div>
+                        <h4 class="my-1 text-dark view-list" id="commercial_count"
+                            data-original="{{customNumFormat($propertyTypeCount['Commercial'])}}"
+                            data-filter-name="property_type" data-filter-value="48">
+                            {{customNumFormat($propertyTypeCount['Commercial'])}}
+                        </h4>
+                        <p class="mb-0 text-secondary">Commercial</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card radius-10 border-start border-0">
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="widgets-icons-2 rounded-circle text-white m-auto" style="background-color: #fde7e6;"><img src="{{asset('assets/images/factory.svg')}}"
+                            alt="Industrial">
+                    </div>
+                    <div>
+                        <h4 class="my-1 text-dark view-list" id="industrial_count"
+                            data-original="{{customNumFormat($propertyTypeCount['Industrial'])}}"
+                            data-filter-name="property_type" data-filter-value="469">
+                            {{customNumFormat($propertyTypeCount['Industrial'])}}
+                        </h4>
+                        <p class="mb-0 text-secondary">Industrial</p>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card radius-10 border-start border-0">
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="widgets-icons-2 rounded-circle text-white m-auto" style="background-color: #e2eff5;"><img
+                            src="{{asset('assets/images/institute-Inst.svg')}}" alt="properties">
+                    </div>
+                    <div>
+                        <h4 class="my-1 text-dark view-list" id="institutional_count"
+                            data-original="{{customNumFormat($propertyTypeCount['Institutional'])}}"
+                            data-filter-name="property_type" data-filter-value="49">
+                            {{customNumFormat($propertyTypeCount['Institutional'])}}
+                        </h4>
+                        <p class="mb-0 text-secondary">Institutional</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card radius-10 border-start border-0">
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="widgets-icons-2 rounded-circle text-white m-auto" style="background-color: #d6eff1;"><img
+                            src="{{asset('assets/images/institute-Mix.svg')}}" alt="properties">
+                    </div>
+                    <div>
+                        <h4 class="my-1 text-dark view-list" id="mixed_count"
+                            data-original="{{customNumFormat($propertyTypeCount['Mixed'])}}"
+                            data-filter-name="property_type" data-filter-value="72">
+                            {{customNumFormat($propertyTypeCount['Mixed'])}}
+                        </h4>
+                        <p class="mb-0 text-secondary">Mixed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card radius-10 border-start border-0">
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="widgets-icons-2 rounded-circle text-white m-auto" style="background-color: #f5e2d5;"><img
+                            src="{{asset('assets/images/institute-Other.svg')}}" alt="properties">
+                    </div>
+                    <div>
+                        <h4 class="my-1 text-dark view-list" id="others_count"
+                            data-original="{{customNumFormat($propertyTypeCount['Others'])}}"
+                            data-filter-name="property_type" data-filter-value="1353">
+                            {{customNumFormat($propertyTypeCount['Others'])}}
+                        </h4>
+                        <p class="mb-0 text-secondary">Others</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--end row-->
 <div id="no-filter-applied">
     <div class="row">
         <div class="col-12 col-lg-5">
@@ -631,17 +746,17 @@ $number_of_colonies = getMisDoneColoniesCount();
                         <div>
                             <h6 class="mb-0">No. of Properties Land Type Wise</h6>
                         </div>
-                        <!-- <div class="dropdown ms-auto">
-                                    <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i
-                                            class='bx bx-dots-horizontal-rounded font-22 text-option'></i>
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="javascript:;">Export PDF</a>
-                                        </li>
-                                        <li><a class="dropdown-item" href="javascript:;">Export CSV</a>
-                                        </li>
-                                    </ul>
-                                </div> -->
+                        <div class="dropdown ms-auto">
+                            <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i
+                                    class='bx bx-dots-horizontal-rounded font-22 text-option'></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:;">Export PDF</a>
+                                </li>
+                                <li><a class="dropdown-item" href="javascript:;">Export CSV</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="chart-container-1" style="height: 390px;">
@@ -658,11 +773,11 @@ $number_of_colonies = getMisDoneColoniesCount();
                         <table class="table table-striped text-center">
                             <thead>
                                 <tr>
-                                    <th>Area (Sqm)</th>
+                                    <th>Area (Sqm.)</th>
                                     <th>No. of Properties</th>
                                     <th>No. of Lease Hold Properties</th>
                                     <th>No. of Free Hold Properties</th>
-                                    <th>Area of Properties</th>
+                                    <th>Area of Properties (Sqm.)</th>
                                 </tr>
                             </thead>
                             @php
@@ -674,22 +789,17 @@ $number_of_colonies = getMisDoneColoniesCount();
                             $freeHoldCount = 0;
                             @endphp
                             <tbody>
-                                {{-- @dd($propertyAreaDetails) --}}
-                                @foreach ($propertyAreaDetails as $key => $row)
+                                @foreach($propertyAreaDetails as $key=>$row)
                                 @php
-                                $leaseHoldCount += $row['leaseHold'];
-                                $freeHoldCount += $row['freeHold'];
+                                    $leaseHoldCount += $row['leaseHold'];
+                                    $freeHoldCount += $row['freeHold'];
                                 @endphp
                                 <tr>
-                                    <td>{{ $key }}</td>
-                                    <td>{{ $row['count'] . ' (' . round(($row['count'] / $totalCount) * 100, 2) . '%)' }}
-                                    </td>
-                                    <td>{{ $row['leaseHold'] . ' (' . round(($row['leaseHold'] / $totalCount) * 100, 2) . '%)' }}
-                                    </td>
-                                    <td>{{ $row['freeHold'] . ' (' . round(($row['freeHold'] / $totalCount) * 100, 2) . '%)' }}
-                                    </td>
-                                    <td>{{ $row['area'] . ' (' . round(($row['area'] / $totalAreaInSqm) * 100, 2) . '%)' }}
-                                    </td>
+                                    <td>{{$key}}</td>
+                                    <td>{{$row['count'].' ('. round(($row['count']/$totalCount)*100, 2).'%)'}}</td>
+                                    <td>{{$row['leaseHold'].' ('. round(($row['leaseHold']/$totalCount)*100, 2).'%)'}}</td>
+                                    <td>{{$row['freeHold'].' ('. round(($row['freeHold']/$totalCount)*100, 2).'%)'}}</td>
+                                    <td>{{$row['area'].' ('. round(($row['area']/$totalAreaInSqm)*100, 2). '%)'}}</td>
                                 </tr>
                                 @endforeach
                                 <tr>
@@ -790,235 +900,292 @@ $number_of_colonies = getMisDoneColoniesCount();
     <div class="row">
         <div class="col-12 col-lg-7">
             {{-- <div class="card radius-10">
-                        <div class="card-body no-padding">
-                            <div class="d-flex tabs-progress-container">
-                                <div class="nav-tabs-left-aside">
-                                    <ul class="nav nav-tabs nav-primary" role="tablist"
-                                        style="display: block !important;">
-                                        @php
-                                            $totalCounter = 0;
-                                        @endphp
-                                        @if (count($tabHeader) > 0)
-                                        
-                                            @foreach ($tabHeader as $i => $th)
-                                                <li class="nav-item" role="presentation">
-                                                    <a class="nav-link {{ $i == 0 ? 'active' : '' }}"
-            id="original_tab_total_{{ $i }}" data-bs-toggle="tab"
-            href="#" role="tab" aria-selected="true"
-            onclick="getTabData('{{ $th->id }}')">
-            <div class="text-center">
-                <div class="tab-title">{{ $th->property_type_name }}</div>
-                <span class="tab-total-no">{{ $th->counter }}</span>
-            </div>
-            </a>
-            </li>
-            @php
-            $totalCounter += $th->counter;
-            @endphp
-            @endforeach
-            <li class="nav-item">
-                <a class="nav-link">
-                    <div class="text-center">
-                        <div class="tab-title">Total</div>
-                        <span class="tab-total-no">{{ $totalCounter }}</span>
-                    </div>
-                </a>
-            </li>
-            @endif
-            </ul>
-        </div>
-        <div class="nav-tabs-right-aside">
-            <div class="tab-content py-3">
-                <div class="tab-pane fade show active" id="" role="tabpanel">
-                    <ul class="progress-report">
-                        <!-- new code -->
-                        <?php
-                        $max = 0;
-                        foreach ($tab1Details as $row) {
-                            $max = $row->counter > $max ? $row->counter : $max;
-                        }
-                        ?>
-
-                        @foreach ($tab1Details as $detail)
-                        <li>
-                            <?php
-                            $width = $max > 0 ? ($detail->counter / $max) * 100 : 0;
-                            ?>
-                            <div
-                                class="d-flex justify-content-between align-items-center mb-2">
-                                <span
-                                    class="progress-title">{{ $detail->PropSubType }}</span>
-                                <span class="progress-result">{{ $detail->counter }}</span>
-                            </div>
-                            <div class="progress mb-4" style="height:7px;">
-                                <div class="progress-bar" role="progressbar"
-                                    style="width: <?= $width ?>%"
-                                    aria-valuenow="{{ $detail->counter }}" aria-valuemin="0"
-                                    aria-valuemax="100"></div>
-                            </div>
-                        </li>
-                        @endforeach
-
-                    </ul>
-
-                    <!--- new code -->
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-</div> --}}
-
-
-<div class="card radius-10">
-    <div class="card-body">
-        <div class="d-flex align-items-center">
-            <div>
-                <h6 class="mb-0">Revenue (INR)</h6>
-            </div>
-            <div class="dropdown ms-auto">
-                <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i
-                        class='bx bx-dots-horizontal-rounded font-22 text-option'></i>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="javascript:;">Export PDF</a>
-                    </li>
-                    <li><a class="dropdown-item" href="javascript:;">Export CSV</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="chart-container-2" style="height: 564px;">
-            <canvas id="revenueINR"></canvas>
-        </div>
-    </div>
-</div>
-</div>
-{{-- @dd($oldDemandData) --}}
-<div class="col-12 col-lg-5">
-    <div class="card radius-10">
-        <div class="card-body">
-            <h6 class="">Outstanding Dues</h6>
-            <div class="table-demand">
-                <div class="table-responsive">
-                    <table class="table align-middle m-0">
-                        <thead>
-                            <tr>
-                                <th class="text-center" style="background-color:#116d6e17;">
-                                    <a href="{{ route('outStandingDuesList') }}" target="_blank">
-                                        <h6 class="pt-2">Total Outstanding Dues </h6>
-                                        <h5 class="pb-1">&#8377;
-                                            {{ customNumFormat(round($oldDemandData['total']->outstanding_amount / 10000000, 2)) }}
-                                            Cr.
-                                            ({{ customNumFormat($oldDemandData['total']->property_count) }}
-                                            Properties)
-                                        </h5>
+                <div class="card-body no-padding">
+                    <div class="d-flex tabs-progress-container">
+                        <div class="nav-tabs-left-aside">
+                            <ul class="nav nav-tabs nav-primary" role="tablist" style="display: block !important;">
+                                  @php
+                                    $totalCounter = 0;
+                                    @endphp
+                                @if(count($tabHeader) > 0)
+                                @foreach($tabHeader as $i=>$th)
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link {{$i == 0 ? 'active': ''}}" id="original_tab_total_{{$i}}" data-bs-toggle="tab" href="#"
+                                        role="tab" aria-selected="true" onclick="getTabData('{{$th->id}}')">
+                                        <div class="text-center">
+                                            <div class="tab-title">{{$th->property_type_name}}</div>
+                                            <span class="tab-total-no">{{$th->counter}}</span>
+                                        </div>
                                     </a>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <table class="table align-middle table-striped m-0">
-                                        <thead>
-                                            <tr>
-                                                <th>Property Status</th>
-                                                <th>Outstanding Dues</th>
-                                                <th>No. of Properties</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            <tr>
-                                                <td>Lease Hold</td>
-                                                <td>&#8377;
-                                                    {{ customNumFormat(round($oldDemandData['leaseHold']->outstanding_amount / 10000000, 2)) }}
-                                                    Cr.
-                                                </td>
-                                                <td><a href="{{ route('outStandingDuesList', ['propertyStatus' => '951']) }}"
-                                                        target="_blank">{{ customNumFormat($oldDemandData['leaseHold']->property_count) }}</a>
-                                                </td>
-                                            </tr>
-
-
-                                            <tr>
-                                                <td>Free Hold</td>
-                                                <td>&#8377;
-                                                    {{ customNumFormat(round($oldDemandData['freeHold']->outstanding_amount / 10000000, 2)) }}
-                                                    Cr.
-                                                </td>
-                                                <td><a href="{{ route('outStandingDuesList', ['propertyStatus' => '952']) }}"
-                                                        target="_blank">{{ customNumFormat($oldDemandData['freeHold']->property_count) }}</a>
-                                                </td>
-                                            </tr>
-
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <!-- <table class="table align-middle table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Title</th>
-                                                <th>Amount</th>
-                                                <th>Number Of Properties</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>Total Amount</td>
-                                            <td>2350000000 Cr.</td>
-                                            <td>535</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Lease Hold</td>
-                                            <td>500000000 Cr.</td>
-                                            <td>150</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Free Hold</td>
-                                            <td>1200000000 Cr.</td>
-                                            <td>200</td>
-                                        </tr>
-                                        </tbody>
-                                    </table> -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- <div class="col-12 col-lg-4">
-                    <div class="card radius-10">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <h6 class="mb-0">Revenue (INR in CR)</h6>
-                                </div>
-                                <div class="dropdown ms-auto">
-                                    <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i
-                                            class='bx bx-dots-horizontal-rounded font-22 text-option'></i>
+                                </li>
+                                 @php
+                                    $totalCounter += $th->counter;
+                                 @endphp
+                                @endforeach
+                                <li class="nav-item" >
+                                    <a class="nav-link">
+                                        <div class="text-center">
+                                            <div class="tab-title">Total</div>
+                                            <span class="tab-total-no">{{ $totalCounter }}</span>
+                                        </div>
                                     </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="javascript:;">Export PDF</a>
+                                </li>
+                                @endif
+                            </ul>
+                        </div>
+                        <div class="nav-tabs-right-aside">
+                            <div class="tab-content py-3">
+                                <div class="tab-pane fade show active" id="" role="tabpanel">
+                                    <ul class="progress-report">
+                                        <!-- new code -->
+                                        <?php
+                                        $max = 0;
+                                        foreach ($tab1Details as $row) {
+                                            $max = $row->counter > $max ? $row->counter : $max;
+                                        }
+                                        ?>
+
+                                        @foreach($tab1Details as $detail)
+                                        <li>
+                                            <?php
+                                            $width = $max > 0 ? ($detail->counter / $max) * 100 : 0;
+                                            ?>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="progress-title">{{$detail->PropSubType}}</span>
+                                                <span class="progress-result">{{$detail->counter}}</span>
+                                            </div>
+                                            <div class="progress mb-4" style="height:7px;">
+                                                <div class="progress-bar" role="progressbar"
+                                                    style="width: <?= $width ?>%"
+                                                    aria-valuenow="{{$detail->counter}}" aria-valuemin="0"
+                                                    aria-valuemax="100"></div>
+                                            </div>
                                         </li>
-                                        <li><a class="dropdown-item" href="javascript:;">Export CSV</a>
-                                        </li>
+                                        @endforeach
+
                                     </ul>
+
+                                    <!--- new code -->
                                 </div>
-                            </div>
-                            <div class="chart-container-2" style="height: 564px;">
-                                <canvas id="revenueINR"></canvas>
+
                             </div>
                         </div>
                     </div>
-                </div> -->
+                </div>
+            </div> --}}
+
+            <div class="card radius-10">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h6 class="mb-0">Revenue (INR)</h6>
+                        </div>
+                        <div class="dropdown ms-auto">
+                            <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i
+                                    class='bx bx-dots-horizontal-rounded font-22 text-option'></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:;">Export PDF</a>
+                                </li>
+                                <li><a class="dropdown-item" href="javascript:;">Export CSV</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container-2" style="height: 564px;">
+                        <canvas id="revenueINR"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-5">
+            <div class="card radius-10">
+                <div class="card-body">
+                <h6 class="">Outstanding Dues</h6>
+                    <div class="table-demand">
+                        <div class="table-responsive">
+                            <table class="table align-middle m-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="background-color:#116d6e17;">
+                                            <h6 class="pt-2">Total Outstanding Dues </h6>
+                                            <h5 class="pb-1">&#8377; {{customNumFormat(round(($oldDemandData['total']->outstanding_amount)/10000000,2))}} Cr. ({{customNumFormat($oldDemandData['total']->property_count)}} Properties)</h5>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                        <table class="table align-middle table-striped m-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Property Status</th>
+                                                    <th>Outstanding Dues</th>
+                                                    <th>No. of Properties</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>Lease Hold</td>
+                                                <td>&#8377; {{customNumFormat(round(($oldDemandData['leaseHold']->outstanding_amount)/10000000,2))}} Cr. </td>
+                                                <td>{{customNumFormat($oldDemandData['leaseHold']->property_count)}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Free Hold</td>
+                                                <td>&#8377; {{customNumFormat(round(($oldDemandData['freeHold']->outstanding_amount)/10000000,2))}} Cr. </td>
+                                                <td>{{customNumFormat($oldDemandData['freeHold']->property_count)}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        </td>                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+                       
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- <div class="col-12 col-lg-4">
+            <div class="card radius-10">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <h6 class="mb-0">Revenue (INR in CR)</h6>
+                        </div>
+                        <div class="dropdown ms-auto">
+                            <a class="dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown"><i
+                                    class='bx bx-dots-horizontal-rounded font-22 text-option'></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:;">Export PDF</a>
+                                </li>
+                                <li><a class="dropdown-item" href="javascript:;">Export CSV</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="chart-container-2" style="height: 564px;">
+                        <canvas id="revenueINR"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+    </div>
+
+
+{{--
+<div class="container-fluid">
+    @if ($applicationData)
+        <div class="col-lg-12 col-12" style="margin-bottom: 25px;">
+            <div class="card offorangecard totalApp" style="margin-bottom: 0px;">
+                <div class="card-body">
+                    <div class="dashboard-card-view">
+                        <h4><a href="{{ route('admin.applications') }}" style="color: inherit">Total
+                                Applications:
+                                <span id="totalAppCount">{{ $applicationData['totalAppCount'] }}</span></a></h4>
+                        <div class="container-fluid">
+                            <div class="row separate-col-border">
+                                @foreach ($statusList as $i => $status)
+                                @if($status->item_code != "APP_CAN" && $status->item_code != "APP_OBJ")
+                                    <div class="custom-col-col col-md-6 col-lg-2">
+                                        @if ($status->item_name == 'Disposed')
+                                            <a href="{{ route('applications.disposed') }}">
+                                                <span class="dashboard-label">{{ $status->item_name }}:</span>
+                                                <span
+                                                    id="total-{{ $status->item_code }}">{{ isset($applicationData['statusWiseCounts'][$status->item_code]) ? $applicationData['statusWiseCounts'][$status->item_code] : 0 }}</span></a>
+                                        @else
+                                            <a
+                                                href="{{ route('admin.applications', ['status' => Crypt::encrypt(" $status->item_code")]) }}">
+                                                <span class="dashboard-label">{{ $status->item_name }}:</span>
+                                                <span
+                                                    id="total-{{ $status->item_code }}">{{ isset($applicationData['statusWiseCounts'][$status->item_code]) ? $applicationData['statusWiseCounts'][$status->item_code] : 0 }}</span></a>
+                                        @endif
+                                    </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
-<!-- end row -->
-{{-- <div class="row">
+
+--}}
+
+@if($applicationCountData)
+    <div class="col-lg-12 col-12" style="margin-bottom: 25px;">
+                    <div class="card totalApp" style="margin-bottom: 0px;">
+                        <div class="card-body">
+                            <h3 class="card-title">Application Summary</h3>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Service Type</th>
+                                        <th>New/Pending</th>
+                                        <th>In Progress</th>
+                                        <th>Disposed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $services = getItemsByGroupId(17001);
+                                        $services = $services->sortBy('item_name');
+                                        $totalApps = [0=>0, 1=>0, 2=>0];
+                                        // dd($services, $seervices);
+                                    @endphp
+                                    @foreach ($services as $service)
+                                        @continue(in_array($service->item_code, ['RS_REG', 'OTP_LOGIN', 'APT_NEW']))
+                                         
+                                        <tr>
+                                            <td>{{$service->item_code == 'SUB_MUT' ? "Mutation":$service->item_name}}</td>
+                                            @php
+                                                $newCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_NEW'))->first()?->count ?? 0;
+                                                $pendingCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_PEN'))->first()?->count ?? 0;
+                                                $inProgressCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_IP'))->first()?->count ?? 0;
+                                                $objectedCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_OBJ'))->first()?->count ?? 0;
+                                                $holdCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_HOLD'))->first()?->count ?? 0;
+                                                $approvedCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_APR'))->first()?->count ?? 0;
+                                                $rejectedCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_REJ'))->first()?->count ?? 0;
+                                                $cancelledCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_CAN'))->first()?->count ?? 0;
+                                            @endphp
+                                            <td>{{$newCount + $pendingCount}} 
+                                                @php
+                                                    $totalApps[0] += $newCount + $pendingCount;
+                                                @endphp
+                                            </td>
+                                            <td>{{$inProgressCount + $objectedCount + $holdCount}}
+                                                @php
+                                                    $totalApps[1] += $inProgressCount + $objectedCount + $holdCount;
+                                                @endphp
+                                            </td>
+
+                                            <td>{{$approvedCount + $rejectedCount + $cancelledCount}}
+                                                @php
+                                                    $totalApps[2] += $approvedCount + $rejectedCount + $cancelledCount;
+                                                @endphp
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    <tr>
+                                        <th>Total</th>
+                                        <th>{{$totalApps[0]}}</th>
+                                        <th>{{$totalApps[1]}}</th>
+                                        <th>{{$totalApps[2]}}</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+@endif
+
+    <!-- end row -->
+    {{-- <div class="row">
             <div class="col-12 col-lg-6">
                 <div class="card radius-10">
                     <div class="card-body">
@@ -1082,125 +1249,9 @@ $number_of_colonies = getMisDoneColoniesCount();
         </div> --}}
 </div>
 </div>
-
-<div class="container-fluid">
-    {{-- @if ($applicationData)
-                <div class="col-lg-12 col-12" style="margin-bottom: 25px;">
-                    <div class="card offorangecard totalApp" style="margin-bottom: 0px;">
-                        <div class="card-body">
-                            <div class="dashboard-card-view">
-                                <h4><a href="{{ route('admin.applications') }}" style="color: inherit">Total
-    Applications:
-    <span id="totalAppCount">{{ $applicationData['totalAppCount'] }}</span></a></h4>
-    <div class="container-fluid">
-        <div class="row separate-col-border">
-            @foreach ($statusList as $i => $status)
-            <div class="custom-col-col col-md-6 col-lg-2">
-                @if ($status->item_name == 'Disposed')
-                <a href="{{ route('applications.disposed') }}">
-                    <span class="dashboard-label">{{ $status->item_name }}:</span>
-                    <span
-                        id="total-{{ $status->item_code }}">{{ isset($applicationData['statusWiseCounts'][$status->item_code]) ? $applicationData['statusWiseCounts'][$status->item_code] : 0 }}</span></a>
-                @else
-                <a
-                    href="{{ route('admin.applications', ['status' => Crypt::encrypt(" $status->item_code")]) }}">
-                    <span class="dashboard-label">{{ $status->item_name }}:</span>
-                    <span
-                        id="total-{{ $status->item_code }}">{{ isset($applicationData['statusWiseCounts'][$status->item_code]) ? $applicationData['statusWiseCounts'][$status->item_code] : 0 }}</span></a>
-                @endif
-            </div>
-            @endforeach
-        </div>
-    </div>
-</div>
-{{-- <div class="row mt-4">
-                @foreach ($statusList as $status)
-                <div class="custom-col-col col-4 col-lg-2">
-                    <span class="status_name">{{$status->item_name}}</span> <span
-    class="status_value">{{isset($statusWiseCounts[$status->item_code]) ?
-                        $statusWiseCounts[$status->item_code] : 0}}</span>
-                </div>
-                @endforeach
-            </div> -}}
-                        </div>
-                    </div>
-                </div>
-            @endif --}}
-            @if($applicationCountData)
-                <div class="col-lg-12 col-12" style="margin-bottom: 25px;">
-                    <div class="card totalApp" style="margin-bottom: 0px;">
-                        <div class="card-body">
-                            <h3 class="card-title">Application Summary</h3>
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Service Type</th>
-                                            <th>New/Pending</th>
-                                            <th>In Progress</th>
-                                            <th>Disposed</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                            $services = getItemsByGroupId(17001);
-                                            $services = $services->sortBy('item_name');
-                                            $totalApps = [0=>0, 1=>0, 2=>0];
-                                            // dd($services, $seervices);
-                                        @endphp
-                                        @foreach ($services as $service)
-                                            @continue(in_array($service->item_code, ['RS_REG', 'OTP_LOGIN', 'APT_NEW']))
-                                            
-                                            <tr>
-                                                <td>{{$service->item_code == 'SUB_MUT' ? "Mutation":$service->item_name}}</td>
-                                                @php
-                                                    $newCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_NEW'))->first()?->count ?? 0;
-                                                    $pendingCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_PEN'))->first()?->count ?? 0;
-                                                    $inProgressCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_IP'))->first()?->count ?? 0;
-                                                    $objectedCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_OBJ'))->first()?->count ?? 0;
-                                                    $holdCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_HOLD'))->first()?->count ?? 0;
-                                                    $approvedCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_APR'))->first()?->count ?? 0;
-                                                    $rejectedCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_REJ'))->first()?->count ?? 0;
-                                                    $cancelledCount = $applicationCountData->where('service_type',$service->id)->where('status', getServiceType('APP_CAN'))->first()?->count ?? 0;
-                                                @endphp
-                                                <td>{{$newCount + $pendingCount}} 
-                                                    @php
-                                                        $totalApps[0] += $newCount + $pendingCount;
-                                                    @endphp
-                                                </td>
-                                                <td>{{$inProgressCount + $objectedCount + $holdCount}}
-                                                    @php
-                                                        $totalApps[1] += $inProgressCount + $objectedCount + $holdCount;
-                                                    @endphp
-                                                </td>
-
-                                                <td>{{$approvedCount + $rejectedCount + $cancelledCount}}
-                                                    @php
-                                                        $totalApps[2] += $approvedCount + $rejectedCount + $cancelledCount;
-                                                    @endphp
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                        <tr>
-                                            <th>Total</th>
-                                            <th>{{$totalApps[0]}}</th>
-                                            <th>{{$totalApps[1]}}</th>
-                                            <th>{{$totalApps[2]}}</th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        </div>
-
-
 <div id="filter-applied" class="d-none">
     @include('include.parts.dashboard-filtered')
 </div>
-
 </div>
 
 @endif
@@ -1209,7 +1260,7 @@ $number_of_colonies = getMisDoneColoniesCount();
 
 @section('footerScript')
 {{-- @haspermission('view dashboard') --}}
-@if ($isPublic || (Auth::check() && Auth::user()->hasPermissionTo('view dashboard')))
+@if($isPublic ||( Auth::check() && Auth::user()->hasPermissionTo('view dashboard')))
 <script src="{{ asset('assets/js/Chart.min.js') }}"></script>
 <script src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script> <!-- added By Nitin to for colony filter -->
 <script src="{{ asset('assets/js/chartjs-plugin-datalabels.min.js') }}"></script>
@@ -1219,14 +1270,14 @@ $number_of_colonies = getMisDoneColoniesCount();
     let colony_id = null;
     /**---------------------------------- */
     const datalabelOptions = {
-        color: '#eee',
-        anchor: 'center',
-        align: 'center',
-        font: {
-            size: 14,
-            weight: 600
-        }
-    }
+                color: '#eee',
+                anchor: 'center',
+                align: 'center',
+                font: {
+                    size: 14,
+                    weight: 600
+                }
+            }
     $(document).ready(() => {
 
         //chart no. (nazul rehabilitation)
@@ -1246,7 +1297,7 @@ $number_of_colonies = getMisDoneColoniesCount();
                 labels: ['No. of Properties'],
                 datasets: [{
                         label: 'Nazul',
-                        data: ["{{ $landTypeCount['Nazul'] }}"],
+                        data: ["{{$landTypeCount['Nazul']}}"],
                         borderColor: gradientStroke1,
                         backgroundColor: gradientStroke1,
                         hoverBackgroundColor: gradientStroke1,
@@ -1256,7 +1307,7 @@ $number_of_colonies = getMisDoneColoniesCount();
                     },
                     {
                         label: 'Rehabilitation',
-                        data: ["{{ $landTypeCount['Rehabilitation'] }}"],
+                        data: ["{{$landTypeCount['Rehabilitation']}}"],
                         borderColor: gradientStroke2,
                         backgroundColor: gradientStroke2,
                         hoverBackgroundColor: gradientStroke2,
@@ -1304,10 +1355,10 @@ $number_of_colonies = getMisDoneColoniesCount();
         var myChart = new Chart(ctx3, {
             type: 'bar',
             data: {
-                labels: [<?= implode(', ', $seriesLabels) ?>],
+                labels: [<?= implode(", ", $seriesLabels) ?>],
                 datasets: [{
-                        label: '{{ $labels[0] }}',
-                        data: [<?= implode(', ', $barData[0]) ?>],
+                        label: '{{$labels[0]}}',
+                        data: [<?= implode(", ", $barData[0]) ?>],
                         borderColor: gradientStroke1,
                         backgroundColor: gradientStroke1,
                         hoverBackgroundColor: gradientStroke1,
@@ -1316,8 +1367,8 @@ $number_of_colonies = getMisDoneColoniesCount();
                         borderWidth: 0
                     },
                     {
-                        label: '{{ $labels[1] }}',
-                        data: [<?= implode(', ', $barData[1]) ?>],
+                        label: '{{$labels[1]}}',
+                        data: [<?= implode(", ", $barData[1]) ?>],
                         borderColor: gradientStroke2,
                         backgroundColor: gradientStroke2,
                         hoverBackgroundColor: gradientStroke2,
@@ -1352,39 +1403,6 @@ $number_of_colonies = getMisDoneColoniesCount();
         });*/
     });
 
-    //anmation
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const animationTargets = document.querySelectorAll(".text-dark, .view-list");
-
-        animationTargets.forEach(el => {
-            let isMoney = el.innerHTML.indexOf('₹') >= 0;
-            let isCrore = el.innerHTML.indexOf('Cr.') >= 0;
-            const finalValue = parseInt(
-                el.innerHTML.replace(/[₹,]| Cr\./g, '').trim()
-            );
-            const startValue = finalValue * 0.8;
-            const duration = 4000; // 1.5 seconds
-            const startTime = performance.now();
-
-
-            function animate(time) {
-                const elapsed = time - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const currentValue = Math.round(startValue + (finalValue - startValue) * progress);
-                el.textContent = (isMoney ? '₹ ' : '') + customNumFormat(currentValue) + (isCrore ?
-                    ' Cr.' : '');
-
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                }
-            }
-
-            requestAnimationFrame(animate);
-        });
-    });
-
-
 
     /** Land Value chart -------------*/
 
@@ -1401,10 +1419,10 @@ $number_of_colonies = getMisDoneColoniesCount();
     var myChart = new Chart(ctx4, {
         type: "bar",
         data: {
-            labels: [<?= implode(', ', $landValueData['labels']) ?>],
+            labels: [<?= implode(", ", $landValueData['labels']) ?>],
             datasets: [{
                 label: "Land Value",
-                data: [<?= implode(', ', $landValueData['values']) ?>],
+                data: [<?= implode(", ", $landValueData['values']) ?>],
                 borderColor: gradientStroke1,
                 backgroundColor: gradientStroke1,
                 hoverBackgroundColor: gradientStroke1,
@@ -1436,8 +1454,6 @@ $number_of_colonies = getMisDoneColoniesCount();
             },
         },
     });*/
-
-
 
 
     var a = document.getElementById("revenueINR").getContext("2d");
@@ -1499,14 +1515,13 @@ $number_of_colonies = getMisDoneColoniesCount();
     });
 
 
-
-
     /** Land Value chart -------------*/
 
     /*** new code by Nitin ---  */
     const getTabData = (tabId) => {
-        var ajaxUrl = "{{ url('dashboard/property-type-data') }}" + '/' + tabId + (colony_id ? `/${colony_id}` :
-            '');
+        var ajaxUrl = "{{ route('propertyTypeDetails', [':typeId', ':colonyId']) }}"
+    .replace(':typeId', tabId)
+    .replace(':colonyId', colony_id ? colony_id : '');
         $.ajax({
             type: 'get',
             url: ajaxUrl,
@@ -1548,14 +1563,14 @@ $number_of_colonies = getMisDoneColoniesCount();
             $('#colony-filter').selectpicker('refresh');
             $.ajax({
                 type: 'POST',
-                url: "{{ route('dashbordColonyFilter') }}",
+                url: "{{route('dashbordColonyFilter')}}",
                 data: {
-                    _token: '{{ csrf_token() }}',
+                    _token: '{{csrf_token()}}',
                     colony_id: colony_id
                 },
                 success: (response) => {
-                    $('.outside-tiles').addClass('d-none');
-                    if (Object.keys(response).length > 0) {
+		       $('.outside-tiles').addClass('d-none');
+             if (Object.keys(response).length > 0) {
                         $('#no-filter-applied').addClass('d-none'); // hide main dashboaed
                         $('#filter-applied').removeClass('d-none'); // show filtered table and tabs
 
@@ -1568,7 +1583,7 @@ $number_of_colonies = getMisDoneColoniesCount();
                                     if (targetElement.hasClass('hoverable')) {
                                         targetElement.attr('title', value);
                                     } else {
-                                        targetElement.text(value);
+                                        targetElement.html(value);
                                     }
                                 }
 
@@ -1578,22 +1593,22 @@ $number_of_colonies = getMisDoneColoniesCount();
 
                     //update property types
 
-                    if (response.property_types && Object.keys(response.property_types).length >
-                        0) {
-                        // $('.tab-total-no').text(0);
+                    if (response.property_types && Object.keys(response.property_types).length > 0) {
+                       // $('.tab-total-no').html(0);
                         let ptypes = response.property_types
                         for (const ind in ptypes) {
+                            // debugger;
                             if (ptypes.hasOwnProperty(ind)) {
                                 const value = ptypes[ind];
                                 let targetElement = $('#' + ind + '_count');
                                 if (targetElement.length) {
-                                    targetElement.text(value);
+                                    targetElement.html(value);
                                 }
 
                                 //update the tab data
                                 let tabElement = $('#tab_total_' + ind);
                                 if (tabElement.length) {
-                                    tabElement.text(value);
+                                    tabElement.html(value);
                                 }
                             }
                         }
@@ -1631,7 +1646,6 @@ $number_of_colonies = getMisDoneColoniesCount();
 
                 },
                 error: (err) => {
-
                     console.log(err);
                 }
             })
@@ -1639,7 +1653,7 @@ $number_of_colonies = getMisDoneColoniesCount();
             //reset the filter
             $('.text-dark').each((i, elm) => { // reset text content
                 if ($(elm).attr('data-original') !== undefined) {
-                    $(elm).text($(elm).attr('data-original'));
+                    $(elm).html($(elm).attr('data-original'));
                 }
             })
             $('.hoverable').each((i, elm) => { // reset text content
@@ -1648,34 +1662,27 @@ $number_of_colonies = getMisDoneColoniesCount();
                 }
             })
 
-            var elemFound = $('[id^=original_tab_total_]');
+             var elemFound = $('[id^=original_tab_total_]');
             if (elemFound.length > 0) {
                 elemFound[0].click();
             }
+
 
             $('#no-filter-applied').removeClass('d-none'); // show main dashboaed
             $('#filter-applied').addClass('d-none'); // hide filtered table and tabs
 
             //Chnage the dropdown first option
 
-            $('#colony-filter').find('option:first').text('Filter by Colony ({{ $number_of_colonies }})');
+            $('#colony-filter').find('option:first').text('Filter by Colony ({{$number_of_colonies}})');
             $('#colony-filter').selectpicker('refresh');
 
             // reset colony id
             colony_id = null;
-            $('.outside-tiles').removeClass('d-none');
-
+$('.outside-tiles').removeClass('d-none');
         }
     })
 
-    /* $('.view-list').click(function() {
-        let propertyType = $(this).data('propertyType');
-        filterData = {
-            "property_type[]": propertyType,
-        }
-        let openUrl = "{{ url('/dashboard/tileList') }}" + `/${propertyType} ${colony_id ? '/'+colony_id:''}`
-        window.open(openUrl, '_blank').focus();
-    }) */
+
     $('.view-list').click(function() {
         let linkEnabled = '<?= $isPublic == true ? 0 : 1 ?>';
         if (linkEnabled == '1') {
@@ -1698,11 +1705,12 @@ $number_of_colonies = getMisDoneColoniesCount();
             // Construct the URL with the query string
             let url = '';
             if (filterValue == 'unalloted') {
-                url = `{{ route('unallotedReport') }}`;
-            } else if (filterValue == 'vaccant') {
-                url = `{{ route('vacant.land.list') }}`;
+                url = `{{ route("unallotedReport") }}`;
+            }else if(filterValue == 'vaccant')
+            {
+                url = `{{ route("vacant.land.list") }}`;
             } else {
-                url = `{{ route('detailedReport') }}?${queryString}`;
+                url = `{{ route("detailedReport") }}?${queryString}`;
             }
 
             // Open the URL in a new tab

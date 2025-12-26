@@ -1,462 +1,29 @@
-{{--
+@if($downloading)
+<style>
+    /* Add this to your CSS file for better PDF rendering */
+.table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+}
 
-<!-- New design for Property Document Details- SOURAV CHAUHAN (9/Jan/2025) -->
- <div class="part-title mt-2">
-                        <h5>Property Document Details</h5>
-                    </div>
-                    <div class="part-details">
-                        <div class="container-fluid pb-3">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <!-- added table responsive div for make table responsive on 28-11-2025 -->
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered particular-document-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>S.No</th>
-                                                    <th>Name</th>
-                                                    <th>Action</th>
-                                                    <!-- show if assined to is CDV and action not null SOURAV CHAUHAN (23/Dec/2024) -->
-                                                    @if ($showCdvActionInDocuments)
-                                                        <th>Action By CDV </th>
-                                                        <th>Documents By CDV</th>
-                                                    @endif
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="{{ $showCdvActionInDocuments ? 5 : 3 }}" class="document-type-row">
-                                                        <h4 class="doc-type-title">Required Documents</h4>
-                                                    </td>
-                                                </tr>
-                                                @php
-                                                    $stepTwoDocs = config('applicationDocumentType.CONVERSION.Required');
-                                                    $counter = 0;
-                                                @endphp
-                                                @foreach ($stepTwoDocs as $document)
-                                                    @php
-                                                        $uploadedDocuments = [];
-                                                        if (!empty($details->documentFinal)) {
-                                                            $uploadedDocuments = $details->documentFinal
-                                                                ->where('document_type', $document['id'])
-                                                                ->all();
-                                                        }
-                                                        $uplodedDocCount = count($uploadedDocuments);
-                                                    @endphp
-                                                    @foreach ($uploadedDocuments as $ud)
-                                                <tr>
-                                                    <td>{{ ++$counter }}</td>
-                                                    <td>
-                                                        <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
-                                                        @if ($ud->documentKeys->count() > 0)
-                                                        <div class="required-doc">
-                                                            <ul class="required-list">
-                                                                @foreach ($ud->documentKeys as $data)
-                                                                    <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $data->value }}</li>
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <div class="checkbox-options">
-                                                        <div class="form-check form-check-success">
-                                                            <input class="form-check-input required-for-approve property-document-approval-chk" name="checkedAction" type="checkbox" id="checkedAction" @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif
-                                                            @if ($roles != 'section-officer') disabled @endif>
-                                                            <label class="form-check-label" for="checkedAction">Checked</label>
-                                                        </div>
-                                                    </div>
-                                                    </td>
-                                                    <!-- show if assined to is CDV and action not null SOURAV CHAUHAN (23/Dec/2024) -->
-                                                    @if ($showCdvActionInDocuments)
-                                                        <td>
-                                                            <div class="checkbox-options" style="display: flex;">
-                                                                <div class="form-check form-check-success custom-mr-5">
-                                                                    <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="1" id="YesCDVStatus1"> -->
-                                                                    <input class="form-check-input doc-check-yes"
-                                                                        value="{{ $ud['id'] }}" type="radio"
-                                                                        name="doc-check-{{ $ud['id'] }}"
-                                                                        id="doc-check-yes-{{ $ud['id'] }}"
-                                                                        @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) disabled
-                                                                            @if ($ud->documentFinalChecklist->is_correct == 1)
-                                                                            checked @endif
-                                                                        @endif
-                                                                        @if ($roles != 'CDV') disabled @endif>
-                                                                    <label class="form-check-label" for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
-                                                                </div>
-                                                                <div class="form-check form-check-success">
-                                                                    <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="0" id="NoCDVStatus1" checked> -->
-                                                                    <input class="form-check-input doc-check-no"
-                                                                    type="radio" name="doc-check-{{ $ud['id'] }}"
-                                                                    id="doc-check-no-{{ $ud['id'] }}"
-                                                                    value="{{ $ud['id'] }}"
-                                                                    @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) disabled
-                                                                    @if ($ud->documentFinalChecklist->is_correct == 0)
-                                                                    checked @endif
-                                                                    @endif
-                                                                    @if ($roles != 'CDV') disabled @endif>
-                                                                    <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
-                                                                </div>
-                                                            </div>
-                                                            @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'] && $ud->documentFinalChecklist->remark)
-                                                                    <div class="required-doc">
-                                                                        <h6 class="required-title">Remarks</h6>
-                                                                        <div class="d-flex">
-                                                                            <p class="remarks-content">{{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}</p>
-                                                                            <a href="javascript:;"
-                                                                                onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
-                                                                        </div>
-                                                                </div>
-                                                                <input type="hidden"
-                                                                    id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
-                                                                    value="{{ $ud->documentFinalChecklist->remark }}" />
-                                                            @endif
-                                                        </td>
-                                                        <td>
-                                                            @if ($ud['office_file_path'])
-                                                                <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name"><i class="fa-solid fa-file-pdf"></i></a>
-                                                            @endif
-                                                        </td>
-                                                    @endif
-                                                </tr>
-                                                @endforeach
-                                                @endforeach
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #000 !important;
+    padding: 8px !important;
+}
 
-                                                <tr>
-                                                <td colspan="{{ $showCdvActionInDocuments ? 5 : 3 }}" class="document-type-row">
-                                                    <h4 class="doc-type-title">Optional Documents</h4>
-                                                </td>
-                                                </tr>
-                                                @php
-                                                    $conversionOptionalDocs = config(
-                                                        'applicationDocumentType.CONVERSION.optional',
-                                                    );
-                                                    $stepThreeDocs = array_reduce(
-                                                        $conversionOptionalDocs['groups'],
-                                                        function ($carry, $group) {
-                                                            return array_merge($carry, $group['documents']);
-                                                        },
-                                                        [],
-                                                    );
-                                                    $counter = 0;
-                                                @endphp
-                                                
-                                                @foreach ($stepThreeDocs as $document)
-                                                @php
-                                                        $uploadedDocuments = [];
-                                                        if (!empty($details->documentFinal)) {
-                                                            $uploadedDocuments = $details->documentFinal
-                                                                ->where('document_type', $document['id'])
-                                                                ->all();
-                                                        }
-                                                        $uplodedDocCount = count($uploadedDocuments);
-                                                    @endphp
-                                                    @foreach ($uploadedDocuments as $ud)
-                                                        <tr>
-                                                            <td>{{ ++$counter }}</td>
-                                                            <td>
-                                                                <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
-                                                                @if ($ud->documentKeys->count() > 0)
-                                                                <div class="required-doc">
-                                                                    <ul class="required-list">
-                                                                        @php
-                                                                            $from = null;
-                                                                            $to = null;
-                                                                        @endphp
+.theme-table th {
+    background-color: #f8f9fa !important;
+    font-weight: bold !important;
+}
 
-                                                                        @foreach ($ud->documentKeys as $data)
-                                                                            @isset($document['inputs'][$data->key])
-                                                                                @if ($document['inputs'][$data->key]['label'] == 'Page No.')
-                                                                                @elseif($document['inputs'][$data->key]['label'] == 'From')
-                                                                                    @php $from = $data->value; @endphp
-                                                                                @elseif($document['inputs'][$data->key]['label'] == 'To')
-                                                                                    @php $to = $data->value; @endphp
-                                                                                @else
-                                                                                    <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $data->value }}</li>
-                                                                                @endif
-                                                                            @endisset
-                                                                        @endforeach
+.document-type-row {
+    background-color: #e9ecef !important;
+    font-weight: bold !important;
+}
+</style>
 
-                                                                        @if ($from && $to)
-                                                                            <li>Page No.: {{ $from }} - {{ $to }}</li>
-                                                                        @elseif ($from)
-                                                                            <li>Page No.: {{ $from }}</li>
-                                                                        @elseif ($to)
-                                                                            <li>Page No.: {{ $to }}</li>
-                                                                        @endif
-
-                                                                    </ul>
-                                                                </div>
-                                                                @endif
-                                                            </td>
-                                                            <td>
-                                                                <div class="checkbox-options">
-                                                                <div class="form-check form-check-success">
-                                                                    <input class="form-check-input required-for-approve property-document-approval-chk" name="checkedAction" type="checkbox" id="checkedAction" @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif
-                                                                    @if ($roles != 'section-officer') disabled @endif>
-                                                                    <label class="form-check-label" for="checkedAction">Checked</label>
-                                                                </div>
-                                                            </div>
-                                                            </td>
-                                                            <!-- show if assined to is CDV and action not null SOURAV CHAUHAN (23/Dec/2024) -->
-                                                            @if ($showCdvActionInDocuments)
-                                                            <td>
-                                                                <div class="checkbox-options" style="display: flex;">
-                                                                    <div class="form-check form-check-success custom-mr-5">
-                                                                        <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="1" id="YesCDVStatus1"> -->
-                                                                        <input class="form-check-input doc-check-yes"
-                                                                            value="{{ $ud['id'] }}" type="radio"
-                                                                            name="doc-check-{{ $ud['id'] }}"
-                                                                            id="doc-check-yes-{{ $ud['id'] }}"
-                                                                            @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) disabled
-                                                                                @if ($ud->documentFinalChecklist->is_correct == 1)
-                                                                                checked @endif
-                                                                            @endif
-                                                                            @if ($roles != 'CDV') disabled @endif>
-                                                                        <label class="form-check-label" for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
-                                                                    </div>
-                                                                    <div class="form-check form-check-success">
-                                                                        <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="0" id="NoCDVStatus1" checked> -->
-                                                                        <input class="form-check-input doc-check-no"
-                                                                        type="radio" name="doc-check-{{ $ud['id'] }}"
-                                                                        id="doc-check-no-{{ $ud['id'] }}"
-                                                                        value="{{ $ud['id'] }}"
-                                                                        @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) disabled
-                                                                            @if ($ud->documentFinalChecklist->is_correct == 0)
-                                                                            checked @endif
-                                                                        @endif
-                                                                        @if ($roles != 'CDV') disabled @endif>
-                                                                        <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
-                                                                    </div>
-                                                                </div>
-                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'] && $ud->documentFinalChecklist->remark)
-                                                                        <div class="required-doc">
-                                                                            <h6 class="required-title">Remarks</h6>
-                                                                            <div class="d-flex">
-                                                                                <p class="remarks-content">{{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}</p>
-                                                                                <a href="javascript:;"
-                                                                                    onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
-                                                                            </div>
-                                                                    </div>
-                                                                    <input type="hidden"
-                                                                        id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
-                                                                        value="{{ $ud->documentFinalChecklist->remark }}" />
-                                                                @endif
-                                                            </td>
-                                                            <td>
-                                                                @if ($ud['office_file_path'])
-                                                                    <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name"><i class="fa-solid fa-file-pdf"></i></a>
-                                                                @endif
-                                                            </td>
-                                                            @endif
-                                                        </tr>
-                                                    @endforeach
-                                                @endforeach
-
-
-
-                                                <tr>
-                                                    <td colspan="5" class="document-type-row">
-                                                        <h4 class="doc-type-title">Additional Documents By Applicant</h4>
-                                                    </td>
-                                                </tr>
-                                                    @php
-                                                        $applicantAdditionalDocuments = [];
-                                                        $counter = 0;
-                                                        if (!empty($details->documentFinal)) {
-                                                            $applicantAdditionalDocuments = $details->documentFinal
-                                                                ->where('document_type', 'AdditionalDocument')
-                                                                ->whereNotNull('file_path')
-                                                                ->all();
-                                                        }
-                                                        $uplodedDocCount = count($applicantAdditionalDocuments);
-                                                    @endphp
-                                                    @if ($uplodedDocCount > 0)
-                                                        @foreach ($applicantAdditionalDocuments as $ud)
-                                                            <tr>
-                                                                <td>{{ ++$counter }}</td>
-                                                                <td>
-                                                                    <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
-                                                                    @if ($ud->documentKeys->count() > 0)
-                                                                    <div class="required-doc">
-                                                                        <ul class="required-list">
-                                                                            @foreach ($ud->documentKeys as $data)
-                                                                                <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $data->value }}</li>
-                                                                            @endforeach
-                                                                        </ul>
-                                                                    </div>
-                                                                    @endif
-                                                                </td>
-                                                                <td>
-                                                                    <div class="checkbox-options">
-                                                                    <div class="form-check form-check-success">
-                                                                        <input class="form-check-input property-document-approval-chk required-for-approve" name="checkedAction" type="checkbox" id="checkedAction" @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif
-                                                                        @if ($roles != 'section-officer') disabled @endif>
-                                                                        <label class="form-check-label" for="checkedAction">Checked</label>
-                                                                    </div>
-                                                                </div>
-                                                                </td>
-                                                                @if ($showCdvActionInDocuments)
-                                                                <td>
-                                                                    <div class="checkbox-options" style="display: flex;">
-                                                                        <div class="form-check form-check-success custom-mr-5">
-                                                                            <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="1" id="YesCDVStatus1"> -->
-                                                                            <input class="form-check-input doc-check-yes required-for-approve"
-                                                                                value="{{ $ud['id'] }}" type="radio"
-                                                                                name="doc-check-{{ $ud['id'] }}"
-                                                                                id="doc-check-yes-{{ $ud['id'] }}"
-                                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) disabled
-                                                                                    @if ($ud->documentFinalChecklist->is_correct == 1)
-                                                                                    checked @endif
-                                                                                @endif
-                                                                                @if ($roles != 'CDV') disabled @endif
-                                                                                >
-                                                                            <label class="form-check-label" for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
-                                                                        </div>
-                                                                        <div class="form-check form-check-success">
-                                                                            <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="0" id="NoCDVStatus1" checked> -->
-                                                                            <input class="form-check-input doc-check-no required-for-approve"
-                                                                            type="radio" name="doc-check-{{ $ud['id'] }}"
-                                                                            id="doc-check-no-{{ $ud['id'] }}"
-                                                                            value="{{ $ud['id'] }}"
-                                                                            @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) disabled
-                                                                                @if ($ud->documentFinalChecklist->is_correct == 0)
-                                                                                checked @endif
-                                                                            @endif
-                                                                            @if ($roles != 'CDV') disabled @endif>
-                                                                            <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
-                                                                        </div>
-                                                                    </div>
-                                                                    @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'] && $ud->documentFinalChecklist->remark)
-                                                                            <div class="required-doc">
-                                                                                <h6 class="required-title">Remarks</h6>
-                                                                                <div class="d-flex">
-                                                                                    <p class="remarks-content">{{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}</p>
-                                                                                    <a href="javascript:;"
-                                                                                        onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
-                                                                                </div>
-                                                                        </div>
-                                                                        <input type="hidden"
-                                                                            id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
-                                                                            value="{{ $ud->documentFinalChecklist->remark }}" />
-                                                                    @endif
-                                                                </td>
-                                                                @endif
-                                                                <td>
-                                                                    @if ($ud['office_file_path'])
-                                                                        <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name"><i class="fa-solid fa-file-pdf"></i></a>
-                                                                    @endif
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    @else
-                                                    <tr>
-                                                        <td colspan="5" class="">
-                                                            <p class="">No Documents Available</p>
-                                                        </td>
-                                                    </tr>
-                                                    @endif
-
-
-
-
-
-                                                    <tr>
-                                                        <td colspan="5" class="document-type-row">
-                                                            <h4 class="doc-type-title">Additional Documents By CDV</h4>
-                                                        </td>
-                                                    </tr>
-                                                        @php
-                                                            $cdvAdditionalDocuments = [];
-                                                            if (!empty($details->documentFinal)) {
-                                                                $cdvAdditionalDocuments = $details->documentFinal
-                                                                    ->where('document_type', 'AdditionalDocument')
-                                                                    ->whereNull('file_path')
-                                                                    ->whereNotNull('office_file_path')
-                                                                    ->all();
-                                                            }
-                                                            $uplodedDocCount = count($cdvAdditionalDocuments);
-                                                            $count = 1;
-                                                        @endphp
-                                                        @if ($uplodedDocCount > 0)
-                                                            @foreach ($cdvAdditionalDocuments as $index => $ud)
-                                                                <tr>
-                                                                    <td>{{$count}}</td>
-                                                                    <td colspan="4" style="text-align: left;">
-                                                                        <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
-                                                                        @if ($ud->documentKeys->count() > 0)
-                                                                        <div class="required-doc">
-                                                                            <ul class="required-list">
-                                                                                @foreach ($ud->documentKeys as $data)
-                                                                                    <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $data->value }}</li>
-                                                                                @endforeach
-                                                                            </ul>
-                                                                        </div>
-                                                                        @endif
-                                                                    </td>
-                                                            
-                                                                </tr>
-                                                                @php
-                                                                $count = $count + 1;
-                                                                @endphp
-                                                            @endforeach
-                                                        @else
-                                                        <tr>
-                                                            <td colspan="5" class="">
-                                                                <p class="">No Documents Available</p>
-                                                            </td>
-                                                        </tr>
-                                                        @endif
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    --}}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- New design for Property Document Details- SOURAV CHAUHAN (13/Dec/2024) -->
+<!-- New design for Property Document Details - SOURAV CHAUHAN (13/Dec/2024) -->
 <div class="part-title mt-2">
     <h5>Details of Documents</h5>
 </div>
@@ -464,34 +31,38 @@
     <div class="container-fluid pb-3">
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="table-responsive">
-                    <table class="table table-bordered theme-table">
+                    <table class="table table-bordered theme-table" style="width: 100%; border-collapse: collapse; border: 1px solid #000;">
                         <thead>
-                            <tr>
-                                <th width="2%">S.No</th>
-                                <th>Document Name</th>
-
+                            <tr style="background-color: #f8f9fa; border: 1px solid #000;">
+                                <th width="2%" style="border: 1px solid #000; padding: 8px; text-align: center;">S.No</th>
+                                <th style="border: 1px solid #000; padding: 8px;">Document Name</th>
                                 @if ($roles != 'applicant')
-                                    <th>Action by SO</th>
+                                    <th style="border: 1px solid #000; padding: 8px; text-align: center;">Action by SO</th>
                                 @endif
-                                <!-- show if assined to is CDV and action not null SOURAV CHAUHAN (23/Dec/2024) -->
-                                @if ($showCdvActionInDocuments && $roles != 'applicant')
-                                    <th>Found Correct</th>
+                                @if($showCdvActionInDocuments && $roles != 'applicant')
+                                    <th style="border: 1px solid #000; padding: 8px; text-align: center;">Action By CDV</th>
                                 @endif
                             </tr>
                         </thead>
                         <tbody>
+                            <!-- Required Documents Section -->
                             <tr>
-                                <td colspan="{{ $downloading ? 2 : ($showCdvActionInDocuments ? 4 : 3) }}"
-                                    class="document-type-row">
-                                    <h4 class="doc-type-title">Required Documents</h4>
+                                @php
+                                    $colspan = 2;
+                                    if ($roles != 'applicant') $colspan++;
+                                    if($showCdvActionInDocuments && $roles != 'applicant') $colspan++;
+                                @endphp
+                                <td colspan="{{ $colspan }}" style="border: 1px solid #000; padding: 10px; background-color: #e9ecef; font-weight: bold;">
+                                    <h4 style="margin: 0; font-size: 16px;">Required Documents</h4>
                                 </td>
                             </tr>
+                            
                             @php
                                 $stepTwoDocs = config('applicationDocumentType.CONVERSION.Required');
                                 $counter = 0;
                             @endphp
+                            
                             @foreach ($stepTwoDocs as $document)
                                 @php
                                     $uploadedDocuments = [];
@@ -500,130 +71,80 @@
                                             ->where('document_type', $document['id'])
                                             ->all();
                                     }
-                                    $uplodedDocCount = count($uploadedDocuments);
                                 @endphp
+                                
                                 @foreach ($uploadedDocuments as $ud)
-                                    <tr id="{{ $ud['id'] }}">
-                                        <td>{{ ++$counter }}.</td>
-                                        <td>
-                                            @if (isset($downloading))
-                                                {{ $ud['title'] }}
+                                <tr style="border: 1px solid #000;">
+                                    <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: top;">{{ ++$counter }}.</td>
+                                    <td style="border: 1px solid #000; padding: 8px; vertical-align: top;">
+                                        <div style="margin-bottom: 5px;">
+                                            <strong>{{ $ud['title'] }}</strong>
+                                        </div>
+                                        
+                                        @if($ud->documentKeys->count() > 0)
+                                            <div style="margin-top: 8px; font-size: 12px;">
+                                                @foreach ($ud->documentKeys as $data)
+                                                    @if(isset($document['inputs'][$data->key]['label']))
+                                                        @php
+                                                            $value = $data->value;
+                                                            $isDate = strtotime($value) !== false;
+                                                            if($isDate){
+                                                                try{
+                                                                    $value = \Carbon\Carbon::parse($value)->format('d-m-Y');
+                                                                } catch (\Exception $e){
+                                                                    $value = $data->value;
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        <div style="margin-bottom: 2px;">
+                                                            <strong>{{ $document['inputs'][$data->key]['label'] }}:</strong> {{ $value }}
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </td>
+
+                                    @if ($roles != 'applicant')
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: top;">
+                                            @if ($checkList && $checkList->is_uploaded_doc_checked == 1)
+                                                <span style="color: green;">✓ Checked</span>
                                             @else
-                                                <span class="doc-name">
-                                                    {{ $ud['title'] }}
-
-                                                    <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}"
-                                                        target="_blank" class="text-danger">
-                                                        <i class="fa-solid fa-file-pdf ml-2"></i>
-                                                    </a>
-                                                </span>
-                                            @endif
-
-
-
-                                            @if ($ud->documentKeys->count() > 0)
-                                                <div class="required-info">
-                                                    <ul class="required-info-list">
-                                                        @foreach ($ud->documentKeys as $data)
-                                                            @if (isset($document['inputs'][$data->key]['label']))
-                                                                <li>{{ $document['inputs'][$data->key]['label'] }}:
-                                                                    {{ $data->value }}</li>
-                                                            @endif
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
+                                                <span style="color: #6c757d;">Not Checked</span>
                                             @endif
                                         </td>
+                                    @endif
 
-                                        @if ($roles != 'applicant')
-                                            <td>
-                                                <div class="form-check">
-                                                    <input
-                                                        class="form-check-input required-for-approve property-document-approval-chk"
-                                                        type="checkbox" name="checkedAction" id="checkedAction"
-                                                        @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif
-                                                        @if ($roles != 'section-officer') disabled @endif>
-                                                    <label class="form-check-label" for="checkedAction">Checked</label>
-                                                </div>
-                                            </td>
-                                        @endif
-
-                                        @if ($showCdvActionInDocuments && $roles != 'applicant')
-                                            <td>
-                                                <div class="cdv-wrapper" style="display: flex;">
-                                                    <div class="cdv-action">
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input doc-check-yes"
-                                                                value="{{ $ud['id'] }}" type="radio"
-                                                                name="doc-check-{{ $ud['id'] }}"
-                                                                id="doc-check-yes-{{ $ud['id'] }}"
-                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) @if ($ud->documentFinalChecklist->is_correct == 1)
-                                                                        checked @endif
-                                                                @endif
-                                                            @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
-                                                            <label class="form-check-label"
-                                                                for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-
-
-                                                            <input class="form-check-input doc-check-no" type="radio"
-                                                                name="doc-check-{{ $ud['id'] }}"
-                                                                id="doc-check-no-{{ $ud['id'] }}"
-                                                                value="{{ $ud['id'] }}"
-                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) @if ($ud->documentFinalChecklist->is_correct == 0)
-                                                                checked @endif
-                                                                @endif
-                                                            @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
-                                                            <label class="form-check-label"
-                                                                for="doc-check-no-{{ $ud['id'] }}">No</label>
-                                                        </div>
+                                    @if($showCdvActionInDocuments && $roles != 'applicant')
+                                        <td style="border: 1px solid #000; padding: 8px; vertical-align: top;">
+                                            @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                @if ($ud->documentFinalChecklist->is_correct == 1)
+                                                    <span style="color: green;">Yes</span>
+                                                @else
+                                                    <span style="color: red;">No</span>
+                                                @endif
+                                                
+                                                @if ($ud->documentFinalChecklist->remark)
+                                                    <div style="margin-top: 5px; font-size: 12px;">
+                                                        <strong>Remarks:</strong> {{ $ud->documentFinalChecklist->remark }}
                                                     </div>
-
-                                                    @if (
-                                                        $ud->documentFinalChecklist &&
-                                                            $ud->documentFinalChecklist->document_id == $ud['id'] &&
-                                                            $ud->documentFinalChecklist->remark)
-                                                        <div class="remark-wrap notCorrectRemark">
-                                                            <div class="remark-title">Remarks: </div>
-                                                            <p class="remarks-content">
-                                                                {{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}
-                                                            </p>
-                                                            <a href="javascript:;"
-                                                                onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
-                                                        </div>
-                                                        <input type="hidden"
-                                                            id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
-                                                            value="{{ $ud->documentFinalChecklist->remark }}" />
-                                                    @endif
-
-                                                    @if ($ud['office_file_path'])
-                                                        <div class="doc-cdv">
-                                                            @if (!isset($downloading))
-                                                                <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}"
-                                                                    target="_blank"
-                                                                    class="text-danger uploaded-doc-name">
-                                                                    <i class="fa-solid fa-file-pdf"></i>
-                                                                </a>
-                                                            @endif
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                        @endif
-                                    </tr>
+                                                @endif
+                                            @else
+                                                <span style="color: #6c757d;">Not Reviewed</span>
+                                            @endif
+                                        </td>
+                                    @endif
+                                </tr>
                                 @endforeach
                             @endforeach
 
-
-
-
+                            <!-- Optional Documents Section -->
                             <tr>
-                                <td colspan="{{ $downloading ? 2 : ($showCdvActionInDocuments ? 4 : 3) }}"
-                                    class="document-type-row">
-                                    <h4 class="doc-type-title">Optional Documents</h4>
+                                <td colspan="{{ $colspan }}" style="border: 1px solid #000; padding: 10px; background-color: #e9ecef; font-weight: bold;">
+                                    <h4 style="margin: 0; font-size: 16px;">Optional Documents</h4>
                                 </td>
                             </tr>
+                            
                             @php
                                 $conversionOptionalDocs = config('applicationDocumentType.CONVERSION.optional');
                                 $stepThreeDocs = array_reduce(
@@ -631,11 +152,11 @@
                                     function ($carry, $group) {
                                         return array_merge($carry, $group['documents']);
                                     },
-                                    [],
+                                    []
                                 );
                                 $counter = 0;
                             @endphp
-
+                            
                             @foreach ($stepThreeDocs as $document)
                                 @php
                                     $uploadedDocuments = [];
@@ -644,127 +165,80 @@
                                             ->where('document_type', $document['id'])
                                             ->all();
                                     }
-                                    $uplodedDocCount = count($uploadedDocuments);
                                 @endphp
+                                
                                 @foreach ($uploadedDocuments as $ud)
-                                    <tr id="{{ $ud['id'] }}">
-                                        <td>{{ ++$counter }}.</td>
-                                        <td>
-                                            @if (isset($downloading))
-                                                {{ $ud['title'] }}
+                                <tr style="border: 1px solid #000;">
+                                    <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: top;">{{ ++$counter }}.</td>
+                                    <td style="border: 1px solid #000; padding: 8px; vertical-align: top;">
+                                        <div style="margin-bottom: 5px;">
+                                            <strong>{{ $ud['title'] }}</strong>
+                                        </div>
+                                        
+                                        @if($ud->documentKeys->count() > 0)
+                                            <div style="margin-top: 8px; font-size: 12px;">
+                                                @foreach ($ud->documentKeys as $data)
+                                                    @if(isset($document['inputs'][$data->key]['label']))
+                                                        @php
+                                                            $value = $data->value;
+                                                            $isDate = strtotime($value) !== false;
+                                                            if($isDate){
+                                                                try{
+                                                                    $value = \Carbon\Carbon::parse($value)->format('d-m-Y');
+                                                                } catch (\Exception $e){
+                                                                    $value = $data->value;
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        <div style="margin-bottom: 2px;">
+                                                            <strong>{{ $document['inputs'][$data->key]['label'] }}:</strong> {{ $value }}
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </td>
+
+                                    @if ($roles != 'applicant')
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: top;">
+                                            @if ($checkList && $checkList->is_uploaded_doc_checked == 1)
+                                                <span style="color: green;">✓ Checked</span>
                                             @else
-                                                <span class="doc-name">
-                                                    {{ $ud['title'] }}
-
-                                                    <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}"
-                                                        target="_blank" class="text-danger">
-                                                        <i class="fa-solid fa-file-pdf ml-2"></i>
-                                                    </a>
-                                                </span>
-                                            @endif
-
-                                            @if ($ud->documentKeys->count() > 0)
-                                                <div class="required-info">
-                                                    <ul class="required-info-list">
-                                                        @foreach ($ud->documentKeys as $data)
-                                                            @if (isset($document['inputs'][$data->key]['label']))
-                                                                <li>{{ $document['inputs'][$data->key]['label'] }}:
-                                                                    {{ $data->value }}</li>
-                                                            @endif
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
+                                                <span style="color: #6c757d;">Not Checked</span>
                                             @endif
                                         </td>
+                                    @endif
 
-                                        @if ($roles != 'applicant')
-                                            <td>
-                                                <div class="form-check">
-                                                    <input
-                                                        class="form-check-input required-for-approve property-document-approval-chk"
-                                                        type="checkbox" name="checkedAction" id="checkedAction"
-                                                        @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif
-                                                        @if ($roles != 'section-officer') disabled @endif>
-                                                    <label class="form-check-label" for="checkedAction">Checked</label>
-                                                </div>
-                                            </td>
-                                        @endif
-
-                                        @if ($showCdvActionInDocuments && $roles != 'applicant')
-                                            <td>
-                                                <div class="cdv-wrapper" style="display: flex;">
-                                                    <div class="cdv-action">
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input doc-check-yes"
-                                                                value="{{ $ud['id'] }}" type="radio"
-                                                                name="doc-check-{{ $ud['id'] }}"
-                                                                id="doc-check-yes-{{ $ud['id'] }}"
-                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) @if ($ud->documentFinalChecklist->is_correct == 1)
-                                                                        checked @endif
-                                                                @endif
-                                                            @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
-                                                            <label class="form-check-label"
-                                                                for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-
-
-                                                            <input class="form-check-input doc-check-no" type="radio"
-                                                                name="doc-check-{{ $ud['id'] }}"
-                                                                id="doc-check-no-{{ $ud['id'] }}"
-                                                                value="{{ $ud['id'] }}"
-                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) @if ($ud->documentFinalChecklist->is_correct == 0)
-                                                                checked @endif
-                                                                @endif
-                                                            @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
-                                                            <label class="form-check-label"
-                                                                for="doc-check-no-{{ $ud['id'] }}">No</label>
-                                                        </div>
+                                    @if($showCdvActionInDocuments && $roles != 'applicant')
+                                        <td style="border: 1px solid #000; padding: 8px; vertical-align: top;">
+                                            @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                @if ($ud->documentFinalChecklist->is_correct == 1)
+                                                    <span style="color: green;">Yes</span>
+                                                @else
+                                                    <span style="color: red;">No</span>
+                                                @endif
+                                                
+                                                @if ($ud->documentFinalChecklist->remark)
+                                                    <div style="margin-top: 5px; font-size: 12px;">
+                                                        <strong>Remarks:</strong> {{ $ud->documentFinalChecklist->remark }}
                                                     </div>
-
-                                                    @if (
-                                                        $ud->documentFinalChecklist &&
-                                                            $ud->documentFinalChecklist->document_id == $ud['id'] &&
-                                                            $ud->documentFinalChecklist->remark)
-                                                        <div class="remark-wrap notCorrectRemark">
-                                                            <div class="remark-title">Remarks: </div>
-                                                            <p class="remarks-content">
-                                                                {{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}
-                                                            </p>
-                                                            <a href="javascript:;"
-                                                                onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
-                                                        </div>
-                                                        <input type="hidden"
-                                                            id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
-                                                            value="{{ $ud->documentFinalChecklist->remark }}" />
-                                                    @endif
-
-                                                    @if ($ud['office_file_path'])
-                                                        <div class="doc-cdv">
-                                                            @if (!isset($downloading))
-                                                                <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}"
-                                                                    target="_blank"
-                                                                    class="text-danger uploaded-doc-name">
-                                                                    <i class="fa-solid fa-file-pdf"></i>
-                                                                </a>
-                                                            @endif
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                        @endif
-                                    </tr>
+                                                @endif
+                                            @else
+                                                <span style="color: #6c757d;">Not Reviewed</span>
+                                            @endif
+                                        </td>
+                                    @endif
+                                </tr>
                                 @endforeach
                             @endforeach
 
-
-
+                            <!-- Additional Documents By Applicant Section -->
                             <tr>
-                                <td colspan="{{ $downloading ? 2 : ($showCdvActionInDocuments ? 4 : 3) }}"
-                                    class="document-type-row">
-                                    <h4 class="doc-type-title">Additional Documents By Applicant</h4>
+                                <td colspan="{{ $colspan }}" style="border: 1px solid #000; padding: 10px; background-color: #e9ecef; font-weight: bold;">
+                                    <h4 style="margin: 0; font-size: 16px;">Additional Documents By Applicant</h4>
                                 </td>
                             </tr>
+                            
                             @php
                                 $applicantAdditionalDocuments = [];
                                 $counter = 0;
@@ -776,141 +250,63 @@
                                 }
                                 $uplodedDocCount = count($applicantAdditionalDocuments);
                             @endphp
-                            @if ($uplodedDocCount > 0)
+                            
+                            @if($uplodedDocCount > 0)
                                 @foreach ($applicantAdditionalDocuments as $ud)
-                                    <tr id="{{ $ud['id'] }}">
-                                        <td>{{ ++$counter }}.</td>
+                                <tr style="border: 1px solid #000;">
+                                    <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: top;">{{ ++$counter }}.</td>
+                                    <td style="border: 1px solid #000; padding: 8px; vertical-align: top;">
+                                        <div style="margin-bottom: 5px;">
+                                            <strong>{{ $ud['title'] }}</strong>
+                                        </div>
+                                    </td>
 
-
-                                        <td>
-                                            {{-- <span class="doc-name">{{ $ud['title'] }} 
-                                                            @if (!isset($downloading))
-                                                            <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger">
-                                                                <i class="fa-solid fa-file-pdf ml-2"></i>
-
-                                                            </a>
-                                                        @endif</span> --}}
-
-                                            @if (isset($downloading))
-                                                {{ $ud['title'] }}
+                                    @if ($roles != 'applicant')
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: top;">
+                                            @if ($checkList && $checkList->is_uploaded_doc_checked == 1)
+                                                <span style="color: green;">✓ Checked</span>
                                             @else
-                                                <span class="doc-name">
-                                                    {{ trim($ud['title']) }} <a
-                                                        href="{{ asset('storage/' . $ud['file_path'] ?? '') }}"
-                                                        target="_blank" class="text-danger"><i
-                                                            class="fa-solid fa-file-pdf ml-2"></i></a>
-
-                                                </span>
-                                            @endif
-                                            @if ($ud->documentKeys->count() > 0)
-                                                <div class="required-doc">
-                                                    <ul class="required-list">
-                                                        @foreach ($ud->documentKeys as $data)
-                                                            @if (isset($document['inputs'][$data->key]['label']))
-                                                                <li>{{ $document['inputs'][$data->key]['label'] }}:
-                                                                    {{ $data->value }}</li>
-                                                            @endif
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
+                                                <span style="color: #6c757d;">Not Checked</span>
                                             @endif
                                         </td>
+                                    @endif
 
-                                        @if ($roles != 'applicant')
-                                            <td>
-                                                <div class="form-check">
-                                                    <input
-                                                        class="form-check-input required-for-approve property-document-approval-chk"
-                                                        type="checkbox" name="checkedAction" id="checkedAction"
-                                                        @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif
-                                                        @if ($roles != 'section-officer') disabled @endif>
-                                                    <label class="form-check-label"
-                                                        for="checkedAction">Checked</label>
-                                                </div>
-                                            </td>
-                                        @endif
-
-                                        @if ($showCdvActionInDocuments && $roles != 'applicant')
-                                            <td>
-                                                <div class="cdv-wrapper" style="display: flex;">
-                                                    <div class="cdv-action">
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input doc-check-yes"
-                                                                value="{{ $ud['id'] }}" type="radio"
-                                                                name="doc-check-{{ $ud['id'] }}"
-                                                                id="doc-check-yes-{{ $ud['id'] }}"
-                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) @if ($ud->documentFinalChecklist->is_correct == 1)
-                                                                        checked @endif
-                                                                @endif
-                                                            @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
-                                                            <label class="form-check-label"
-                                                                for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-
-
-                                                            <input class="form-check-input doc-check-no"
-                                                                type="radio" name="doc-check-{{ $ud['id'] }}"
-                                                                id="doc-check-no-{{ $ud['id'] }}"
-                                                                value="{{ $ud['id'] }}"
-                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id']) @if ($ud->documentFinalChecklist->is_correct == 0)
-                                                                checked @endif
-                                                                @endif
-                                                            @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
-                                                            <label class="form-check-label"
-                                                                for="doc-check-no-{{ $ud['id'] }}">No</label>
-                                                        </div>
+                                    @if($showCdvActionInDocuments && $roles != 'applicant')
+                                        <td style="border: 1px solid #000; padding: 8px; vertical-align: top;">
+                                            @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                @if ($ud->documentFinalChecklist->is_correct == 1)
+                                                    <span style="color: green;">Yes</span>
+                                                @else
+                                                    <span style="color: red;">No</span>
+                                                @endif
+                                                
+                                                @if ($ud->documentFinalChecklist->remark)
+                                                    <div style="margin-top: 5px; font-size: 12px;">
+                                                        <strong>Remarks:</strong> {{ $ud->documentFinalChecklist->remark }}
                                                     </div>
-
-                                                    @if (
-                                                        $ud->documentFinalChecklist &&
-                                                            $ud->documentFinalChecklist->document_id == $ud['id'] &&
-                                                            $ud->documentFinalChecklist->remark)
-                                                        <div class="remark-wrap notCorrectRemark">
-                                                            <div class="remark-title">Remarks: </div>
-                                                            <p class="remarks-content">
-                                                                {{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}
-                                                            </p>
-                                                            <a href="javascript:;"
-                                                                onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
-                                                        </div>
-                                                        <input type="hidden"
-                                                            id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
-                                                            value="{{ $ud->documentFinalChecklist->remark }}" />
-                                                    @endif
-
-                                                    @if ($ud['office_file_path'])
-                                                        <div class="doc-cdv">
-                                                            @if (!isset($downloading))
-                                                                <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}"
-                                                                    target="_blank"
-                                                                    class="text-danger uploaded-doc-name">
-                                                                    <i class="fa-solid fa-file-pdf"></i>
-                                                                </a>
-                                                            @endif
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            </td>
-                                        @endif
-                                    </tr>
+                                                @endif
+                                            @else
+                                                <span style="color: #6c757d;">Not Reviewed</span>
+                                            @endif
+                                        </td>
+                                    @endif
+                                </tr>
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="5" class="">
-                                        <p class="text-center">No Documents Available</p>
+                                    <td colspan="{{ $colspan }}" style="border: 1px solid #000; padding: 15px; text-align: center;">
+                                        <p style="margin: 0; color: #6c757d;">No Documents Available</p>
                                     </td>
                                 </tr>
                             @endif
 
-
-
-
+                            <!-- Additional Documents By Section -->
                             <tr>
-                                <td colspan="5" class="document-type-row">
-                                    <h4 class="doc-type-title">Additional Documents By CDV</h4>
+                                <td colspan="{{ $colspan }}" style="border: 1px solid #000; padding: 10px; background-color: #e9ecef; font-weight: bold;">
+                                    <h4 style="margin: 0; font-size: 16px;">Additional Documents By Section</h4>
                                 </td>
                             </tr>
+                            
                             @php
                                 $cdvAdditionalDocuments = [];
                                 if (!empty($details->documentFinal)) {
@@ -923,54 +319,493 @@
                                 $uplodedDocCount = count($cdvAdditionalDocuments);
                                 $count = 1;
                             @endphp
-                            @if ($uplodedDocCount > 0)
-                                @foreach ($cdvAdditionalDocuments as $index => $ud)
-                                    <tr>
-                                        <td>{{ $count }}</td>
-                                        <td colspan="4" style="text-align: left;">
-                                            {{-- <span class="doc-name">{{ $ud['title'] }} 
-                                                                        @if (!isset($downloading))
-                                                                        <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger">
-                                                                            <i class="fa-solid fa-file-pdf ml-2"></i>
-                                                                        </a>
-                                                                        @endif
-                                                                    </span> --}}
-                                            @if (isset($downloading))
-                                                {{ $ud['title'] }}
-                                            @else
-                                                <span class="doc-name">
-                                                    {{ trim($ud['title']) }} <a
-                                                        href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}"
-                                                        target="_blank" class="text-danger"><i
-                                                            class="fa-solid fa-file-pdf ml-2"></i></a>
-
-                                                </span>
-                                            @endif
-                                            @if ($ud->documentKeys->count() > 0)
-                                                <div class="required-doc">
-                                                    <ul class="required-list">
-                                                        @foreach ($ud->documentKeys as $data)
-                                                            <li>{{ $document['inputs'][$data->key]['label'] }}:
-                                                                {{ $data->value }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                </div>
-                                            @endif
+                            
+                            @if($uplodedDocCount > 0)
+                                @foreach ($cdvAdditionalDocuments as $ud)
+                                    <tr style="border: 1px solid #000;">
+                                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $count }}</td>
+                                        <td colspan="{{ $colspan - 1 }}" style="border: 1px solid #000; padding: 8px;">
+                                            <strong>{{ $ud['title'] }}</strong>
                                         </td>
-
                                     </tr>
-                                    @php
-                                        $count = $count + 1;
-                                    @endphp
+                                    @php $count++; @endphp
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="5" class="">
-                                        <p class="text-center">No Documents Available</p>
+                                    <td colspan="{{ $colspan }}" style="border: 1px solid #000; padding: 15px; text-align: center;">
+                                        <p style="margin: 0; color: #6c757d;">No Documents Available</p>
                                     </td>
                                 </tr>
                             @endif
-                            <!-- <tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@else
+<!-- New design for Property Document Details- SOURAV CHAUHAN (13/Dec/2024) -->
+ <div class="part-title mt-2">
+                        <h5>Details of Documents</h5>
+                    </div>
+                    <div class="part-details">
+                        <div class="container-fluid pb-3">
+                            <div class="row">
+                                <div class="col-lg-12">
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered theme-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="2%">S.No</th>
+                                                <th>Document Name</th>
+                                                @if ($roles != 'applicant')
+                                                    <th>Action by SO</th>
+                                                @endif
+                                                <!-- show if assined to is CDV and action not null SOURAV CHAUHAN (23/Dec/2024) -->
+                                                @if($showCdvActionInDocuments && $roles != 'applicant')
+                                                   <!-- <th>Found Correct</th>-->
+                                                     <th>Action By CDV </th>
+                                                @endif
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td colspan="{{ $downloading ? 2 : ($showCdvActionInDocuments ? 4 : 3) }}" class="document-type-row"><h4 class="doc-type-title">Required Documents</h4></td>
+                                                </tr>
+                                                @php
+                                                $stepTwoDocs = config('applicationDocumentType.CONVERSION.Required');
+                                                $counter = 0;
+                                            @endphp
+                                            @foreach ($stepTwoDocs as $document)
+                                                @php
+                                                    $uploadedDocuments = [];
+                                                    if (!empty($details->documentFinal)) {
+                                                        $uploadedDocuments = $details->documentFinal
+                                                            ->where('document_type', $document['id'])
+                                                            ->all();
+                                                    }
+                                                    $uplodedDocCount = count($uploadedDocuments);
+                                                @endphp
+                                                @foreach ($uploadedDocuments as $ud)
+                                                <tr id="{{ $ud['id'] }}">
+                                                    <td>{{ ++$counter }}.</td>
+                                                    <td>
+                                                        <span class="doc-name">
+                                                        {{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a>
+                                                        </span>
+
+
+
+                                                        @if($ud->documentKeys->count()> 0)
+                                                            <div class="required-info">
+                                                                <ul class="required-info-list">
+                                                                    @foreach ($ud->documentKeys as $data)
+                                                                        @if(isset($document['inputs'][$data->key]['label']))
+                                                                        @php
+                                                                            $value = $data->value;
+                                                                            $isDate = strtotime($value) !== false;
+                                                                            if($isDate){
+                                                                                try{
+                                                                                    $value = \Carbon\Carbon::parse($value)->format('d-m-Y');
+                                                                                } catch (\Exception $e){
+                                                                                    $value = $data->value;
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                            <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $value }}</li>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </td>
+
+                                                    @if ($roles != 'applicant')
+                                                        <td>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input required-for-approve property-document-approval-chk" type="checkbox" name="checkedAction" id="checkedAction" @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif @if ($roles != 'section-officer') disabled @endif>
+                                                                <label class="form-check-label" for="checkedAction">Checked</label>
+                                                            </div>
+                                                        </td>
+                                                    @endif
+
+                                                    @if($showCdvActionInDocuments && $roles != 'applicant')
+                                                    <td>
+                                                        <div class="cdv-wrapper" style="display: flex;">
+                                                         <!--   <div class="cdv-action">
+                                                                <div class="form-check form-check-inline">
+                                                                <input class="form-check-input doc-check-yes"
+                                                                    value="{{ $ud['id'] }}" type="radio"
+                                                                    name="doc-check-{{ $ud['id'] }}"
+                                                                    id="doc-check-yes-{{ $ud['id'] }}"
+                                                                    @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                                        @if ($ud->documentFinalChecklist->is_correct == 1)
+                                                                        checked @endif
+                                                                    @endif
+                                                                    @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
+                                                                <label class="form-check-label" for="doc-check-yes-{{ $ud['id'] }}">Yes</label> 
+                                                                </div>
+                                                                <div class="form-check form-check-inline">
+
+
+                                                                <input class="form-check-input doc-check-no"
+                                                                type="radio" name="doc-check-{{ $ud['id'] }}"
+                                                                id="doc-check-no-{{ $ud['id'] }}"
+                                                                value="{{ $ud['id'] }}"
+                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                                @if ($ud->documentFinalChecklist->is_correct == 0)
+                                                                checked @endif
+                                                                @endif
+                                                                @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
+                                                                <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
+                                                                </div>
+                                                            </div> -->
+
+                                                            @if (
+                                                            $ud->documentFinalChecklist &&
+                                                                $ud->documentFinalChecklist->document_id == $ud['id'] &&
+                                                                $ud->documentFinalChecklist->remark)
+                                                            <div class="remark-wrap notCorrectRemark">
+                                                                <div class="remark-title">Remarks: </div>
+                                                                <p class="remarks-content">
+                                                                {{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}
+                                                                </p>
+                                                                <a href="javascript:;"
+                                                                onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
+                                                            </div>
+                                                            <input type="hidden"
+                                                                id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
+                                                                value="{{ $ud->documentFinalChecklist->remark }}" />
+                                                        @endif
+
+                                                        @if($ud['office_file_path'])
+                                                            <div class="doc-cdv">
+                                                                <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name">
+                                                                    <i class="fa-solid fa-file-pdf"></i>
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                        </div>
+                                                    </td>
+                                                    @endif
+                                                </tr>
+                                                @endforeach
+                                                @endforeach
+
+
+
+
+                                                <tr>
+                                                    <td colspan="{{ $downloading ? 2 : ($showCdvActionInDocuments ? 4 : 3 ) }}" class="document-type-row"><h4 class="doc-type-title">Optional Documents</h4></td>
+                                                </tr>
+                                                @php
+                                                $conversionOptionalDocs = config(
+                                                    'applicationDocumentType.CONVERSION.optional',
+                                                );
+                                                $stepThreeDocs = array_reduce(
+                                                    $conversionOptionalDocs['groups'],
+                                                    function ($carry, $group) {
+                                                        return array_merge($carry, $group['documents']);
+                                                    },
+                                                    [],
+                                                );
+                                                $counter = 0;
+                                            @endphp
+                                            
+                                            @foreach ($stepThreeDocs as $document)
+                                            @php
+                                                    $uploadedDocuments = [];
+                                                    if (!empty($details->documentFinal)) {
+                                                        $uploadedDocuments = $details->documentFinal
+                                                            ->where('document_type', $document['id'])
+                                                            ->all();
+                                                    }
+                                                    $uplodedDocCount = count($uploadedDocuments);
+                                                @endphp
+                                                @foreach ($uploadedDocuments as $ud)
+                                                <tr id="{{ $ud['id'] }}">
+                                                    <td>{{ ++$counter }}.</td>
+                                                    <td>
+                                                        <span class="doc-name">
+                                                        {{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a>
+                                                        </span>
+
+                                                        @if($ud->documentKeys->count()> 0)
+                                                            <div class="required-info">
+                                                                <ul class="required-info-list">
+                                                                    @foreach ($ud->documentKeys as $data)
+                                                                        @if(isset($document['inputs'][$data->key]['label']))
+                                                                         @php
+                                                                            $value = $data->value;
+                                                                            $isDate = strtotime($value) !== false;
+                                                                            if($isDate){
+                                                                                try{
+                                                                                    $value = \Carbon\Carbon::parse($value)->format('d-m-Y');
+                                                                                } catch (\Exception $e){
+                                                                                    $value = $data->value;
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                            <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $value }}</li>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </td>
+
+                                                    @if ($roles != 'applicant')
+                                                        <td>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input required-for-approve property-document-approval-chk" type="checkbox" name="checkedAction" id="checkedAction" @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif @if ($roles != 'section-officer') disabled @endif>
+                                                                <label class="form-check-label" for="checkedAction">Checked</label>
+                                                            </div>
+                                                        </td>
+                                                    @endif
+
+                                                    @if($showCdvActionInDocuments && $roles != 'applicant')
+                                                    <td>
+                                                        <div class="cdv-wrapper" style="display: flex;">
+                                                            <!-- <div class="cdv-action">
+                                                                <div class="form-check form-check-inline">
+                                                                <input class="form-check-input doc-check-yes"
+                                                                    value="{{ $ud['id'] }}" type="radio"
+                                                                    name="doc-check-{{ $ud['id'] }}"
+                                                                    id="doc-check-yes-{{ $ud['id'] }}"
+                                                                    @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                                        @if ($ud->documentFinalChecklist->is_correct == 1)
+                                                                        checked @endif
+                                                                    @endif
+                                                                    @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
+                                                                <label class="form-check-label" for="doc-check-yes-{{ $ud['id'] }}">Yes</label> 
+                                                                </div>
+                                                                <div class="form-check form-check-inline">
+
+
+                                                                <input class="form-check-input doc-check-no"
+                                                                type="radio" name="doc-check-{{ $ud['id'] }}"
+                                                                id="doc-check-no-{{ $ud['id'] }}"
+                                                                value="{{ $ud['id'] }}"
+                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                                @if ($ud->documentFinalChecklist->is_correct == 0)
+                                                                checked @endif
+                                                                @endif
+                                                                @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
+                                                                <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
+                                                                </div>
+                                                            </div> -->
+
+                                                            @if (
+                                                            $ud->documentFinalChecklist &&
+                                                                $ud->documentFinalChecklist->document_id == $ud['id'] &&
+                                                                $ud->documentFinalChecklist->remark)
+                                                            <div class="remark-wrap notCorrectRemark">
+                                                                <div class="remark-title">Remarks: </div>
+                                                                <p class="remarks-content">
+                                                                {{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}
+                                                                </p>
+                                                                <a href="javascript:;"
+                                                                onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
+                                                            </div>
+                                                            <input type="hidden"
+                                                                id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
+                                                                value="{{ $ud->documentFinalChecklist->remark }}" />
+                                                        @endif
+
+                                                        @if($ud['office_file_path'])
+                                                            <div class="doc-cdv">
+                                                                <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name">
+                                                                    <i class="fa-solid fa-file-pdf"></i>
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                        </div>
+                                                    </td>
+                                                    @endif
+                                                </tr>
+                                                @endforeach
+                                                @endforeach
+
+
+
+                                                <tr>
+                                                    <td colspan="{{ $downloading ? 2 : ($showCdvActionInDocuments ? 4 : 3 ) }}" class="document-type-row"><h4 class="doc-type-title">Additional Documents By Applicant</h4></td>
+                                                </tr>
+                                                @php
+                                                    $applicantAdditionalDocuments = [];
+                                                    $counter = 0;
+                                                    if (!empty($details->documentFinal)) {
+                                                        $applicantAdditionalDocuments = $details->documentFinal
+                                                            ->where('document_type', 'AdditionalDocument')
+                                                            ->whereNotNull('file_path')
+                                                            ->all();
+                                                    }
+                                                    $uplodedDocCount = count($applicantAdditionalDocuments);
+                                                @endphp
+                                                @if($uplodedDocCount > 0)
+                                                    @foreach ($applicantAdditionalDocuments as $ud)
+                                                <tr id="{{ $ud['id'] }}">
+                                                    <td>{{ ++$counter }}.</td>
+
+
+                                                    <td>
+                                                        <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
+                                                        @if($ud->documentKeys->count()> 0)
+                                                        <div class="required-doc">
+                                                            <ul class="required-list">               
+                                                                @foreach ($ud->documentKeys as $data)
+                                                                    @if(isset($document['inputs'][$data->key]['label']))
+                                                                     @php
+                                                                            $value = $data->value;
+                                                                            $isDate = strtotime($value) !== false;
+                                                                            if($isDate){
+                                                                                try{
+                                                                                    $value = \Carbon\Carbon::parse($value)->format('d-m-Y');
+                                                                                } catch (\Exception $e){
+                                                                                    $value = $data->value;
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $value }}</li>
+                                                                    @endif
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                        @endif
+                                                    </td>
+
+                                                    @if ($roles != 'applicant')
+                                                        <td>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input required-for-approve property-document-approval-chk" type="checkbox" name="checkedAction" id="checkedAction" @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif @if ($roles != 'section-officer') disabled @endif>
+                                                                <label class="form-check-label" for="checkedAction">Checked</label>
+                                                            </div>
+                                                        </td>
+                                                    @endif
+
+                                                    @if($showCdvActionInDocuments && $roles != 'applicant')
+                                                    <td>
+                                                        <div class="cdv-wrapper" style="display: flex;">
+                                                            <!-- <div class="cdv-action">
+                                                                <div class="form-check form-check-inline">
+                                                                <input class="form-check-input doc-check-yes"
+                                                                    value="{{ $ud['id'] }}" type="radio"
+                                                                    name="doc-check-{{ $ud['id'] }}"
+                                                                    id="doc-check-yes-{{ $ud['id'] }}"
+                                                                    @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                                        @if ($ud->documentFinalChecklist->is_correct == 1)
+                                                                        checked @endif
+                                                                    @endif
+                                                                    @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
+                                                                <label class="form-check-label" for="doc-check-yes-{{ $ud['id'] }}">Yes</label> 
+                                                                </div>
+                                                                <div class="form-check form-check-inline">
+
+
+                                                                <input class="form-check-input doc-check-no"
+                                                                type="radio" name="doc-check-{{ $ud['id'] }}"
+                                                                id="doc-check-no-{{ $ud['id'] }}"
+                                                                value="{{ $ud['id'] }}"
+                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'])
+                                                                @if ($ud->documentFinalChecklist->is_correct == 0)
+                                                                checked @endif
+                                                                @endif
+                                                                @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
+                                                                <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
+                                                                </div>
+                                                            </div> -->
+
+                                                            @if (
+                                                            $ud->documentFinalChecklist &&
+                                                                $ud->documentFinalChecklist->document_id == $ud['id'] &&
+                                                                $ud->documentFinalChecklist->remark)
+                                                            <div class="remark-wrap notCorrectRemark">
+                                                                <div class="remark-title">Remarks: </div>
+                                                                <p class="remarks-content">
+                                                                {{ substr($ud->documentFinalChecklist->remark, 0, 50) . '...' }}
+                                                                </p>
+                                                                <a href="javascript:;"
+                                                                onclick="getRemark('{{ $ud->documentFinalChecklist->document_id }}')">View</a>
+                                                            </div>
+                                                            <input type="hidden"
+                                                                id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
+                                                                value="{{ $ud->documentFinalChecklist->remark }}" />
+                                                        @endif
+
+                                                        @if($ud['office_file_path'])
+                                                            <div class="doc-cdv">
+                                                                <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name">
+                                                                    <i class="fa-solid fa-file-pdf"></i>
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                        </div>
+                                                    </td>
+                                                    @endif
+                                                </tr>
+                                                @endforeach
+                                                @else
+                                                <tr>
+                                                    <td colspan="5" class="">
+                                                        <p class="text-center">No Documents Available</p>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+
+
+
+                                                <tr>
+                                                    <td colspan="5" class="document-type-row">
+                                                        <h4 class="doc-type-title">Additional Documents By Section</h4>
+                                                    </td>
+                                                </tr>
+                                                    @php
+                                                        $cdvAdditionalDocuments = [];
+                                                        if (!empty($details->documentFinal)) {
+                                                            $cdvAdditionalDocuments = $details->documentFinal
+                                                                ->where('document_type', 'AdditionalDocument')
+                                                                ->whereNull('file_path')
+                                                                ->whereNotNull('office_file_path')
+                                                                ->all();
+                                                        }
+                                                        $uplodedDocCount = count($cdvAdditionalDocuments);
+                                                        $count = 1;
+                                                    @endphp
+                                                    @if($uplodedDocCount > 0)
+                                                        @foreach ($cdvAdditionalDocuments as $index => $ud)
+                                                            <tr>
+                                                                <td>{{$count}}</td>
+                                                                <td colspan="4" style="text-align: left;">
+                                                                    <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
+                                                                    @if($ud->documentKeys->count()> 0)
+                                                                    <div class="required-doc">
+                                                                        <ul class="required-list">
+                                                                            @foreach ($ud->documentKeys as $data)
+                                                                                <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $data->value }}</li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    </div>
+                                                                    @endif
+                                                                </td>
+                                                        
+                                                            </tr>
+                                                            @php
+                                                            $count = $count + 1;
+                                                            @endphp
+                                                        @endforeach
+                                                    @else
+                                                    <tr>
+                                                        <td colspan="5" class="">
+                                                            <p class="text-center">No Documents Available</p>
+                                                        </td>
+                                                    </tr>
+                                                    @endif
+                                                <!-- <tr>
                                                     <td>2.</td>
                                                     <td>
                                                         <span class="doc-name">Public Notice in National Daily (English)
@@ -1069,12 +904,12 @@
                                                         </div>
                                                     </td>
                                                 </tr> -->
-                        </tbody>
-                    </table>
-                </div>
+                                            </tbody>
+                                    </table>
+                                </div>
 
 
-                {{--
+                                {{--
                                     <table class="table table-bordered particular-document-table">
                                         <thead>
                                             <tr>
@@ -1084,15 +919,15 @@
                                                     <th>Action</th>
                                                 @endif
                                                 <!-- show if assined to is CDV and action not null SOURAV CHAUHAN (23/Dec/2024) -->
-                                                @if ($showCdvActionInDocuments && $roles != 'applicant')
-                                                    <th>Action By CDV </th>
-                                                    <th>Documents By CDV</th>
+                                                @if($showCdvActionInDocuments && $roles != 'applicant')
+                                                    <th>Action By Section </th>
+                                                    <th>Documents By Section</th>
                                                 @endif
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td colspan="{{ $showCdvActionInDocuments ? 5 : 3 }}" class="document-type-row">
+                                                <td colspan="{{ $downloading ? 2 : ($showCdvActionInDocuments ? 5 : 3 )}}" class="document-type-row">
                                                     <h4 class="doc-type-title">Required Documents</h4>
                                                 </td>
                                             </tr>
@@ -1116,11 +951,11 @@
                                                 <td>
                                                     <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
                                                 
-                                                    @if ($ud->documentKeys->count() > 0)
+                                                    @if($ud->documentKeys->count()> 0)
                                                     <div class="required-doc">
                                                         <ul class="required-list">
                                                             @foreach ($ud->documentKeys as $data)
-                                                                @if (isset($document['inputs'][$data->key]['label']))
+                                                                @if(isset($document['inputs'][$data->key]['label']))
                                                                     <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $data->value }}</li>
                                                                 @endif
                                                             @endforeach
@@ -1140,7 +975,7 @@
                                                     </td>
                                                 @endif
                                                 <!-- show if assined to is CDV and action not null SOURAV CHAUHAN (23/Dec/2024) -->
-                                                @if ($showCdvActionInDocuments && $roles != 'applicant')
+                                                @if($showCdvActionInDocuments && $roles != 'applicant')
                                                     <td>
                                                         <div class="checkbox-options" style="display: flex;">
                                                             <div class="form-check form-check-success custom-mr-5">
@@ -1170,7 +1005,10 @@
                                                                 <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
                                                             </div>
                                                         </div>
-                                                        @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'] && $ud->documentFinalChecklist->remark)
+                                                        @if (
+                                                            $ud->documentFinalChecklist &&
+                                                                $ud->documentFinalChecklist->document_id == $ud['id'] &&
+                                                                $ud->documentFinalChecklist->remark)
                                                                 <div class="required-doc notCorrectRemark">
                                                                     <h6 class="required-title">Remarks</h6>
                                                                     <div class="d-flex">
@@ -1185,7 +1023,7 @@
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        @if ($ud['office_file_path'])
+                                                        @if($ud['office_file_path'])
                                                             <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name"><i class="fa-solid fa-file-pdf"></i></a>
                                                         @endif
                                                     </td>
@@ -1195,7 +1033,7 @@
                                             @endforeach
 
                                             <tr>
-                                            <td colspan="{{ $showCdvActionInDocuments ? 5 : 3 }}" class="document-type-row">
+                                            <td colspan="{{ $downloading ? 2 : ($showCdvActionInDocuments ? 5 : 3 )}}" class="document-type-row">
                                                 <h4 class="doc-type-title">Optional Documents</h4>
                                             </td>
                                             </tr>
@@ -1218,7 +1056,7 @@
                                                         <td>{{ ++$counter }}</td>
                                                         <td>
                                                             <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
-                                                            @if ($ud->documentKeys->count() > 0)
+                                                            @if($ud->documentKeys->count()> 0)
                                                             <div class="required-doc">
                                                                 <ul class="required-list">
                                                                     @php
@@ -1228,7 +1066,7 @@
 
                                                                     @foreach ($ud->documentKeys as $data)
                                                                         @isset($document['inputs'][$data->key])
-                                                                            @if ($document['inputs'][$data->key]['label'] == 'Page No.')
+                                                                            @if($document['inputs'][$data->key]['label'] == 'Page No.')
                                                                             @elseif($document['inputs'][$data->key]['label'] == 'From')
                                                                                 @php $from = $data->value; @endphp
                                                                             @elseif($document['inputs'][$data->key]['label'] == 'To')
@@ -1261,11 +1099,11 @@
                                                         </div>
                                                         </td>
                                                         <!-- show if assined to is CDV and action not null SOURAV CHAUHAN (23/Dec/2024) -->
-                                                        @if ($showCdvActionInDocuments)
+                                                        @if($showCdvActionInDocuments)
                                                         <td>
-                                                            <div class="checkbox-options" style="display: flex;">
+                                                            <!-- <div class="checkbox-options" style="display: flex;">
                                                                 <div class="form-check form-check-success custom-mr-5">
-                                                                    <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="1" id="YesCDVStatus1"> -->
+                                                                  
                                                                     <input class="form-check-input doc-check-yes"
                                                                         value="{{ $ud['id'] }}" type="radio"
                                                                         name="doc-check-{{ $ud['id'] }}"
@@ -1278,7 +1116,7 @@
                                                                     <label class="form-check-label" for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
                                                                 </div>
                                                                 <div class="form-check form-check-success">
-                                                                    <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="0" id="NoCDVStatus1" checked> -->
+                                                                   
                                                                     <input class="form-check-input doc-check-no"
                                                                     type="radio" name="doc-check-{{ $ud['id'] }}"
                                                                     id="doc-check-no-{{ $ud['id'] }}"
@@ -1290,8 +1128,11 @@
                                                                     @if ($roles != 'CDV' || $applicationAppointmentLink) disabled @endif>
                                                                     <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
                                                                 </div>
-                                                            </div>
-                                                            @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'] && $ud->documentFinalChecklist->remark)
+                                                            </div> -->
+                                                            @if (
+                                                                $ud->documentFinalChecklist &&
+                                                                    $ud->documentFinalChecklist->document_id == $ud['id'] &&
+                                                                    $ud->documentFinalChecklist->remark)
                                                                     <div class="required-doc notCorrectRemark">
                                                                         <h6 class="required-title">Remarks</h6>
                                                                         <div class="d-flex">
@@ -1306,7 +1147,7 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            @if ($ud['office_file_path'])
+                                                            @if($ud['office_file_path'])
                                                                 <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name"><i class="fa-solid fa-file-pdf"></i></a>
                                                             @endif
                                                         </td>
@@ -1333,17 +1174,17 @@
                                                     }
                                                     $uplodedDocCount = count($applicantAdditionalDocuments);
                                                 @endphp
-                                                @if ($uplodedDocCount > 0)
+                                                @if($uplodedDocCount > 0)
                                                     @foreach ($applicantAdditionalDocuments as $ud)
                                                         <tr id="{{ $ud['id'] }}">
                                                             <td>{{ ++$counter }}</td>
                                                             <td>
                                                                 <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
-                                                                @if ($ud->documentKeys->count() > 0)
+                                                                @if($ud->documentKeys->count()> 0)
                                                                 <div class="required-doc">
                                                                     <ul class="required-list">               
                                                                         @foreach ($ud->documentKeys as $data)
-                                                                            @if (isset($document['inputs'][$data->key]['label']))
+                                                                            @if(isset($document['inputs'][$data->key]['label']))
                                                                                 <li>{{ $document['inputs'][$data->key]['label'] }}: {{ $data->value }}</li>
                                                                             @endif
                                                                         @endforeach
@@ -1360,7 +1201,7 @@
                                                                 </div>
                                                             </div>
                                                             </td>
-                                                            @if ($showCdvActionInDocuments)
+                                                            @if($showCdvActionInDocuments)
                                                             <td>
                                                                 <div class="checkbox-options" style="display: flex;">
                                                                     <div class="form-check form-check-success custom-mr-5">
@@ -1391,7 +1232,10 @@
                                                                         <label class="form-check-label" for="doc-check-no-{{ $ud['id'] }}">No</label>
                                                                     </div>
                                                                 </div>
-                                                                @if ($ud->documentFinalChecklist && $ud->documentFinalChecklist->document_id == $ud['id'] && $ud->documentFinalChecklist->remark)
+                                                                @if (
+                                                                    $ud->documentFinalChecklist &&
+                                                                        $ud->documentFinalChecklist->document_id == $ud['id'] &&
+                                                                        $ud->documentFinalChecklist->remark)
                                                                         <div class="required-doc notCorrectRemark">
                                                                             <h6 class="required-title">Remarks</h6>
                                                                             <div class="d-flex">
@@ -1407,7 +1251,7 @@
                                                             </td>
                                                             @endif
                                                             <td>
-                                                                @if ($ud['office_file_path'])
+                                                                @if($ud['office_file_path'])
                                                                     <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name"><i class="fa-solid fa-file-pdf"></i></a>
                                                                 @endif
                                                             </td>
@@ -1427,7 +1271,7 @@
 
                                                 <tr>
                                                     <td colspan="5" class="document-type-row">
-                                                        <h4 class="doc-type-title">Additional Documents By CDV</h4>
+                                                        <h4 class="doc-type-title">Additional Documents By Section</h4>
                                                     </td>
                                                 </tr>
                                                     @php
@@ -1442,13 +1286,13 @@
                                                         $uplodedDocCount = count($cdvAdditionalDocuments);
                                                         $count = 1;
                                                     @endphp
-                                                    @if ($uplodedDocCount > 0)
+                                                    @if($uplodedDocCount > 0)
                                                         @foreach ($cdvAdditionalDocuments as $index => $ud)
                                                             <tr>
                                                                 <td>{{$count}}</td>
                                                                 <td colspan="4" style="text-align: left;">
                                                                     <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
-                                                                    @if ($ud->documentKeys->count() > 0)
+                                                                    @if($ud->documentKeys->count()> 0)
                                                                     <div class="required-doc">
                                                                         <ul class="required-list">
                                                                             @foreach ($ud->documentKeys as $data)
@@ -1467,14 +1311,16 @@
                                                     @else
                                                     <tr>
                                                         <td colspan="5" class="">
-                                                            <p class="">No Documents Available</p>
+                                                            <p class="">No Documents Available.</p>
                                                         </td>
                                                     </tr>
                                                     @endif
                                         </tbody>
                                     </table>
                                     --}}
-            </div>
-        </div>
-    </div>
-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+@endif

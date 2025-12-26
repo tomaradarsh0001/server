@@ -1,5 +1,5 @@
 <!-- Modal for Adding Remarks -->
-<div class="modal fade" id="remarksModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="remarksModalLabel" aria-hidden="true">
+<div class="modal fade" id="remarksModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="remarksModalLabel">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

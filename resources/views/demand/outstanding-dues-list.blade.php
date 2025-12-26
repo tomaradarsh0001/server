@@ -23,7 +23,7 @@
 <hr>
 <div class="card">
     <div class="card-body">
-        <!-- added table responsive div mobile view by anil on 26-11-2025 -->
+         <!-- added table responsive div mobile view by anil on 26-11-2025 -->
         <div class="table-responsive">
             <table id="example" class="table table-striped display nowrap" style="width:100%">
                 <thead>

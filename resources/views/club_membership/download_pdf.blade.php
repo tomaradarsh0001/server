@@ -103,7 +103,7 @@
             font-weight: bold;
         }
 
-        .watermark {
+        /* .watermark {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -113,7 +113,7 @@
             z-index: -1;
             white-space: nowrap;
             pointer-events: none;
-        }
+        } */
 
         /* for signature of admin by swati on 29052025*/
         .signature-box {
@@ -158,10 +158,11 @@
 
     <!-- Watermark -->
     <!-- <div class="watermark">Land and Development Office</div> -->
+     <div class="watermark"></div>
 
     <!-- Emblem Image -->
     <div class="emblem-div">
-        <img src="assets/images/emblem.jpg" width="60" alt="Emblem" class="emblem">
+        <img src="assets/images/emblem.png" width="60" alt="Emblem" class="emblem">
     </div>
 
     <!-- Main Title -->

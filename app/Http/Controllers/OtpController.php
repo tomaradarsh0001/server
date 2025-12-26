@@ -25,7 +25,8 @@ class OtpController extends Controller
 
     public function saveAptOtp(Request $request, CommunicationService $communicationService)
     {
-        try {
+        // return response()->json(['success' => true, 'message' => 'No mobile or email provided']);
+        // try {
             $action = 'APT_OTP'; // Define or modify action based on module requirements
 
             if ($request->has('mobile')) {
@@ -72,9 +73,13 @@ class OtpController extends Controller
 
                     if (!empty($latestMobileRecord) && 
                         ($latestMobileRecord->is_email_verified == '1' && $latestMobileRecord->is_mobile_verified == '1')) {
-                        return $this->commonService->createOtp('email', $email, 'APT_NEW', $action, $countryCode, $communicationService);
+                        $response =  $this->commonService->createOtp('email', $email, 'APT_NEW', $action, $countryCode, $communicationService);
                     } elseif (!empty($latestMobileRecord)) {
-                        return $this->commonService->updateOtp($latestMobileRecord, 'email', $email, $action, $countryCode, $communicationService);
+                        $response = $this->commonService->updateOtp($latestMobileRecord, 'email', $email, $action, $countryCode, $communicationService);
+                    }
+                    if(isset($response)){
+                        $data = $response->getData();
+                        return response()->json(['success' => $data->success, 'message' => $data->message]);
                     }
                 }
 
@@ -91,10 +96,10 @@ class OtpController extends Controller
             } else {
                 return response()->json(['success' => false, 'message' => 'No mobile or email provided']);
             }
-        } catch (\Exception $e) {
-            Log::error('Error in saveOtp: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'An error occurred. Please try again later.']);
-        }
+        // } catch (\Exception $e) {
+        //     Log::error('Error in saveOtp: ' . $e->getMessage());
+        //     return response()->json(['success' => false, 'message' => 'An error occurred. Please try again later.']);
+        // }
     }
 
 

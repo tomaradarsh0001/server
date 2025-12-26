@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use Illuminate\Http\Request;
@@ -24,14 +23,6 @@ use App\Models\SplitedPropertyDetailHistory;
 use App\Models\CurrentLesseeDetail;
 use App\Models\LndoLandRate;
 use App\Models\CircleLandRate;
-use App\Models\CircleResidentialLandRate;
-use App\Models\LndoResidentialLandRate;
-use App\Models\CircleCommercialLandRate;
-use App\Models\LndoCommercialLandRate;
-use App\Models\CircleInstitutionalLandRate;
-use App\Models\LndoInstitutionalLandRate;
-use App\Models\CircleIndustrialLandRate;
-use App\Models\LndoIndustrialLandRate;
 // use App\Models\FreeHoldDetail;
 use DB;
 use Auth;
@@ -140,7 +131,7 @@ class MisMultiplePropertyService
                     $section_code = $colony_data['dealing_section_code'];
                     // $property_id = Self::getPropertyIdIfNotAvaiable();
                     $property_id = $request->property_id;
-                    // dd($request->all());
+
                     $property_master_id = self::storePropetyBasicDetails($request, $property_id, $main_property_id, $section_code);
                     $childs = self::storeLeaseDetails($request, $property_master_id, $property_id);
 
@@ -317,10 +308,10 @@ class MisMultiplePropertyService
             $premium_in_paisa = null;
         }
         $plot_area_in_sqm = self::convertToSquareMeter($request->area, $request->area_unit);
-        //Commented on dated 20/dec/2024 - Lalit Tiwari
-        // $plotValueData = self::calculatePlotValue($request,$plot_area_in_sqm,$request->present_colony_name);//added by sourav for storing the land values - 5/juy/2024
-        $plotValueData = CommonService::calculatePlotValue($request, $plot_area_in_sqm);
-
+        // Commented on dated 20/dec/2024 - Lalit Tiwari
+        // $plotValueData = self::calculatePlotValue($request, $plot_area_in_sqm, $request->present_colony_name);
+        $plotValueData = CommonService::calculatePlotValue($request,$plot_area_in_sqm);
+        //added by sourav for storing the land values - 5/juy/2024
         $propertyLeaseDetail = PropertyLeaseDetail::create([
             'property_master_id' => $property_master_id,
             'type_of_lease' => $request->lease_type,
@@ -348,7 +339,6 @@ class MisMultiplePropertyService
             'property_type_as_per_lease' => $request->purpose_property_type,
             'property_sub_type_as_per_lease' => $request->purpose_property_sub_type,
             'is_land_use_changed' => $request->land_use_changed,
-            'date_of_land_change' => $request->date_of_land_change,
             'property_type_at_present' => $request->purpose_lease_type_alloted_present,
             'property_sub_type_at_present' => $request->purpose_lease_sub_type_alloted_present,
             'date_of_conveyance_deed' => $request->conveyanc_date[0],
@@ -369,7 +359,7 @@ class MisMultiplePropertyService
                             'property_master_id' => $property_master_id,
                             'old_property_id' => $property_id,
                             'process_of_transfer' => 'Original',
-                            'transferDate' => $request->date_of_execution, //for saving date in case of original 24 april 2024
+                            'transferDate' => $request->date_of_execution,//for saving date in case of original 24 april 2024
                             'lessee_name' => $favourOf['name'],
                             'batch_transfer_id' => 1,
                             'created_by' => Auth::id()
@@ -387,25 +377,21 @@ class MisMultiplePropertyService
             $currentPropertyDetails = PropertyMaster::where('id', $property_master_id)->first();
             foreach ($request->jointProperty as $key => $property) {
                 $propertyStatusFreehold = $request->freeHold;
-                if ($request->property_status == '951') { //if default property is lease hold
+                if ($request->property_status == '951') {//if default property is lease hold
                     if ($request->freeHold[$key + 1] == 'yes') {
-                        $propertyStatus = 952; //splited property will be free hold
+                        $propertyStatus = 952;//splited property will be free hold
                     } else {
-                        $propertyStatus = 951; //splited property will be lease hold
+                        $propertyStatus = 951;//splited property will be lease hold
                     }
                 } else if ($request->property_status == '952') {
                     $propertyStatus = 952;
-                } else if ($propertyStatusFreehold[0] == 'yes') { //if default property is free hold
+                } else if ($propertyStatusFreehold[0] == 'yes') {//if default property is free hold
                     $propertyStatus = 952;
                 } else {
-                    $propertyStatus = null; //if property neither free hold nor lease hold
+                    $propertyStatus = null;//if property neither free hold nor lease hold
                 }
-
-
-
-
                 $plot_area_in_sqm_cild = self::convertToSquareMeter($property['jointpropertyarea'], $property['jointpropertyuit']);
-                $plotValueData = self::calculatePlotValue($request, $plot_area_in_sqm_cild, $request->present_colony_name); //added by sourav for storing the land values - 5/juy/2024
+                $plotValueData = self::calculatePlotValue($request, $plot_area_in_sqm_cild, $request->present_colony_name);//added by sourav for storing the land values - 5/juy/2024
 
                 $splitedPropertyDetail = SplitedPropertyDetail::create([
                     'property_master_id' => $property_master_id,
@@ -432,106 +418,21 @@ class MisMultiplePropertyService
     }
 
 
-    //for calculating land value - SOURAV CHAUHAN (19/Dec/2024)
-    /* public function calculatePlotValue($request,$plot_area_in_sqm,$colonyId){
+    //to creating Child Id For the given Parent Id
+    //8/May/2024 - Sourav Chauhan
+    public function createChildForParent($parentID)
+    {
+        $availableRecords = SplitedPropertyDetail::where('parent_prop_id', $parentID)->get();
+        if ($availableRecords->isNotEmpty()) {
+            $lastId = $availableRecords->max('child_prop_id');
+            $lastId = (int) substr($lastId, strpos($lastId, '/') + 1);
+            $nextId = $parentID . '/' . ($lastId + 1);
+        } else {
+            $nextId = $parentID . '/1';
+        }
+        return $nextId;
+    }
 
-            $plot_value = 0;
-            $plot_value_cr = 0;
-            $lndoRateInv = null;
-            $circleRateInv = null;
-
-            $propertyType = $request->land_use_changed
-                    ? $request->purpose_lease_type_alloted_present
-                    : $request->purpose_property_type;
-                switch ($propertyType) {
-                    case '47'://Residential
-                        $circleRateInv = Self::fetchLatestLandRate(CircleResidentialLandRate::class, $colonyId);
-                        $lndoRateInv = Self::fetchLatestLandRate(LndoResidentialLandRate::class, $colonyId);
-                        break;
-                    case '48'://Commercial
-                        $circleRateInv = Self::fetchLatestLandRate(CircleCommercialLandRate::class, $colonyId);
-                        $lndoRateInv = Self::fetchLatestLandRate(LndoCommercialLandRate::class, $colonyId);
-                        break;
-                    case '49'://Institutional
-                        $circleRateInv = Self::fetchLatestLandRate(CircleInstitutionalLandRate::class, $colonyId);
-                        $lndoRateInv = Self::fetchLatestLandRate(LndoInstitutionalLandRate::class, $colonyId);
-                        break;
-                    case '469'://industrial
-                        $circleRateInv = Self::fetchLatestLandRate(CircleIndustrialLandRate::class, $colonyId);
-                        $lndoRateInv = Self::fetchLatestLandRate(LndoIndustrialLandRate::class, $colonyId);
-                        break;
-                }
-                $plotAreaInSqm = round($plot_area_in_sqm, 2);
-                if ($lndoRateInv !== null) {
-                    $plot_value = round($lndoRateInv * $plotAreaInSqm, 2);
-                }
-                if ($circleRateInv !== null) {
-                    $plot_value_cr = round($circleRateInv * $plotAreaInSqm, 2);
-                }
-
-            $data = [
-                "plot_value" => $plot_value,
-                "plot_value_cr" => $plot_value_cr
-            ];
-
-            return $data;
-
-    } */
-
-
-    // public function calculatePlotValue($request,$plot_area_in_sqm,$colonyId){
-    //     // $colonyId = $request->present_colony_name;
-    //     $lndoRate = LndoLandRate::where("old_colony_id", $colonyId)
-    //         ->orderBy('date_from', 'desc')
-    //         ->first();
-
-    //     $circleRate = CircleLandRate::where("old_colony_id", $colonyId)
-    //         ->orderBy('date_from', 'desc')
-    //         ->first();
-
-    //         $plot_value = 0;
-    //         $plot_value_cr = 0;
-    //         if ($lndoRate || $circleRate) {
-    //             $lndoRateInv = null;
-    //             $circleRateInv = null;
-
-    //             $propertyType = $request->land_use_changed
-    //                     ? $request->purpose_lease_type_alloted_present
-    //                     : $request->purpose_property_type;
-    //             switch ($propertyType) {
-    //                 case '47':
-    //                     $lndoRateInv = $lndoRate ? $lndoRate['residential_land_rate'] : null;
-    //                     $circleRateInv = $circleRate ? $circleRate['residential_land_rate'] : null;
-    //                     break;
-    //                 case '48':
-    //                     $lndoRateInv = $lndoRate ? $lndoRate['commercial_land_rate'] : null;
-    //                     $circleRateInv = $circleRate ? $circleRate['commercial_land_rate'] : null;
-    //                     break;
-    //                 case '49':
-    //                     $lndoRateInv = $lndoRate ? $lndoRate['institutional_land_rate'] : null;
-    //                     $circleRateInv = $circleRate ? $circleRate['institutional_land_rate'] : null;
-    //                     break;
-    //             }
-    //             $plotAreaInSqm = round($plot_area_in_sqm, 2);
-    //             if ($lndoRateInv !== null) {
-    //                 $plot_value = round($lndoRateInv * $plotAreaInSqm, 2);
-    //             }
-    //             if ($circleRateInv !== null) {
-    //                 $plot_value_cr = round($circleRateInv * $plotAreaInSqm, 2);
-    //             }
-    //         } else {
-    //             $plot_value = 0;
-    //             $plot_value_cr = 0;
-    //         } 
-
-    //         $data = [
-    //             "plot_value" => $plot_value,
-    //             "plot_value_cr" => $plot_value_cr
-    //         ];
-
-    //         return $data;
-
-    // }
 
     public function calculatePlotValue($request, $plot_area_in_sqm, $colonyId)
     {
@@ -585,6 +486,7 @@ class MisMultiplePropertyService
         ];
 
         return $data;
+
     }
 
     public function calculatePlotValueChild($request, $plot_area_in_sqm, $colonyId, $property_master_id)
@@ -637,121 +539,8 @@ class MisMultiplePropertyService
         ];
 
         return $data;
+
     }
-
-
-    //For calculating land value - SOURAV CHAUHAN (19/Dec/2024)
-    /* public function calculatePlotValueChild($request,$plot_area_in_sqm,$colonyId,$property_master_id){
-            $plot_value = 0;
-            $plot_value_cr = 0;
-            $lndoRateInv = null;
-            $circleRateInv = null;
-            $propertyType = PropertyMaster::where('id',$property_master_id)->first();
-            switch ($propertyType['property_type']) {
-                case '47'://Residential
-                    $circleRateInv = Self::fetchLatestLandRate(CircleResidentialLandRate::class, $colonyId);
-                    $lndoRateInv = Self::fetchLatestLandRate(LndoResidentialLandRate::class, $colonyId);
-                    break;
-                case '48'://Commercial
-                    $circleRateInv = Self::fetchLatestLandRate(CircleCommercialLandRate::class, $colonyId);
-                    $lndoRateInv = Self::fetchLatestLandRate(LndoCommercialLandRate::class, $colonyId);
-                    break;
-                case '49'://Institutional
-                    $circleRateInv = Self::fetchLatestLandRate(CircleInstitutionalLandRate::class, $colonyId);
-                    $lndoRateInv = Self::fetchLatestLandRate(LndoInstitutionalLandRate::class, $colonyId);
-                    break;
-                case '469'://industrial
-                    $circleRateInv = Self::fetchLatestLandRate(CircleIndustrialLandRate::class, $colonyId);
-                    $lndoRateInv = Self::fetchLatestLandRate(LndoIndustrialLandRate::class, $colonyId);
-                    break;
-            }
-            $plotAreaInSqm = round($plot_area_in_sqm, 2);
-            if ($lndoRateInv !== null) {
-                $plot_value = round($lndoRateInv * $plotAreaInSqm, 2);
-            }
-            if ($circleRateInv !== null) {
-                $plot_value_cr = round($circleRateInv * $plotAreaInSqm, 2);
-            }
-
-            $data = [
-                "plot_value" => $plot_value,
-                "plot_value_cr" => $plot_value_cr
-            ];
-
-            return $data;
-
-    } */
-
-
-    // public function calculatePlotValueChild($request,$plot_area_in_sqm,$colonyId,$property_master_id){
-    //     // $colonyId = $request->present_colony_name;
-    //     $lndoRate = LndoLandRate::where("old_colony_id", $colonyId)
-    //         ->orderBy('date_from', 'desc')
-    //         ->first();
-
-    //     $circleRate = CircleLandRate::where("old_colony_id", $colonyId)
-    //         ->orderBy('date_from', 'desc')
-    //         ->first();
-
-    //         $plot_value = 0;
-    //         $plot_value_cr = 0;
-    //         if ($lndoRate || $circleRate) {
-    //             $lndoRateInv = null;
-    //             $circleRateInv = null;
-
-    //             $propertyType = PropertyMaster::where('id',$property_master_id)->first();
-    //             switch ($propertyType['property_type']) {
-    //                 case '47':
-    //                     $lndoRateInv = $lndoRate ? $lndoRate['residential_land_rate'] : null;
-    //                     $circleRateInv = $circleRate ? $circleRate['residential_land_rate'] : null;
-    //                     break;
-    //                 case '48':
-    //                     $lndoRateInv = $lndoRate ? $lndoRate['commercial_land_rate'] : null;
-    //                     $circleRateInv = $circleRate ? $circleRate['commercial_land_rate'] : null;
-    //                     break;
-    //                 case '49':
-    //                     $lndoRateInv = $lndoRate ? $lndoRate['institutional_land_rate'] : null;
-    //                     $circleRateInv = $circleRate ? $circleRate['institutional_land_rate'] : null;
-    //                     break;
-    //             }
-    //             $plotAreaInSqm = round($plot_area_in_sqm, 2);
-    //             if ($lndoRateInv !== null) {
-    //                 $plot_value = round($lndoRateInv * $plotAreaInSqm, 2);
-    //             }
-    //             if ($circleRateInv !== null) {
-    //                 $plot_value_cr = round($circleRateInv * $plotAreaInSqm, 2);
-    //             }
-    //         } else {
-    //             $plot_value = 0;
-    //             $plot_value_cr = 0;
-    //         } 
-
-    //         $data = [
-    //             "plot_value" => $plot_value,
-    //             "plot_value_cr" => $plot_value_cr
-    //         ];
-
-    //         return $data;
-
-    // }
-
-
-    //to creating Child Id For the given Parent Id
-    //8/May/2024 - Sourav Chauhan
-    public function createChildForParent($parentID)
-    {
-        $availableRecords = SplitedPropertyDetail::where('parent_prop_id', $parentID)->get();
-        if ($availableRecords->isNotEmpty()) {
-            $lastId = $availableRecords->max('child_prop_id');
-            $lastId = (int) substr($lastId, strpos($lastId, '/') + 1);
-            $nextId = $parentID . '/' . ($lastId + 1);
-        } else {
-            $nextId = $parentID . '/1';
-        }
-        return $nextId;
-    }
-
-
 
     // To convert the area to square meter
     public function convertToSquareMeter($value, $fromUnit)
@@ -820,6 +609,7 @@ class MisMultiplePropertyService
                             'created_by' => Auth::id()
                         ]);
                     }
+
                 }
             }
         } else {
@@ -872,7 +662,8 @@ class MisMultiplePropertyService
                     $landTransferType = $plot['land_transfer_type'] ?? null;
                     $transferDate = $plot['transferDate'] ?? null;
                     // Determine batch_transfer_id
-                    $isPrevBatchIdForPlot = PropertyTransferredLesseeDetail::where('property_master_id', $property_master_id)
+                    $isPrevBatchIdForPlot = PropertyTransferredLesseeDetail::
+                        where('property_master_id', $property_master_id)
                         ->where('splited_property_detail_id', $splited_property_detail_id)
                         ->max('batch_transfer_id');
                     if ($isPrevBatchIdForPlot) {
@@ -942,7 +733,8 @@ class MisMultiplePropertyService
         } else {
             for ($i = 1; isset($request["stepFour$i"]); $i++) {
                 $splited_property_detail_id = $childs[$i - 1];
-                $maxBatchId = PropertyTransferredLesseeDetail::where('property_master_id', $property_master_id)
+                $maxBatchId = PropertyTransferredLesseeDetail::
+                    where('property_master_id', $property_master_id)
                     ->where('splited_property_detail_id', $splited_property_detail_id)
                     ->max('batch_transfer_id');
                 $data = $request["stepFour$i"];
@@ -998,7 +790,9 @@ class MisMultiplePropertyService
                             'created_by' => Auth::id()
                         ]);
                     }
+
                 }
+
             }
         } else {
             //current lessee details
@@ -1024,6 +818,7 @@ class MisMultiplePropertyService
                 'area_in_sqm' => self::convertToSquareMeter($request->area, $request->area_unit),
                 'created_by' => Auth::id()
             ]);
+
         }
         //End 
     }
@@ -1071,7 +866,7 @@ class MisMultiplePropertyService
                     $splited_property_detail_id = null;
                 }
 
-                //For storing the upplementary details -SOURAV CHAUHAN (8/july/2024)
+                //For storing the upplementary details -SOURAV CHAUHAN (16/july/2024)
                 if ($request->supplementary_ground_rent_unit[$i] == '1') {
                     $gr_in_paisa = $request->supplementary_ground_rent2[$i];
                     $gr_in_aana = null;
@@ -1093,8 +888,9 @@ class MisMultiplePropertyService
                     $supplementary_total_premium = $request->supplementary_premium1[$i] + ($premium_in_aana / 16);
                 }
 
-                $supplementary_area_in_sqm = Self::convertToSquareMeter($request->supplementary_area[$i], $request->supplementary_area_unit[$i]);
-                //For storing the upplementary details -SOURAV CHAUHAN (8/july/2024)
+                $supplementary_area_in_sqm = self::convertToSquareMeter($request->supplementary_area[$i], $request->supplementary_area_unit[$i]);
+                //For storing the upplementary details -SOURAV CHAUHAN (16/july/2024)
+
 
                 $propertyMiscDetail = PropertyMiscDetail::create([
                     'property_master_id' => $property_master_id,
@@ -1104,7 +900,7 @@ class MisMultiplePropertyService
                     'gr_revised_date' => $request->gr_revised_date[$i],
                     'is_supplimentry_lease_deed_executed' => $request->Supplementary[$i],
                     'supplimentry_lease_deed_executed_date' => $request->supplementary_date[$i],
-                    'supplementary_area' => $request->supplementary_area[$i], //For storing the upplementary details -SOURAV CHAUHAN (8/july/2024)
+                    'supplementary_area' => $request->supplementary_area[$i],//For storing the upplementary details -SOURAV CHAUHAN (8/july/2024)
                     'supplementary_area_unit' => $request->supplementary_area_unit[$i],
                     'supplementary_area_in_sqm' => $supplementary_area_in_sqm,
                     'supplementary_premium' => $request->supplementary_premium1[$i],
@@ -1115,7 +911,7 @@ class MisMultiplePropertyService
                     'supplementary_gr_in_paisa' => $gr_in_paisa,
                     'supplementary_gr_in_aana' => $gr_in_aana,
                     'supplementary_total_gr' => $supplementary_total_gr,
-                    'supplementary_remark' => $request->supplementary_remark[$i], //For storing the upplementary details -SOURAV CHAUHAN (8/july/2024)
+                    'supplementary_remark' => $request->supplementary_remark[$i],//For storing the upplementary details -SOURAV CHAUHAN (8/july/2024)
                     'is_re_rented' => $request->Reentered[$i],
                     're_rented_date' => $request->date_of_reentry[$i],
                     'created_by' => Auth::id(),
@@ -1149,6 +945,7 @@ class MisMultiplePropertyService
                 ]);
             }
         }
+
     }
 
     public function propertDetails()
@@ -1162,6 +959,7 @@ class MisMultiplePropertyService
             $misData = PropertyMaster::where('created_by', $userId)->latest()->get();
         }
         return $misData;
+
     }
 
 
@@ -1171,8 +969,21 @@ class MisMultiplePropertyService
         //dd($misData->propertyTransferredLesseeDetails);
         return $misData;
     }
- 
-     // vivek ji on 28 august 
+
+
+    //Update the property Details
+    public function update($id, $request)
+    {
+        self::updatePropetyBasicDetails($id, $request);
+        self::updateLeaseDetails($id, $request);
+        self::updateLandTransferDetails($id, $request);
+        self::updatePropertyStatusDetails($id, $request);
+        self::updateInspectionDemandDetails($id, $request);
+        self::updateMiscellaneousDetail($id, $request);
+        self::updateContactDetails($id, $request);
+        return true;
+    }
+// vivek ji on 28 august 
      public function delete($id, $request)
 	{
 		$PropertyTransferredLesseeDetails = PropertyTransferredLesseeDetail::find($id);
@@ -1191,20 +1002,6 @@ class MisMultiplePropertyService
 			}
 		}
 	}
-
-    //Update the property Details
-    public function update($id, $request)
-    {
-        self::updatePropetyBasicDetails($id, $request);
-        self::updateLeaseDetails($id, $request);
-        self::updateLandTransferDetails($id, $request);
-        self::updatePropertyStatusDetails($id, $request);
-        self::updateInspectionDemandDetails($id, $request);
-        self::updateMiscellaneousDetail($id, $request);
-        self::updateContactDetails($id, $request);
-        return true;
-    }
-
 
     //Update Property Basic Details and save to property master model
     public function updatePropetyBasicDetails($id, $request)
@@ -1253,32 +1050,10 @@ class MisMultiplePropertyService
             $propertyMasterHistory->updated_by = Auth::id();
             $propertyMasterHistory->save();
         }
+
     }
 
-	public function deleteChildLandTransferByBatchId($childItemId, $propertyMasterId, $splitedPropertyId, $request)
-	{
-		//dd($childItemId);
-		$PropertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('id', $childItemId)
-		->where('property_master_id', $propertyMasterId)
-		->where('splited_property_detail_id', $splitedPropertyId)
-		->first();
-		if ($PropertyTransferredLesseeDetail) {
-			// Create history record
-			$propertyLeaseDetailHistory = new PropertyTransferLesseeDetailHistory();
-			$propertyLeaseDetailHistory->property_master_id = $PropertyTransferredLesseeDetail->property_master_id;
-			$propertyLeaseDetailHistory->lessee_id = $PropertyTransferredLesseeDetail->id;
-			$propertyLeaseDetailHistory->is_active = 1;
-			$propertyLeaseDetailHistory->new_is_active = 0;
-			$propertyLeaseDetailHistory->updated_by = Auth::id();
 
-			if ($propertyLeaseDetailHistory->save()) {
-				$PropertyTransferredLesseeDetail->is_active = 0;
-				$PropertyTransferredLesseeDetail->delete();
-				return true;
-			}
-		}
-		return false;
-	}
 
     //Update the property lease details
     public function updateLeaseDetails($id, $request)
@@ -1304,8 +1079,8 @@ class MisMultiplePropertyService
         }
         $plot_area_in_sqm = self::convertToSquareMeter($request->area, $request->area_unit);
         //Commented on dated 20/dec/2024 - Lalit Tiwari
-        // $plotValueData = self::calculatePlotValue($request,$plot_area_in_sqm,$request->present_colony_name);
-        $plotValueData = CommonService::calculatePlotValue($request, $plot_area_in_sqm);
+        // $plotValueData = self::calculatePlotValue($request, $plot_area_in_sqm, $request->present_colony_name);
+        $plotValueData = CommonService::calculatePlotValue($request,$plot_area_in_sqm);
 
         $propertyLeaseDetail = PropertyLeaseDetail::where('property_master_id', $id)->first();
         $oldPropertyLeaseDetail = $propertyLeaseDetail->getOriginal();
@@ -1365,7 +1140,7 @@ class MisMultiplePropertyService
         if ($favourOfs) {
             foreach ($favourOfs as $index => $favourOf) {
                 if ($favourOf != null) {
-                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::withTrashed()->where('id', $index)->first();
+                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('id', $index)->first();
                     $oldPropertyTransferLesseeDetailHistory = $propertyTransferredLesseeDetail->getOriginal();
                     $propertyTransferredLesseeDetail->transferDate = $request->date_of_execution;
                     $propertyTransferredLesseeDetail->lessee_name = $favourOf;
@@ -1390,6 +1165,7 @@ class MisMultiplePropertyService
                 }
             }
         }
+
     }
 
 
@@ -1411,7 +1187,7 @@ class MisMultiplePropertyService
 
                 for ($index = 0; $index < $count; $index++) {
 
-                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::withTrashed()->where('id', $ids[$index])->first();
+                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('id', $ids[$index])->first();
                     $oldPropertyTransferLesseeDetailHistory = $propertyTransferredLesseeDetail->getOriginal();
                     $propertyTransferredLesseeDetail->process_of_transfer = $transfer;
                     $propertyTransferredLesseeDetail->transferDate = $request->transferDate[$key];
@@ -1440,6 +1216,7 @@ class MisMultiplePropertyService
                         $propertyTransferLesseeDetailHistory->save();
                     }
                 }
+
             }
         }
     }
@@ -1453,7 +1230,7 @@ class MisMultiplePropertyService
         if ($favourOfs) {
             foreach ($favourOfs as $index => $favourOf) {
                 if ($favourOf != null) {
-                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::withTrashed()->where('id', $index)->first();
+                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('id', $index)->first();
                     $oldPropertyTransferLesseeDetailHistory = $propertyTransferredLesseeDetail->getOriginal();
                     $propertyTransferredLesseeDetail->transferDate = $request->conveyanc_date;
                     $propertyTransferredLesseeDetail->lessee_name = $favourOf;
@@ -1478,6 +1255,8 @@ class MisMultiplePropertyService
                 }
             }
         }
+
+
     }
 
 
@@ -1511,6 +1290,8 @@ class MisMultiplePropertyService
             $propInspDemandDetailHistory->updated_by = Auth::id();
             $propInspDemandDetailHistory->save();
         }
+
+
     }
 
 
@@ -1585,6 +1366,7 @@ class MisMultiplePropertyService
         self::updateChildMiscellaneousDetail($id, $request, $property_master_id, $old_property_id);
         self::updateChildContactDetails($id, $request, $property_master_id, $old_property_id);
         return true;
+
     }
 
     //update the Child Basic details
@@ -1594,7 +1376,7 @@ class MisMultiplePropertyService
         $plot_area_in_sqm = self::convertToSquareMeter($request->area, $request->unit);
         $colonyId = PropertyMaster::where('id', $property_master_id)->pluck('new_colony_name')->toArray();
         //Commented on dated 20/dec/2024 - Lalit Tiwari
-        // $plotValueData = self::calculatePlotValueChild($request,$plot_area_in_sqm,$colonyId[0],$property_master_id);
+        // $plotValueData = self::calculatePlotValueChild($request, $plot_area_in_sqm, $colonyId[0], $property_master_id);
         $plotValueData = CommonService::calculatePlotValue($request, $plot_area_in_sqm);
         $splitedPropertyDetail = SplitedPropertyDetail::find($id);
         $oldSplitedPropertyDetail = $splitedPropertyDetail->getOriginal();
@@ -1625,6 +1407,7 @@ class MisMultiplePropertyService
 
             $splitedPropertyDetailHistory->updated_by = Auth::id();
             $splitedPropertyDetailHistory->save();
+
         }
     }
 
@@ -1647,7 +1430,7 @@ class MisMultiplePropertyService
 
                 for ($index = 0; $index < $count; $index++) {
 
-                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::withTrashed()->where('id', $ids[$index])->first();
+                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('id', $ids[$index])->first();
                     $oldPropertyTransferLesseeDetailHistory = $propertyTransferredLesseeDetail->getOriginal();
                     $propertyTransferredLesseeDetail->process_of_transfer = $transfer;
                     $propertyTransferredLesseeDetail->transferDate = $request->pre_transferDate[$key];
@@ -1677,8 +1460,9 @@ class MisMultiplePropertyService
                         $propertyTransferLesseeDetailHistory->save();
                     }
                 }
+
             }
-        }if (isset($request->idNewAdd)) {
+           }if (isset($request->idNewAdd)) {
 			//dd($request->input('nameNewAdd0'));
 			///.print_r("Masterd id =".$property_master_id ."splid id-".$id); die;
 			for ($i = 0; $i < count($request->idNewAdd); $i++) {
@@ -1721,7 +1505,7 @@ class MisMultiplePropertyService
                     $batch_transfer_id = $isPrevBatchId + 1;
                     $previous_batch_transfer_id = $isPrevBatchId;
                 } else {
-                    $batch_transfer_id = 1;
+                    $batch_transfer_id = null;
                     $previous_batch_transfer_id = null;
                 }
 
@@ -1755,6 +1539,7 @@ class MisMultiplePropertyService
                 }
             }
         }
+
     }
 
     public function updateChildPropertyStatusDetails($id, $request, $property_master_id, $old_property_id)
@@ -1764,7 +1549,7 @@ class MisMultiplePropertyService
             if ($favourOfs) {
                 foreach ($favourOfs as $index => $favourOf) {
                     if ($favourOf != null) {
-                        $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::withTrashed()->where('id', $index)->first();
+                        $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('id', $index)->first();
                         $oldPropertyTransferLesseeDetailHistory = $propertyTransferredLesseeDetail->getOriginal();
                         $propertyTransferredLesseeDetail->transferDate = $request->conveyanc_date;
                         $propertyTransferredLesseeDetail->lessee_name = $favourOf;
@@ -1817,6 +1602,7 @@ class MisMultiplePropertyService
 
 
 
+
         //update current lessee details
         //Sourav Chauhan - 18 july 2024
         $latestBatchId = PropertyTransferredLesseeDetail::where('property_master_id', $property_master_id)->where('splited_property_detail_id', $id)->max('batch_transfer_id');
@@ -1852,6 +1638,10 @@ class MisMultiplePropertyService
                 'created_by' => Auth::id()
             ]);
         }
+
+
+
+
     }
 
     //update the Child Inspection and demand details
@@ -1908,6 +1698,7 @@ class MisMultiplePropertyService
     //update the Child Miscellaneous details
     public function updateChildMiscellaneousDetail($id, $request, $property_master_id, $old_property_id)
     {
+        //added for updating the supplementary details - SOURAV CHAUHAN (16/July/2024)
         if ($request->supplementary_ground_rent_unit == '1') {
             $gr_in_paisa = $request->supplementary_ground_rent2;
             $gr_in_aana = null;
@@ -1928,7 +1719,7 @@ class MisMultiplePropertyService
             $premium_in_paisa = null;
             $supplementary_total_premium = $request->supplementary_premium1 + ($premium_in_aana / 16);
         }
-        $supplementary_area_in_sqm = Self::convertToSquareMeter($request->supplementary_area, $request->supplementary_area_unit);
+        $supplementary_area_in_sqm = self::convertToSquareMeter($request->supplementary_area, $request->supplementary_area_unit);
 
         $splitedMisDetail = PropertyMiscDetail::where('property_master_id', $property_master_id)
             ->where('splited_property_detail_id', $id)
@@ -1939,8 +1730,7 @@ class MisMultiplePropertyService
             $splitedMisDetail->gr_revised_date = $request->gr_revised_date;
             $splitedMisDetail->is_supplimentry_lease_deed_executed = $request->Supplementary;
             $splitedMisDetail->supplimentry_lease_deed_executed_date = $request->supplementary_date;
-
-            //added for updating the supplementary details - SOURAV CHAUHAN (12/July/2024)
+            //added for updating the supplementary details - SOURAV CHAUHAN (16/July/2024)
             $splitedMisDetail->supplementary_area = $request->supplementary_area;
             $splitedMisDetail->supplementary_area_unit = $request->supplementary_area_unit;
             $splitedMisDetail->supplementary_area_in_sqm = $supplementary_area_in_sqm;
@@ -1953,8 +1743,6 @@ class MisMultiplePropertyService
             $splitedMisDetail->supplementary_gr_in_aana = $gr_in_aana;
             $splitedMisDetail->supplementary_total_gr = $supplementary_total_gr;
             $splitedMisDetail->supplementary_remark = $request->supplementary_remark;
-
-
             $splitedMisDetail->is_re_rented = $request->Reentered;
             $splitedMisDetail->re_rented_date = $request->date_of_reentry;
             if ($splitedMisDetail->isDirty()) {
@@ -1984,9 +1772,7 @@ class MisMultiplePropertyService
                 $PropertyMiscDetail->gr_revised_date = $request->gr_revised_date;
                 $PropertyMiscDetail->is_supplimentry_lease_deed_executed = $request->Supplementary;
                 $PropertyMiscDetail->supplimentry_lease_deed_executed_date = $request->supplementary_date;
-
-
-                //added for updating the supplementary details - SOURAV CHAUHAN (12/July/2024)
+                //added for updating the supplementary details - SOURAV CHAUHAN (16/July/2024)
                 $PropertyMiscDetail->supplementary_area = $request->supplementary_area;
                 $PropertyMiscDetail->supplementary_area_unit = $request->supplementary_area_unit;
                 $PropertyMiscDetail->supplementary_area_in_sqm = $supplementary_area_in_sqm;
@@ -1999,16 +1785,38 @@ class MisMultiplePropertyService
                 $PropertyMiscDetail->supplementary_gr_in_aana = $gr_in_aana;
                 $PropertyMiscDetail->supplementary_total_gr = $supplementary_total_gr;
                 $PropertyMiscDetail->supplementary_remark = $request->supplementary_remark;
-
-
                 $PropertyMiscDetail->is_re_rented = $request->Reentered;
                 $PropertyMiscDetail->re_rented_date = $request->date_of_reentry;
                 $PropertyMiscDetail->save();
             }
+
         }
     }
 
+public function deleteChildLandTransferByBatchId($childItemId, $propertyMasterId, $splitedPropertyId, $request)
+	{
+		//dd($childItemId);
+		$PropertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('id', $childItemId)
+		->where('property_master_id', $propertyMasterId)
+		->where('splited_property_detail_id', $splitedPropertyId)
+		->first();
+		if ($PropertyTransferredLesseeDetail) {
+			// Create history record
+			$propertyLeaseDetailHistory = new PropertyTransferLesseeDetailHistory();
+			$propertyLeaseDetailHistory->property_master_id = $PropertyTransferredLesseeDetail->property_master_id;
+			$propertyLeaseDetailHistory->lessee_id = $PropertyTransferredLesseeDetail->id;
+			$propertyLeaseDetailHistory->is_active = 1;
+			$propertyLeaseDetailHistory->new_is_active = 0;
+			$propertyLeaseDetailHistory->updated_by = Auth::id();
 
+			if ($propertyLeaseDetailHistory->save()) {
+				$PropertyTransferredLesseeDetail->is_active = 0;
+				$PropertyTransferredLesseeDetail->delete();
+				return true;
+			}
+		}
+		return false;
+	}
     //update the Child Contact details
     public function updateChildContactDetails($id, $request, $property_master_id, $old_property_id)
     {
@@ -2050,6 +1858,9 @@ class MisMultiplePropertyService
             $splitedContactDetail->email = $request->email;
             $splitedContactDetail->as_on_date = $request->date;
             $splitedContactDetail->save();
+
         }
     }
+
+
 }

@@ -31,12 +31,11 @@ use App\Models\TempLandUseChangeApplication;
 use App\Models\TempConversionApplication;
 use App\Models\PropertySectionMapping;
 use App\Models\User;
-use App\Models\Section;
 use Illuminate\Support\Facades\DB;
 use URL;
+use App\Models\Section;
 use Illuminate\Support\Facades\Storage;
 use App\Services\CommonService;
-use App\Services\CommunicationService;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use PhpParser\Node\Stmt\TryCatch;
@@ -45,15 +44,15 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\CommonMail;
 use App\Models\City;
 use App\Models\Country;
-use App\Models\NocApplication;
 use App\Models\PayerDetail;
 use App\Models\State;
-use App\Models\TempNoc;
 use App\Services\PropertyMasterService;
+use App\Services\CommunicationService;
 use Carbon\Carbon;
+use App\Models\TempNoc;
+use App\Models\NocApplication;
 use App\Models\PropertyScannedRequest;
 use App\Models\SplitedPropertyDetail;
-
 
 class GeneralFunctions
 {
@@ -89,6 +88,7 @@ class GeneralFunctions
     //For generating registration number
     public static function generateRegistrationNumber()
     {
+        // $lastRegistration = UserRegistration::latest('created_at')->first();
         $lastRegistration = UserRegistration::latest('id')->first();
 
         if ($lastRegistration) {
@@ -201,7 +201,6 @@ class GeneralFunctions
         $commonService = new CommonService;
         $settingsService = new SettingsService;
         $applicationNo = $commonService->getUniqueID($finalModel, $prefix, $column);
-
         switch ($modelName) {
             case 'TempSubstitutionMutation':
                 $serviceType = getServiceType('SUB_MUT');
@@ -238,18 +237,33 @@ class GeneralFunctions
                 'application_no' => $applicationNo,
                 'date' => Carbon::now()->format('d-m-Y'),
                 'time' => Carbon::now('Asia/Kolkata')->format('H:i:s'),
+                'datetime'=> Carbon::now()->format('d-m-Y').' '.Carbon::now('Asia/Kolkata')->format('H:i:s')
             ];
-
+       
             // Action type for notifications
             $action = 'APP_ACK';
-            // $checkEmailTemplateExists = checkTemplateExists('email', $action);
-            // if (!empty($checkEmailTemplateExists)) {
-            // Apply mail settings and send notifications
-            // $settingsService->applyMailSettings($action);
-            // Send notifications
-            $application = Application::where('application_no', $applicationNo)->first();
+            $checkEmailTemplateExists = checkTemplateExists('email', $action);
+            if (!empty($checkEmailTemplateExists)) {
+                $application = Application::where('application_no', $applicationNo)->first();
+                $userId = $application->created_by;
+                $registerUser = User::find($userId);
+                try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($registerUser->email, $mailSettings);
 
-            //added by swati mishra on 06082025 for scanninng request generation once any application is successfully submitted.
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $registerUser->email,
+                        'data'   => $data,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $registerUser->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
             try {
                 self::createScanningRequest($application);
             } catch (\Throwable $e) {
@@ -258,38 +272,26 @@ class GeneralFunctions
                     'exception' => $e
                 ]);
             }
-
-            $userId = $application->created_by;
-            $registerUser = User::find($userId);
-            //dd($registerUser);
-            // Mail::to($registerUser->email)->send(new CommonMail($data, $action));
-            // }
-
-
-            //For sending mail with communication tracking - SOURAV CHAUHAN (21/Nov/2024)
+            
+            }
+           
+            $mobileNo = $registerUser->mobile_no;
+            $checkSmsTemplateExists = checkTemplateExists('sms', $action);
             $communicationService = new CommunicationService;
-            $type = 'email';
-            // $communicationService->sendMailWithTracking($action, $data, $registerUser, $type);
-
-
-
-            // $mobileNo = $registerUser->mobile_no;
-            // $checkSmsTemplateExists = checkTemplateExists('sms', $action);
-            // $communicationService = new CommunicationService;
-            // if (!empty($checkSmsTemplateExists)) {
-            //     $communicationService->sendSmsMessage($data, $mobileNo, $action);
-            // }
-            // $checkWhatsappTemplateExists = checkTemplateExists('whatsapp', $action);
-            // if (!empty($checkWhatsappTemplateExists)) {
-            //     $communicationService->sendWhatsAppMessage($data, $mobileNo, $action);
-            // }
+            if (!empty($checkSmsTemplateExists)) {
+                $communicationService->sendSmsMessage($data, $mobileNo, $action);
+            }
+            $checkWhatsappTemplateExists = checkTemplateExists('whatsapp', $action);
+            if (!empty($checkWhatsappTemplateExists)) {
+                $communicationService->sendWhatsAppMessage($data, $mobileNo, $action);
+            }
             return response()->json(['status' => 'success', 'message' => 'Application submitted succesfully']);
         } else {
             return response()->json(['status' => 'error', 'message' => 'Application not submitted!']);
         }
     }
 
-    //added by swati mishra on 06082025 for scanninng request generation once any application is successfully submitted.
+     //added by swati mishra on 06082025 for scanninng request generation once any application is successfully submitted.
     public static function createScanningRequest($application)
     {
         $commonService = new CommonService;
@@ -390,7 +392,6 @@ class GeneralFunctions
         \Log::info("Scanning request created for old_property_id = {$oldPropertyId}");
     }
 
-
     //For storing mutation application temporary tables data to final tables - SOURAV CHAUHAN (1/Oct/2024)
     public function convertMutationApplication($modelName, $modelId, $finalModel, $applicationNo, $serviceType, $paymentComplete)
     {
@@ -470,7 +471,7 @@ class GeneralFunctions
         $propertyType = $propertyDetails->property_type;
         $propertySubType = $propertyDetails->property_sub_type;
         $propertySectionMapping = PropertySectionMapping::where('colony_id', $colony)->where('property_type', $propertyType)->where('property_subtype', $propertySubType)->first();
-        $sectionId = !is_null($propertySectionMapping) ? $propertySectionMapping['section_id'] : null; // modified to handle case when no mapping found for givern type and subtype // Niitn - 13-02-2025
+        $sectionId = $propertySectionMapping['section_id'];
         return $sectionId;
     }
 
@@ -604,11 +605,11 @@ class GeneralFunctions
     }
 
     //store the appliction movement - SOURAV CHAUHAN (9/Oct/2024)
-    public function applicationMovement($applicationNo, $modelId, $serviceType, $createdBy, $sectionId)
+   public function applicationMovement($applicationNo, $modelId, $serviceType, $createdBy, $sectionId)
     {
-        $section = Section::find($sectionId);
+        $section = Section::find($sectionId); 
         $userId = null;
-        $users = $section->users()->get();
+        $users = $section->users()->get(); 
         foreach ($users as $user) {
             $sectionOfficer = $user->roles()->where('name', 'section-officer')->get();
             if ($sectionOfficer->isNotEmpty()) {
@@ -628,6 +629,7 @@ class GeneralFunctions
             'application_no' => $applicationNo,
         ]);
     }
+
 
     public function deleteApplicationAllTempData($modelName, $modelId, $serviceType)
     {
@@ -825,7 +827,6 @@ class GeneralFunctions
         $modelClass = '\\App\\Models\\' . $model;
         $application = $modelClass::find($modelId);
         $payment->application_no = $application->application_no ?? null;
-
         if ($payment->save()) {
             return true;
         } else {
@@ -843,8 +844,8 @@ class GeneralFunctions
             $modelName = 'LandUseChangeApplication';
             $tempAttributes = $tempRow->toArray();
             unset($tempAttributes['id'], $tempAttributes['created_at'], $tempAttributes['updated_at']);
-            $tempAttributes['created_by'] = Auth::id();
-            $tempAttributes['updated_by'] = Auth::id();
+            /* $tempAttributes['created_by'] = Auth::id();
+            $tempAttributes['updated_by'] = Auth::id(); */
             $tempAttributes['application_no'] = $applicationNo;
             $tempAttributes['status'] = getServiceType('APP_NEW');
             $tempAttributes['section_id'] = self::findSection($tempAttributes['property_master_id']);
@@ -875,7 +876,9 @@ class GeneralFunctions
         $modelName = 'ConversionApplication';
         $tempAttributes = $tempRow->toArray();
         $transactionSuccess = false;
-        unset($tempAttributes['id'], $tempAttributes['created_at'], $tempAttributes['updated_at']);
+        unset($tempAttributes['id'], $tempAttributes['created_at'], $tempAttributes['updated_at'], $tempAttributes['created_by'], $tempAttributes['updated_by']);
+        $tempAttributes['created_by'] = Auth::check() ? Auth::id() : $paymentComplete->created_by;
+        $tempAttributes['updated_by'] = Auth::check() ? Auth::id() : $paymentComplete->created_by; // added by nitin to fix issue if payment is not updated immediately
         $tempAttributes['application_no'] = $applicationNo;
         $tempAttributes['status'] = getServiceType('APP_NEW');
         $tempAttributes['section_id'] = self::findSection($tempAttributes['property_master_id']);
@@ -889,7 +892,7 @@ class GeneralFunctions
             Self::updatePayment($modelName, $newRow->id, $paymentComplete);
 
             //Step 7:- store the appliction movement - SOURAV CHAUHAN (9/Oct/2024)
-            Self::applicationMovement($applicationNo, $newRow->id, $serviceType, $paymentComplete->created_by, $tempAttributes['section_id']);
+            Self::applicationMovement($applicationNo, $newRow->id, $serviceType, $paymentComplete->created_by,  $tempAttributes['section_id']);
 
             Self::deleteApplicationAllTempData($tempModelName, $modelId, $serviceType);
 
@@ -901,74 +904,73 @@ class GeneralFunctions
     //for storing temp co Applicants 
     public static function storeTempCoApplicants($serviceType, $modelName, $modelId, $colonyCode, $request)
     {
-        // dd($serviceType, $modelName, $modelId, $colonyCode, $request);
-        // try {
-        $allSaved = true;
+        try {
+            $allSaved = true;
 
-        foreach ($request->coapplicants as $i => $coapplicantData) {
-            // dd($coapplicantData);
-            if (!empty($coapplicantData['name'])) {
-                $coapplicantId = isset($coapplicantData['coapplicantId']) && $coapplicantData['coapplicantId'] > 0
-                    ? $coapplicantData['coapplicantId']
-                    : 0;
+            foreach ($request->coapplicants as $i => $coapplicantData) {
+                // dd($coapplicantData);
+                if (!empty($coapplicantData['name'])) {
+                    $coapplicantId = isset($coapplicantData['coapplicantId']) && $coapplicantData['coapplicantId'] > 0
+                        ? $coapplicantData['coapplicantId']
+                        : 0;
 
 
-                $indexNo = $coapplicantData['indexNo'] ?? 0;
-                if ($coapplicantId > 0) {
-                    $existingCoapplicant = $coapplicantId ? TempCoapplicant::find($coapplicantId) : null;
-                    $recordExistCheckArray = ['id' => $coapplicantId]; // if coaaplicant idis available then check record for id exist
-                } else {
-                    $existingCoapplicant = $coapplicantId ? TempCoapplicant::where('model_name', $modelName)->where('model_id', $modelId)->where('index_no', $indexNo)->first() : null;
-                    $existingCoapplicant = !empty($existingCoapplicant) ? $existingCoapplicant : null;
-                    $recordExistCheckArray = ['model_name' => $modelName, 'model_id' => $modelId, 'index_no' => $indexNo]; // if id id not available then match model name, model id , index not uniquely identify existing record. useful for create case// coming back on step after submitting
-                }
-                // Retrieve or initialize the coapplicant model
-                $user = Auth::user();
-                $userDetails = $user->applicantUserDetails;
-                $registrationNumber = $userDetails->applicant_number;
-                $date = now()->format('YmdHis');
+                    $indexNo = $coapplicantData['indexNo'] ?? 0;
+                    if ($coapplicantId > 0) {
+                        $existingCoapplicant = $coapplicantId ? TempCoapplicant::find($coapplicantId) : null;
+                        $recordExistCheckArray = ['id' => $coapplicantId]; // if coaaplicant idis available then check record for id exist
+                    } else {
+                        $existingCoapplicant = $coapplicantId ? TempCoapplicant::where('model_name', $modelName)->where('model_id', $modelId)->where('index_no', $indexNo)->first() : null;
+                        $existingCoapplicant = !empty($existingCoapplicant) ? $existingCoapplicant : null;
+                        $recordExistCheckArray = ['model_name' => $modelName, 'model_id' => $modelId, 'index_no' => $indexNo]; // if id id not available then match model name, model id , index not uniquely identify existing record. useful for create case// coming back on step after submitting
+                    }
+                    // Retrieve or initialize the coapplicant model
+                    $user = Auth::user();
+                    $userDetails = $user->applicantUserDetails;
+                    $registrationNumber = $userDetails->applicant_number;
+                    $date = now()->format('YmdHis');
 
-                $pathToUpload = "$registrationNumber/$colonyCode/$serviceType/$modelId/coapplicant/" . $indexNo;
+                    $pathToUpload = "$registrationNumber/$colonyCode/$serviceType/$modelId/coapplicant/" . $indexNo;
 
-                // Handle each file type (photo, aadhaar, pan)
-                $imageFullPath = self::handleFileUpload($request, "coapplicants.$i.photo", $pathToUpload, 'image-', $date, $existingCoapplicant, 'image_path');
-                $aadhaarFullPath = self::handleFileUpload($request, "coapplicants.$i.aadhaarFile", $pathToUpload, 'aadhaar-', $date, $existingCoapplicant, 'aadhaar_file_path');
-                $panFullPath = self::handleFileUpload($request, "coapplicants.$i.panFile", $pathToUpload, 'pan-', $date, $existingCoapplicant, 'pan_file_path');
+                    // Handle each file type (photo, aadhaar, pan)
+                    $imageFullPath = self::handleFileUpload($request, "coapplicants.$i.photo", $pathToUpload, 'image-', $date, $existingCoapplicant, 'image_path');
+                    $aadhaarFullPath = self::handleFileUpload($request, "coapplicants.$i.aadhaarFile", $pathToUpload, 'aadhaar-', $date, $existingCoapplicant, 'aadhaar_file_path');
+                    $panFullPath = self::handleFileUpload($request, "coapplicants.$i.panFile", $pathToUpload, 'pan-', $date, $existingCoapplicant, 'pan_file_path');
 
-                // Save or update co-applicant details
-                $tempCoapplicant = TempCoapplicant::updateOrCreate(
-                    $recordExistCheckArray,
-                    [
-                        'service_type' => getServiceType($serviceType),
-                        'model_name' => $modelName,
-                        'index_no' => $indexNo ?? null,
-                        'model_id' => $modelId,
-                        'co_applicant_name' => $coapplicantData['name'],
-                        'co_applicant_gender' => $coapplicantData['gender'],
-                        'co_applicant_age' => $coapplicantData['dateOfBirth'],
-                        'prefix' => $serviceType == "SUB_MUT" ? $coapplicantData['prefixInv'] : $coapplicantData['conPrefixInv'],
-                        'co_applicant_father_name' => $serviceType == "SUB_MUT" ? $coapplicantData['secondnameInv'] : $coapplicantData['fathername'],
-                        'co_applicant_aadhar' => $coapplicantData['aadharnumber'],
-                        'co_applicant_pan' => $coapplicantData['pannumber'],
-                        'co_applicant_mobile' => $coapplicantData['mobilenumber'],
-                        'created_by' => Auth::id(),
-                        'image_path' => $imageFullPath,
-                        'aadhaar_file_path' => $aadhaarFullPath,
-                        'pan_file_path' => $panFullPath
-                    ]
-                );
+                    // Save or update co-applicant details
+                    $tempCoapplicant = TempCoapplicant::updateOrCreate(
+                        $recordExistCheckArray,
+                        [
+                            'service_type' => getServiceType($serviceType),
+                            'model_name' => $modelName,
+                            'index_no' => $indexNo ?? null,
+                            'model_id' => $modelId,
+                            'co_applicant_name' => $coapplicantData['name'],
+                            'co_applicant_gender' => $coapplicantData['gender'],
+                            'co_applicant_age' => $coapplicantData['dateOfBirth'],
+                            'prefix' => $serviceType == "SUB_MUT" ? $coapplicantData['prefixInv'] :$coapplicantData['conPrefixInv'],
+                            'co_applicant_father_name' => $serviceType == "SUB_MUT" ? $coapplicantData['secondnameInv']:$coapplicantData['fathername'],
+                            'co_applicant_aadhar' => $coapplicantData['aadharnumber'],
+                            'co_applicant_pan' => $coapplicantData['pannumber'],
+                            'co_applicant_mobile' => $coapplicantData['mobilenumber'],
+                            'created_by' => Auth::id(),
+                            'image_path' => $imageFullPath,
+                            'aadhaar_file_path' => $aadhaarFullPath,
+                            'pan_file_path' => $panFullPath
+                        ]
+                    );
 
-                if (!$tempCoapplicant) {
-                    $allSaved = false;
+                    if (!$tempCoapplicant) {
+                        $allSaved = false;
+                    }
                 }
             }
-        }
 
-        return $allSaved;
-        // } catch (\Exception $e) {
-        //     Log::error("Error storing coapplicants: " . $e->getMessage());
-        //     return response()->json(['status' => false, 'message' => 'An error occurred while storing coapplicants', 'error' => $e->getMessage()], 500);
-        // }
+            return $allSaved;
+        } catch (\Exception $e) {
+            Log::error("Error storing coapplicants: " . $e->getMessage());
+            return response()->json(['status' => false, 'message' => 'An error occurred while storing coapplicants', 'error' => $e->getMessage()], 500);
+        }
     }
 
     private static function handleFileUpload($request, $inputName, $pathToUpload, $prefix, $date, $existingCoapplicant, $fileColumnName)
@@ -1009,6 +1011,7 @@ class GeneralFunctions
     {
         $user = Auth::user();
         $userProperties = $user->userProperties->select('old_property_id', 'flat_id')->toArray();
+        // dd($userProperties);
         $newDemandCount = 0;
         $demands = collect();
         $pms = new PropertyMasterService();

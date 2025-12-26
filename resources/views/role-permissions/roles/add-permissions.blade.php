@@ -9,7 +9,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h6 class="mb-0 text-uppercase tabular-record_font pb-4">Role: {{$role->name}}</h6>
-                            <form action="{{ url('roles/'.$role->id.'/give-permissions') }}" method="POST" >
+                        <form action="{{ route('roles.givePermission', $role->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                                 <div class="">

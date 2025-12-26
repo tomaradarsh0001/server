@@ -21,22 +21,20 @@
             padding: 5px 10px;
             border-radius: 4px;
         }
-
-        .alertDot {
-            width: 9px;
-            height: 9px;
-            background-color: #007bff;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #007bff, 0 0 20px #007bff, 0 0 30px #007bff;
-            animation: pulse 1.5s infinite;
-        }
-
+       .alertDot {
+        width: 9px;
+        height: 9px;
+        background-color: #007bff;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #007bff, 0 0 20px #007bff, 0 0 30px #007bff;
+        animation: pulse 1.5s infinite;
+    }
         /* Ensure responsiveness on smaller screens */
         @media (max-width: 768px) {
             div.dt-buttons {
                 width:100%;
             }
-
+            
             div.dt-buttons.btn-group {
                 flex-direction: column;
                 align-items: flex-start;
@@ -54,7 +52,7 @@
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Registrations</li>
                 </ol>
@@ -70,15 +68,14 @@
             @if (Auth::user()->roles[0]->name != 'it-cell')
                 <div class="d-flex justify-content-end">
                     <ul class="d-flex gap-3 flex-wrap">
-                        @if (Auth::user()->roles[0]->name == 'deputy-lndo')
-                            <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
-                                <div class="alertRed"></div>
-                                <span class="text-secondary">Action Not Taken By SO</span>
-                            </li>
-                            <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">|</li>
-                        @endif
-
-                        <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
+                   @if (Auth::user()->roles[0]->name == 'deputy-lndo')
+    <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
+        <div class="alertRed"></div>
+        <span class="text-secondary">Action Not Taken By SO</span>
+    </li>
+    <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">|</li>
+@endif
+                   <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
                             <div class="alertGreen"></div>
                             <span class="text-secondary">First Actionable</span>
                         </li>
@@ -86,14 +83,13 @@
                         <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
                             <div class="alertDot"></div>
                             <span class="text-secondary">Actionable</span>
-                        </li>
-                        <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">|</li>
-                        <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
+                        </li>     
+                   <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
                             <i class="fadeIn animated bx bx-list-ul fs-5" style="color:#6610f2"></i>
                             <span class="text-secondary">MIS Checked</span>
                         </li>
                         <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">|</li>
-                        {{-- <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
+                       {{--  <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
                             <i class="fadeIn animated bx bx-file-find fs-5" style="color:#20c997"></i>
                             <span class="text-secondary">Scanned Files Checked</span>
                         </li>
@@ -103,9 +99,9 @@
                             <span class="text-secondary">Uploaded Documents Checked</span>
                         </li>
                     </ul>
-                </div>
+                </div> 
             @endif
-
+            
             <table id="example" class="display nowrap applicant_list_table" style="width:100%">
                 <thead>
                     <tr>
@@ -123,16 +119,16 @@
                         @if ($user->roles[0]['name'] != 'it-cell')
                             <th>Activity</th>
                         @endif
-
+                        
                         <th>
                             <div style="width: 110px; overflow: hidden;">
                                 <select class="form-control form-select form-select-sm" name="status" id="status"
                                     style="font-weight: bold;">
                                     <option value="">Status</option>
                                     @foreach ($items as $item)
-                                        <option class="text-capitalize" value="{{ $item->id }}"
-                                            @if ($getStatusId == $item->id) @selected(true) @endif>
-                                            {{ $item->item_name }}
+                                        <option class="text-capitalize" value="{{ $item->id }}" @if ($getStatusId == $item->id)
+                                            @selected(true)
+                                        @endif>{{ ucfirst($item->item_name) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -153,66 +149,66 @@
     @include('include.loader')
     @include('include.alerts.ajax-alert')
 
-    <!-- Modal Popup for Transfer Property To section - Lalit (23/Jan/2025) -->
-    <div class="modal fade" id="transferPropertyModel" tabindex="-1" aria-labelledby="transferPropertyModelLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="transferPropertyModelLabel">Transfer to Section</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="propertyTransferForm">
-                    @csrf
-                    <div class="modal-body">
-                        <!-- Hidden Input Field to Store User ID -->
-                        <input type="hidden" id="userId" name="userId">
-                        <div class="mb-3">
-                            <label for="transferPropertyId" class="form-label">Enter Transfer Property Id</label>
-                            <input type="text" class="form-control" id="transferPropertyId" name="transferPropertyId"
-                                required>
-                        </div>
-                        <div id="transferPropertyIdError" class="text-danger"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-                </form>
-            </div>
+<!-- Modal Popup for Transfer Property To section - Lalit (23/Jan/2025) -->
+<div class="modal fade" id="transferPropertyModel" tabindex="-1" aria-labelledby="transferPropertyModelLabel"
+aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="transferPropertyModelLabel">Transfer to Section</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-    </div>
-
-    <!-- Modal Popup for Reject User Registration Property - Lalit (3/March/2025) -->
-    <div class="modal fade" id="rejectPropertyModel" tabindex="-1" aria-labelledby="rejectPropertyModelLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rejectPropertyModelLabel">Are you sure want to reject?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <form id="propertyTransferForm">
+            @csrf
+            <div class="modal-body">
+                <!-- Hidden Input Field to Store User ID -->
+                <input type="hidden" id="userId" name="userId">
+                <div class="mb-3">
+                    <label for="transferPropertyId" class="form-label">Enter Transfer Property Id</label>
+                    <input type="text" class="form-control" id="transferPropertyId" name="transferPropertyId"
+                        required>
                 </div>
-                <form id="rejectUserRegisteredForm">
-                    @csrf
-                    <div class="modal-body">
-                        <!-- Hidden Input Field to Store User ID -->
-                        <input type="hidden" id="rejectUserId" name="rejectUserId">
-                        <div class="mb-3">
-                            <label for="remarks" class="form-label">Remarks</label>
-                            <textarea id="remarks" name="remarks" class="form-control" placeholder="Enter Remarks"></textarea>
-                            <div id="remarksError" class="text-danger"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-                </form>
+                <div id="transferPropertyIdError" class="text-danger"></div>
             </div>
-        </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
     </div>
-    @include('include.remark')
+</div>
+</div>
 
+<!-- Modal Popup for Reject User Registration Property - Lalit (3/March/2025) -->
+<div class="modal fade" id="rejectPropertyModel" tabindex="-1" aria-labelledby="rejectPropertyModelLabel"
+aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="rejectPropertyModelLabel">Are you sure want to reject?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="rejectUserRegisteredForm">
+            @csrf
+            <div class="modal-body">
+                <!-- Hidden Input Field to Store User ID -->
+                <input type="hidden" id="rejectUserId" name="rejectUserId">
+                <div class="mb-3">
+                    <label for="remarks" class="form-label">Remarks</label>
+                    <textarea id="remarks" name="remarks" class="form-control" placeholder="Enter Remarks"></textarea>
+                    <div id="remarksError" class="text-danger"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+    
+@include('include.remark') 
 @endsection
 
 
@@ -268,7 +264,7 @@
                             name: 'section'
                         },
                     @endif
-
+                    
                     {
                         data: 'documents',
                         name: 'documents',
@@ -285,8 +281,7 @@
 
                                     // Extract the file name without extension and the prefix
                                     let nameParts = docName.split('_');
-                                    let prefix = nameParts[
-                                        0]; // The part before the underscore
+                                    let prefix = nameParts[0]; // The part before the underscore
                                     let displayName = '';
 
                                     // Use a switch statement to map prefixes to display names
@@ -338,83 +333,81 @@
                         }
                     },
                     @if ($user->roles[0]['name'] != 'it-cell')
-                        {
-                            data: 'activity',
-                            name: 'activity',
-                            orderable: false,
-                            searchable: false,
-                            render: function(data, type, row) {
-                                let mis = $('<div>').text(data.mis).html();
-                                // let scannedFiles = $('<div>').text(data.scanned_files).html();
-                                let uploadedDoc = $('<div>').text(data.uploaded_doc).html();
-                                // console.log(mis, scannedFiles, uploadedDoc);
-                                let misCheckedBy = data.mis_checked_by || '';
-                                // let scanFileCheckedBy = data.scan_file_checked_by || '';
-                                let uploadedDocCheckedBy = data.uploaded_doc_checked_by || '';
-                                let misColor = data.mis_color_code || '';
-                                // let scannedFilesColor = data.scan_file_color_code || '';
-                                let uploadedDocColor = data.uploaded_doc_color_code || '';
+                    {
+                        data: 'activity',
+                        name: 'activity',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            let mis = $('<div>').text(data.mis).html();
+                         //   let scannedFiles = $('<div>').text(data.scanned_files).html();
+                            let uploadedDoc = $('<div>').text(data.uploaded_doc).html();
+                         //   console.log(mis,scannedFiles,uploadedDoc);
+                            let misCheckedBy = data.mis_checked_by || '';
+                       //     let scanFileCheckedBy = data.scan_file_checked_by || '';
+                            let uploadedDocCheckedBy = data.uploaded_doc_checked_by || '';
+                            let misColor = data.mis_color_code || '';
+                       //     let scannedFilesColor = data.scan_file_color_code || '';
+                            let uploadedDocColor = data.uploaded_doc_color_code || '';
 
-                                let misHtml = mis == 1 ?
-                                    `<div class="list-inline-item d-flex align-items-center">
-            <i class="fadeIn animated bx bx-list-ul fs-5" style="color:${misColor}"></i> <span class="px-2 fst-italic">${misCheckedBy}</span></div>` :
-                                    '';
+                            let misHtml = mis == 1 ? `<div class="list-inline-item d-flex align-items-center">
+            <i class="fadeIn animated bx bx-list-ul fs-5" style="color:${misColor}"></i> <span class="px-2 fst-italic">${misCheckedBy}</span></div>` : '';
 
-                                //                     let scannedFilesHtml = scannedFiles == 1 ?
-                                //                         `<div class="list-inline-item d-flex align-items-center pt-1">
-                            // <i class="fadeIn animated bx bx-file-find fs-5" style="color:${scannedFilesColor}"></i><span class="px-2 fst-italic">${scanFileCheckedBy}</span></div>` :
-                                //                         '';
+         //                   let scannedFilesHtml = scannedFiles == 1 ?
+           //                     `<div class="list-inline-item d-flex align-items-center pt-1">
+          //  <i class="fadeIn animated bx bx-file-find fs-5" style="color:${scannedFilesColor}"></i><span class="px-2 fst-italic">${scanFileCheckedBy}</span></div>` : '';
 
-                                let uploadedDocHtml = uploadedDoc == 1 ?
-                                    `<div class="list-inline-item d-flex align-items-center pt-1">
-            <i class="lni lni-cloud-upload fs-5" style="color:${uploadedDocColor}"></i> <span class="px-2 fst-italic">${uploadedDocCheckedBy}</span></div>` :
-                                    '';
+                            let uploadedDocHtml = uploadedDoc == 1 ?
+                                `<div class="list-inline-item d-flex align-items-center pt-1">
+            <i class="lni lni-cloud-upload fs-5" style="color:${uploadedDocColor}"></i> <span class="px-2 fst-italic">${uploadedDocCheckedBy}</span></div>` : '';
 
-                                return `<div>
+                            return `<div>
                             ${misHtml}
+         
                             ${uploadedDocHtml}
                         </div>`;
-                            }
-                        },
-                    @endif {
+                        }
+                    },
+                    @endif
+                    {
                         data: 'status',
                         name: 'status',
                         orderable: false,
                         searchable: false,
                     },
                     @if ($user->roles[0]['name'] != 'it-cell')
-                        {
-                            data: 'remark',
-                            name: 'remark',
-                            render: function(data, type, row) {
-                                // Check if both remark and assigned_by_name are empty
-                                if (!data.remark) {
-                                    return '<span>NA</span>';
-                                }
-
-                                // Escape remark and assigned_by_name
-                                let escapedRemark = $('<div>').text(data.remark || '').html();
-                                let assignedByName = data.assigned_by_name ?
-                                    $('<span>').text(' (' + data.assigned_by_name + ')')
-                                    .css({
-                                        'font-size': '13px',
-                                        'color': '#7e7e7ea1',
-                                        'font-weight': '700'
-                                    }).html() :
-                                    '';
-
-                                // Combine escaped remark and assigned_by_name
-                                let escapedData = escapedRemark + assignedByName;
-
-                                // Truncate if too long
-                                let shortRemark = escapedData.length > 30 ? escapedData.substring(0,
-                                    30) + '...' : escapedData;
-
-                                // Return formatted HTML
-                                return `<div class="text-wrap custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" title="${escapedData}">${shortRemark}</div>`;
+                    {
+                        data: 'remark',
+                        name: 'remark',
+                        render: function(data, type, row) {
+                            // Check if both remark and assigned_by_name are empty
+                            if (!data.remark) {
+                                return '<span>NA</span>';
                             }
-                        },
-                    @endif {
+
+                            // Escape remark and assigned_by_name
+                            let escapedRemark = $('<div>').text(data.remark || '').html();
+                            let assignedByName = data.assigned_by_name ? 
+                                $('<span>').text(' (' + data.assigned_by_name + ')')
+                                .css({
+                                    'font-size': '13px',
+                                    'color': '#7e7e7ea1',
+                                    'font-weight': '700'
+                                }).html() 
+                                : '';
+
+                            // Combine escaped remark and assigned_by_name
+                            let escapedData = escapedRemark + assignedByName;
+
+                            // Truncate if too long
+                            let shortRemark = escapedData.length > 30 ? escapedData.substring(0, 30) + '...' : escapedData;
+
+                            // Return formatted HTML
+                            return `<div class="text-wrap custom-tooltip" data-bs-toggle="tooltip" data-bs-html="true" title="${escapedData}">${shortRemark}</div>`;
+                        }
+                    },
+                    @endif
+                    {
                         data: 'created_at',
                         name: 'created_at'
                     },
@@ -429,24 +422,17 @@
                 buttons: [
                     'csv', 'excel', {
                         extend: 'pdf',
-                        // added this line for landscape view added by anil on 26-08-2025
-                        orientation: 'landscape',
-                        pageSize: 'A4',
                         exportOptions: {
                             columns: ':not(:nth-child(7))', // Exclude the 7th column (documents)
                             format: {
                                 header: function(data, columnIdx) {
-                                    if (columnIdx === 9) {
+                                    if (columnIdx === 7) {
                                         // For the status column, return only "Status" in the export
                                         return 'Status';
                                     }
                                     return data; // return original header for other columns
                                 }
                             }
-                        },
-                        // PDF body margins: [left, top, right, bottom] added by anil 26-08-2025
-                        customize: function(doc) {
-                            doc.pageMargins = [15, 10, 15, 10];
                         }
                     }
                 ],
@@ -471,7 +457,7 @@
                 table.ajax.reload();
             });
 
-
+            
         });
 
         $(document).ready(function() {
@@ -598,79 +584,73 @@
             });
 
         });
-        //added by swati mishra for resend communication on 18082025
-        $(document).on('click', '.resend-comm-btn', function() {
-            const id = $(this).data('id');
-            const btn = $(this);
-            btn.prop('disabled', true);
+//added by swati mishra for resend communication on 18082025
+$(document).on('click', '.resend-comm-btn', function () {
+    const id = $(this).data('id');
+    const btn = $(this);
+    btn.prop('disabled', true);
 
-            $.ajax({
-                url: "{{ route('register.user.resendComms', ['id' => 'ID_PLACEHOLDER']) }}".replace(
-                    'ID_PLACEHOLDER', id),
-                method: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function(res) {
-                    if (res.status === 'success') {
-                        showSuccess(res.message || 'Resent successfully.');
-                    } else {
-                        showError(res.message || 'Could not resend.');
-                    }
-                },
-                error: function() {
-                    showError('Something went wrong. Please try again.');
-                },
-                complete: function() {
-                    btn.prop('disabled', false);
-                }
-            });
-        });
-
-        let revokeTargetId = null;
-
-        $(document).on('click', '.revoke-approval-btn', function() {
-            revokeTargetId = $(this).data('id'); // store the registration id
-            $('#rejectionReason').val(''); // reset textarea
-            $('#rejectionReasonError').hide();
-            $('#rejectReasonModal').modal('show'); // open modal
-        });
-
-        // Submit inside the modal
-        $(document).on('click', '.submit-reason', function() {
-            const reason = $('#rejectionReason').val().trim();
-            if (!reason /* || reason.length < 50 */ ) { // uncomment length check if you want ≥50 chars
-                $('#rejectionReasonError').show();
-                return;
+    $.ajax({
+        url: "{{ route('register.user.resendComms', ['id' => 'ID_PLACEHOLDER']) }}".replace('ID_PLACEHOLDER', id),
+        method: 'POST',
+        data: { _token: "{{ csrf_token() }}" },
+        success: function (res) {
+            if (res.status === 'success') {
+                showSuccess(res.message || 'Resent successfully.');
+            } else {
+                showError(res.message || 'Could not resend.');
             }
-            $('#rejectionReasonError').hide();
+        },
+        error: function () {
+            showError('Something went wrong. Please try again.');
+        },
+        complete: function () { btn.prop('disabled', false); }
+    });
+});
+ let revokeTargetId = null;
 
-            const btn = $(this).prop('disabled', true);
+    $(document).on('click', '.revoke-approval-btn', function () {
+        revokeTargetId = $(this).data('id');              // store the registration id
+        $('#rejectionReason').val('');                    // reset textarea
+        $('#rejectionReasonError').hide();
+        $('#rejectReasonModal').modal('show');            // open modal
+    });
 
-            $.ajax({
-                url: "{{ route('register.user.revokeApproval', ['id' => 'ID_PLACEHOLDER']) }}".replace(
-                    'ID_PLACEHOLDER', revokeTargetId),
-                method: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    remarks: reason
-                },
-                success: function(res) {
-                    if (res.status === 'success') {
-                        $('#rejectReasonModal').modal('hide');
-                        showSuccess(res.message || 'Approval revoked.');
-                        $('#example').DataTable().ajax.reload(null, false);
-                    } else {
-                        showError(res.message || 'Could not revoke.');
-                    }
-                },
-                error: function() {
-                    showError('Something went wrong. Please try again.');
-                },
-                complete: function() {
-                    btn.prop('disabled', false);
+    // Submit inside the modal
+    $(document).on('click', '.submit-reason', function () {
+        const reason = $('#rejectionReason').val().trim();
+        if (!reason /* || reason.length < 50 */) {        // uncomment length check if you want ≥50 chars
+            $('#rejectionReasonError').show();
+            return;
+        }
+        $('#rejectionReasonError').hide();
+
+        const btn = $(this).prop('disabled', true);
+
+        $.ajax({
+            url: "{{ route('register.user.revokeApproval', ['id' => 'ID_PLACEHOLDER']) }}".replace('ID_PLACEHOLDER', revokeTargetId),
+            method: 'POST',
+            data: {
+                _token: "{{ csrf_token() }}",
+                remarks: reason
+            },
+            success: function (res) {
+                if (res.status === 'success') {
+                    $('#rejectReasonModal').modal('hide');
+                    showSuccess(res.message || 'Approval revoked.');
+                    $('#example').DataTable().ajax.reload(null, false);
+                } else {
+                    showError(res.message || 'Could not revoke.');
                 }
-            });
+            },
+            error: function () {
+                showError('Something went wrong. Please try again.');
+            },
+            complete: function () {
+                btn.prop('disabled', false);
+            }
         });
+    });
+        
     </script>
 @endsection

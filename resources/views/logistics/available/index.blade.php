@@ -20,16 +20,23 @@
             margin-bottom: 25px !important;
         }
     </style>
- {{-- breadcrumb  --}}
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Logistics</div>
-    @include('include.partials.breadcrumbs')
-</div>
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Logistic</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Available Stock</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
     <div class="card">
         <div class="card-body">
 
             <div class="d-flex justify-content-end py-3">
-                <a href="{{ url('logistic/purchase') }}">
+                <a href="{{ route('purchase.index') }}">
                     <button type="button" class="btn btn-danger px-2 mx-2">← Back</button>
                 </a>
             </div>

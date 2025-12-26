@@ -68,9 +68,9 @@ class ImportPropertyDemands extends Command
                 // Map property_status: Freehold => 951, else => 952
                 $statusText            = $demandRow['PropertyStatus'] ?? '';
                 $mappedPropertyStatus  = (trim($statusText) === 'Freehold') ? 952 : 951;
-                $amount      = $demandRow['Amount'] ?? 0;
+                $amount = $demandRow['Amount'] ?? 0;
                 $outstanding = $demandRow['Outstanding'] ?? 0;
-                $paid_amount = max(0, $amount - $outstanding);
+                $paid_amount = max (0, $amount-$outstanding);
 
                 // Store in old_demands table
                 $oldDemand = OldDemand::updateOrCreate(

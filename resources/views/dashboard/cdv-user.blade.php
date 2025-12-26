@@ -50,21 +50,18 @@
                     <div class="ps-3">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb mb-0 p-0">
-                                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i
-                                            class="bx bx-home-alt"></i></a>
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                                 </li>
-                                <li class="breadcrumb-item">Dashboards</li>
-                                <li class="breadcrumb-item active" aria-current="page">My Dashboard</li>
                             </ol>
                         </nav>
                     </div>
                 </div>
             </div>
-			<div class="col-md-3"> @if(session()->has('original_user_id'))
+            <div class="col-md-3"> @if(session()->has('original_user_id'))
 				<a href="{{ route('restore.user') }}" class="btn btn-warning">Switch back</a>
 				@endif</div>
-            <div class="col-lg-6 ms-auto">
-                <div class="colony-dropdown">
+            <div class="col-lg-6">
+                <div class="colony-dropdown ms-auto">
                     <div>
                         <select id="select-filter" class="form-select">
                             <option value=""> Filter by section</option>
@@ -76,133 +73,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="container-fluid general-widget g-0">
-            <div class="row">
-                <div class="col-lg-12 order-lg-1 mb-4">
-                    <div class="card widget-card">
-                        <div class="card-header rounded-0 text-center">
-                            <h5 class="mt-3">
-                                <a href="{{ route('regiserUserListings') }}">Total Registrations:
-                                    <span id="reg-totalAppCount">{{ $totalAppCount }}</span>
-                                </a>
-                            </h5>
-                        </div>
-                        <div class="card-body">                    
-                            <div class="row">
-                                <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
-                                    <div class="card o-hidden border-0 h-100 w-100">
-                                        <div class="bg-secondary b-r-4 card-body">
-                                            <a href="#">
-                                                <div class="widget-media">
-                                                    <div class="align-self-center text-center widget-media-icon">
-                                                        <i class="fa-solid fa-solid fa-trash-arrow-up"></i>
-                                                    </div>
-                                                    <div class="widget-media-body">
-                                                        <span class="m-0">Cancelled</span>
-                                                        <h4 class="mb-0 counter" id="total-APP_CAN">0</h4>
-                                                        <i class="fa-solid fa-solid fa-trash-arrow-up"></i>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
-                                    <div class="card o-hidden border-0 h-100 w-100">
-                                        <div class="bg-dark-orange b-r-4 card-body">
-                                            <a href="#">
-                                                <div class="widget-media">
-                                                    <div class="align-self-center text-center widget-media-icon">
-                                                        <i class="fa-solid fa-solid fa-pause"></i>
-                                                    </div>
-                                                    <div class="widget-media-body">
-                                                        <span class="m-0">Hold</span>
-                                                        <h4 class="mb-0 counter" id="">0</h4>
-                                                        <i class="fa-solid fa-solid fa-pause"></i>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
-                                    <div class="card o-hidden border-0 h-100 w-100">
-                                        <div class="bg-reddis b-r-4 card-body">
-                                            <a href="#">
-                                                <div class="widget-media">
-                                                    <div class="align-self-center text-center widget-media-icon">
-                                                        <i class="fa-solid fa-solid fa-hourglass-half"></i>
-                                                    </div>
-                                                    <div class="widget-media-body">
-                                                        <span class="m-0">Pending</span>
-                                                        <h4 class="mb-0 counter" id="">0</h4>
-                                                        <i class="fa-solid fa-solid fa-hourglass-half"></i>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
-                                    <div class="card o-hidden border-0 h-100 w-100">
-                                        <div class="bg-light-green b-r-4 card-body">
-                                            <a href="#">
-                                                <div class="widget-media">
-                                                    <div class="align-self-center text-center widget-media-icon">
-                                                        <i class="fa-solid fa-solid fa-bars-progress"></i>
-                                                    </div>
-                                                    <div class="widget-media-body">
-                                                        <span class="m-0">In Progress</span>
-                                                        <h4 class="mb-0 counter" id="total-APP_IP">5</h4>
-                                                        <i class="fa-solid fa-solid fa-bars-progress"></i>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
-                                    <div class="card o-hidden border-0 h-100 w-100">
-                                        <div class="bg-yellow b-r-4 card-body">
-                                            <a href="#">
-                                                <div class="widget-media">
-                                                    <div class="align-self-center text-center widget-media-icon">
-                                                        <i class="fa-solid fa-object-ungroup"></i>
-                                                    </div>
-                                                    <div class="widget-media-body">
-                                                        <span class="m-0">Objected</span>
-                                                        <h4 class="mb-0 counter" id="">26</h4>
-                                                        <i class="fa-solid fa-object-ungroup"></i>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
-                                    <div class="card o-hidden border-0 h-100 w-100">
-                                        <div class="bg-deer b-r-4 card-body">
-                                            <a href="#">
-                                                <div class="widget-media">
-                                                    <div class="align-self-center text-center widget-media-icon">
-                                                        <i class="fa-solid fa-solid fa-trash-arrow-up"></i>
-                                                    </div>
-                                                    <div class="widget-media-body">
-                                                        <span class="m-0">Disposed</span>
-                                                        <h4 class="mb-0 counter" id="">14</h4>
-                                                        <i class="fa-solid fa-solid fa-trash-arrow-up"></i>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
         <div class="container-fluid dashboardcards">
             <div class="row">
                 <div class="col-lg-12 col-12">
@@ -210,21 +80,20 @@
                         <div class="card offorangecard totalApp" style="margin-bottom: 0px;">
                             <div class="card-body">
                                 <div class="dashboard-card-view">
-                                    <h4><a href="{{ route('admin.applicationsAssignedToUser') }}"
-                                            style="color: inherit">Total Applications:
+                                    <h4><a href="{{ route('admin.applicationsAssignedToUser') }}" style="color: inherit">Total Applications:
                                             <span id="totalAppCount">{{ $totalAppCount }}</span></a></h4>
                                     <div class="container-fluid">
                                         <div class="row separate-col-border">
                                             @foreach ($statusList as $i => $status)
-                                                @if ($status->item_name != 'New')
-                                                    <div class="custom-col-col col-4 col-lg-2">
-                                                        <a
-                                                            href="{{ route('admin.applicationsAssignedToUser', ['status' => Crypt::encrypt("$status->item_code")]) }}">
-                                                            <span class="dashboard-label">{{ $status->item_name }}:</span>
-                                                            <span
-                                                                id="total-{{ $status->item_code }}">{{ isset($statusWiseCounts[$status->item_code]) ? $statusWiseCounts[$status->item_code] : 0 }}</span>
-                                                        </a>
-                                                    </div>
+                                            @if($status->item_name != 'New' )
+                                                <div class="custom-col-col col-4 col-lg-2"><a
+                                                        href="{{ route('admin.applicationsAssignedToUser', [
+                                                            'status' => Crypt::encrypt("
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    $status->item_code"),
+                                                        ]) }}"><span
+                                                            class="dashboard-label">{{ $status->item_name }}:</span> <span
+                                                            id="total-{{ $status->item_code }}">{{ isset($statusWiseCounts[$status->item_code]) ? $statusWiseCounts[$status->item_code] : 0 }}</span></a>
+                                                </div>
                                                 @endif
                                             @endforeach
                                         </div>
@@ -238,54 +107,47 @@
                                         $statusWiseCounts[$status->item_code] : 0}}</span>
                                 </div>
                                 @endforeach
-                            </div> --}}
-                            </div>
+                            </div>--}}
                         </div>
                     </div>
-                </div>
-
+                    </div>
+                </div> 
+                
                 <div class="col-lg-6 col-12">
                     <div class="card greycard submutCard">
                         <div class="card-body">
-                            <h4>Substitution / Mutation: <span
-                                    id="mutation-total">{{ isset($mutataionData['total']) ? $mutataionData['total'] : 0 }}</span>
-                            </h4>
+                            <h4>Substitution / Mutation: <span id="mutation-total">{{ isset($mutataionData['total']) ? $mutataionData['total'] : 0 }}</span> </h4>
                             <div class="styled-table">
                                 @foreach ($statusList as $i => $status)
-                                    <div class="table-item">
-                                        <span>
-                                            <a href="#">{{ $status->item_name }}:</a>
-                                        </span>
-                                        <div class="value"><span
-                                                id="mutation-{{ $status->item_code }}">{{ isset($mutataionData[$status->item_code]) ? $mutataionData[$status->item_code] : 0 }}</span>
+                                        <div class="table-item">
+                                    <span>
+                                        <a href="#">{{ $status->item_name }}:</a>
+                                    </span>
+                                    <div class="value"><span id="mutation-{{ $status->item_code }}">{{ isset($mutataionData[$status->item_code]) ? $mutataionData[$status->item_code] : 0 }}</span></div>
+                                    
                                         </div>
-
-                                    </div>
                                 @endforeach
-                            </div>
+                                    </div>
                         </div>
                     </div>
                 </div>
-
+           
                 <div class="col-lg-6 col-12">
                     <div class="card bluecard conversioncard">
                         <div class="card-body">
-                            <h4>Conversion: <span
-                                    id="conversion-total">{{ isset($conversionData['total']) ? $conversionData['total'] : 0 }}</span>
-                            </h4>
+                            <h4>Conversion: <span id="conversion-total">{{ isset($conversionData['total']) ? $conversionData['total'] : 0 }}</span></h4>
                             <div class="styled-table">
                                 @foreach ($statusList as $i => $status)
-                                    <div class="table-item">
-                                        <span>
-                                            <a href="#">{{ $status->item_name }}:</a>
-                                        </span>
-                                        <div class="value">
-                                            <span
-                                                id="conversion-{{ $status->item_code }}">{{ isset($conversionData[$status->item_code]) ? $conversionData[$status->item_code] : 0 }}</span>
-                                        </div>
+                                <div class="table-item">
+                                    <span>
+                                        <a href="#">{{ $status->item_name }}:</a>
+                                    </span>
+                                    <div class="value">
+                                        <span id="conversion-{{ $status->item_code }}">{{ isset($conversionData[$status->item_code]) ? $conversionData[$status->item_code] : 0 }}</span>
                                     </div>
+                                </div>
                                 @endforeach
-                            </div>
+                                    </div>
                         </div>
                     </div>
                 </div>
@@ -340,21 +202,21 @@
                                 $('#conversion-' + ck).html(response.conversionData[ck]);
                             })
 
-                            //registration
-                            let registrationKeys = Object.keys(response.registrationData);
-                            registrationKeys.forEach(rk => {
-                                $('#reg-' + rk).html(response.registrationData[rk]);
-                            })
-                            //new properties
-                            let newPropKeys = Object.keys(response.newPropertyData);
-                            newPropKeys.forEach(npk => {
-                                $('#new-prop-' + npk).html(response.newPropertyData[npk]);
-                            })
+                    //registration
+                    let registrationKeys = Object.keys(response.registrationData);
+                    registrationKeys.forEach(rk => {
+                        $('#reg-' + rk).html(response.registrationData[rk]);
+                    })
+                    //new properties
+                    let newPropKeys = Object.keys(response.newPropertyData);
+                    newPropKeys.forEach(npk => {
+                        $('#new-prop-' + npk).html(response.newPropertyData[npk]);
+                    })
 
-                            //public services
-                            $('#grievencesCount').html(response.grievencesCount);
-                            $('#appointmentCount').html(response.appointmentCount);
-                            $('#publicServiceCount').html(response.grievencesCount + response.appointmentCount);
+                    //public services
+                    $('#grievencesCount').html(response.grievencesCount);
+                    $('#appointmentCount').html(response.appointmentCount);
+                    $('#publicServiceCount').html(response.grievencesCount + response.appointmentCount);
 
 
                         } else {

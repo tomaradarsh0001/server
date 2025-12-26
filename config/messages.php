@@ -110,7 +110,7 @@ return [
             'linkExpired' => 'Given link is not active',
             'rescheduleLimitExceeded' => 'Appointment can be rescheduled only once',
             'appointmentTaken' => 'This date is taken. Choose another date',
-            'documentNotDelete' => 'Some issue in removing the document. Please try after sometime'
+            'documentNotDelete' => 'Some issue in removing the document. Please try after sometime.'
         ]
     ],
 ];

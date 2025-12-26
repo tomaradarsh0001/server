@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Applicant Property History')
+@section('title', 'Book Proof Reading Appointment')
 
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
@@ -43,9 +43,7 @@
     .available-date{
         background: #1c8b36;
     }
-	.flatpickr-day.passed-date,.passed-date {
-		background-color: lightblue !important;
-	}
+
     /*css copied from public/style.ccs*/
 
     /* Appointment Date - Passed date */
@@ -109,7 +107,7 @@
             transform: rotate(360deg);
         }
     } */
-     .loader {
+    .loader {
         width: 48px;
         height: 48px;
         border:6px solid #FFF;
@@ -135,8 +133,7 @@
         75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
         100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
     }
-    /* commented and adeed by anil for replace the new loader on 24-07-2025  */
-
+    /* commented and adeed by anil for replace the new loader on 13-08-2025  */
 </style>
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
@@ -245,8 +242,8 @@
                                             <p class="services_count_text"><b>Application No.:</b> <span id="grievencesCount">{{$appointmentData->application_no}}</span></p>
                                         </div>
                                         <div class="">
-                                            <p class="services_count_text"><b>Scheduled Date:</b> <span id="grievencesCount">{{ date('d-m-Y', strtotime($appointmentData->schedule_date)) }}</span></p>
-											<p class="services_count_text"><b>Scheduled Time:</b> <span id="grievencesCount">{{ $appointmentData->schedule_timeslot }}</span></p>
+                                          <p class="services_count_text"><b>Scheduled Date:</b> <span id="grievencesCount">{{ date('d-m-Y', strtotime($appointmentData->schedule_date)) }}</span></p>
+                                         <p class="services_count_text"><b>Scheduled Time:</b> <span id="grievencesCount">{{ $appointmentData->schedule_timeslot }}</span></p>
                                         </div>
                                     </div>
                                     <div class="">
@@ -277,16 +274,16 @@
                 </div>
             </div> -->
 
-<!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
-    <!-- <div id="spinnerOverlay" style="display:none;">
-        <div class="spinner"></div>
-        <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
-    </div> -->
-    <div id="spinnerOverlay" style="display:none;">
+<!-- commented and adeed by anil for replace the new loader on 07-08-2025  -->
+<!-- <div id="spinnerOverlay" style="display:none;">
+    <div class="spinner"></div>
+    <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
+</div> -->
+<div id="spinnerOverlay" style="display:none;">
         <span class="loader"></span>
         <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
     </div>
-<!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+<!-- commented and adeed by anil for replace the new loader on 07-08-2025  -->
 
     @include('include.alerts.ajax-alert')
 @endsection
@@ -295,10 +292,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-	$(document).ready(function () {
-		let calendarData = @json($calendarData);
-		console.log(calendarData);
-
+$(document).ready(function () {
+		let calendarData = @json($calendarData);		
 		const meetingTimeElement = document.getElementById("app_meeting_time");
 		const timeSlotDiv = document.getElementById("app_timeSlotDiv");
 		const today = new Date();
@@ -307,7 +302,8 @@
 		minDate.setHours(0, 0, 0, 0);
 		$("#appointmentDate").flatpickr({
 			...calendarData,
-
+			altFormat: "d-m-Y",altInput: true,
+  			allowInput: true, 			
 			onDayCreate: function (dObj, dStr, fp, dayElem) {
 				const holidays = calendarData.holidays;
 				const bookedDates = calendarData.bookedDates;
@@ -321,7 +317,7 @@
 				console.log(localDate);
 				if (holidays.includes(localDate)) {
 					dayElem.classList.add("holiday");
-					console.log(dayElem);
+					//console.log(dayElem);
 				}
 				if (bookedDates.includes(localDate)) {
 					dayElem.classList.add("taken-by-other");
@@ -331,9 +327,10 @@
 					dayElem.classList.add("passed-date", "flatpickr-disabled");
 					dayElem.removeAttribute("tabindex");
 				}
+				
 			},
 
-			onReady: function (selectedDates, dateStr, instance) {
+			onReady: function (selectedDates, dateStr, instance) {				
 				const legend = `
                 <div class="flatpickr-legend">
                     <div class="d-flex legend-label"><span class="legend-item selected"></span> <label>Present appointment</label></div>
@@ -349,6 +346,7 @@
 			},
 
 			onChange: function (selectedDates, dateStr, instance) {
+				
 				if (dateStr) {
 					fetchAvailableTimeSlots(dateStr);
 				}
@@ -358,7 +356,7 @@
 		// new  functions added  in 16-09-2025
 		function fetchAvailableTimeSlots(date)
 		{
-			fetch(`/applications/get-available-time-slots?date=${date}`)
+			fetch(getBaseURL() + `/applications/get-available-time-slots?date=${date}`)
 			.then(response => response.json())
 			.then(data => {
 				meetingTimeElement.innerHTML = '<option value="">Select a time slot</option>';
@@ -377,8 +375,6 @@
 			.catch(error => console.error("Error fetching time slots:", error));
 		}
 	});
-
-
     function bookAppointment(){
 
         const appontmentButon = $("#appointmentButton")

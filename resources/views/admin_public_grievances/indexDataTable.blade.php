@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Grievances')
+@section('title', 'Public Grievances List')
 
 @section('content')
 
@@ -40,25 +40,31 @@
 
 
 
-<!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Public Services</div>
-        @include('include.partials.breadcrumbs')
+    <div class="breadcrumb-title pe-3">Public Grievances</div>
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Grievance List</li>
+            </ol>
+        </nav>
     </div>
+</div>
 
 <div class="card">
     <div class="card-body">
         <div class="d-flex justify-content py-3">
             @can('add.grievance')
-                <a href="{{ url('/admin-grievances') }}">
-                    <button type="button" class="btn btn-primary py-2">+ Add Grievance</button>
-                </a>
+            <a href="{{ route('grievance.create') }}">
+                <button type="button" class="btn btn-primary py-2">+ Add Grievance</button>
+            </a>            
             @endcan
         </div>
         <table id="grievancesTable" class="display nowrap" style="width:100%">
             <thead>
             <tr>
-                <th>S.No</th>
+                <th>#</th>
                 <th>Ticket No.</th>
                 <th>Name</th>
                 <th>Contact Detail</th>
@@ -86,12 +92,16 @@
 @include('admin_public_grievances.viewMoreRemarks')
 @include('admin_public_grievances.remarks')
 
+
+
+@endsection
+@section('footerScript')
 <script>
     $(document).ready(function() {
         var table = $('#grievancesTable').DataTable({
             processing: true,
             serverSide: true,
-            // responsive: true,
+         //   responsive: true,
             ajax: {
                 url: "{{ route('grievance.getGrievances') }}",
                 type: 'GET',
@@ -170,9 +180,10 @@
     });
 
     function openRemarksModal(grievanceId) {
-    var baseUrl = '{{ url("grievances/details") }}';
+    var baseUrl = '{{ route("grievance.details", ["id" => "__ID__"]) }}';
+    baseUrl = baseUrl.replace('__ID__', grievanceId);
     $.ajax({
-        url: baseUrl + '/' + grievanceId,
+        url: baseUrl ,
         method: 'GET',
         success: function(response) {
             var statusSelect = $('#status');

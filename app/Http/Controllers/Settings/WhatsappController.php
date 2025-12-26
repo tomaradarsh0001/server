@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Configuration;
-use App\Models\Item;
 use Auth;
 use Illuminate\Support\Facades\Log;
 use App\Services\SettingsService;
-use App\Helpers\GeneralFunctions;
+use App\Models\Item;
 
 class WhatsappController extends Controller
 {
@@ -20,15 +19,10 @@ class WhatsappController extends Controller
         $this->settingsService = $settingsService;
     }
 
-    /*public function index(){
+    /* public function index(){
         $whatsapp = Configuration::where('type','whatsapp')->paginate(10);
-        $items = [];
-        foreach ($whatsapp as $data) {
-            $item = Item::where('item_code', $data->action)->first();
-            $items[$data->id] = $item ? $item->getItemNameByItemCode($data->action) : 'Default';
-        }
-        return view('settings.whatsapp.index',compact(['whatsapp','items']));
-    }*/
+        return view('settings.whatsapp.index',compact(['whatsapp']));
+    } */
 
     public function index(){
         return view('settings.whatsapp.indexDatatable');
@@ -124,8 +118,7 @@ class WhatsappController extends Controller
     }
 
     public function create(){
-        $actions = GeneralFunctions::getItemsByGroupId(17002);
-        return view('settings.whatsapp.create',compact(['actions']));
+        return view('settings.whatsapp.create');
     }
 
     public function store(Request $request){
@@ -171,14 +164,10 @@ class WhatsappController extends Controller
             }
 
             $configuration->status = 1;
-           
-        } else {
-            $configuration->status = 0;
-        }
-        if($configuration->save()){
+            $configuration->save();
             return redirect()->back()->with('success', 'status updated successfully');
         } else {
-            return redirect()->back()->with('failure', 'status not updated');
+            return redirect()->back()->with('failure', "status can't be updated");
         }
     }
 

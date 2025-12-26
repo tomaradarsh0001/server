@@ -5,8 +5,6 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Illuminate\Auth\Access\AuthorizationException;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Illuminate\Http\Exceptions\ThrottleRequestsException;
 
 class Handler extends ExceptionHandler
 {
@@ -45,17 +43,9 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
-            return redirect()->back()->with('failure', 'You do not have the required permission');
+            return redirect()->back()->with('failure','You do not have the required permission');
         });
     }
-
-    /**
-     * Render an exception into an HTTP response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $exception
-     * @return \Illuminate\Http\Response
-     */
 
     public function render($request, Throwable $exception)
     {

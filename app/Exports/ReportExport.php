@@ -3,25 +3,21 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ReportExport implements FromCollection, WithHeadings, WithStyles
+class ReportExport implements FromArray, WithHeadings, WithStyles
 {
     /**
      * @return \Illuminate\Support\Collection
      */
 
-    protected $rows;
-    public function __construct($data)
+    protected $output;
+    public function __construct(array $output)
     {
-        $this->rows = $data;
-    }
-    public function collection()
-    {
-        return collect($this->rows);
+        $this->output = $output;
+        ob_clean();
     }
 
     public function headings(): array
@@ -41,30 +37,10 @@ class ReportExport implements FromCollection, WithHeadings, WithStyles
         ];
     }
 
-    /*  public function array(): array
+    public function array(): array
     {
-        //return $this->output;
-        return $this->data;
-        /*  $result = [];
-        foreach ($this->chunks as $chunk) {
-            foreach ($chunk as $item) {
-                $result[] = [
-                    'old_propert_id' => $item->old_propert_id,
-                    'unique_propert_id' => $item->unique_propert_id,
-                    'land_type' => $item->land_type,
-                    'status' => $item->status,
-                    'lease_tenure' => $item->lease_tenure,
-                    'land_use' => $item->land_use,
-                    'area' => $item->area_in_sqm,
-                    'address' => $item->address,
-                    'lesse_name' => $item->lesse_name,
-                    'gr_in_re_rs' => $item->gr_in_re_rs,
-                    'gr' => $item->gr,
-                ];
-            }
-        }
-        return $result; /
-    } */
+        return $this->output;
+    }
 
     public function styles(Worksheet $sheet)
     {

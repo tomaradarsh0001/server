@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Flat Details')
+@section('title', 'Flat Listing')
 
 @section('content')
 
@@ -25,7 +25,7 @@
         /* Ensure responsiveness on smaller screens */
         @media (max-width: 768px) {
             div.dt-buttons {
-                width: 100%;
+                width:100%;
             }
 
             div.dt-buttons.btn-group {
@@ -39,11 +39,23 @@
             }
         }
     </style>
-    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">MIS</div>
-        @include('include.partials.breadcrumbs')
-    </div>
     <!--breadcrumb-->
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Properties</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="{{'dashboard'}}"><i class="bx bx-home-alt"></i></a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">Properties</li>
+				<li class="breadcrumb-item active" aria-current="page">View</li>
+				<li class="breadcrumb-item active" aria-current="page">Flats</li>
+                </ol>
+            </nav>
+        </div>
+
+    </div>
+
     <hr>
 
     <div class="card">
@@ -57,8 +69,8 @@
                     <tr>
                         <th>S.No.</th>
                         <th>Flat No.</th>
-                        {{-- Add new column floor - Lalit tiwari (19/march/2025) --}}
-                        <th>Floor</th>
+                          {{-- Add new column floor - Lalit tiwari (19/march/2025) --}}
+                          <th>Floor</th>
                         <th>Property Id</th>
                         <th>File No.</th>
                         <th>Address</th>
@@ -157,10 +169,9 @@
                 buttons: [
                     'csv', 'excel', 'pdf'
                 ],
-                // Custom pagination options
-                lengthMenu: [
-                    [10, 25, 50, 100, 500, 1000, 5000],
-                    [10, 25, 50, 100, 500, 1000, 5000],
+                lengthMenu:[
+                    [10,25,50,100,500,1000,5000],
+                    [10,25,50,100,500,1000,5000],
                 ],
             });
             // Trigger table reload on status filter change

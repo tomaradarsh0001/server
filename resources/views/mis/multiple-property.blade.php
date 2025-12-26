@@ -1,15 +1,26 @@
 @extends('layouts.app')
 
-@section('title', 'Add Multiple Property')
+@section('title', 'Multiple Property Form')
 
 @section('content')
 <link href="{{asset('assets/plugins/bs-stepper/css/bs-stepper.css')}}" rel="stylesheet" />
 
-                  <!--breadcrumb-->
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">MIS</div>
-        @include('include.partials.breadcrumbs')
-    </div>
+
+                <!--breadcrumb-->
+                <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                    <div class="breadcrumb-title pe-3">MIS</div>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Multiple Property Form</li>
+                            </ol>
+                        </nav>
+
+                    </div>
+                    <!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
+                </div>
                 <!--end breadcrumb-->
                 <!--start stepper three-->
                 <!-- <h6 class="text-uppercase">MIS</h6> -->
@@ -131,7 +142,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="FileNumber" class="form-label">File Number</label>
+                                                <label for="FileNumber" class="form-label">File Number <small class="text-red">*</small></label>
                                                 <input type="text" class="form-control" name="file_number"
                                                     id="FileNumber" placeholder="File Number"
                                                     value="{{ old('file_number') }}">
@@ -147,7 +158,7 @@
                                                     placeholder="Generated File No." readonly disabled>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="colonyName" class="form-label">Colony Name (Present)</label>
+                                                <label for="colonyName" class="form-label">Colony Name (Present) <small class="text-red">*</small></label>
                                                 <select class="form-select" name="present_colony_name" id="colonyName"
                                                     aria-label="Colony Name (Present)">
                                                     <option value="">Select</option>
@@ -161,7 +172,7 @@
                                                 <div id="PresentColonyNameError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="ColonyNameOld" class="form-label">Colony Name (Old)</label>
+                                                <label for="ColonyNameOld" class="form-label">Colony Name (Old) <small class="text-red">*</small></label>
                                                 <select class="form-select" name="old_colony_name" id="ColonyNameOld"
                                                     aria-label="Default select example">
                                                     <option value="">Select</option>
@@ -175,7 +186,7 @@
                                                 <div id="OldColonyNameError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="PropertyStatus" class="form-label">Property Status</label>
+                                                <label for="PropertyStatus" class="form-label">Property Status <small class="text-red">*</small></label>
                                                 <select class="form-select" id="PropertyStatus" name="property_status"
                                                     aria-label="Default select example">
                                                     <option value="">Select</option>
@@ -189,7 +200,7 @@
                                                 <div id="PropertyStatusError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="LandType" class="form-label">Land Type</label>
+                                                <label for="LandType" class="form-label">Land Type <small class="text-red">*</small></label>
                                                 <select class="form-select" id="LandType" name="land_type"
                                                     aria-label="Default select example">
                                                     <option value="">Select</option>
@@ -221,7 +232,7 @@
 
                                         <div class="row g-3">
                                             <div class="col-12 col-lg-3">
-                                                <label for="TypeLease" class="form-label">Type of Lease</label>
+                                                <label for="TypeLease" class="form-label">Type of Lease <small class="text-red">*</small></label>
                                                 <select class="form-select" name="lease_type" id="TypeLease"
                                                     aria-label="Type of Lease">
                                                     <option value="">Select</option>
@@ -246,7 +257,7 @@
                                                 <div id="dateexecutionError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-3">
-                                                <label for="lease_exp_duration" class="form-label">Duration</label>
+                                                <label for="lease_exp_duration" class="form-label">Duration <small class="text-red">*</small></label>
                                                 <input type="text" maxlength="2" name="lease_exp_duration"
                                                     class="form-control numericOnly" id="lease_exp_duration"
                                                     placeholder="Duration" value="">
@@ -275,7 +286,7 @@
                                                 <div id="dateOfExpirationError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="dateallotment" class="form-label">Date of Allotment</label>
+                                                <label for="dateallotment" class="form-label">Date of Allotment <small class="text-red">*</small></label>
                                                 <input type="date" name="date_of_allotment" class="form-control"
                                                     id="dateallotment" value="{{ old('date_of_allotment') }}">
                                                 @error('date_of_allotment')
@@ -295,7 +306,7 @@
                                             </div>
                                             <div class="col-12 col-lg-4">
                                                 <label for="plotno" class="form-label">Plot No. (Only alphanumeric
-                                                    allowed)</label>
+                                                    allowed) <small class="text-red">*</small></label>
                                                 <input type="text" name="plot_no" class="form-control plotNoAlpaMix"
                                                     id="plotno" placeholder="Plot No." value="{{ old('plot_no') }}">
                                                 @error('plot_no')
@@ -324,7 +335,7 @@
                                                             <div class="item-content">
                                                                 <div class="mb-3">
                                                                     <label for="favourName1"
-                                                                        class="form-label">Name</label>
+                                                                        class="form-label">Name <small class="text-red">*</small></label>
                                                                     <input type="text" class="form-control alpha-only"
                                                                         name="favour_name[]" id="favourName1"
                                                                         placeholder="Name" data-name="name">
@@ -378,7 +389,7 @@
                                                                     <div class="item-content row">
                                                                         <div class="col-lg-2 col-12 mb-3">
                                                                             <label for="jointplotno"
-                                                                                class="form-label">Plot No.</label>
+                                                                                class="form-label">Plot No. <small class="text-red">*</small></label>
                                                                             <input type="text"
                                                                                 class="plotNoAlpaMix form-control"
                                                                                 name="jointplotno[]" id="jointplotno"
@@ -388,7 +399,7 @@
                                                                         </div>
                                                                         <div class="col-lg-4 col-12 mb-3">
                                                                             <label for="jointpropertyarea"
-                                                                                class="form-label">Area</label>
+                                                                                class="form-label">Area <small class="text-red">*</small></label>
                                                                                 <div class="unit-field">
                                                                                     <div>
                                                                                     <input type="text"
@@ -430,7 +441,7 @@
                                                                         </div>
                                                                         <div class="col-lg-2 col-12 mb-3">
                                                                             <label for="jointpropertyid"
-                                                                                class="form-label">PID</label>
+                                                                                class="form-label">PID <small class="text-red">*</small></label>
                                                                             <input type="text"
                                                                                 class="numericOnly form-control plotPropId"
                                                                                 maxlength="5" name="jointpropertyid[]"
@@ -469,7 +480,7 @@
                                                 @enderror
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="areaunitname" class="form-label">Area</label>
+                                                <label for="areaunitname" class="form-label">Area <small class="text-red">*</small></label>
                                                 <div class="unit-field">
                                                     <input type="text" class="numericDecimal form-control unit-input"
                                                         id="areaunitname" name="area">
@@ -490,7 +501,7 @@
                                                 <div id="selectareaunitError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="premiumunit1" class="form-label">Premium (Re/ Rs)</label>
+                                                <label for="premiumunit1" class="form-label">Premium (Re/ Rs) <small class="text-red">*</small></label>
                                                 <div class="unit-field">
                                                     <div>
                                                     <input type="text" class="form-control mr-2" id="premiumunit1"
@@ -523,7 +534,7 @@
                                                 <div id="premiumunit2Error" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="groundRent1" class="form-label">Ground Rent (Re/ Rs)</label>
+                                                <label for="groundRent1" class="form-label">Ground Rent (Re/ Rs) <small class="text-red">*</small></label>
                                                 <div class="unit-field">
                                                     <div>
                                                         <input type="text" class="form-control mr-2" id="groundRent1"
@@ -549,20 +560,20 @@
                                             </div>
                                             <div class="col-12 col-lg-3">
                                                 <label for="startdateGR" class="form-label">Start Date of Ground
-                                                    Rent</label>
+                                                    Rent <small class="text-red">*</small></label>
                                                 <input type="date" class="form-control" id="startdateGR"
                                                     name="start_date_of_gr">
                                                 <div id="startdateGRError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-2">
-                                                <label for="RGRduration" class="form-label">RGR Duration (Yrs)</label>
+                                                <label for="RGRduration" class="form-label">RGR Duration (Yrs) <small class="text-red">*</small></label>
                                                 <input type="text" class="form-control" id="RGRduration"
                                                     name="rgr_duration" maxlength="2">
                                                 <div id="RGRdurationError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-3">
                                                 <label for="frevisiondateGR" class="form-label">First Revision of GR due
-                                                    on</label>
+                                                    on <small class="text-red">*</small></label>
                                                 <input type="date" class="form-control" id="frevisiondateGR"
                                                     name="first_revision_of_gr_due">
                                                 <div id="frevisiondateGRError" class="text-danger"></div>
@@ -570,7 +581,7 @@
                                             <div class="col-12 col-lg-6">
                                                 <label for="oldPropertyType" class="form-label">Purpose for which
                                                     leased/
-                                                    allotted (As per lease)</label>
+                                                    allotted (As per lease) <small class="text-red">*</small></label>
                                                 <select class="form-select" id="oldPropertyType"
                                                     aria-label="Type of Lease" name="purpose_property_type">
                                                     <option value="" selected>Select</option>
@@ -584,7 +595,7 @@
                                             <div class="col-12 col-lg-6">
                                                 <label for="oldPropertySubType" class="form-label">Sub-Type (Purpose ,
                                                     at
-                                                    present)</label>
+                                                    present) <small class="text-red">*</small></label>
                                                 <select class="form-select" id="oldPropertySubType"
                                                     aria-label="Type of Lease" name="purpose_property_sub_type">
                                                     <option value="" selected>Select</option>
@@ -612,7 +623,7 @@
                                                 </div>
                                                     <div class="col-12 col-lg-4">
                                                         <label for="PropertyType" class="form-label">Purpose for which
-                                                            leased/ allotted (At present)</label>
+                                                            leased/ allotted (At present) <small class="text-red">*</small></label>
                                                         <select class="form-select" id="propertyType"
                                                             aria-label="Type of Lease"
                                                             name="purpose_lease_type_alloted_present">
@@ -628,7 +639,7 @@
                                                     <div class="col-12 col-lg-4">
                                                         <label for="propertySubType" class="form-label">Sub-Type
                                                             (Purpose , at
-                                                            present)</label>
+                                                            present) <small class="text-red">*</small></label>
                                                         <select class="form-select" id="propertySubType"
                                                             aria-label="Type of Lease"
                                                             name="purpose_lease_sub_type_alloted_present">
@@ -697,7 +708,7 @@
                                                                             <div class="col-12 col-lg-4 my-4">
                                                                                 <label for="ProcessTransfer"
                                                                                     class="form-label">Process of
-                                                                                    transfer</label>
+                                                                                    transfer <small class="text-red">*</small></label>
                                                                                 <select name="land_transfer_type[]"
                                                                                     class="form-select processtransfer form-required"
                                                                                     data-name="processtransfer"
@@ -729,7 +740,7 @@
                                                                             </div>
                                                                             <div class="col-12 col-lg-4 my-4">
                                                                                 <label for="transferredDate"
-                                                                                    class="form-label">Date</label>
+                                                                                    class="form-label">Date <small class="text-red">*</small></label>
                                                                                 <input type="date" name="transferDate[]"
                                                                                     class="form-control transferredDate form-required"
                                                                                     id="transferredDate">
@@ -752,7 +763,7 @@
                                                                                     <div class="item-content row">
                                                                                         <div class="col-lg-4 mb-3">
                                                                                             <label for="name"
-                                                                                                class="form-label">Name</label>
+                                                                                                class="form-label">Name <small class="text-red">*</small></label>
                                                                                             <input type="text"
                                                                                                 name="name0[]"
                                                                                                 class="form-control lesseeName form-required alpha-only"
@@ -778,7 +789,7 @@
                                                                                         </div>
                                                                                         <div class="col-lg-4 mb-3">
                                                                                             <label for="share"
-                                                                                                class="form-label">Share</label>
+                                                                                                class="form-label">Share <small class="text-red">*</small></label>
                                                                                             <input type="text"
                                                                                                 class="form-control lesseeShare form-required"
                                                                                                 id="share"
@@ -899,7 +910,7 @@
                                                         style="display: none;">
                                                         <div class="col-12 col-lg-4">
                                                             <label for="ConveyanceDate" class="form-label">Date of
-                                                                Conveyance Deed</label>
+                                                                Conveyance Deed <small class="text-red">*</small></label>
                                                             <input type="date" class="form-control"
                                                                 name="conveyanc_date[]" id="ConveyanceDate">
                                                             <span class="text-danger"></span>
@@ -926,7 +937,7 @@
                                                                         <div class="item-content row">
                                                                             <div class="mb-3 col-lg-12 col-12">
                                                                                 <label for="inputName1"
-                                                                                    class="form-label">Name</label>
+                                                                                    class="form-label">Name <small class="text-red">*</small></label>
                                                                                 <input type="text"
                                                                                     name="free_hold_in_favour_name[]"
                                                                                     class="alpha-only form-control"
@@ -1164,7 +1175,7 @@
                                             <div class="col-lg-12">
                                                 <div class="GR-container" id="GRContainer" style="display: none;">
                                                     <div class="col-12 col-lg-4">
-                                                        <label for="GRrevisedDate" class="form-label">Date</label>
+                                                        <label for="GRrevisedDate" class="form-label">Date <small class="text-red">*</small></label>
                                                         <input type="date" name="gr_revised_date[]" class="form-control form-required"
                                                             id="GRrevisedDate">
                                                             <div class="text-danger"></div>
@@ -1202,7 +1213,7 @@
                                                     <div class="row">
                                                         <div class="col-12 col-lg-6">
                                                             <label for="SupplementaryDate"
-                                                                class="form-label">Date</label>
+                                                                class="form-label">Date <small class="text-red">*</small></label>
                                                             <input type="date" min="1600-01-01" max="2050-12-31"
                                                                 class="form-control form-required" name="supplementary_date[]"
                                                                 id="SupplementaryDate">
@@ -1370,7 +1381,7 @@
 
                                                     <div class="col-12 col-lg-4">
                                                         <label for="reentryDate" class="form-label">Date of
-                                                            re-entry</label>
+                                                            re-entry <small class="text-red">*</small></label>
                                                         <input type="date" class="form-control form-required" id="reentryDate"
                                                             name="date_of_reentry[]">
                                                             <div class="text-danger"></div>
@@ -1401,7 +1412,7 @@
                                         <p class="mb-4">Please enter Latest Contact Details</p>
                                         <div class="row g-3">
                                             <div class="col-12 col-lg-4">
-                                                <label for="address" class="form-label">Address</label>
+                                                <label for="address" class="form-label">Address <small class="text-red">*</small></label>
                                                 <input type="text" name="address[]" class="form-control" id="address"
                                                     placeholder="Address">
                                                 @error('address')
@@ -1422,7 +1433,7 @@
                                                 <div id="EmailError" class="text-danger"></div>
                                             </div>
                                             <div class="col-12 col-lg-4">
-                                                <label for="asondate" class="form-label">As on Date</label>
+                                                <label for="asondate" class="form-label">As on Date <small class="text-red">*</small></label>
                                                 <input type="date" name="date[]" class="form-control" id="asondate">
                                                 <div id="asondateError" class="text-danger"></div>
                                             </div>
@@ -1463,7 +1474,13 @@
                 </div>
                 <!--end stepper three-->
             
-
+<style>.text-red{color:red;}.btn i {
+    vertical-align: middle;
+    font-size: 1.2rem;
+     margin-top: -0.2em  !important;
+     margin-bottom: -0.2em !important;
+    margin-right: 5px;
+}</style>
 
 @endsection
 

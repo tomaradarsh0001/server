@@ -22,7 +22,7 @@
                         <option value="">Gender</option>
                         <option value="Male" selected>Male</option>
                         <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="Transgender">Transgender</option>
                     </select>
                 </div>
             </div>
@@ -31,9 +31,9 @@
                     <label for="dateOfBirth" class="form-label">Date of Birth<span class="text-danger"></span></label>
                     <div class="mix-field dob-wrap">
                         <input type="date" id="conDateOfBirth" name="dateOfBirth" max="{{ date('Y-m-d') }}"
-                        class="form-control" readonly />
+                            class="form-control" readonly />
                         <div class="age-box">
-                        <h4>Age (in years): </h4>
+                            <h4>Age (in years): </h4>
                             <input type="text" id="conAge" name="age" class="form-control" placeholder="0"
                                 readonly />
                         </div>
@@ -57,24 +57,25 @@
                     </div>
                 </div>
             </div>
+
+
             <input type="hidden" id="isApplicantIndian" name="isApplicantIndian"
                 value="{{ $userDetails->applicantUserDetails->isIndian ?? '' }}">
             @if (!empty($userDetails->applicantUserDetails->isIndian) && $userDetails->applicantUserDetails->isIndian == 1)
                 <div class="col-lg-4">
-                    <div class="form-group">
-                        <label for="convaadhar" class="form-label">Aadhaar Number</label>
-                        <input type="text" name="convaadhar" class="form-control numericOnly" id="convaadhar"
-                            maxlength="12" placeholder="Aadhaar Number" readonly>
-                    </div>
+                <div class="form-group">
+                    <label for="convaadhar" class="form-label">Aadhaar Number</label>
+                    <input type="text" name="convaadhar" class="form-control numericOnly" id="convaadhar"
+                        maxlength="12" placeholder="Aadhaar Number" readonly>
                 </div>
-                <div class="col-lg-4">
-                    <div class="form-group">
-                        <label for="convpan" class="form-label">PAN Number</label>
-                        <input type="text" name="convpan"
-                            class="form-control pan_number_format text-transform-uppercase" id="convpan"
-                            maxlength="10" placeholder="PAN Number" readonly>
-                    </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="convpan" class="form-label">PAN Number</label>
+                    <input type="text" name="convpan" class="form-control pan_number_format text-transform-uppercase"
+                        id="convpan" maxlength="10" placeholder="PAN Number" readonly>
                 </div>
+            </div>
             @else
                 <div class="col-lg-4">
                     <div class="form-group">
@@ -92,11 +93,13 @@
                 </div>
             @endif
 
+
+            
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="convmobilenumber" class="form-label">Mobile Number</label>
-                    <input type="text" name="convmobilenumber" class="form-control numericOnly"
-                        id="convmobilenumber" maxlength="10" placeholder="Mobile Number" readonly>
+                    <input type="text" name="convmobilenumber" class="form-control numericOnly" id="convmobilenumber"
+                        maxlength="10" placeholder="Mobile Number" readonly>
                 </div>
             </div>
         </div>
@@ -106,7 +109,7 @@
             <div class="col-lg-12">
                 <div id="CONrepeater" class="position-relative conversion-coapplicants">
                     <div class="part-title mb-2">
-                        <h5>Name & Details of Other Co-Applicants</h5>
+                        <h5>Name & Details of Co-Applicants</h5>
                         <!-- add name in title same as in mutation by anil on 11-02-2025 -->
                     </div>
                     <div class="position-sticky text-end mt-2"
@@ -124,8 +127,7 @@
                             $tempCoapplicant = isset($tempCoapplicant) ? $tempCoapplicant : [];
                         @endphp
                         @forelse($tempCoapplicant as $coapplicant)
-                            <div class="items coapplicant-block" data-group="convcoapplicant"
-                                data-type='coapplicant'>
+                            <div class="items coapplicant-block" data-group="convcoapplicant" data-type='coapplicant'>
                                 <!-- add coapplicant-block class by anil on 28-03-2025  -->
                                 <!-- Repeater Content -->
                                 <input type="hidden" data-name="coapplicantId" value="{{ $coapplicant->id }}">
@@ -156,9 +158,9 @@
                                                     <option value="Female"
                                                         {{ $coapplicant->co_applicant_gender == 'Female' ? 'selected' : '' }}>
                                                         Female</option>
-                                                    <option value="Other"
-                                                        {{ $coapplicant->co_applicant_gender == 'Other' ? 'selected' : '' }}>
-                                                        Other</option>
+                                                    <option value="Transgender"
+                                                        {{ $coapplicant->co_applicant_gender == 'Transgender' ? 'selected' : '' }}>
+                                                        Transgender</option>
                                                 </select>
                                                 <!-- add error span tag by anil on 02-04-2025 for show error in draft view-->
                                                 <span class="error-message text-danger"></span>
@@ -180,7 +182,7 @@
                                                     </div>
                                                     <div class="col-lg-6">
                                                         <div class="age-box">
-                                                            <h4>Age: </h4>
+                                                            <h4>Age (in years): </h4>
                                                             <input type="text" id="age" name="age"
                                                                 value="" data-name="age" class="form-control"
                                                                 placeholder="0" readonly="">
@@ -374,7 +376,7 @@
                                                     <option value="">Select</option>
                                                     <option value="Male">Male</option>
                                                     <option value="Female">Female</option>
-                                                    <option value="Other">Other</option>
+                                                    <option value="Transgender">Transgender</option>
                                                 </select>
                                                 <span class="error-message text-danger"></span>
                                                 <!-- add span tag by anil on 10-02-2025 -->
@@ -523,7 +525,7 @@
                                         </div>
                                     </div> --> <!-- changed UI to fix design and image privew by anil on 11-02-2025 -->
 
-                                        <div class="col-lg-4 d-flex justify-content-between">
+                                        <div class="col-lg-6 col-xl-6 col-xxl-4 d-flex justify-content-between">
                                             <div class="form-group form-box">
                                                 <label for="photo" class="form-label">Upload Passport Size
                                                     Photo</label>
@@ -581,7 +583,7 @@
                             class="text-danger">*</span></label>
                     <input type="text" name="convNameAsOnLease" class="form-control alpha-only"
                         id="convNameAsOnLease" placeholder="Executed in Favour of"
-                        value="{{ isset($application) ? $application->name_as_per_lease_conv_deed : '' }}" readonly>
+                        value="{{ isset($application) ? $application->name_as_per_lease_conv_deed : '' }}" >
                     <div id="convNameAsOnLeaseError" class="text-danger text-left"></div>
                 </div>
             </div>
@@ -598,7 +600,7 @@
                             class="text-danger">*</span></label>
                     <input type="date" name="convExecutedOnAsOnLease" class="form-control"
                         id="convExecutedOnAsOnLease" placeholder="Executed on"
-                        value="{{ isset($application) ? $application->executed_on : '' }}" readonly>
+                        value="{{ isset($application) ? $application->executed_on : '' }}" >
                     <!-- add readonly by anil on 16-02-2025 -->
                     <div id="convExecutedOnAsOnLeaseError" class="text-danger text-left"></div>
                 </div>
@@ -704,7 +706,7 @@
                 <div class="col-lg-12 items">
                     <div class="col-lg-6">
                         <div class="d-flex align-items-center">
-                            <h6 class="mr-5 mb-0">Whether the Application Is on the Basis of a Court Order?
+                            <h6 class="mr-5 mb-0">Whether the application is on the basis of a court order?
                             </h6>
                             <div class="form-check mr-5">
                                 <input class="form-check-input" name="courtorderConversion" type="radio"
@@ -741,8 +743,7 @@
                             </div>
                             <div class="col-lg-4">
                                 <div class="form-group">
-                                    <label for="convCaseDetail" class="form-label">Details<span
-                                            class="text-danger">*</span></label>
+                                    <label for="convCaseDetail" class="form-label">Details</label>
                                     <textarea name="convCaseDetail" id="convCaseDetail" class="form-control">{{ isset($application) ? $application->case_detail : '' }}</textarea>
                                     <div id="convCaseDetailError" class="text-danger text-left"></div>
                                 </div>
@@ -761,7 +762,7 @@
                                 <div class="form-group form-box">
                                     <label for="convCourtOrderFile" class="quesLabel form-label"
                                         data-toggle="tooltip" data-placement="top"
-                                        title="Certified copies of any court order / decree">Court Order / Decree
+                                        title="Certified copies of any court order / decree">Court Order / Decree In PDF
                                         <span><i class='bx bx-info-circle'></i></span> <span
                                             class="text-danger">*</span></label>
                                     <input type="file" name="convCourtOrderFile" class="form-control"
@@ -820,7 +821,7 @@
                     <div class="row">
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center">
-                                <h6 class="mr-5 mb-0">Is Property Mortgaged?</h6>
+                                <h6 class="mr-5 mb-0">Is property mortgaged?</h6>
                                 <div class="form-check mr-5">
                                     <input class="form-check-input" name="propertymortgagedConversion"
                                         id="YesMortgagedConversion" type="radio" value="1"
@@ -859,7 +860,7 @@
                                 }
                             @endphp
                             <div class="row">
-                                <div class="col-lg-4">
+                                {{--<div class="col-lg-4">
                                     <div class="form-group form-box">
                                         <!-- <label for="convMortgageeBankNOC" class="quesLabel" data-toggle="tooltip" data-placement="top" title="NOC from Mortgage Bank/Authority">  commeted by anil on 25-03-2025 for no more need tooltip-->
                                         <label for="convMortgageeBankNOC" class="quesLabel form-label">
@@ -878,11 +879,11 @@
                                         @endif
                                         <div id="convMortgageeBankNOCError" class="text-danger text-left"></div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label for="NOCAttestationDateConversion" class="form-label">Date of
-                                            Document<span class="text-danger">*</span></label>
+                                            NOC<span class="text-danger">*</span></label>
                                         <input type="date" name="NOCAttestationDateConversion"
                                             class="form-control" id="NOCAttestationDateConversion"
                                             value="{{ !empty($NOCAttestationDateConversion) ? $NOCAttestationDateConversion->value : '' }}">
@@ -892,7 +893,7 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label for="NOCIssuedByConversion" class="form-label">Issuing Authority<span
+                                        <label for="NOCIssuedByConversion" class="form-label">Issuing Authority (Bank/ Financial institution)<span
                                                 class="text-danger">*</span></label>
                                         <input type="text" name="NOCIssuedByConversion" class="form-control"
                                             id="NOCIssuedByConversion" placeholder="Issuing Authority"

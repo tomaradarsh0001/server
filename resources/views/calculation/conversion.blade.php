@@ -33,10 +33,10 @@
 <div class="card">
     <div class="card-body">
         <div class="row">
-            <div class="col-lg-12 mb-3">
+            <div class="col-lg-12">
                 @include('include.parts.property-selector',['leaseHoldOnly'=>true])
             </div>
-            <div class="col-lg-6 mt-2 d-flex">
+            <div class="col-lg-4 mt-2">
                 {{-- <div class="form-group">
                     <label for="lessee_type">Lessee Type</label>
                     <select name="lessee_tyep" id="lessee_type" class="form-select">
@@ -83,7 +83,7 @@
                     </tr>
 
                     <tr>
-                        <th>Charges Calculation</th>
+                        <th>Charges Calcutation</th>
                         <td> <span id="equation"></span> <b class="float-right"><small></small></b></td>
                     </tr>
                     <tr>
@@ -116,9 +116,6 @@
 <script src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script>
 
 <script>
-function sqmToSqyard(sqm) {
-  return sqm * 1.19599;
-}
     $('#submitButton').click(function() {
         propertyId = !isNaN($('#oldPropertyId').val()) && $('#oldPropertyId').val().length == 5 ?
             $('#oldPropertyId').val() :

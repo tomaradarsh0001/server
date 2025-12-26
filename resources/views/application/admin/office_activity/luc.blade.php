@@ -7,7 +7,7 @@
                 <p class="remark-content"> {{ $latestMovement->remarks }}<span class="author-name">-
                         {{ !empty($latestMovement->assigned_by) ? getUserNamebyId($latestMovement->assigned_by) : '' }}
                         <!--(JE)--></span>, <span
-                        class="author-time">{{ date('h:i a - d/m/Y', strtotime($latestMovement->created_at)) }}</span>
+                        class="author-time">{{ date('d-m-Y h:i a', strtotime($latestMovement->created_at)) }}</span>
                 </p>
             </div>
             @if ($showRevertButton)

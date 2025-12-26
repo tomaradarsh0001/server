@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add SMS')
+@section('title', 'Create Sms Settings')
 
 @section('content')
 <style>
@@ -15,10 +15,16 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
-                <li class="breadcrumb-item">Application Configuration</li>
-                <li class="breadcrumb-item">SMS</li>
-                <li class="breadcrumb-item active" aria-current="page">Add SMS</li>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Sms</li>
+                <li>
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item">
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Create Sms</li>
+                    </ol>
+                </li>
             </ol>
 
         </nav>
@@ -36,17 +42,9 @@
         <form class="row g-3" id="smsCreateForm" method="post" action="{{route('settings.sms.store')}}">
             @csrf
             <div class="col-md-4">
-            <div class="d-flex justify-content-between">
-                    <label for="smsAction" class="form-label">Sms Action</label>
-                    <a href="{{route('settings.action.index')}}" title="Add/ Edit Action"><i class="lni lni-circle-plus"></i></a>
-                </div>
-               
-                <select class="form-select required-for-sms-setting-create" name="smsAction" id="smsAction">
-                    <option value="">Select Action</option>
-                    @foreach($actions as $action)
-                        <option value="{{$action->item_code}}">{{$action->item_name}}</option>
-                    @endforeach
-                </select>
+                <label for="smsAction" class="form-label">Sms Action</label>
+                <input type="text" class="form-control required-for-sms-setting-create" id="smsAction"
+                    name="smsAction" placeholder="Sms Action">
                 <div class="text-danger required-error-message" id="smsActionError">This field is required.</div>
             </div>
             <div class="col-md-4">

@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            /* font-family: sans-serif !important;e */
+            /* font-family: sans-serif !important; */
             margin: 0;
             padding: 0;
             position: relative;
@@ -32,10 +32,10 @@
             top: -50%;
             left: -50%;
             z-index: -99;
-            background: url(assets/images/water-mark-emblem.png) center center no-repeat;
+            background: url("{{ public_path('assets/images/water-mark-emblem.png') }}") center center no-repeat;
             background-size: 300px;
             opacity: 0.3;
-        }
+        }        
 
         /* body::after {
             content: "";
@@ -48,7 +48,7 @@
             background: url(assets/images/water-mark.jpg) 0 0 repeat;
             background-size:300px;
             transform: rotate(-30deg);
-            opacity: 0.2;
+            opacity: 0.1;
         } */
 
         .emblem-div {
@@ -63,7 +63,7 @@
 
         .title-main {
             color: navy;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
             text-align: center;
             margin: 0;
@@ -71,7 +71,7 @@
 
         .title-sub {
             color: navy;
-            font-size: 8px;
+            font-size: 10px;
             font-weight: bold;
             text-align: center;
             margin: 0;
@@ -119,10 +119,11 @@
 </head>
 
 <body>
+
     <div class="watermark"></div>
     <!-- Emblem -->
     <div class="emblem-div">
-        <img src="assets/images/emblem.jpg" width="40" alt="Emblem" class="emblem">
+        <img src="{{ public_path('assets/images/emblem.jpg') }}" width="60" alt="Emblem" class="emblem">
     </div>
 
     <!-- Title -->
@@ -194,9 +195,9 @@
             <td>{{ $payment->demand->unique_id ?? 'N/A' }}</td>
         </tr>
         <tr>
-            <!-- <td><b>Payment Purpose:</b></td>
-            <td>{{ $payment->paymentTypeItem->item_name ?? 'N/A' }}</td> -->
-            <td><b>Payment Purpose:</b></td>
+          {{--  <td><b>Payment Purpose:</b></td>
+            <td>{{ $payment->paymentTypeItem->item_name ?? 'N/A' }}</td>  --}}
+             <td><b>Payment Purpose:</b></td>
             <td>
                 @if(($payment->paymentTypeItem->item_name ?? '') === 'Application' && $payment->application)
                     {{ $payment->application->serviceTypeItem->item_name ?? 'Application' }}
@@ -204,7 +205,6 @@
                     {{ $payment->paymentTypeItem->item_name ?? 'N/A' }}
                 @endif
             </td>
-
             <td><b>Paid Amount:</b></td>
             <td>₹ {{ $payment->amount ? number_format($payment->amount, 2) : 'N/A' }}</td>
         </tr>

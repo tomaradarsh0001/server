@@ -3,11 +3,6 @@
 @section('title', 'Edit Item')
 
 @section('content')
-{{-- breadcrumb  --}}
-    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Logistics</div>
-        @include('include.partials.breadcrumbs')
-    </div>
 
     <div>
         <div class="col pt-3">

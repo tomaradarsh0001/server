@@ -1,6 +1,56 @@
 @extends('layouts.app')
 @section('title', 'Application')
 @section('content')
+    @if ($application->Signed_letter && getStatusDetailsById($details->status ?? '')->item_code == "APP_APR")
+        <style>
+            body::before {
+                content: "APPROVED";
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -30%) rotate(-15deg);
+                font-size: 8rem;
+                font-weight: 900;
+                color: rgba(99, 207, 175, 0.19); /* Light gray and transparent */
+                border: 5px solid rgba(30, 144, 109, 0.19);
+                padding: 1rem 2rem;
+                z-index: 2;
+                white-space: nowrap;
+                pointer-events: none; /* Let clicks pass through */
+            }
+            .content {
+                position: relative;
+                z-index: 1; /* Ensure content is above the watermark */
+                padding: 2rem;
+            }
+        </style>
+    @endif
+
+    @if (getStatusDetailsById($details->status ?? '')->item_code == "APP_REJ")
+        <style>
+            body::before {
+                content: "REJECTED";
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -30%) rotate(-15deg);
+                font-size: 8rem;
+                font-weight: 900;
+                color: rgba(235, 76, 76, 0.19); /* Light gray and transparent */
+                border: 5px solid rgba(233, 77, 77, 0.19);
+                padding: 1rem 2rem;
+                z-index: 2;
+                white-space: nowrap;
+                pointer-events: none; /* Let clicks pass through */
+            }
+            .content {
+                position: relative;
+                z-index: 1; /* Ensure content is above the watermark */
+                padding: 2rem;
+            }
+        </style>
+    @endif
+
     <style>
         .pagination .active a {
             color: #ffffff !important;
@@ -53,7 +103,6 @@
             /* Ensure it covers other content */
         }
 
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */        
         /* .spinner {
             border: 8px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -98,7 +147,7 @@
             75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
             100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
         }
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */      
+        /* commented and adeed by anil for replace the new loader on 08-08-2025  */
 
         /* for offic activity By Diwakar */
         div.dt-buttons {
@@ -154,81 +203,58 @@
             color: #6c757dad !important;
         }
     </style>
-
-    @isset($downloading)
-       <style>
-        /* Hide all navigation and layout parts */
-            .sidebar-wrapper,
-            .backButton,
-            .switcher-wrapper,
-            .menu,
-            .navbar,
-            .page-breadcrumb,
-            .btn,
-            .card .btn-group,
-            footer,
-            .footer,
-            header,
-            hr,
-            .no-print {
-                display: none !important;
-                width: 0 !important;
-                visibility: hidden !important;
-            }
-
-            /* Expand the content area */
-            .content,
-            #content,
-            .main-content,
-            .card {
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                border: none !important;
-                box-shadow: none !important;
-            }
-
-            body {
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-            .wrapper.toggled .page-wrapper,
-            .wrapper .page-wrapper{
-                margin:0!important;
-                width: 100%;
-            }
-            .page-content, .page-content > .card > .card-body{
-                padding:0!important;
-            }
-            .sidebar-wrapper{
-                width:0!important;
-            }
-       </style>
-    @endisset
     <!-- dd($details, $details->documentFinal) -->
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">APPLICATION</div>
+        <div class="breadcrumb-title pe-3">Application</div>
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
                     </li>
-                    <li class="breadcrumb-item">{{ $applicationType }}</li>
-                    <li class="breadcrumb-item active" aria-current="page">Application Details</li>
+                    <li class="breadcrumb-item"><a href="{{route('admin.applications')}}">Applications</a></li>
+                    <li class="breadcrumb-item">
+                        
+                             
+                {{ $applicationType }}
+                        </li>
+                    <li class="breadcrumb-item active" aria-current="page">Details</li>
                 </ol>
             </nav>
         </div>
     </div>
+
     <!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
     <hr>
-    <div class="card">
+    <div class="card content">
         <div class="card-body">
             <div>
-                @if ($roles == 'applicant')
-                    <button class="btn btn-success px-2 mx-2" id="downloadPayRec" title="Download Payment Reciept"><span
-                            id="receiptButtonText">Payment Reciept</span> <i class="bx bx-downvote me-0"></i></button>
-                @endif
+               
+                <div class="mb-3 d-flex justify-content-between align-items-center px-3">
+                    @if ($roles == 'applicant')
+                
+                        @if($uniquePaymentId)
+                            <a href="{{route('downloadPaymentReceiptPdf',$uniquePaymentId)}}"><button class="btn btn-success px-2 mx-2" title="Download Payment Reciept"><span
+                            id="receiptButtonText">Payment Reciept</span>  <i class="bx bx-download"></i></button></a>
+                        @endif
+                        
+                        @if ($application->Signed_letter && getStatusDetailsById($details->status ?? '')->item_code == "APP_APR")
+                            <div class="d-flex justigy-content-center align-items-center">
+                                <a href="{{ asset('storage/' . $application->Signed_letter) }}" class="btn btn-success px-2 mx-2" target="_blank">View
+                                    Signed
+                                    Letter  <i class="bx bxs-file"></i></a>
+                            </div>
+                        @endif
+                        @endif
+                         {{-- NEW : Download Application PDF Button --}}
+                        <a href="{{ url('edharti/applications/' . $details->id) . '?type=' . base64_encode($details->model_name ?? $application->model_name) . '&downloading=1' }}">
+                            <button class="btn btn-primary px-2 mx-2" title="Download Application">
+                                Download Application 
+                                <i class="bx bx-download"></i>
+                            </button>
+                        </a>
+                    </div>
+                       
                 <div class="parent_table_container pb-3">
                     <!-- added calss tm-tiles by anil on 19-11-2025 -->
                     <table class="table report-item tm-tiles">
@@ -243,7 +269,7 @@
                                             {{ $applicationType }}
                                         </span>
                                     </span></td>
-                                <td>Application Current Status: <span class="highlight_value">
+                                <td>Current Status: <span class="highlight_value">
                                         <!-- spelling correction by anil on 04-03-2025 -->
                                         @switch(getStatusDetailsById( $details->status ?? '' )->item_code)
                                             @case('APP_REJ')
@@ -314,10 +340,6 @@
                                             <td>{{ $details->new_property_id ?? '' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Property Status:</th>
-                                            <td colspan="3">{{ $propertyCommonDetails['status'] ?? '' }}</td>
-                                        </tr>
-                                        <tr>
                                             <th>Lease Type:</th>
                                             <td>{{ $propertyCommonDetails['leaseType'] ?? '' }}</td>
                                             <th>Lease Execution Date:</th>
@@ -334,6 +356,10 @@
                                             <td>{{ $propertyCommonDetails['presentlyKnownAs'] ?? '' }}</td>
                                             <th>Original Lessee:</th>
                                             <td>{{ $propertyCommonDetails['inFavourOf'] ?? '' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Property Status:</th>
+                                            <td colspan="3">{{ $propertyCommonDetails['status'] ?? '' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -375,9 +401,9 @@
                                                         $useremail = $user->email;
                                                         $position = strpos($useremail, '@');
                                                         $email = $useremail
-                                                            /* substr($useremail, 0, 2) .
+                                                            /*substr($useremail, 0, 2) .
                                                             str_repeat('*', $position - 2) .
-                                                            substr($useremail, $position) */;
+                                                            substr($useremail, $position)*/;
                                                     } else {
                                                         $email = '';
                                                     }
@@ -391,32 +417,41 @@
                                             <th>{{ $user->applicantUserDetails->so_do_spouse }}:</th>
                                             <td> {{ $user->applicantUserDetails->second_name }}</td>
                                         </tr>
-                                        <tr>
-                                            @php
-                                                $pan = $user->applicantUserDetails->pan_card;
-                                                $pan =   decryptString($pan) ?? $pan;
-                                            @endphp
-                                        
-                                            <th>PAN:</th>
-                                            <td>{{ $pan
-                                                /* ? str_repeat('*', 5) . substr($user->applicantUserDetails->pan_card, -5)
-                                                : ''  */}}
+                                        @if (!empty($user->applicantUserDetails->isIndian) && $user->applicantUserDetails->isIndian == 1)
+                                            <tr>
+                                                <th>PAN:</th>
+                                                <td>{{ decryptString($user->applicantUserDetails->pan_card ?? '') }}
+                                                </td>
+                                                <th>Aadhaar:</th>
+                                                @php
+                                                    $applicantAadhaar = $user->applicantUserDetails->aadhar_card;
+                                                @endphp
+                                                <td> {{ decryptString($applicantAadhaar) }}
+                                                </td>
+                                            </tr>
+                                        @else
+                                            <th>Document Type:</th>
+                                            <td>
+                                                @if ($user->applicantUserDetails->documentType && $user->applicantUserDetails->documentType === 'pion')
+                                                    Person of Indian Origin Number
+                                                @elseif ($user->applicantUserDetails->documentType && $user->applicantUserDetails->documentType === 'ocin')
+                                                    Overseas Citizen of India Number
+                                                @else
+                                                    Passport Number
+                                                @endif
                                             </td>
-                                            <th>Aadhaar:</th>
+                                            <th>Document Type Number:</th>
                                             @php
-                                                $applicantAadhaar = $user->applicantUserDetails->aadhar_card;
-                                                $applicantAadhaar =  preg_match('/[a-zA-Z]/', $applicantAadhaar) ? decryptString($applicantAadhaar) : $applicantAadhaar;
+                                                $documentTypeNumber = $user->applicantUserDetails->documentTypeNumber ?? '';
                                             @endphp
-                                            <td> {{ $applicantAadhaar
-                                                /* ? substr($applicantAadhaar, 0, 4) .
-                                                    str_repeat('*', 4) .
-                                                    substr($applicantAadhaar, -4)
-                                                : '' */ }}
+                                            <td> {{ decryptString($documentTypeNumber) ?? '' }}
                                             </td>
-                                        </tr>
+                                            </tr>
+                                        @endif
+
                                         <tr>
                                             <th>Mobile:</th>
-                                            <td>{{ $user->mobile_no /* ? substr($user->mobile_no, 0, 3) . str_repeat('*', 4) . substr($user->mobile_no, -3) : '' */ }}
+                                            <td>{{ $user->mobile_no /*? substr($user->mobile_no, 0, 3) . str_repeat('*', 4) . substr($user->mobile_no, -3) : ''*/ }}
                                             </td>
                                             <th>Address:</th>
                                             <td class="w-50">{{ $user->applicantUserDetails->address ?? '' }}</td>
@@ -430,7 +465,7 @@
             </div>
             @if (isset($coapplicants) && count($coapplicants) > 0)
                 <div class="part-title">
-                    <h5>Name & Details of Other Co-Applicants</h5>
+                    <h5>Name & Details of Co-Applicants</h5>
                 </div>
                 <div class="part-details">
                     <div class="container-fluid">
@@ -470,15 +505,13 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Aadhaar: 
-                                                            @php
+                                                        <td>Aadhaar:  @php
                                                                     $aadhaar = $coapplicant->co_applicant_aadhar;
                                                                     $aadhaar =  preg_match('/[a-zA-Z]/', $aadhaar) ? decryptString($aadhaar) : $aadhaar;
                                                                 @endphp
                                                                 <span
-                                                                class="highlight_value">{{ /* strlen($aadhaar) > 8 ? substr($aadhaar, 0, 4). str_repeat('*',strlen($aadhaar) - 8).substr($aadhaar,-4): */ $aadhaar }}
-                                                                
-                                                            </span><span><a target="_blank"
+                                                                class="highlight_value">{{/* strlen($aadhaar) > 8 ? substr($aadhaar, 0, 4). str_repeat('*',strlen($aadhaar) - 8).substr($aadhaar,-4):*/ $aadhaar }}
+                                                                <span><a target="_blank"
                                                                     href="{{ asset('storage/' . $coapplicant->aadhaar_file_path ?? '') }}">
                                                                     (View)
                                                                 </a></span>
@@ -530,7 +563,7 @@
                                                     <td id="executedOn">{{ $details->executed_on ?? '' }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Regn. No.:</th>
+                                                    <th>Registration No.:</th>
                                                     <td>{{ $details->reg_no_as_per_lease_conv_deed ?? '' }}</td>
                                                     <th>Book No.:</th>
                                                     <td>{{ $details->book_no_as_per_lease_conv_deed ?? '' }}</td>
@@ -543,7 +576,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Regn. Date:</th>
+                                                    <th>Registration Date:</th>
                                                     <td id="regnDate">{{ $details->reg_date_as_per_lease_conv_deed ?? '' }}
                                                     </td>
                                                 </tr>
@@ -579,7 +612,7 @@
                                                 <td id="executedOn">{{ $details->executed_on ?? '' }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Regn. No.:</th>
+                                                <th>Registration No.:</th>
                                                 <td>{{ $details->reg_no ?? '' }}</td>
                                                 <th>Book No.:</th>
                                                 <td>{{ $details->book_no ?? '' }}</td>
@@ -591,7 +624,7 @@
                                                 <td>{{ $details->page_no ?? '' }}</td>
                                             </tr>
                                             <tr>
-                                                <th>Regn. Date:</th>
+                                                <th>Registration Date:</th>
                                                 <td id="leaseDeedRegnDateNoc">{{ $details->reg_date ?? '' }}</td>
                                             </tr>
                                         </tbody>
@@ -627,7 +660,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th>Regn. No.:</th>
+                                                <th>Registration No.:</th>
                                                 <td>{{ $details->reg_no_as_per_noc_conv_deed ?? '' }}</td>
                                                 <th>Book No.:</th>
                                                 <td>{{ $details->book_no_as_per_noc_conv_deed ?? '' }}</td>
@@ -640,7 +673,7 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th>Regn. Date:</th>
+                                                <th>Registration Date:</th>
                                                 <td id="regnDateNoc">{{ $details->reg_date_as_per_noc_conv_deed ?? '' }}
                                                 </td>
                                             </tr>
@@ -735,7 +768,7 @@
                                             @if ($details->mixed_use == 1)
                                                 <th>Total built up area</th>
                                                 <td>{{ $details->total_built_up_area . ' Sq. Mtr.' }}</td>
-                                                <th>Area saght as commercial</th>
+                                                <th>Area sought as commercial</th>
                                                 <td>{{ $details->commercial_area . ' Sq. Mtr.' }}</td>
                                             @endif
                                         </tr>
@@ -784,7 +817,7 @@
                                             <td>{{ $details->flat_number ?? '' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>is Flat not listed:</th>
+                                            <th>Is Flat not listed:</th>
                                             <td>{{ $details->flat_id ? 'True' : 'False' }}</td>
                                             <th>Name of Builder / Developer:</th>
                                             <td>{{ $details->builder_developer_name ?? '' }}</td>
@@ -841,24 +874,43 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="viewScannedFilesLabel">View Scanned Files</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                        @if ($roles == 'section-officer') onclick='checkScannedFiles()' @endif></button>
+                    @if (!empty($scannedFiles['files']))
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            @if ($roles == 'section-officer') onclick='checkScannedFiles()' @endif></button>
+                    @else
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    @endif
                 </div>
                 <div class="modal-body">
-                    @if ($scannedFiles)
+                    @if (!empty($scannedFiles['files']))
                         <ul class="files-link">
                             @foreach ($scannedFiles['files'] as $scannedFile)
-                                <li><a href="{{ $scannedFiles['baseUrl'] }}{{ $scannedFile }}"
-                                        target="_blank">{{ $scannedFile }}</a></li>
+                               
+                                         <li><a href="{{ $scannedFiles['baseUrl'] }}{{ $scannedFile['actual']}}"
+                                        target="_blank">{{ $scannedFile['display']}}</a></li>
                             @endforeach
                         </ul>
                     @else
                         <p class="text-danger fs-4">No scanned files available.</p>
                     @endif
+
+                     <!-- added on 06-11-2025 for scanned files -->
+                    @if(auth()->user()->getRoleNames()->first() === 'section-officer')
+                        <div class="btn-group">
+                            <a target="_blank" href="{{ route('property.scanning.create', ['property_id' => $oldPropertyId]) }}"
+                            class="btn btn-success ml-2">
+                                + Upload Scanned Files
+                            </a>
+                        </div>
+                    @endif
                 </div>
                 <div class="modal-footer justify-content-end">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                         @if (!empty($scannedFiles['files']))
+                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                         @if ($roles == 'section-officer') onclick='checkScannedFiles()' @endif>Close</button>
+                        @else
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        @endif
                 </div>
             </div>
         </div>
@@ -898,7 +950,7 @@
     @include('include.alerts.ajax-alert')
     {{-- @include('include.alerts.section.scanned-files-checked') --}} {{-- confirmation  not required anymore - Nitin 09Dec2024 --}}
 
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
     <!-- <div id="spinnerOverlay" style="display:none;">
         <div class="spinner"></div>
         <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
@@ -907,13 +959,13 @@
         <span class="loader"></span>
         <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
     </div>
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
 
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Please enter remark</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Please enter remark.</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="{{ route('applications.checklist') }}" id="checklistRemarkForm">

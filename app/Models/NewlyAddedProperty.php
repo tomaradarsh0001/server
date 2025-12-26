@@ -17,11 +17,6 @@ class NewlyAddedProperty extends Model
         return $this->belongsTo(OldColony::class, 'locality');
     }
 
-    public function item()
-    {
-        return $this->belongsTo(Item::class, 'status', 'id');
-    }
-
     // Define the relationship with the ApplicantUserDetails model
     public function applicantDetails()
     {
@@ -32,6 +27,11 @@ class NewlyAddedProperty extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'status', 'id');
     }
 
     public function flat()

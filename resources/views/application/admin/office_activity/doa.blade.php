@@ -7,7 +7,7 @@
                 <p class="remark-content"> {{ $latestMovement->remarks }}<span class="author-name">-
                         {{ !empty($latestMovement->assigned_by) ? getUserNamebyId($latestMovement->assigned_by) : '' }}
                         <!--(JE)--></span>, <span
-                        class="author-time">{{ date('h:i a - d/m/Y', strtotime($latestMovement->created_at)) }}</span>
+                        class="author-time">{{ date('d-m-Y h:i a', strtotime($latestMovement->created_at)) }}</span>
                 </p>
             </div>
             @if ($showRevertButton)
@@ -222,13 +222,13 @@
                         onclick="handleApplicationAction('APPROVE','{{ $details->application_no }}',this)">Approve</button>
                     <button type="button" class="btn btn-danger"
                         onclick="handleApplicationAction('REJECT_APP','{{ $details->application_no }}',this)">Reject</button>
-                @elseif ($latestAppAction['latest_action'] == 'RECOMMENDED' || $latestAppAction['latest_action'] == 'OBJECT')
+                @elseif (isset($$latestAppAction) && ($latestAppAction['latest_action'] == 'RECOMMENDED' || $latestAppAction['latest_action'] == 'OBJECT'))
                     <button type="button" class="btn btn-primary"
                         onclick="handleApplicationAction('RECOMMENDED','{{ $details->application_no }}',this)">Recommend</button>
                     <button type="button" class="btn btn-warning"
                         onclick="handleApplicationAction('OBJECT','{{ $details->application_no }}',this)">Object</button>
                 @endif
-                @if ($latestAppAction['latest_action'] == 'RECOMMENDED' || $latestAppAction['latest_action'] == 'OBJECT')
+                @if (isset($latestAppAction) && ($latestAppAction['latest_action'] == 'RECOMMENDED' || $latestAppAction['latest_action'] == 'OBJECT'))
                     <button type="button" class="btn btn-danger"
                         onclick="handleApplicationAction('REJECT_APP','{{ $details->application_no }}',this)">Reject</button>
                 @endif

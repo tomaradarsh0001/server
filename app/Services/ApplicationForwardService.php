@@ -66,7 +66,6 @@ class ApplicationForwardService
      */
     public function revert(array $data): array
     {
-        dd('here');
         $lastMovement = DB::table('application_movements')
             ->where('model_id', $data['modalId'])
             ->where('application_no', $data['applicantNo'])
@@ -88,7 +87,7 @@ class ApplicationForwardService
             'assigned_by_role'   => Auth::user()->roles[0]->id ?? null,
             'assigned_to'        => $lastMovement->assigned_by,
             'assigned_to_role'   => $lastMovement->assigned_by_role,
-            'service_type'       => getServiceType($data['serviceType']),
+            'service_type'       => $data['serviceType'],
             'model_id'           => $data['modalId'],
             'status'             => $lastMovement->status,
             'action'             => $lastMovement->action,

@@ -27,7 +27,7 @@
                         <table class="table table-bordered table-striped">
                            
                             <tr>
-                                <th width="180">Included in New Demand</th>
+                                <th width="180">Include in New Demand</th>
                                 <th>Details</th>
                                 <th>Demand Amount</th>
                                 <th>Paid Amount</th>
@@ -53,7 +53,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5">Nothing to display here</td>
+                                    <td colspan="5">Nothing to display here.</td>
                                 </tr>
                             @endforelse
                         </table>
@@ -62,7 +62,7 @@
             @empty
                 <div class="row">
                     <div class="col-lg-12">
-                        <h5>No old demand found</h5>
+                        <h5>No old demand found.</h5>
                     </div>
                 </div>
             @endforelse

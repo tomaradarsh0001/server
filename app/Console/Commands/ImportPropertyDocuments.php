@@ -29,6 +29,73 @@ class ImportPropertyDocuments extends Command
     protected $description = 'Command description';
 
 
+    /*private function handlePropertyDocs($masterProperty, $propertyId, $splitedPropertyDetailId = null, $flatId = null)
+    {
+        // $colonyName = Str::slug($masterProperty->newColony->name);
+        $colonyName = $masterProperty->newColony->name;
+        $url = config('constants.propertyDocList') . $propertyId;
+        Log::info($url);
+        $docResponse = Http::timeout(10)->get($url);
+
+        if ($docResponse->successful()) {
+            $resp = $docResponse->json();
+            if (count($resp) > 0) {
+                $data = $resp[0];
+                $fileUrlPath = $data['Path'] ?? '';
+                $ListFileNames = $data['ListFileName'] ?? [];
+                Log::info('ListFileNames', $ListFileNames);
+                foreach ($ListFileNames as $file) {
+                    $fileName = $file['PropertyFileName'] ?? null;
+                    if (!$fileName) {
+                        Log::warning('filename not found');
+                        continue;
+                    };
+                    $matchArray = [
+                        'property_master_id' => $masterProperty->id,
+                        'splited_property_detail_id' => $splitedPropertyDetailId,
+                        'flat_id' => $flatId,
+                        'old_property_id' => $propertyId,
+                        'colony_name' => $colonyName,
+                        'document_name' => $fileName,
+                    ];
+                    $updateArray = [
+                        'document_path' => null,
+                        'status' => 0
+                    ];
+
+                    $fileUrl = $fileUrlPath . $fileName;
+                    Log::warning('fileUrl' . $fileUrl);
+                    $fileResponse = Http::get($fileUrl);
+
+                    if ($fileResponse->successful()) {
+                        $fileContents = $fileResponse->body();
+                        if (strlen($fileContents) < 25500) {
+                            $this->warn('invalid file. skipping ' . $fileName);
+                        } else {
+                            $newFilePath = "documents/$colonyName/$propertyId/scannedFiles/$fileName";
+                            Storage::disk('public')->put($newFilePath, $fileResponse->body());
+                            $updateArray = [
+                                'document_name' => $fileName,
+                                'document_path' => $newFilePath,
+                                'status' => 1
+                            ];
+                            $this->info("property - $propertyId document $fileName imported.");
+                        }
+                    } else {
+                        $this->warn("Failed to download file: $fileUrl");
+                    }
+                    PropertyScannedFile::updateOrCreate($matchArray, $updateArray);
+                }
+            } else {
+                Log::warning('no data for this property');
+            }
+        } else {
+            Log::warning("API returned error for property {$propertyId}: " . $docResponse->status());
+        }
+    }*/
+
+
+ 
     private function handlePropertyDocs($masterProperty, $propertyId, $splitedPropertyDetailId = null, $flatId = null)
     {
         // $colonyName = Str::slug($masterProperty->newColony->name);
@@ -109,21 +176,22 @@ class ImportPropertyDocuments extends Command
                     ];
                     $updateArray = [
                         'document_path' => null,
-                        'status' => 0,  
+                        'status' => 0,
+                        
                     ];
 
                     
 
                     // $fileUrl = $fileUrlPath . $fileName;
-                    $encodedFileName = rawurlencode($fileName);
-                    $fileUrl = rtrim($fileUrlPath, '/') . '/' . $encodedFileName; // safe concatenation
-
+                    $cleanFileName = ltrim($fileName, '/\\');   // remove / or \ from start
+                    $encodedFileName = rawurlencode($cleanFileName);
+                    $fileUrl = $fileUrlPath . $encodedFileName; // DO NOT add extra slash
                     Log::warning('fileUrl' . $fileUrl);
                     $fileResponse = Http::get($fileUrl);
 
                     if ($fileResponse->successful()) {
                         $fileContents = $fileResponse->body();
-                        if (strlen($fileContents) < 25000) {
+                        if (strlen($fileContents) < 5000) {
                             $this->warn('invalid file. skipping ' . $fileName);
                         } else {
                             // use NEW filename in the saved path
@@ -170,50 +238,66 @@ class ImportPropertyDocuments extends Command
         }
     }
 
-
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $importedList = PropertyScannedFile::where('status', 1)->pluck('old_property_id')->toArray();
+        // $importedList = PropertyScannedFile::where('status', 1)->pluck('old_property_id')->toArray();
+        // $masterProperties = PropertyMaster::whereNull('is_joint_property')
+        //     ->whereNotIn('old_propert_id', $importedList)
+        //     ->get();
         $masterProperties = PropertyMaster::whereNull('is_joint_property')
-            ->whereNotIn('old_propert_id', $importedList)
-            ->get();
+                            ->whereNotIn('old_propert_id', function ($q) {
+                                $q->select('old_property_id')
+                                ->from('property_scanned_files')
+                                ->where('status', 1);
+                            })
+                            ->get();
+
         Log::info('totalProps = ' . $masterProperties->count());
-        $splitedProerties = SplitedPropertyDetail::whereNotIn('old_property_id', $importedList)->get();
+        $splitedProerties = SplitedPropertyDetail::whereNotIn('old_property_id', function ($q) {
+                                $q->select('old_property_id')
+                                ->from('property_scanned_files')
+                                ->where('status', 1);
+                            })
+                            ->get();
         //$flats = Flat::whereNotIn('old_property_id', $importedList)->get();
-        $this->info("masterProperties = ".$masterProperties->count(). " splitedProerties ".$splitedProerties->count());
+
         if (!$masterProperties->isEmpty()) {
 
 
-            try {
+           
                 foreach ($masterProperties as $masterProperty) {
-                    if (!$masterProperty->newColony) {
-                        Log::warning("Skipping property ID {$masterProperty->id} due to missing colony.");
-                        continue;
-                    }
-                    $propertyId = $masterProperty->old_propert_id;
+                 try {
+                        if (!$masterProperty->newColony) {
+                            Log::warning("Skipping property ID {$masterProperty->id} due to missing colony.");
+                            continue;
+                        }
+                        $propertyId = $masterProperty->old_propert_id;
 
-                    $this->handlePropertyDocs($masterProperty, $propertyId);
+                        $this->handlePropertyDocs($masterProperty, $propertyId);
+                    } catch (\Exception $e) {
+                        Log::warning("Failed for property {$propertyId}: " . $e->getMessage());
+                    }
                 }
-            } catch (\Exception $e) {
-                Log::warning("Failed for property {$propertyId}: " . $e->getMessage());
-            }
-        } 
+            
+        }
         if (!$splitedProerties->isEmpty()) {
 
 
-            try {
+            
                 foreach ($splitedProerties as $sp) {
+                    try {
 
-                    $propertyId = $sp->old_property_id;
+                        $propertyId = $sp->old_property_id;
 
-                    $this->handlePropertyDocs($sp->master, $propertyId, $sp->id);
+                        $this->handlePropertyDocs($sp->master, $propertyId, $sp->id);
+                    } catch (\Exception $e) {
+                        Log::warning("Failed for property {$propertyId}: " . $e->getMessage());
+                    }
                 }
-            } catch (\Exception $e) {
-                Log::warning("Failed for property {$propertyId}: " . $e->getMessage());
-            }
+            
         }
         /* if (!$flats->isEmpty()) {
 

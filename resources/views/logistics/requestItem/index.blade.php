@@ -24,11 +24,18 @@
         }
     </style>
 
-{{-- breadcrumb  --}}
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Logistics</div>
-    @include('include.partials.breadcrumbs')
-</div>
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Logistic Management</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Users Request List</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content py-3">
@@ -40,7 +47,7 @@
                 <table class="table table-striped table-bordered" id="myDataTable">
                     <thead>
                         <tr>
-                            <th>S.No</th>
+                            <th>#</th>
                             <th>Request ID</th>
                             <th>Requested Item List</th>
                             <th>Issued Units</th>

@@ -38,8 +38,7 @@ class Payment extends Model
     {
         return $this->belongsTo(PropertyMaster::class, 'property_master_id');
     }
-
-    public function application()
+public function application()
     {
         return $this->hasOne(Application::class, 'application_no', 'application_no');
     }

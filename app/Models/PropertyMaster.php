@@ -34,8 +34,7 @@ class PropertyMaster extends Model
         return $this->hasMany(PropertyTransferredLesseeDetail::class, 'property_master_id')->whereNull('flat_id');
     }
 
-
-    public function propertyInspectionDemandDetail(): HasOne
+      public function propertyInspectionDemandDetail(): HasOne
     {
         return $this->hasOne(PropertyInspectionDemandDetail::class, 'property_master_id')->whereNull('splited_property_detail_id');
     }

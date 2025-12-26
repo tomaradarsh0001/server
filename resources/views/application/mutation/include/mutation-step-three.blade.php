@@ -654,11 +654,11 @@
         <div class="row mt-2">
             <div class="col-lg-12">
                 <h6 class="mt-3 mb-0">Terms & Conditions</h6>
-                <ul class="consent-agree">
+                <!-- <ul class="consent-agree"> -->
                    
-                    <li> Processing fee of Rs.{{ getApplicationCharge(getServiceType('SUB_MUT')) }} /- is non-refundable.
-                        </li>
-                </ul>
+                    Processing fee of Rs.{{ getApplicationCharge(getServiceType('SUB_MUT')) }} /- is non-refundable.
+                
+                <!-- </ul> -->
                 <div class="form-check form-group">
                     @if(isset($application))
                         <input class="form-check-input" name="agreeConsent" type="checkbox" id="agreeconsent">
@@ -667,7 +667,7 @@
                     @endif
 
                     <label class="form-check-label" for="agreeconsent">I agree, all the
-                        information provided by me is accurate to the best of my knowledge. I
+                        information provided is accurate. I
                         take full responsibility for any issues or failures that may arise from
                         its use.</label>
 

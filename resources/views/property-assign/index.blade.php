@@ -17,8 +17,7 @@
     }
 
     /* commented by anil for loader issue on 29-09-2025 */
-
-    /* .loader {
+    .loader {
         display: flex;
         justify-content: center;
         flex-direction: row;
@@ -26,6 +25,7 @@
     }
 
     .lds-roller {
+        /* change color here */
         color: #116d6e
     }
 
@@ -138,7 +138,7 @@
         100% {
             transform: rotate(360deg);
         }
-    } */
+    }
     /* End commented by anil for loader issue on 29-09-2025 */
     #spinnerOverlay {
         position: fixed;
@@ -179,7 +179,7 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                 </li>
                 <li class="breadcrumb-item">Miscellaneous</li>
                 <li class="breadcrumb-item active" aria-current="page">Property Assignment</li>
@@ -276,7 +276,7 @@
     <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
 </div>
 <!-- commented and adeed by anil for new loader on 29-09-2025  -->
-
+ 
 @endsection
 
 

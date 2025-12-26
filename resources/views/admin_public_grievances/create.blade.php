@@ -7,7 +7,7 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
                 <li class="breadcrumb-item active" aria-current="page">{{ isset($grievance) ? 'Edit Grievance' : 'Create New Grievance' }}</li>
             </ol>
         </nav>
@@ -17,7 +17,8 @@
 <div class="card">
     <div class="card-body">
         <div class="d-flex justify-content-end py-3">
-            <a href="{{ url('public-services/grievances') }}">
+           <a href="{{ route('grievance.index') }}">                
+
                 <button type="button" class="btn btn-dark px-2 mx-2">← Back</button>
             </a>
         </div>
@@ -44,14 +45,12 @@
                             <div class="mix-field d-flex">
                                 @if (!empty($countries) && count($countries) > 0)
                                     <select name="countryCode" id="grievance_countryCode" class="form-select prefix" style="width:30%">
-                                        <!-- <option value="">Select</option> -->
+                                        <option value="">Select</option>
                                         @foreach ($countries as $country)
-                                            @if ($country->phonecode == 91)
-                                                <option value="{{ $country->phonecode }}"
-                                                    @if ($country->phonecode == 91) @selected(true) @endif>
-                                                    {{ $country->iso2 }} (+{{ $country->phonecode }})
-                                                </option>
-                                            @endif
+                                            <option value="{{ $country->phonecode }}"
+                                                @if ($country->phonecode == 91) @selected(true) @endif>
+                                                {{ $country->iso2 }} (+{{ $country->phonecode }})
+                                            </option>
                                         @endforeach
                                     </select>
                                 @endif

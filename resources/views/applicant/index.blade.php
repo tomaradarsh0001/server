@@ -88,9 +88,8 @@
                                         <h6 class="mb-0">Email:</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="email" name="email" id="profileEmail" class="form-control"
-                                            value="{{ old('email', $user->email) }}">
-                                        <div class="text-danger" id="profileEmailError"></div>
+                                        <input type="email" name="email" class="form-control"
+                                            value="{{ old('email', $user->email) }}" required>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
@@ -98,9 +97,8 @@
                                         <h6 class="mb-0">Mobile No:</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <input type="text" name="mobile_no" maxlength="10" class="form-control" id="profileMobileNo"
-                                            value="{{ old('mobile_no', $user->mobile_no) }}">
-                                        <div class="text-danger" id="profileMobileNoError"></div>
+                                        <input type="text" name="mobile_no" class="form-control"
+                                            value="{{ old('mobile_no', $user->mobile_no) }}" required>
                                     </div>
                                 </div>
 
@@ -111,8 +109,7 @@
                                         <h6 class="mb-0">Communication Address:</h6>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
-                                        <textarea name="address" class="form-control" id="profileAddress" rows="2">{{ old('address', $user->applicantDetails->address ?? '') }}</textarea>
-                                        <div class="text-danger" id="profileAddressError"></div>
+                                        <textarea name="address" class="form-control" rows="2" required>{{ old('address', $user->applicantDetails->address ?? '') }}</textarea>
                                     </div>
                                 </div>
                                 @endif
@@ -131,7 +128,7 @@
 
                                 <div class="row">
                                     <div class="col-sm-12 text-end">
-                                        <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
                                     </div>
                                 </div>
                             </form>

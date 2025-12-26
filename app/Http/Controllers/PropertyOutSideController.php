@@ -21,31 +21,29 @@ class PropertyOutsideController extends Controller
 
     public function index(Request $request)
     {
-        $uniqueStates = PropertyOutside::select(
+      //  return view('properties_out_side.indexDatatable');
+       $uniqueStates = PropertyOutside::select(
             'states.id',
             'states.name as state_name'
         )
-            ->leftJoin('states', 'property_outsides.state_id', '=', 'states.id')
-            ->groupBy('states.id', 'states.name')
-            ->orderBy('states.name')
-            ->get();
+        ->leftJoin('states', 'property_outsides.state_id', '=', 'states.id')
+        ->groupBy('states.id', 'states.name')
+->orderBy('states.name')
+        ->get();
 
         $uniqueStatuses = PropertyOutside::select(
             'items.id',
             'items.item_name'
         )
-            ->leftJoin('items', 'property_outsides.present_status', '=', 'items.id')
-            ->groupBy('items.id', 'items.item_name')
-            ->get();
-
-        // dd($uniqueStates,$uniqueStatuses);
-
-        return view('properties_out_side.indexDatatable', compact(['uniqueStates', 'uniqueStatuses']));
+        ->leftJoin('items', 'property_outsides.present_status', '=', 'items.id')
+        ->groupBy('items.id', 'items.item_name')
+       
+        ->get();        
+        return view('properties_out_side.indexDatatable',compact(['uniqueStates','uniqueStatuses']));
     }
 
     public function getUnallotedOutsideDelhiPropertyData(Request $request)
     {
-
         $data = PropertyOutside::select(
             'property_outsides.id',
             'property_outsides.address',
@@ -60,8 +58,8 @@ class PropertyOutsideController extends Controller
             ->leftJoin('cities', 'property_outsides.city_id', '=', 'cities.id')
             ->leftJoin('present_custodians', 'property_outsides.present_custodian', '=', 'present_custodians.id')
             ->leftJoin('items', 'property_outsides.present_status', '=', 'items.id');
-
-        if ($request->has('state') && $request->state != '') {
+            
+          if ($request->has('state') && $request->state != '') {
             $data->where('property_outsides.state_id', $request->state);
         }
         if ($request->has('city') && $request->city != '') {
@@ -70,7 +68,6 @@ class PropertyOutsideController extends Controller
         if ($request->has('status') && $request->status != '') {
             $data->where('property_outsides.present_status', $request->status);
         }
-
         return DataTables::of($data)
             ->addIndexColumn()
             ->editColumn('custody_date', function ($row) {
@@ -289,7 +286,6 @@ class PropertyOutsideController extends Controller
         $property = PropertyOutside::with(['state', 'city', 'presentStatus', 'presentCustodian', 'landUse'])->findOrFail($id);
         return view('properties_out_side.view', compact('property'));
     }
-
     public function getVacantLandCities($stateId)
     {
         $cities = PropertyOutside::select(

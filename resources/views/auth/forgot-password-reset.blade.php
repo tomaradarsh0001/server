@@ -205,7 +205,7 @@
                         if (response.status) {
                             showSuccess(response.message);
                             setTimeout(() => {
-                                window.location.href = "/login";
+                                window.location.href = "/edharti/login";
                             }, 2000);
                         } else {
                             showError(response.message)

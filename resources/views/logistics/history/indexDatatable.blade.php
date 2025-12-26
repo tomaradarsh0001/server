@@ -26,7 +26,7 @@
             div.dt-buttons {
                 width:100%;
             }
-            
+
             div.dt-buttons.btn-group {
                 flex-direction: column;
                 align-items: flex-start;
@@ -51,17 +51,25 @@
             word-wrap: break-word;
         }
     </style>
- {{-- breadcrumb  --}}
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Logistics</div>
-    @include('include.partials.breadcrumbs')
-</div>
+    <!--breadcrumb-->
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Logistic</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Stock History</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
 
     <hr>
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-end py-3">
-                <a href="{{ url('logistic/purchase') }}">
+                <a href="{{ route('purchase.index') }}">
                     <button type="button" class="btn btn-danger px-2 mx-2 ">← Back</button>
                 </a>
             </div>

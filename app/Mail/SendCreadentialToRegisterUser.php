@@ -29,7 +29,7 @@ class SendCreadentialToRegisterUser extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your application for Edharti Portal successfully approved.',
+            subject: 'Your creadentials for Edharti Portal',
         );
     }
 

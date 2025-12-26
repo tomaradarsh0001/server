@@ -135,9 +135,9 @@
         <li class="breadcrumb-item" aria-current="page">Demand</li>
         <li class="breadcrumb-item active" aria-current="page">
           @if (Route::is('createDemandView'))
-          Create demand
+          Create Demand
           @elseif (Route::is('EditDemand'))
-          Edit demand
+          Edit Demand
           @endif
         </li>
       </ol>
@@ -149,13 +149,9 @@
 <hr />
 @php
 $propertyAllreadySelected = isset($demand) || isset($applicationData);
-if(isset($demand)){
-  $applicationData = $demand->application?->applicationData;
-}
 $creatingNewDemand = !isset($demand);
 $propertSelectorPath = $propertyAllreadySelected ? null: 'include.parts.property-selector';
 $totalDemandAmount = 0;
-// Adding this line here for checking demand status by Swati on 21-07-2025
 $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDING";
 @endphp
 <div class="card">
@@ -302,7 +298,7 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                             <tr>
                               <td>#</td>
                               <td>Particulars</td>
-                              <td>Financial Year</td>
+                              <td>Finacial Year</td>
                               <td>Balance Amount</td>
                             </tr>
                           </thead>
@@ -324,7 +320,7 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                     </div>
                     @endif
                     <div class="row">
-                      <div class="col-lg-3"><label>Is new allotment?</label></div>
+                      <div class="col-lg-3"><label>Is it a new allotment?</label></div>
                       <div class="col-lg-9">
                         <div class="new-allotment-option">
                           <div class="form-check form-check-inline mr-5">
@@ -335,11 +331,10 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                             <input type="radio" name="new_allotment_radio" class="form-check-input" value="0" {{(isset($newAllotment) && $newAllotment == 0) ? 'checked':''}} {{(isset($newAllotment))?'disabled':''}}>
                             <label class="form-check-label">No</label>
                           </div>
-                          @if(isset($newAllotment)) {{-- for edit case only --}}
-                          <input type="hidden" name="new_allotment_radio" value="{{ $newAllotment }}">
-                          @endif
-
                         </div>
+      			              @if(isset($newAllotment)) {{-- for edit case only --}}
+                            <input type="hidden" name="new_allotment_radio" value="{{ $newAllotment }}">
+                          @endif
                       </div>
                     </div>
 
@@ -381,10 +376,9 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                       @isset($demand)
                       @php
                       $selectedSubheadCodes = array_keys($slectedSubheads);
-                      // dd($selectedSubheadCodes);
+                      //dd($penalties);
                       @endphp
                       @foreach($subheads as $head)
-                      {{-- @dd($selectedSubheadCodes, $head) --}}
 
                       <div class="demand-item-container">
                         <div class="col-lg-12 my-1">
@@ -426,533 +420,523 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                             <div class="calculation-info">&diam; Type of property &nbsp; &nbsp; &rarr; {{isset($selectedValues['ground_rent_property_type']) ? getServiceNameById($selectedValues['ground_rent_property_type']) : 'N/A'}} </div>
                             <input type="hidden" name="ground_rent_property_type" id="" value="{{$selectedValues['ground_rent_property_type'] ??'' }}">
                           @break
+
                           @case('DEM_UEI')
                           {{-- @dd($selectedValues) --}}
                           <div class="col-lg-12 mt-2">
-                        <div class="form-check form-check-inline custom-check">
-                          <input class="form-check-input" type="radio" name="is_transfer_done" value="1" onchange="appendUnearnedIncreaseInput(this,3,true)" @if(isset($selectedValues['is_transfer_done']) && $selectedValues['is_transfer_done']==1) checked @endif>
-                          <label class="form-check-label">Transfer completed</label>
-                        </div>
-                        <div class="form-check form-check-inline custom-check">
-                          <input class="form-check-input" type="radio" name="is_transfer_done" value="0" onchange="appendUnearnedIncreaseInput(this,2,true)" @if(isset($selectedValues['is_transfer_done']) && $selectedValues['is_transfer_done']==0) checked @endif>
-                          <label class="form-check-label">Transfer yet to be completed</label>
-                        </div>
-                      </div>
-                      @if(isset($selectedValues['is_transfer_done']) && $selectedValues['is_transfer_done'] == 1)
-                      <div class="input-block">
-                        <label class="form-label">Consideration value</label>
-                        <input type="number" min="0" class="form-control" id="unearned_increase_consideration_value" name="unearned_increase_consideration_value" value="{{$selectedValues['unearned_increase_consideration_value'] ?? ''}}">
-                        <div class="error" id="unearned_increase_consideration_value_error"></div>
-                      </div>
-                      <div class="input-block">
-                        <label class="form-label">Transfer Date</label>
-                        <input type="date" class="form-control" onblur="getLandValueAtDate('{{ $demand->old_property_id }}', this.value)" name="unearned_increase_transfer_date" value="{{date('Y-m-d',strtotime($selectedValues['unearned_increase_transfer_date'])) ?? ''}}">
-                        <div class="error" id="unearned_increase_transfer_date_error"></div>
-                      </div>
-                      @endif
-                      <div class="input-block" id="land_value_block">
-                        <label>Land value {{isset($selectedValues['unearned_increase_transfer_date'])?'on '. date('d-m-Y',strtotime($selectedValues['unearned_increase_transfer_date'])) : '' }}</label>
-                        <div id="land_value_UEI">
-                          <input type="number" min="0" class="form-control" value="{{$selectedValues['unearned_increase_land_value']}}" readOnly id="unearned_increase_land_value" name="unearned_increase_land_value">
-                          <div class="error" id="unearned_increase_land_value_error"></div>
-                        </div>
-                      </div>
-                      @break
-
-                      @case('DEM_CONV_CHG')
-                      <div class="input-block">
-                        <label class="form-label">Land value</label>
-                        <input type="number" min="0" class="form-control" value="{{$selectedValues['conversion_land_value'] ?? ''}}" readOnly id="conversion_land_value" name="conversion_land_value">
-                        <div class="error" id="conversion_land_value_error"></div>
-                      </div>
-                      <div class="col-lg-12">
-                        {{-- <div class="calculation-info"> &diams; <b>Total coversion charges &rarr;</b> ₹{{customNumFormat(round(0.2*((float)$selectedValues['conversion_land_value'])),2)}} [20% of land value]<br>
-                        &diams; <b>Applicable remission &rarr;</b> ₹{{customNumFormat(round(0.2*0.4*((float)$selectedValues['conversion_land_value'])),2)}} [40% of converison charges]
-                      </div> --}}
-                      <div class="calculation-info"> &diams; <b>Land Rate &rarr;</b> ₹{{customNumFormat(round((float)$selectedValues['conversion_land_rate']),2)}}<br></div>
-                      <div class="calculation-info"> &diams; <b>Plot Area &rarr;</b> {{customNumFormat(round((float)$selectedValues['conversion_plot_area']),2)}} Sqm.<br></div>
-                      <div class="calculation-info"> &diams; <b>Total conversion charges</b> [{{$selectedValues['conversion_formula']}}] &rarr; ₹{{customNumFormat(round((float)$selectedValues['conversion_charges']),2)}} </b><br>
-                        &diams; <b>Applicable remission &rarr;</b> ₹{{customNumFormat(round((float)$selectedValues['conversion_remission_amount']),2)}} [40% of conversion charges]<br>
-                        &diams; <b>Applicable surcharge &rarr;</b> ₹{{customNumFormat(round((float)$selectedValues['conversion_surcharge_amount']),2)}} [33.33% of conversion charges]</div>
-                    </div>
-                    <div class="col-lg-12">
-                      <div class="form-check ">
-                        <input type="hidden" name="conversion_land_rate" id="conversion_land_rate" value="{{$selectedValues['conversion_land_rate']}}">
-                        <input type="hidden" name="conversion_plot_area" id="conversion_plot_area" value="{{$selectedValues['conversion_plot_area']}}">
-                        <input type="hidden" name="conversion_remission_amount" id="conversion_remission_amount" value="{{$selectedValues['conversion_remission_amount']}}">
-                        <input type="hidden" name="conversion_surcharge_amount" id="conversion_surcharge_amount" value="{{$selectedValues['conversion_surcharge_amount']}}">
-                        <input type="hidden" name="conversion_formula" id="conversion_formula" value="{{$selectedValues['conversion_formula']}}">
-                        <input type="hidden" name="conversion_charges" id="conversion_charges" value="{{$selectedValues['conversion_charges']}}">
-                        <div class="row mt-2">
-                          <div class="col-lg-3">
-                            <input class="form-check-input" type="checkbox" name="conversion_remission" id="conversion_remission" @checked(isset($selectedValues['conversion_remission']) && $selectedValues['conversion_remission']==1)>
-                            <label class="form-check-label">Allow Remission</label>
+                            <div class="form-check form-check-inline custom-check">
+                              <input class="form-check-input" type="radio" name="is_transfer_done" value="1" onchange="appendUnearnedIncreaseInput(this,3,true)" @if(isset($selectedValues['is_transfer_done']) && $selectedValues['is_transfer_done']==1) checked @endif>
+                              <label class="form-check-label">Transfer completed</label>
+                            </div>
+                            <div class="form-check form-check-inline custom-check">
+                              <input class="form-check-input" type="radio" name="is_transfer_done" value="0" onchange="appendUnearnedIncreaseInput(this,2,true)" @if(isset($selectedValues['is_transfer_done']) && $selectedValues['is_transfer_done']==0) checked @endif>
+                              <label class="form-check-label">Transfer yet to be completed</label>
+                            </div>
                           </div>
-                          <div class="col-lg-3">
-                            <input class="form-check-input" type="checkbox" name="conversion_surcharge" id="conversion_surcharge" @checked(isset($selectedValues['conversion_surcharge']) && $selectedValues['conversion_surcharge']==1)>
-                            <label class="form-check-label">Add Surcharge</label>
+                          @if(isset($selectedValues['is_transfer_done']) && $selectedValues['is_transfer_done'] == 1)
+                          <div class="input-block">
+                            <label class="form-label">Consideration value</label>
+                            <input type="number" min="0" class="form-control" id="unearned_increase_consideration_value" name="unearned_increase_consideration_value" value="{{$selectedValues['unearned_increase_consideration_value'] ?? ''}}">
+                            <div class="error" id="unearned_increase_consideration_value_error"></div>
+                          </div>
+                          <div class="input-block">
+                            <label class="form-label">Transfer Date</label>
+                            <input type="date" class="form-control" onblur="getLandValueAtDate('{{ $demand->old_property_id }}', this.value)" name="unearned_increase_transfer_date" value="{{date('Y-m-d',strtotime($selectedValues['unearned_increase_transfer_date'])) ?? ''}}">
+                            <div class="error" id="unearned_increase_transfer_date_error"></div>
+                          </div>
+                          @endif
+                          <div class="input-block" id="land_value_block">
+                            <label>Land value {{isset($selectedValues['unearned_increase_transfer_date'])?'on '. date('d-m-Y',strtotime($selectedValues['unearned_increase_transfer_date'])) : '' }}</label>
+                            <div id="land_value_UEI">
+                              <input type="number" min="0" class="form-control" value="{{$selectedValues['unearned_increase_land_value']}}" readOnly id="unearned_increase_land_value" name="unearned_increase_land_value">
+                              <div class="error" id="unearned_increase_land_value_error"></div>
+                            </div>
+                          </div>
+                          @break
+
+                          @case('DEM_CONV_CHG')
+                         
+                          
+                           
+                          
+                          <div class="col-lg-12">
+                            {{-- <div class="calculation-info"> &diams; <b>Total coversion charges &rarr;</b> ₹{{customNumFormat(round(0.2*((float)$selectedValues['conversion_land_value'])),2)}} [20% of land value]<br>
+                            &diams; <b>Applicable remission &rarr;</b> ₹{{customNumFormat(round(0.2*0.4*((float)$selectedValues['conversion_land_value'])),2)}} [40% of converison charges]
+                          </div> --}}
+                          <div class="calculation-info"> &diams; <b>Land Rate &rarr;</b> ₹{{customNumFormat(round((float)$selectedValues['conversion_land_rate']),2)}}<br></div>
+                          <div class="calculation-info"> &diams; <b>Plot Area &rarr;</b> {{customNumFormat(round((float)$selectedValues['conversion_plot_area']),2)}} Sqm.<br></div>
+                          <div class="calculation-info"> &diams; <b>Total conversion charges</b> [{{$selectedValues['conversion_formula']}}] &rarr; ₹{{customNumFormat(round((float)$selectedValues['conversion_charges']),2)}} </b><br>
+                            &diams; <b>Applicable remission &rarr;</b> [40% of conversion charges] <b>₹{{customNumFormat(round((float)$selectedValues['conversion_remission_amount']),2)}}</b><br>
+                            &diams; <b>Applicable surcharge &rarr;</b> [33.33% of conversion charges]  <b>₹{{customNumFormat(round((float)$selectedValues['conversion_surcharge_amount']),2)}}</b></div>
+                        </div>
+                        <div class="col-lg-12">
+                          <div class="form-check ">
+                            <input type="hidden" name="conversion_land_rate" id="conversion_land_rate" value="{{$selectedValues['conversion_land_rate']}}">
+                            <input type="hidden" name="conversion_plot_area" id="conversion_plot_area" value="{{$selectedValues['conversion_plot_area']}}">
+                            <input type="hidden" name="conversion_remission_amount" id="conversion_remission_amount" value="{{$selectedValues['conversion_remission_amount']}}">
+                            <input type="hidden" name="conversion_surcharge_amount" id="conversion_surcharge_amount" value="{{$selectedValues['conversion_surcharge_amount']}}">
+                            <input type="hidden" name="conversion_formula" id="conversion_formula" value="{{$selectedValues['conversion_formula']}}">
+                            <input type="hidden" name="conversion_charges" id="conversion_charges" value="{{$selectedValues['conversion_charges']}}">
+                            <div class="row mt-2">
+                              <div class="col-lg-3">
+                                <input class="form-check-input" type="checkbox" name="conversion_remission" id="conversion_remission" @checked(isset($selectedValues['conversion_remission']) && $selectedValues['conversion_remission']==1)>
+                                <label class="form-check-label">Allow Remission</label>
+                              </div>
+                              <div class="col-lg-3">
+                                <input class="form-check-input" type="checkbox" name="conversion_surcharge" id="conversion_surcharge" @checked(isset($selectedValues['conversion_surcharge']) && $selectedValues['conversion_surcharge']==1)>
+                                <label class="form-check-label">Add Surcharge</label>
+                              </div>
+                            </div>
                           </div>
                         </div>
+                          @break
+
+                          @case('DEM_LUC_RC')
+                          {{-- <div class="col-lg-12 mt-2">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="checkbox" name="partial_change" id="partial_change" onchange="toggleBuiltUpAreaInputs(this)" @checked(isset($selectedValues['partial_change']) && $selectedValues['partial_change']==1)>
+                              <label class="form-check-label">Land use change sought under mixed use policy</label>
+                            </div>
+                          </div>
+                          <div class="col-lg-12 mb-2">
+                            <div class="calculation-info">Land value @ commercial land rate &rarr; &#8377;{{customNumFormat(
+                                      round($selectedValues['luc_land_value'] ?? 0))}}</div>
+                          </div>
+                          <div class="input-block">
+                            <label class="form-label">Commercial Land value</label>
+                            <input type="number" min="0" class="form-control" value="{{$selectedValues['luc_land_value']??''}}" readOnly id="luc_land_value" name="luc_land_value">
+                            <div class="error" id="luc_land_value_error"></div>
+                          </div>
+                          {{-- @dd(($selectedValues['partial_change']) && $selectedValues['partial_change'] == 1) --}
+                          @if(isset($selectedValues['partial_change']) && $selectedValues['partial_change'] == 1)
+                          <div class="input-block builtUpAreaInputs">
+                            <label class="form-label">Total built up area</label>
+                            <input type="number" min="0" class="form-control" id="luc_TBUA" name="luc_TBUA" value="{{$selectedValues['luc_TBUA'] ?? ''}}">
+                            <div class="error" id="luc_TBUA_error"></div>
+                          </div>
+                          <div class="input-block builtUpAreaInputs">
+                            <label class="form-label">Area to be used as commercial</label>
+                            <input type="number" min="0" class="form-control" id="luc_BUAC" name="luc_BUAC" value="{{$selectedValues['luc_BUAC'] ?? ''}}">
+                            <div class="error" id="luc_BUAC_error"></div>
+                          </div>
+                          @endif --}}
+                          <div class="col-lg-12 mt-2">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="partial_change" id="partial_change" checked="${applicationData.mixed_use == 1}" disabled">
+                                <input type="hidden" name="partial_change" value="${applicationData.mixed_use}">
+                                <label class="form-check-label">Land use change sought under mixed use policy</label>
+                            </div>
+                          </div>
+                          <div class="calculation-info">&diam; Total built up area as per Application &nbsp; &nbsp; &rarr;{{$selectedValues['luc_TBUA']}}(Sqm) </div>
+                          <input type="hidden" name="luc_TBUA" value="{{$selectedValues['luc_TBUA']}}">
+                          <div class="calculation-info">&diam; Land use change sought &nbsp; &nbsp; &rarr; {{getServiceNameById($selectedValues['land_use_change_to'])}}</div>
+                          <input type="hidden" name="land_use_change_to" value="{{$selectedValues['land_use_change_to']}}">
+                          <div class="calculation-info">&diam; Area sought for land use change &nbsp; &nbsp; &rarr; {{$selectedValues['luc_BUAC']}}(Sqm) </div>
+                          {{-- @dd($demand->propertyMaster) --}}
+                          <input type="hidden" name="luc_BUAC" value="{{$selectedValues['luc_BUAC']}}">
+                          <div class="calculation-info">&diam; Land rate for {{strtolower(getServiceNameById($selectedValues['land_use_change_to']))}} properties in {{$demand->propertyMaster->newColony->name}} &nbsp; &nbsp; &rarr; {{$selectedValues['luc_land_rate']}}/sqm </div>
+                          <input type="hidden" name="luc_land_rate" value="{{$selectedValues['luc_land_rate']}}">
+                        
+                
+                          <div class="input-block">
+                                <label class="form-label">Last Transaction Value</label>
+                                <input type="number" min="0" class="form-control" id="luc_ltv" name="luc_ltv" value="{{$selectedValues['luc_ltv']}}">
+                                <div class="error" id="luc_ltv_error"></div>
+                          </div>
+
+
+
+                          @break
+
+                          @case('DEM_SLET_CHG')
+                          <div class="col-lg-12 mt-2">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="checkbox" name="penal_subletting" id="penal_subletting" onchange="togglePenalSublettingInputs(this)" @checked(isset($selectedValues['penal_subletting']) && $selectedValues['penal_subletting']==1)>
+                              <label class="form-check-label">Add Penalty</label>
+                            </div>
+                          </div>
+                          <div class="input-block">
+                            <label class="form-label">Annual income from subletting</label>
+                            <input type="number" min="0" class="form-control" id="annual_subletting_income" name="annual_subletting_income" value="{{$selectedValues['annual_subletting_income'] ?? ''}}">
+                            <div class="error" id="annual_subletting_income_error"></div>
+                          </div>
+                          @if (isset($selectedValues['penal_subletting']) && $selectedValues['penal_subletting'] == 1)
+                          <div class="input-block panalSublettingInputs">
+                            <label class="form-label">Date of start of subletting</label>
+                            <input type="date" class="form-control" id="subletting_start_date" name="subletting_start_date" value="{{$selectedValues['subletting_start_date'] ?? '' }}">
+                            <div class="error" id="subletting_start_date_error"></div>
+                          </div>
+                          <div class="input-block panalSublettingInputs">
+                            <label class="form-label">Date of confirmation of subletting</label>
+                            <input type="date" class="form-control" id="subletting_confirmation_date" name="subletting_confirmation_date" value="{{$selectedValues['subletting_confirmation_date'] ?? '' }}">
+                            <div class="error" id="subletting_confirmation_date_error"></div>
+                          </div>
+                          @endif
+                          @break
+
+                          @case('DEM_PENAL_STANDARD')
+                          <div class="input-block">
+                            <label class="form-label">Land Value</label>
+                            <input type="number" min="0" class="form-control" value="{{$selectedValues['standard_penalty_land_value']}}" readOnly id="standard_penalty_land_value" name="standard_penalty_land_value">
+                            <div class="error" id="standard_penalty_land_value_error"></div>
+                          </div>
+                          <div class="col-lg-12">
+                            <div class="calculation-info">Standard penalty is 1% of land value (&#8377;{{customNumFormat(round($selectedValues['standard_penalty_land_value'],2 ))}}) &approx; &#8377;{{customNumFormat(round(0.01*$selectedValues['standard_penalty_land_value'],2))}}</div>
+                          </div>
+                          <div class="col-lg-12">
+                            <div class="input-block">
+                              <label class="form-label">Description</label>
+                              <textarea class="form-control" name="standard_penalty_description" id="standard_penalty_description" rows="5" placeholder="Add description of penalty (min. 50 characters)">{{$selectedValues['standard_penalty_description'] ?? '' }}</textarea>
+                              <div class="error" id="standard_penalty_description_error"></div>
+                            </div>
+                          </div>
+                          @break
+
+                          @case("DEM_MANUAL")
+                          <!-- code moved -->
+                          @break
+
+                          @case('DEM_OTHER')
+                          <div class="input-block">
+                            <label class="form-label">Demand Amount</label>
+                            <input type="number" min="0" class="form-control" id="others_deamnd_amount" step="0.01" value="{{$slectedSubheads['DEM_OTHER']['amount']}}">
+                            <div class="error" id="others_deamnd_amount_error"></div>
+                          </div>
+                          <div class="input-block">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="others_description" id="others_description" rows="5" placeholder="Add description of penalty (min. 50 characters)">{{$selectedValues['others_description'] ??''}}</textarea>
+                            <div class="error" id="others_description_error"></div>
+                          </div>
+                          @break
+                          @default
+
+                          @endswitch
+
+                          @endif
+                        </div>
+                        @if(in_array($head->item_code,$selectedSubheadCodes))
+                        <div class="col-lg-12 my-3" id="calculation-div">
+                          <button type="button" class="btn btn-sm btn-primary btn-calculate me-auto" style="display: none">{{($head->item_code == "DEM_PENAL_STANDARD" || $head->item_code == "DEM_OTHER")?'Add':'Calculate'}}</button>
+                        </div>
+                        @endif
                       </div>
-                    </div>
-                    @break
-
-                    @case('DEM_LUC_RC')
-                    {{-- <div class="col-lg-12 mt-2">
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="partial_change" id="partial_change" onchange="toggleBuiltUpAreaInputs(this)" @checked(isset($selectedValues['partial_change']) && $selectedValues['partial_change']==1)>
-                        <label class="form-check-label">Land use change sought under mixed use policy</label>
-                      </div>
-                    </div>
-                    <div class="col-lg-12 mb-2">
-                      <div class="calculation-info">Land value @ commercial land rate &rarr; &#8377;{{customNumFormat(
-                                round($selectedValues['luc_land_value'] ?? 0))}}</div>
-                    </div>
-                    <div class="input-block">
-                      <label class="form-label">Commercial Land value</label>
-                      <input type="number" min="0" class="form-control" value="{{$selectedValues['luc_land_value']??''}}" readOnly id="luc_land_value" name="luc_land_value">
-                      <div class="error" id="luc_land_value_error"></div>
-                    </div>
-                    {{-- @dd(($selectedValues['partial_change']) && $selectedValues['partial_change'] == 1) --}
-                    @if(isset($selectedValues['partial_change']) && $selectedValues['partial_change'] == 1)
-                    <div class="input-block builtUpAreaInputs">
-                      <label class="form-label">Total built up area</label>
-                      <input type="number" min="0" class="form-control" id="luc_TBUA" name="luc_TBUA" value="{{$selectedValues['luc_TBUA'] ?? ''}}">
-                      <div class="error" id="luc_TBUA_error"></div>
-                    </div>
-                    <div class="input-block builtUpAreaInputs">
-                      <label class="form-label">Area to be used as commercial</label>
-                      <input type="number" min="0" class="form-control" id="luc_BUAC" name="luc_BUAC" value="{{$selectedValues['luc_BUAC'] ?? ''}}">
-                      <div class="error" id="luc_BUAC_error"></div>
-                    </div>
-                    @endif --}}
-                    <div class="col-lg-12 mt-2">
-                      <div class="form-check form-check-inline">
-                          <input class="form-check-input" type="checkbox" name="partial_change" id="partial_change" checked="${applicationData.mixed_use == 1}" disabled">
-                          <input type="hidden" name="partial_change" value="${applicationData.mixed_use}">
-                          <label class="form-check-label">Land use change sought under mixed use policy</label>
-                      </div>
-                    </div>
-                    <div class="calculation-info">&diam; Total built up area as per Application &nbsp; &nbsp; &rarr;{{$selectedValues['luc_TBUA']}}(Sqm) </div>
-                    <input type="hidden" name="luc_TBUA" value="{{$selectedValues['luc_TBUA']}}">
-                    <div class="calculation-info">&diam; Land use change sought &nbsp; &nbsp; &rarr; {{getServiceNameById($selectedValues['land_use_change_to'])}}</div>
-                    <input type="hidden" name="land_use_change_to" value="{{$selectedValues['land_use_change_to']}}">
-                    <div class="calculation-info">&diam; Area sought for land use change &nbsp; &nbsp; &rarr; {{$selectedValues['luc_BUAC']}}(Sqm) </div>
-                    {{-- @dd($demand->propertyMaster) --}}
-                    <input type="hidden" name="luc_BUAC" value="{{$selectedValues['luc_BUAC']}}">
-                    <div class="calculation-info">&diam; Land rate for {{strtolower(getServiceNameById($selectedValues['land_use_change_to']))}} properties in {{$demand->propertyMaster->newColony->name}} &nbsp; &nbsp; &rarr; {{$selectedValues['luc_land_rate']}}/sqm </div>
-                    <input type="hidden" name="luc_land_rate" value="{{$selectedValues['luc_land_rate']}}">
-                  
-          
-                    <div class="input-block">
-                          <label class="form-label">Last Transaction Value</label>
-                          <input type="number" min="0" class="form-control" id="luc_ltv" name="luc_ltv" value="{{$selectedValues['luc_ltv']}}">
-                          <div class="error" id="luc_ltv_error"></div>
-                    </div>
-
-
-
-                    @break
-
-                    @case('DEM_SLET_CHG')
-                    <div class="col-lg-12 mt-2">
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="penal_subletting" id="penal_subletting" onchange="togglePenalSublettingInputs(this)" @checked(isset($selectedValues['penal_subletting']) && $selectedValues['penal_subletting']==1)>
-                        <label class="form-check-label">Add Penalty</label>
-                      </div>
-                    </div>
-                    <div class="input-block">
-                      <label class="form-label">Annual income from subletting</label>
-                      <input type="number" min="0" class="form-control" id="annual_subletting_income" name="annual_subletting_income" value="{{$selectedValues['annual_subletting_income'] ?? ''}}">
-                      <div class="error" id="annual_subletting_income_error"></div>
-                    </div>
-                    @if (isset($selectedValues['penal_subletting']) && $selectedValues['penal_subletting'] == 1)
-                    <div class="input-block panalSublettingInputs">
-                      <label class="form-label">Date of Start of Subletting</label>
-                      <input type="date" class="form-control" id="subletting_start_date" name="subletting_start_date" value="{{$selectedValues['subletting_start_date'] ?? '' }}">
-                      <div class="error" id="subletting_start_date_error"></div>
-                    </div>
-                    <div class="input-block panalSublettingInputs">
-                      <label class="form-label">Date of Confirmation of Subletting</label>
-                      <input type="date" class="form-control" id="subletting_confirmation_date" name="subletting_confirmation_date" value="{{$selectedValues['subletting_confirmation_date'] ?? '' }}">
-                      <div class="error" id="subletting_confirmation_date_error"></div>
-                    </div>
-                    @endif
-                    @break
-
-                    @case('DEM_PENAL_STANDARD')
-                    <div class="input-block">
-                      <label class="form-label">Land value</label>
-                      <input type="number" min="0" class="form-control" value="{{$selectedValues['standard_penalty_land_value']}}" readOnly id="standard_penalty_land_value" name="standard_penalty_land_value">
-                      <div class="error" id="standard_penalty_land_value_error"></div>
-                    </div>
-                    <div class="col-lg-12">
-                      <div class="calculation-info">Standard penalty is 1% of land value (&#8377;{{customNumFormat(round($selectedValues['standard_penalty_land_value'],2 ))}}) &approx; &#8377;{{customNumFormat(round(0.01*$selectedValues['standard_penalty_land_value'],2))}}</div>
-                    </div>
-                    <div class="col-lg-12">
-                      <div class="input-block">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" name="standard_penalty_description" id="standard_penalty_description" rows="5" placeholder="Add description of penalty (min. 50 characters)">{{$selectedValues['standard_penalty_description'] ?? '' }}</textarea>
-                        <div class="error" id="standard_penalty_description_error"></div>
-                      </div>
-                    </div>
-                    @break
-
-                    @case("DEM_MANUAL")
-                    <!-- code moved -->
-                    @break
-
-                    @case('DEM_OTHER')
-                    <div class="input-block">
-                      <label class="form-label">Demand Amount</label>
-                      <input type="number" min="0" class="form-control" id="others_deamnd_amount" step="0.01" value="{{$slectedSubheads['DEM_OTHER']['amount']}}">
-                      <div class="error" id="others_deamnd_amount_error"></div>
-                    </div>
-                    <div class="input-block">
-                      <label class="form-label">Description</label>
-                      <textarea class="form-control" name="others_description" id="others_description" rows="5" placeholder="Add description of penalty (min. 50 characters)">{{$selectedValues['others_description'] ??''}}</textarea>
-                      <div class="error" id="others_description_error"></div>
-                    </div>
-                    @break
-                    @default
-
-                    @endswitch
-
-                    @endif
-                  </div>
-                  @if(in_array($head->item_code,$selectedSubheadCodes))
-                  <div class="col-lg-12 my-3" id="calculation-div">
-                    <button type="button" class="btn btn-sm btn-primary btn-calculate me-auto" style="display: none">{{($head->item_code == "DEM_PENAL_STANDARD" || $head->item_code == "DEM_OTHER")?'Add':'Calculate'}}</button>
-                  </div>
-                  @endif
-                </div>
-                @endforeach
-                @isset($slectedSubheads['DEM_MANUAL'])
-                @foreach ($slectedSubheads['DEM_MANUAL'] as $counter=>$manualDemand)
-                <div class="demand-item-container manual-demand-input">
-                  <div class="col-lg-12 my-1">
-                    <div class=" form-check">
-                      <h6>Others</h6>
-                      <input type="hidden" name="detail_id[DEM_MANUAL][{{$counter}}]" value="{{$manualDemand['id'] ?? ''}}">
-                      <input type="hidden" name="demand_amount[DEM_MANUAL][{{$counter}}]" id="include-demand-amount" value="{{$manualDemand['amount'] ?? 0}}">
-                    </div>
-                  </div>
-                  <div class="col-lg-12 user-inputs" id="user-inputs">
-                    <div class="input-block">
-                      <label for="" class="form-label">Head</label>
-                      <input type="text" name="manual_title[{{$counter}}]" id="manual_title" class="form-control" value="{{$manualDemand['values']['manual_title']}}">
-                      <div class="error" id="manual_title_error"></div>
-                    </div>
-                    <div class="input-block">
-                      <label class="form-label">Amount</label>
-                      <input type="number" min="0" name="manual_amount[{{$counter}}]" id="manual_amount" class="form-control" step="0.01" value="{{$manualDemand['values']['manual_amount']}}">
-                      <div class="error" id="manual_amount_error"></div>
-                    </div>
-                    <div class="input-block">
-                      <label for="" class="form-label">Date From</label>
-                      <input type="date" name="manual_date_from[{{$counter}}]" id="manual_date_from" class="form-control" value="{{$manualDemand['values']['manual_date_from']}}">
-                      <div class="error" id="manual_date_from_error"></div>
-                    </div>
-                    <div class="input-block">
-                      <label for="" class="form-label">Date To</label>
-                      <input type="date" name="manual_date_to[{{$counter}}]" id="manual_date_to" class="form-control" value="{{$manualDemand['values']['manual_date_to']}}">
-                      <div class="error" id="manual_date_to_error"></div>
-                    </div>
-                    <div class="col-lg-12 mt-2">
-                      <label class="form-label">Description</label>
-                      <textarea class="form-control" name="manual_description[{{$counter}}]" id="manual_description" rows="5" placeholder="Add description of demand (min. 50 characters)">{{$manualDemand['values']['manual_description']}}</textarea>
-                      <div class="error" id="manual_description_error"></div>
-                    </div>
-                    <div class="col-lg-12 d-flex mt-2 justify-content-between">
-                      <button type="button" class="btn btn-sm btn-primary btn-calculate me-auto">Add</button>
-                      @if(!isset($openInReadOnlyMode))
-                      <button type="button" class="btn btn-danger ms-auto" onclick="removerOthers(this)">Remove</button>
-                      @endif
-                    </div>
-                  </div>
-                </div>
-
-                @endforeach
-                @endisset
-
-                @endisset
-              </div>
-              @if(!isset($openInReadOnlyMode))
-              <div class="col mt-2 mb-2" id="colAddMore" @if(!isset($demand)) style="display: none" @endif><button type="button" class="btn btn-primary" onclick="appendManualInput()">Add More</button></div>
-              @endif
-
-              @if(isset($penalties) && count($penalties) > 0)
-              <div class="row py-2">
-                <label>Penalties added in demand</label>
-                <div class="col-lg-12">
-                  <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <td style="width: 5%">#</td>
-                        <td>Particulars</td>
-                        <td>Balance Amount</td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach($penalties as $item)
-                      <tr>
-                        <td>{{$loop->iteration}}</td>
-                        <td>{{$item->remarks}}</td>
-                        <td>&#8377; {{customNumFormat($item->net_total)}}</td>
-                        @php
-                        $totalDemandAmount += $item->net_total;
-                        @endphp
-                      </tr>
                       @endforeach
-                    </tbody>
-                  </table>
+                      @isset($slectedSubheads['DEM_MANUAL'])
+                      @foreach ($slectedSubheads['DEM_MANUAL'] as $counter=>$manualDemand)
+                      <div class="demand-item-container manual-demand-input">
+                        <div class="col-lg-12 my-1">
+                          <div class=" form-check">
+                            <h6>Others</h6>
+                            <input type="hidden" name="detail_id[DEM_MANUAL][{{$counter}}]" value="{{$manualDemand['id'] ?? ''}}">
+                            <input type="hidden" name="demand_amount[DEM_MANUAL][{{$counter}}]" id="include-demand-amount" value="{{$manualDemand['amount'] ?? 0}}">
+                          </div>
+                        </div>
+                        <div class="col-lg-12 user-inputs" id="user-inputs">
+                          <div class="input-block">
+                            <label for="" class="form-label">Head</label>
+                            <input type="text" name="manual_title[{{$counter}}]" id="manual_title" class="form-control" value="{{$manualDemand['values']['manual_title']}}">
+                            <div class="error" id="manual_title_error"></div>
+                          </div>
+                          <div class="input-block">
+                            <label class="form-label">Amount</label>
+                            <input type="number" min="0" name="manual_amount[{{$counter}}]" id="manual_amount" class="form-control" step="0.01" value="{{$manualDemand['values']['manual_amount']}}">
+                            <div class="error" id="manual_amount_error"></div>
+                          </div>
+                          <div class="input-block">
+                            <label for="" class="form-label">Date From</label>
+                            <input type="date" name="manual_date_from[{{$counter}}]" id="manual_date_from" class="form-control" value="{{$manualDemand['values']['manual_date_from']}}">
+                            <div class="error" id="manual_date_from_error"></div>
+                          </div>
+                          <div class="input-block">
+                            <label for="" class="form-label">Date To</label>
+                            <input type="date" name="manual_date_to[{{$counter}}]" id="manual_date_to" class="form-control" value="{{$manualDemand['values']['manual_date_to']}}">
+                            <div class="error" id="manual_date_to_error"></div>
+                          </div>
+                          <div class="col-lg-12 mt-2">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" name="manual_description[{{$counter}}]" id="manual_description" rows="5" placeholder="Add description of demand (min. 50 characters)">{{$manualDemand['values']['manual_description']}}</textarea>
+                            <div class="error" id="manual_description_error"></div>
+                          </div>
+                            <div class="col-lg-12 d-flex mt-2 justify-content-between">
+                              <button type="button" class="btn btn-sm btn-primary btn-calculate me-auto">Add</button>
+                              @if(!isset($openInReadOnlyMode))
+                                <button type="button" class="btn btn-danger ms-auto" onclick="removerOthers(this)">Remove</button>
+                              @endif
+                            </div>
+                        </div>
+                      </div>
+
+                      @endforeach
+                      @endisset
+
+                      @endisset
+                    </div>
+                    @if(!isset($openInReadOnlyMode))
+                    <div class="col mt-2 mb-2" id="colAddMore" @if(!isset($demand)) style="display: none" @endif><button type="button" class="btn btn-primary" onclick="appendManualInput()">Add More</button></div>
+                    @endif
+
+                    @if(isset($penalties) && count($penalties) > 0)
+                    <div class="row py-2">
+                      <label>Penalties added in demand</label>
+                      <div class="col-lg-12">
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <td style="width: 5%">#</td>
+                              <td>Particulars</td>
+                              <td>Balance Amount</td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @foreach($penalties as $item)
+                            <tr>
+                              <td>{{$loop->iteration}}</td>
+                              <td>{{$item->remarks}}</td>
+                              <td>&#8377; {{customNumFormat($item->net_total)}}</td>
+                              @php
+                              $totalDemandAmount += $item->net_total;
+                              @endphp
+                            </tr>
+                            @endforeach
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    @endif
+
+                  </div>
                 </div>
               </div>
-              @endif
-
             </div>
           </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="row my-3">
-    <div class="col-lg-12">
-      <div class="bill-raise">
-        @if(isset($openInReadOnlyMode))
-        <table class="table-bordered">
-          <thead>
-            <tr>
-              <th>Payable Demand Amount</th>
-              <th>Paid Amount</th>
-              <th>Outstanding</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>&#8377;{{customNumFormat($demand->net_total)}}</td>
-              <td>&#8377;{{customNumFormat($demand->paid_amount)}}</td>
-              <td>&#8377;{{customNumFormat($demand->balance_amount)}}</td>
-            </tr>
-          </tbody>
-        </table>
-        @else
-        <h6 class="demand-total">Demand Total Amount:</h6>
-        <h6 class="demand-amount">₹<span id="demandTotalAmount" unformatted-amount="{{isset($demand) ? $demand->net_total : 0}}">{{isset($demand) ? customNumFormat($demand->net_total) : 0}}</span></h6>
-        @endif
-      </div>
-    </div>
-  </div>
-  <div class="row mb-2">
+          <div class="row my-3">
+            <div class="col-lg-12">
+              <div class="bill-raise">
+                @if(isset($openInReadOnlyMode))
+                <table class="table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Payable Amount</th>
+                      <th>Paid Amount</th>
+                      <th>Outstanding</th>
+                    </tr>
+                  </thead>
+                  <tbldy>
+                    <tr>
+                      <td>&#8377;{{customnumformat($demand->net_total ?? 0)}}</td>
+                      <td>&#8377;{{customnumformat($demand->paid_amount ?? 0)}}</td>
+                      <td>&#8377;{{customnumformat($demand->balance_amount ?? 0)}}</td>
+                    </tr>
+                  </tbldy>
+                </table>
+                @else
+                  <h6 class="demand-total">Demand Total Amount:</h6>
+                  <h6 class="demand-amount">₹<span id="demandTotalAmount" unformatted-amount="{{isset($demand) ? $demand->net_total : 0}}">{{isset($demand) ? customNumFormat($demand->net_total) : 0}}</span></h6>
+                @endif
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
 
-    <div class="col-lg-4">
-      @if(!isset($openInReadOnlyMode))
-      <button type="button" class="btn btn-primary float-right" id="btn-submit">Submit</button>
-      @endif
-    </div>
-    <div class="col-lg-8 d-flex justify-content-end">
-      @unlessrole('internal-audit-cell')
-      @if(isset($canApprove) && $canApprove)
-      <a href="javascript:void(0)"><button type="button" class="btn btn-success mr-2" {{$demand->status == getServiceType('DEM_PENDING') ? 'disabled': ''}} onclick="confirmApprove('{{$demand->status == getServiceType('DEM_PENDING') ? '': route('ApproveDemand',$demand->id)}}')">{{$demand->status == getServiceType('DEM_PENDING') ? 'Approved': 'Approve'}}</button></a>
-      @endif
-      @if(isset($canEdit) && $canEdit)
-      <a href="{{route('EditDemand',$demand->id)}}"><button type="button" class="btn btn-warning">Edit</button></a>
-      @endif
-      {{-- Demand Letter Button by Swati on 21-07-2025--}}
-      @if($isPending)
-      {{-- <a href="{{ route('demand.demand_letter_pdf', $demand->id) }}" target="_blank"> --}}
-      <button type="button" class="btn btn-info ms-2" onclick="downloadPDF()">View Demand Letter</button>
-      {{-- </a> --}}
-      @endif
-      @endunlessrole
+            <div class="col-lg-4">
+              @if(!isset($openInReadOnlyMode))
+              <button type="button" class="btn btn-primary float-right" id="btn-submit">Submit</button>
+              @endif
+            </div>
+            <div class="col-lg-8 d-flex justify-content-end">
+              @unlessrole('internal-audit-cell')
+                @if(isset($canApprove) && $canApprove)
+                <a href="javascript:void(0)"><button type="button" class="btn btn-success mr-2" {{$demand->status == getServiceType('DEM_PENDING') ? 'disabled': ''}} onclick="confirmApprove('{{$demand->status == getServiceType('DEM_PENDING') ? '': route('ApproveDemand',$demand->id)}}')">{{$demand->status == getServiceType('DEM_PENDING') ? 'Approved': 'Approve'}}</button></a>
+                @endif
+                @if(isset($canEdit) && $canEdit)
+                <a href="{{route('EditDemand',$demand->id)}}"><button type="button" class="btn btn-warning">Edit</button></a>
+                @endif
+                {{-- Demand Letter Button by Swati on 21-07-2025--}}
+                @if($isPending)
+                    <a href="{{ route('demand.demand_letter_pdf', $demand->id) }}" target="_blank">
+                        <button type="button" class="btn btn-info ms-2">View Demand Letter</button>
+                    </a>
+                @endif
+              @endunlessrole
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-  </form>
-</div>
-</div>
-</div>
-@include('include.alerts.ajax-alert')
-@include('include.alerts.ajax-alert')
-@include('include.alerts.approve-confirmation')
-<div class="modal fade" id="confirmNewDemandModal" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="submitModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"> <!-- modal-dialog-centered class added by anil on 21-01-2025 -->
-    <div class="modal-content text-center">
-      <div class="modal-header border-0 h-0">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        {{-- <img
+  @include('include.alerts.ajax-alert')
+  @include('include.alerts.approve-confirmation')
+  <div class="modal fade" id="confirmNewDemandModal" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="submitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg"> <!-- modal-dialog-centered class added by anil on 21-01-2025 -->
+      <div class="modal-content text-center">
+        <div class="modal-header border-0 h-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {{-- <img
               src="{{ asset('assets/images/update.svg') }}"
-        alt="success"
-        class="success_icon" /> --}}
-        <!-- <h5 class="modal-title mb-2" id="ModalSuccessLabel">Are you sure?</h5> -->
-        <p id="confirmationMessage">
-          Unpaid demand found against the selected property. Do you want to
-          continue?
-        </p>
-        <div class="row mt-2">
-          <div class="col-lg-12" id="oldDemandDetails"></div>
+          alt="success"
+          class="success_icon" /> --}}
+          <!-- <h5 class="modal-title mb-2" id="ModalSuccessLabel">Are you sure?</h5> -->
+          <p id="confirmationMessage">
+            An unpaid demand has been found against the selected property. Do you want to
+            continue?
+          </p>
+          <div class="row mt-2">
+            <div class="col-lg-12" id="oldDemandDetails"></div>
+          </div>
+          <p>Do you want to continue? </p>
+          <br />
+        </div>
+        <div class="modal-footer border-0 justify-content-center">
+          <button type="button" class="btn btn-secondary btn-width" data-bs-dismiss="modal" id="confirmation-no">No</button>
+          <button type="button" name="status" value="submit" class="btn btn-primary btn-width" id="confirmation-yes">Yes</button> <!-- change the button color yellow to theme green by anil on 21-01-2025 -->
         </div>
       </div>
-      <div class="modal-footer border-0 justify-content-center">
-        <button type="button" class="btn btn-secondary btn-width" data-bs-dismiss="modal" id="confirmation-no">No</button>
-        <button type="button" name="status" value="submit" class="btn btn-primary btn-width" id="confirmation-yes">Yes</button> <!-- change the button color yellow to theme green by anil on 21-01-2025 -->
-      </div>
     </div>
   </div>
-</div>
-@endsection
-@section('footerScript')
+  @endsection
+  @section('footerScript')
+  <script src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script>
+  <script>
+    let propertyId;
+    /* let propertyTypes;
+    let propertyDetails; */
+    let demandDetailsHtml;
+    let conversionCharges;
+    let conversionRemission;
+    let conversionSurcharge;
+    let isPropertyTypeCommercial = false; //to skip appending land use change demand for commercial properties - added bu Ntiin on 24 March 2025
+    let isPropertyLeaseHold = false;
+    let prevPendingAmount = <?= $totalDemandAmount ?>;
+    let propertyType = false; //to skip appending land use change demand for commercial properties - added bu Ntiin on 24 March 2025
+    let propertyTypeName;
+    const spinnerOverlay = document.getElementById("spinnerOverlay");
+   @if (isset($applicationData))
+            var applicationData = @json($applicationData);
+        @else
+            var applicationData = null;
+        @endif
+    let redirectToEdit = false;
+    let oldDemandId = [];
+    let editDemandId = null;
+    let landValue = null;
+    let landArea = null;
+    let addInputPending = 0 //disable submitting form when all inputs are not added
+    let allocationType = @json($allocationType ?? '');
+    let allocationDateInputErrors = false;
+    let allocationLandRate;
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script> --}}
-<script src="{{asset('assets/js/vfs_fonts_custom.js')}}"></script>
-
-<script src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script>
-<script>
-  function sqmToSqyard(sqm) {
-    return sqm * 1.19599;
-  }
-  
-  const spinnerOverlay = document.getElementById("spinnerOverlay");
-  document.addEventListener("DOMContentLoaded", function () {
-    
-});
-  let propertyId;
-  /* let propertyTypes;
-  let propertyDetails; */
-  let demandDetailsHtml;
-  let conversionCharges;
-  let conversionRemission;
-  let conversionSurcharge;
-  let propertyType = false; //to skip appending land use change demand for commercial properties - added bu Ntiin on 24 March 2025
-  let propertyTypeName;
-  let isPropertyLeaseHold = false;
-  let prevPendingAmount = <?= $totalDemandAmount ?>;
-  @if(isset($applicationData))
-  var applicationData = @json($applicationData);
-  @else
-  var applicationData = null;
-  @endif
-  let redirectToEdit = false;
-  let oldDemandId = [];
-  let editDemandId = null;
-  let landValue = null;
-  let landArea = null;
-  let ApplicationType;
-  let addInputPending = 0 //disable submitting form when all inputs are not added
-  let allocationType = @json($allocationType ?? '');
-  let allocationDateInputErrors = false;
-  let allocationLandRate;
-
-  const standardConversionRemission = (40 / 100);
+    const standardConversionRemission = (40 / 100);
 
 
-  $(document).ready(function() {
-    let openInReadOnlyMode = <?= isset($openInReadOnlyMode) ? 'true' : 'false' ?>;
-    let creatingNewDemand = <?= $creatingNewDemand ? 'true' : 'false' ?>;
-    ApplicationType = <?= isset($applicationData) ? "'" . $applicationData->type . "'" : 'null' ?>;
-    if (!creatingNewDemand) {
-      landValue = parseFloat("<?= $landValue ?? 0 ?>");
-      landArea = parseFloat("<?= $landArea ?? 0 ?>");
-    } else {
-      if (applicationData && !landValue && !landArea) {
-        getPropertyBasicDetail(applicationData.old_property_id);
+    $(document).ready(function() {
+      let openInReadOnlyMode = <?= isset($openInReadOnlyMode) ? 'true' : 'false' ?>;
+      let creatingNewDemand = <?= $creatingNewDemand ? 'true' : 'false' ?>;
+      if (!creatingNewDemand) {
+        landValue = parseFloat("<?= $landValue ?? 0 ?>");
+        landArea = parseFloat("<?= $landArea ?? 0 ?>");
       }
-    }
-    let calculateTotal = <?= isset($demand) ? 'true' : 'false' ?>;
-    if (openInReadOnlyMode) {
-      $('#demand-input-form').find('input, textarea').attr('readonly', true);
-      $('#demand-input-form').find('select').attr('disabled', true);
-      $('#demand-input-form').find('input[type="checkbox"]').prop('disabled', true);
-    }
-    if (creatingNewDemand) {
-      getSelctedPropertyOldDemand();
-    }
-    toggleRemoveButton();
-
-    //code added by nitin to automaticlly show result
-    $('.btn-calculate').each(function() {
-      $(this).click();
-    })
-  });
-
-  $("#submitButton").click(function() {
-    propertyId = !isNaN($("#oldPropertyId").val()) && $("#oldPropertyId").val().length == 5 ?
-      $("#oldPropertyId").val() :
-      $("#property").length > 0 && $("#property").val() != "" ?
-      $("#property").val() :
-      $("#plot").length > 0 && $("#plot").val() != "" ? $("#plot").val() : "";
-    $('#detail-container').empty();
-    $('#demand-subheads-container').empty();
-    $('#input-form-container').addClass('d-none');
-    $('input[name="new_allotment_radio"]').prop('checked', false);
-    getPropertyBasicDetail(propertyId);
-  });
-
-  /** get detail of property when property is selected */
-  function getPropertyBasicDetail(propId) {
-    landValue = null;
-    landArea = null;
-    $.ajax({
-      type: "post",
-      url: "{{route('propertyCommonBasicdetail')}}",
-      data: {
-        _token: "{{csrf_token()}}",
-        property_id: propId,
-        skipAccessCheck: 1
-      },
-      success: function(response) {
-        if (response.status == "success") {
-          if (!Array.isArray(response.data)) {
-            landValue = response.data.plot_value ?? response.data.property_lease_detail.plot_value ?? null;
-          }
-          landArea = response.data.landSize;
-
-          displayPropertyDetails(response.data);
-        } else {
-          showError(response.message);
+     else{
+        if(applicationData && !landValue && !landArea)
+        {
+          getPropertyBasicDetail(applicationData.old_property_id);
         }
-      },
+      }
+      let calculateTotal = <?= isset($demand) ? 'true' : 'false' ?>;
+      if (openInReadOnlyMode) {
+        $('#demand-input-form').find('input, textarea').attr('readonly', true);
+        $('#demand-input-form').find('select').attr('disabled', true);
+        $('#demand-input-form').find('input[type="checkbox"]').prop('disabled', true);
+      }
+      if (creatingNewDemand) {
+        getSelctedPropertyOldDemand();
+      }
+      toggleRemoveButton();
+
+      //code added by nitin to automaticlly show result
+      $('.btn-calculate').each(function() {
+        $(this).click();
+      })
     });
-  }
-  /** display details of property */
-  function displayPropertyDetails(data) {
-    $("#detail-container").empty();
-    if (Array.isArray(data)) {
-      $("#detail-container").html(`<tr>
+
+    $("#submitButton").click(function() {
+      propertyId = !isNaN($("#oldPropertyId").val()) && $("#oldPropertyId").val().length == 5 ?
+        $("#oldPropertyId").val() :
+        $("#property").length > 0 && $("#property").val() != "" ?
+        $("#property").val() :
+        $("#plot").length > 0 && $("#plot").val() != "" ? $("#plot").val() : "";
+      $('#detail-container').empty();
+      $('#demand-subheads-container').empty();
+      $('#input-form-container').addClass('d-none');
+      $('input[name="new_allotment_radio"]').prop('checked', false);
+      getPropertyBasicDetail(propertyId);
+    });
+
+    /** get detail of property when property is selected */
+    function getPropertyBasicDetail(propId) {
+      landValue = null;
+      landArea = null;
+      $.ajax({
+        type: "post",
+        url: "{{route('propertyCommonBasicdetail')}}",
+        data: {
+          _token: "{{csrf_token()}}",
+          property_id: propId,
+          skipAccessCheck: 1
+        },
+        success: function(response) {
+          if (response.status == "success") {
+            if (!Array.isArray(response.data)) {
+              landValue = response.data.plot_value ?? response.data.property_lease_detail.plot_value ?? null;
+            }
+            landArea = response.data.landSize;
+
+            displayPropertyDetails(response.data);
+          } else {
+            showError(response.message);
+          }
+        },
+      });
+    }
+    /** display details of property */
+    function displayPropertyDetails(data) {
+      $("#detail-container").empty();
+      if (Array.isArray(data)) {
+        $("#detail-container").html(`<tr>
                       <td colspan="5"><h6>Given property has ${data.length} propert${
               data.length > 1 ? "ies" : "y"
             }</h6></td>
                   </tr>`);
-      data.forEach(function(row, i) {
-        appendPropertyDetail(row, true, i + 1);
-      });
-      $("#detail-container").append(`<tr>
-                <td colspan="5"><h5>Please enter property id of splited property to continue</h5></td>
+        data.forEach(function(row, i) {
+          appendPropertyDetail(row, true, i + 1);
+        });
+        $("#detail-container").append(`<tr>
+                <td colspan="5"><h5>Please enter property id of splitted property to continue.</h5></td>
             </tr>`);
-      $("#btn-rgr").prop("disabled", true);
-    } else {
-      appendPropertyDetail(data);
-      $("#property_id").val(data.id);
-      $("#splited").val(data.is_joint_property === undefined ? 1 : 0);
+        $("#btn-rgr").prop("disabled", true);
+      } else {
+        appendPropertyDetail(data);
+        $("#property_id").val(data.id);
+        $("#splited").val(data.is_joint_property === undefined ? 1 : 0);
+      }
+      $("#selectedOldPropertyId").val(
+        data.old_property_id ?? data.old_propert_id
+      );
+      $("#detail-card").removeClass("d-none");
     }
-    $("#selectedOldPropertyId").val(
-      data.old_property_id ?? data.old_propert_id
-    );
-    $("#detail-card").removeClass("d-none");
-  }
 
-  function appendPropertyDetail(row, isMultiple = false, rowNum = null) {
-    if (isMultiple && rowNum) {
-      $("#detail-container").append(`<tr>
+    function appendPropertyDetail(row, isMultiple = false, rowNum = null) {
+      if (isMultiple && rowNum) {
+        $("#detail-container").append(`<tr>
                 <td>${rowNum}</td><td colspan="4"></td>
             </tr>`);
-    }
-    // removed <td><b>Land Value : </b> &nbsp;-</td>
-    let transferHTML = "";
-    if (row.trasferDetails && row.trasferDetails.length > 0) {
-      transferHTML = `<div class= "transfer-details" style="display: inline; position:absolute">
+      }
+      // removed <td><b>Land Value : </b> &nbsp;-</td>
+      let transferHTML = "";
+      if (row.trasferDetails && row.trasferDetails.length > 0) {
+        transferHTML = `<div class= "transfer-details" style="display: inline; position:absolute">
             <span class="qmark">&#8505;</span>
             <ul class="transfer-list container">
                 <li class="transfer-list-item row row-lg-4">
@@ -962,24 +946,23 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                     <div class="transfer-list-cell col">Lessee Name</div>
                     </li>
             `;
-      row.trasferDetails.forEach((data, i) => {
-        transferHTML += `<li class="transfer-list-item row row-lg-4">
+        row.trasferDetails.forEach((data, i) => {
+          transferHTML += `<li class="transfer-list-item row row-lg-4">
                     <div class="transfer-list-cell col">${i + 1}</div>
                     <div class="transfer-list-cell col">${data.transferDate ? data.transferDate.split('-').reverse().join('-'):'N/A'}</div>
                     <div class="transfer-list-cell col">${data.process_of_transfer}</div>
                     <div class="transfer-list-cell col">${data.lesse_name}</div>
                     </li>`;
-      });
-      transferHTML +
-        `</ul>
+        });
+        transferHTML +
+          `</ul>
             </div>`;
-    }
+      }
 
-    landValue = row.plot_value ?? row.property_lease_detail.plot_value ?? 'N/A';
-    propertyType = row.property_type;
-    propertyTypeName = row.proprtyTypeName;
-    isPropertyLeaseHold = (row.status ?? row.property_status) == 951;
-    let detailHTML = `
+      landValue = row.plot_value ?? row.property_lease_detail.plot_value ?? 'N/A';
+      isPropertyTypeCommercial = row.property_type == 48;
+      isPropertyLeaseHold = row.status == 951;
+      let detailHTML = `
         <div class="part-title">
                         <h5>Property Basic Details</h5>
                       </div>
@@ -999,7 +982,7 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                         </tr>
                         <tr>
                           <th>Land Size:</th>
-                          <td colspan="2">${ customNumFormat(Math.round(row.landSize * 100) / 100)}Sq. Mtr. <small>(${ Number(sqmToSqyard(row.landSize)).toFixed(2) } Sq. Yard )</small></td>
+                         <td colspan="2">${ customNumFormat(Math.round(row.landSize * 100) / 100)}Sq. Mtr. <small>(${ Number(sqmToSqyard(row.landSize)).toFixed(2) } Sq. Yard )</small></td>
                           <th>Land Value:</th>
                           <td colspan="2">₹${customNumFormat(Math.round(landValue*100)/100)}</td>
                         </tr>
@@ -1024,74 +1007,77 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                 </div>
               </div>
             </div>`
-    let knownAs = row.presently_known_as ?? row.property_lease_detail.presently_known_as ?? ''
-    if (knownAs != "") {
-      $('#known-as').text(knownAs);
-      $('#knownAsDiv').show();
+      let knownAs = row.presently_known_as ?? row.property_lease_detail.presently_known_as ?? ''
+      if (knownAs != "") {
+        $('#known-as').text(knownAs);
+        $('#knownAsDiv').show();
+      }
+      /* let detailHTML = `<div class="parent_table_container">
+      <table class="table report-item">         
+                                  <tr>     
+                                      <td>Property ID: <span class="highlight_value">${row.unique_propert_id}( ${row.old_propert_id} )</span></td>
+                                      <td>Land Size: <span class="highlight_value">${ customNumFormat(Math.round(row.landSize * 100) / 100)} Sq. Mtr.</span></td>
+                                      <td>Land Value: <span class="highlight_value">₹${customNumFormat(Math.round(landValue*100)/100)}</span></td>
+                                  </tr>
+                                  <tr>
+                                      <td>Property Type: <span class="highlight_value">${row.proprtyTypeName}</span></td>
+                                      <td>Property Subtype: <span class="highlight_value">${row.proprtySubtypeName}</span></td>
+                                      <td>Land Type: <span class="highlight_value">${row.landTypeName}</span></td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="">Present Lessee: <span class="highlight_value lessee_address mr-2">${row.lesseName ? row.lesseName.replaceAll(',', ', ') : "N/A"}</span> ${transferHTML}</td>
+                                      <td>Property Status: <span class="highlight_value">${row.statusName}</span></td>
+                                  </tr>
+                          </table>
+                        </div>`; */
+      $("#detail-container").append(detailHTML);
+
+      /*  $("#detail-container").append(`
+             <tr>
+               <td><b>Property ID : </b> &nbsp;${data.unique_propert_id} (${data.old_propert_id})</td>
+               <td><b>Land Type : </b> &nbsp;${data.landTypeName}</td>
+               <td><b>Land Use Type : </b> &nbsp;${data.proprtyTypeName}</td>
+               <td><b>Land Use Subtype : </b> &nbsp;${data.proprtySubtypeName}</td>
+               <td><b>Land Size : </b> &nbsp;${ Math.round(data.landSize * 100) / 100} Sq. Mtr.</td>
+             </tr>
+             <tr>
+                 <td><b>Status of RGR : </b> &nbsp;<span class="rgrStatus">${data.rgr == 1 ? "Yes" : "No"}</span></td>
+                 <td><b>Lessee/Owner Name : </b> &nbsp;${data.lesseName ? data.lesseName.replaceAll(',', ', ') : "N/A"} ${ data.trasferDetails && data.trasferDetails.length > 0 ? transferHTML : ""}</td>
+                 <td><b>Lease Type : </b> &nbsp;${data.leaseTypeName ? data.leaseTypeName : "N/A"}</td>
+                 <td><b>Owner&apos;s E-mail : </b> &nbsp;${data.email ? data.email : "N/A"}</td>
+                 <td><b>Owner&apos;s Phone Number: </b> &nbsp;${data.phone_no ? data.phone_no : "N/A"}</td>
+             </tr>
+             <tr>
+               <td><b>Date of Allotment : </b> &nbsp;${data.leaseDate? data.leaseDate.split("-").reverse().join("-"):"N/A"}</td>
+               <td><b>Lease Tenure : </b> &nbsp;${data.leaseTenure? data.leaseTenure + " years": "N/A"}</td>
+               <td colspan="4"><b>Address : </b> &nbsp;${data.address ?? "N A"} </td>
+             </tr>
+           `); */
     }
-    /* let detailHTML = `<div class="parent_table_container">
-    <table class="table report-item">         
-                                <tr>     
-                                    <td>Property ID: <span class="highlight_value">${row.unique_propert_id}( ${row.old_propert_id} )</span></td>
-                                    <td>Land Size: <span class="highlight_value">${ customNumFormat(Math.round(row.landSize * 100) / 100)} Sq. Mtr.</span></td>
-                                    <td>Land Value: <span class="highlight_value">₹${customNumFormat(Math.round(landValue*100)/100)}</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Property Type: <span class="highlight_value">${row.proprtyTypeName}</span></td>
-                                    <td>Property Subtype: <span class="highlight_value">${row.proprtySubtypeName}</span></td>
-                                    <td>Land Type: <span class="highlight_value">${row.landTypeName}</span></td>
-                                </tr>
-                                <tr>
-                                  <td colspan="">Present Lessee: <span class="highlight_value lessee_address mr-2">${row.lesseName ? row.lesseName.replaceAll(',', ', ') : "N/A"}</span> ${transferHTML}</td>
-                                    <td>Property Status: <span class="highlight_value">${row.statusName}</span></td>
-                                </tr>
-                        </table>
-                      </div>`; */
-    $("#detail-container").append(detailHTML);
 
-    /*  $("#detail-container").append(`
-           <tr>
-             <td><b>Property ID : </b> &nbsp;${data.unique_propert_id} (${data.old_propert_id})</td>
-             <td><b>Land Type : </b> &nbsp;${data.landTypeName}</td>
-             <td><b>Land Use Type : </b> &nbsp;${data.proprtyTypeName}</td>
-             <td><b>Land Use Subtype : </b> &nbsp;${data.proprtySubtypeName}</td>
-             <td><b>Land Size : </b> &nbsp;${ Math.round(data.landSize * 100) / 100} Sq. Mtr.</td>
-           </tr>
-           <tr>
-               <td><b>Status of RGR : </b> &nbsp;<span class="rgrStatus">${data.rgr == 1 ? "Yes" : "No"}</span></td>
-               <td><b>Lessee/Owner Name : </b> &nbsp;${data.lesseName ? data.lesseName.replaceAll(',', ', ') : "N/A"} ${ data.trasferDetails && data.trasferDetails.length > 0 ? transferHTML : ""}</td>
-               <td><b>Lease Type : </b> &nbsp;${data.leaseTypeName ? data.leaseTypeName : "N/A"}</td>
-               <td><b>Owner&apos;s E-mail : </b> &nbsp;${data.email ? data.email : "N/A"}</td>
-               <td><b>Owner&apos;s Phone Number: </b> &nbsp;${data.phone_no ? data.phone_no : "N/A"}</td>
-           </tr>
-           <tr>
-             <td><b>Date of Allotment : </b> &nbsp;${data.leaseDate? data.leaseDate.split("-").reverse().join("-"):"N/A"}</td>
-             <td><b>Lease Tenure : </b> &nbsp;${data.leaseTenure? data.leaseTenure + " years": "N/A"}</td>
-             <td colspan="4"><b>Address : </b> &nbsp;${data.address ?? "N A"} </td>
-           </tr>
-         `); */
-  }
+    /** function checks and return unpaid demand for property ADARSG*/
+    $("#btn-demand").click(getSelctedPropertyOldDemand);
 
-  /** function checks and return unpaid demand for property */
-  $("#btn-demand").click(getSelctedPropertyOldDemand);
+    // $(document).ready(getSelctedPropertyoldDemand);
 
-  // $(document).ready(getSelctedPropertyoldDemand);
-
-  function getSelctedPropertyOldDemand() {
-    oldDemandId = [];
-    var selectedOldPropertyId = $("#selectedOldPropertyId").val();
-    if (selectedOldPropertyId && selectedOldPropertyId != "") {
-      $.ajax({
-        type: "get",
-        // url: "{{url('/demand/getExistingPropertyDemand')}}" + "/" + selectedOldPropertyId,
-        url: "{{route('getExistingPropertyDemand',['oldPropertyId'=>'__ID__'])}}".replace('__ID__', selectedOldPropertyId),
-        success: function(response) {
-          if (response.status) {
-            /** Active application details */
-            if (response.data.applicationData && response.data.applicationData.length > 0) {
-              let applicationHtml = `
+    function getSelctedPropertyOldDemand() {
+      oldDemandId = [];
+      var selectedOldPropertyId = $("#selectedOldPropertyId").val();
+       var responseUrl = "{{ route('getExistingPropertyDemand', ['oldPropertyId' => '__ID__']) }}";
+        responseUrl = responseUrl.replace('__ID__', selectedOldPropertyId);
+        console.log(responseUrl);
+                   
+      if (selectedOldPropertyId && selectedOldPropertyId != "") {
+        $.ajax({
+          type: "get",
+          url:responseUrl,
+          success: function(response) {
+            if (response.status) {
+              /** Active application details */
+              if (response.data.applicationData && response.data.applicationData.length > 0) {
+                let applicationHtml = `
                 <div class="part-title">
-                  <h5>Property active application Details</h5>
+                  <h5>Details of Active Applications for the Property</h5>
                 </div>
                 <div class="part-details">
                   <div class="container-fluid">
@@ -1106,14 +1092,14 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                             </tr>
                           </thead>
                         <tbody>`;
-              response.data.applicationData.forEach(row => {
-                applicationHtml += `<tr>
+                response.data.applicationData.forEach(row => {
+                  applicationHtml += `<tr>
                     <td>${row.application_no}</td>
                     <td>${row.appliedFor}</td>
                     <td>${row.statusName}</td>
                   </tr>`
-              })
-              applicationHtml += `
+                })
+                applicationHtml += `
                           </tbody>
                         </table>
                       </div>
@@ -1121,22 +1107,22 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                   </div>
                 </div>
                 `
-              $("#app-detail-container").append(applicationHtml);
-              $('#app-detail-card').removeClass('d-none')
-            }
+                $("#app-detail-container").append(applicationHtml);
+                $('#app-detail-card').removeClass('d-none')
+              }
 
-            /** pending demand details */
-            if (response.data && (response.data.demand || (response.data.dues && response.data.dues > 0))) {
-              if (response.data.demand) {
-                var oldDemand = response.data.demand;
-                var confirmationMessage = oldDemand.status_code == 'DEM_DRAFT' ? "There is already a demand with status DRAFT against the selected property. If you continue then new data will be added to the previously saved demand." : "There is already an unpaid demand against this property. Do you want to create a new demand? All unpaid subheads will be carried forward to new demand."
-                $('#confirmationMessage').text(confirmationMessage);
-                prevPendingAmount += oldDemand.balance_amount;
-                redirectToEdit = (oldDemand.status_code && oldDemand.status_code == 'DEM_DRAFT')
-                editDemandId = oldDemand.id;
-                $("#demandTotalAmount").text(customNumFormat(prevPendingAmount));
-                var demandDetails = response.data.demandDetails;
-                demandDetailsHtml = `<div class="row mt-2"><div class="col-lg-12">
+              /** pending demand details */
+              if (response.data && (response.data.demand || (response.data.dues && response.data.dues > 0))) {
+                if (response.data.demand) {
+                  var oldDemand = response.data.demand;
+                  var confirmationMessage = oldDemand.status_code == 'DEM_DRAFT' ? "There is already an unpaid demand with status DRAFT against the selected property. If you continue then new data will be added to the previously saved demand." : "There is already an unpaid demand against this property. All unpaid subheads will be carried forward to new demand."
+                  $('#confirmationMessage').text(confirmationMessage);
+                  prevPendingAmount += oldDemand.balance_amount;
+                  redirectToEdit = (oldDemand.status_code && oldDemand.status_code == 'DEM_DRAFT')
+                  editDemandId = oldDemand.id;
+                  $("#demandTotalAmount").text(customNumFormat(prevPendingAmount));
+                  var demandDetails = response.data.demandDetails;
+                  demandDetailsHtml = `<div class="row mt-2"><div class="col-lg-12">
                             <h5>Previous Demand</h5>
                             <table class="table table-bordered">
                                 <tr>
@@ -1153,34 +1139,34 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                                 </tr>
                             </table>`;
 
-                var pendingSubheads = demandDetails.filter(
-                  (row) => parseFloat(row.balance_amount) > 0
-                );
-                if (pendingSubheads && pendingSubheads.length > 0) {
-                  demandDetailsHtml += ` <br>
+                  var pendingSubheads = demandDetails.filter(
+                    (row) => parseFloat(row.balance_amount) > 0
+                  );
+                  if (pendingSubheads && pendingSubheads.length > 0) {
+                    demandDetailsHtml += ` <br>
                                 <table class="table table-bordered mt-2">
                                     <tr>
-                                        <th>S.No</th>
+                                        <th>S.No.</th>
                                         <th>Subhead Name</th>
                                         <th>Duration</th>
                                         <th>Amount</th>
                                         <th>Balance</th>
                                     </tr>`;
-                  pendingSubheads.forEach((row, index) => {
-                    demandDetailsHtml += `<tr>
+                    pendingSubheads.forEach((row, index) => {
+                      demandDetailsHtml += `<tr>
                                                             <td>${index + 1}</td>
                                                             <td>${row.subhead_name}</td>
                                                             <td>${row.duration_from ?? ''} - ${row.duration_to ?? ''}</td>
                                                             <td>₹ ${customNumFormat(row.net_total)}</td>
                                                             <td>₹ ${customNumFormat(row.balance_amount)}</td>
                                                         </tr>`;
-                  });
-                  demandDetailsHtml += `</table> </div></div>`;
-                }
-              } else if (response.data.dues && response.data.dues > 0) {
+                    });
+                    demandDetailsHtml += `</table> </div></div>`;
+                  }
+                } else if (response.data.dues && response.data.dues > 0) {
 
-                // prevPendingAmount += response.data.dues; //not required after last update on 03Mar2025
-                demandDetailsHtml = `<div class="row mt-2"><div class="col-lg-12">
+                  // prevPendingAmount += response.data.dues; //not required after last update on 03Mar2025
+                  demandDetailsHtml = `<div class="row mt-2"><div class="col-lg-12">
                             <h5>Previous Dues</h5>
                             <table class="table table-bordered">
                                 <tr>
@@ -1189,12 +1175,12 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                                     <th>Demand Date</th>
                                     <th>Demand amount</th>
                                     <th>Paid amount</th>
-                                    <th>Outstanding</th>
+                                    <th>Outstanding amount</th>
                                 </tr>`;
-                response.data.previousDemands.forEach(demand => {
-                  oldDemandId.push(demand.demand_id)
-                  let demandDate = demand.demand_date.substring(0, demand.demand_date.indexOf("T")).split('-').reverse().join('-')
-                  demandDetailsHtml += `<tr>
+                  response.data.previousDemands.forEach(demand => {
+                    oldDemandId.push(demand.demand_id)
+                    let demandDate = demand.demand_date.substring(0, demand.demand_date.indexOf("T")).split('-').reverse().join('-')
+                    demandDetailsHtml += `<tr>
                                     <th>${demand.property_id}</th>
                                     <th>${demand.demand_id}</th>
                                     <th>${demandDate}</th>
@@ -1202,79 +1188,67 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                                     <th>₹ ${customNumFormat(demand.paid_amount)}</th>
                                     <th>₹ ${customNumFormat(demand.outstanding)}</th>
                                 </tr>`;
-                });
+                  });
 
-                demandDetailsHtml += `</table></div></div>`;
+                  demandDetailsHtml += `</table></div></div>`;
+                }
+
+                $("#oldDemandDetails").html(demandDetailsHtml);
+                $("#confirmNewDemandModal").modal("show");
+
+              } else {
+                $("#input-form-container").removeClass("d-none");
               }
-
-              $("#oldDemandDetails").html(demandDetailsHtml);
-              $("#confirmNewDemandModal").modal("show");
-
             } else {
-              $("#input-form-container").removeClass("d-none");
+              showError(response.details);
             }
-          } else {
-            showError(response.details);
           }
-        }
-      });
+        });
+      }
     }
-  }
 
-  //when confirm yes
-  $("#confirmation-yes").click(function() {
-    if (redirectToEdit) {
-      let redirectMessage = `<h6>Redirecting to edit page</h6>`;
-      $('#oldDemandDetails').after(redirectMessage);
-      setTimeout(() => {
-        // window.location.href = "{{url('/demand/edit')}}" + '/' + editDemandId;
-        //window.location.href = "{{route('EditDemand',['demandId'=>'__ID__'])}}".replace('__ID__',editDemandId);
-        let editRoute = "{{route('EditDemand',['demandId'=>'__ID__'])}}".replace('__ID__', editDemandId);
-        if (applicationData) {
-          editRoute = "{{route('EditDemand',['demandId'=>'__ID__', 'applicationData'=>'__DATA__'])}}".replace('__ID__', editDemandId).replace('__DATA__', atob(applicationData));
-        }
-        window.location.href = editRoute;
+    //when confirm yes
+    $("#confirmation-yes").click(function() {
+      if (redirectToEdit) {
+        let redirectMessage = `<h6>Redirecting to edit page.</h6>`;
+        $('#oldDemandDetails').after(redirectMessage);
+        setTimeout(() => {
+          // window.location.href = "{{url('/demand/edit')}}" + '/' + editDemandId;
+          window.location.href = "{{route('EditDemand',['demandId'=>'__ID__'])}}".replace('__ID__',editDemandId);
+        }, 1000);
+      } else if (oldDemandId.length > 0) {
+        let ids = oldDemandId.join(',');
+        // $("#formOldDemandDetails").load("{{url('/demand/old-demand-data')}}" + '/' + ids, function() {
+        $("#formOldDemandDetails").load("{{route('oldDemandData',['oldDemands'=> '__IDs__'])}}".replace('__IDs__',ids), function() {
 
-      }, 1000);
-    } else if (oldDemandId.length > 0) {
-      let ids = oldDemandId.join(',');
-      //$("#formOldDemandDetails").load("{{url('/demand/old-demand-data')}}" + '/' + ids, function() {
-      $("#formOldDemandDetails").load("{{route('oldDemandData',['oldDemands'=> '__IDs__'])}}".replace('__IDs__', ids), function() {
-        calculateTotalAmount();
-      });
+          calculateTotalAmount();
+        });
 
+        $("#confirmNewDemandModal").modal("hide");
+        $("#input-form-container").removeClass("d-none");
+      } else {
+        $("#confirmNewDemandModal").modal("hide");
+        $("#input-form-container").removeClass("d-none");
+        $("#formOldDemandDetails").html(demandDetailsHtml);
+      }
+    });
+    //when confirm No
+    $("#confirmation-no").click(function() {
       $("#confirmNewDemandModal").modal("hide");
-      $("#input-form-container").removeClass("d-none");
-    } else {
-      $("#confirmNewDemandModal").modal("hide");
-      $("#input-form-container").removeClass("d-none");
-      $("#formOldDemandDetails").html(demandDetailsHtml);
+      $("#input-form-container").addClass("d-none");
+      $("#formOldDemandDetails").html('');
+    });
+
+    /** Function to enable/disable remove buttons */
+    function toggleRemoveButton() {
+      if ($(".subhead-input").length === 1) {
+        $(".btn-remove-subhead").prop("disabled", true);
+      } else {
+        $(".btn-remove-subhead").prop("disabled", false);
+      }
     }
-  });
-  //when confirm No
-  $("#confirmation-no").click(function() {
-    $("#confirmNewDemandModal").modal("hide");
-    $("#input-form-container").addClass("d-none");
-    $("#formOldDemandDetails").html('');
-  });
 
-  /** Function to enable/disable remove buttons */
-  function toggleRemoveButton() {
-    if ($(".subhead-input").length === 1) {
-      $(".btn-remove-subhead").prop("disabled", true);
-    } else {
-      $(".btn-remove-subhead").prop("disabled", false);
-    }
-  }
-
-  /** calculate total demand amount */
-  /* 
-      $("body").on("change", 'input[name="amount[]"]', function() {
-        // Use event delegation to handle dynamic elements
-        calculateTotalAmount();
-      }); */
-
-  function daysInMonth(year, month) {
+    function daysInMonth(year, month) {
     // month: 1-12
     return new Date(year, month, 0).getDate();
   }
@@ -1352,44 +1326,50 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
     }
   });
 
+    /** calculate total demand amount */
+    /* 
+        $("body").on("change", 'input[name="amount[]"]', function() {
+          // Use event delegation to handle dynamic elements
+          calculateTotalAmount();
+        }); */
 
-  function calculateTotalAmount() {
+    function calculateTotalAmount() {
 
-    var sum = prevPendingAmount;
+      var sum = prevPendingAmount;
 
-    // 1. Add all input values
-    $('input[id^="include-demand-amount"]').each(function(i, input) {
-      const value = parseFloat(input.value) || 0;
-      console.log('input', i, value);
-      sum += value;
-    });
+      // 1. Add all input values
+      $('input[id^="include-demand-amount"]').each(function(i, input) {
+        const value = parseFloat(input.value) || 0;
+        console.log('input', i, value);
+        sum += value;
+      });
 
-    // 2. Add all checked checkbox data-subhead-amount
-    $('.check-include-in-demand:checked').each(function(i, checkbox) {
-      const dataAmount = parseFloat($(checkbox).data('subheadAmount')) || 0;
-      console.log('checkbox', i, dataAmount);
-      sum += dataAmount;
-    });
+      // 2. Add all checked checkbox data-subhead-amount
+      $('.check-include-in-demand:checked').each(function(i, checkbox) {
+        const dataAmount = parseFloat($(checkbox).data('subheadAmount')) || 0;
+        console.log('checkbox', i, dataAmount);
+        sum += dataAmount;
+      });
 
-    // 3. Update total
-    $("#demandTotalAmount").text(customNumFormat((Math.round(sum * 100) / 100).toFixed(2)))
-    // prevPendingAmount = sum;
-    $("#demandTotalAmount").text(customNumFormat((Math.round(sum * 100) / 100).toFixed(2)));
-  }
-
-  /* Submit the form */
-
-  $("#btn-submit").click(function() {
-    if ($(this).is(':disabled')) {
-      e.preventDefault(); // Stop the form from submitting
-      showError('All demand inputs not added in final amount')
-      return false;
+      // 3. Update total
+      $("#demandTotalAmount").text(customNumFormat((Math.round(sum * 100) / 100).toFixed(2)))
+      // prevPendingAmount = sum;
+      $("#demandTotalAmount").text(customNumFormat((Math.round(sum * 100) / 100).toFixed(2)));
     }
-    var formData = $("#demand-input-form").serialize();
-    var isValid = true;
-    var errorMessage = '';
-    var today = new Date().toISOString().split("T")[0];
-    /*  $('#demand-input-form span.text-danger').not('label span.text-danger').remove();
+
+    /* Submit the form */
+
+    $("#btn-submit").click(function() {
+      if ($(this).is(':disabled')) {
+        e.preventDefault(); // Stop the form from submitting
+        showError('All demand inputs are not added in final amount.')
+        return false;
+      }
+      var formData = $("#demand-input-form").serialize();
+      var isValid = true;
+      var errorMessage = '';
+      var today = new Date().toISOString().split("T")[0];
+      /*  $('#demand-input-form span.text-danger').not('label span.text-danger').remove();
       $("#demand-input-form").find("[required]").each(function() {
         if ($(this).val() === "" || $(this).val() === null) {
           isValid = false;
@@ -1421,64 +1401,56 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
         }
       });
  */
-    // If validation fails
-    if (!isValid) {
-      return false; // Prevent form submission
-    }
-    $('#btn-submit').attr('disabled', true).text('Submitting...');
-    spinnerOverlay.style.display = "flex"
-    $.ajax({
-      type: "post",
-      url: "{{route('storeDemand')}}",
-      data: formData,
-      success: function(response) {
-        if (response.status) {
+      // If validation fails
+      if (!isValid) {
+        return false; // Prevent form submission
+      }
+      $('#btn-submit').attr('disabled', true).text('Submitting...');
+      spinnerOverlay.style.display = "flex"
+      $.ajax({
+        type: "post",
+        url: "{{route('storeDemand')}}",
+        data: formData,
+        success: function(response) {
           spinnerOverlay.style.display = "none"
-          var route = "{{route('demandList')}}";
-
-
-          @isset($applicationData)
-          if (ApplicationType && ApplicationType != null && ApplicationType != 'null') {
-            route = "{{ url('applications') }}/{{ $applicationData->id }}?type=" + ApplicationType;
+          if (response.status) {
+            showSuccess(response.message, "{{route('demandList')}}");
+          } else {
+            spinnerOverlay.style.display = "none"
+            if( typeof response ==  'string'){
+              response = JSON.parse(response);
+             if(response.message)
+               response  = JSON.parse(response.message);
+            }
+            showError(response.details);
+            $('#btn-submit').removeAttr('disabled').text('Submit');
           }
-          @endisset
-          showSuccess(response.message, route);
-        } else {
-          spinnerOverlay.style.display = "none"
-          if (typeof response == 'string') {
-            response = JSON.parse(response);
-            if (response.message)
-              response = JSON.parse(response.message);
-          }
-          showError(response.details);
-          $('#btn-submit').removeAttr('disabled').text('Submit');
-        }
-      },
+        },
+      });
     });
-  });
 
-  /* function includeAllOldDemandHeads() {
-    $(document).find('.check-include-in-demand').prop('checked', true).trigger('change');
-  } */
-  /** include previous demand subheds in new demand */
-  /* $(document).on('change', '.check-include-in-demand', function() {
-    debugger;
-    // console.log($(this).data('demandId'), $(this).data('subheadKey'), $(this).data('subheadAmount'))
-    let subheadAmount = $(this).data('subheadAmount')
-    if ($(this).is(':checked')) {
-      prevPendingAmount += subheadAmount;
-    } else {
-      prevPendingAmount -= subheadAmount;
-    }
-    console.log(prevPendingAmount)
-    // calculateTotalAmount();// commented because in case  new demand head data is added twice if done after adding new demand  heads
-    $('#demandTotalAmount').text(customeNumFormat(prevPendingAmount)); // only updating demand amount // not calculating the new demand head amount here
+    /* function includeAllOldDemandHeads() {
+      $(document).find('.check-include-in-demand').prop('checked', true).trigger('change');
+    } */
+    /** include previous demand subheds in new demand */
+    /* $(document).on('change', '.check-include-in-demand', function() {
+      debugger;
+      // console.log($(this).data('demandId'), $(this).data('subheadKey'), $(this).data('subheadAmount'))
+      let subheadAmount = $(this).data('subheadAmount')
+      if ($(this).is(':checked')) {
+        prevPendingAmount += subheadAmount;
+      } else {
+        prevPendingAmount -= subheadAmount;
+      }
+      console.log(prevPendingAmount)
+      // calculateTotalAmount();// commented because in case  new demand head data is added twice if done after adding new demand  heads
+      $('#demandTotalAmount').text(customeNumFormat(prevPendingAmount)); // only updating demand amount // not calculating the new demand head amount here
 
-  }) */
-
+    }) */
 
 
-  /* load demand subheads */
+
+    /* load demand subheads */
   $('input[name="new_allotment_radio"]').change(function() {
     let selectedVal = $(this).val();
     $('#demand-subheads-container').empty();
@@ -1541,75 +1513,76 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
       }
     })
   }
-  /** when user select a subhead to be included in demand */
-  $(document).on('change', '.select-head-check', function() {
-    if ($(this).is(":checked")) {
-      let container = $(this).closest('.demand-item-container');
-      appendUserInputs($(this))
-      let demandCode = $(this).attr('name');
-      if (container.find('.btn-calculate').length == 0) {
-        container.append(`<div class="col-lg-12 my-3" id="calculation-div"><button type="button" class="btn btn-sm btn-primary btn-calculate me-auto">${(demandCode == "DEM_PENAL_STANDARD" || demandCode == "DEM_OTHER" || demandCode == "DEM_MANUAL")?'Add':'Calculate'}</button></div>`)
+
+    /** when user select a subhead to be included in demand */
+    $(document).on('change', '.select-head-check', function() {
+      if ($(this).is(":checked")) {
+        let container = $(this).closest('.demand-item-container');
+        appendUserInputs($(this))
+        let demandCode = $(this).attr('name');
+        if (container.find('.btn-calculate').length == 0) {
+          container.append(`<div class="col-lg-12 my-3" id="calculation-div"><button type="button" class="btn btn-sm btn-primary btn-calculate me-auto">${(demandCode == "DEM_PENAL_STANDARD" || demandCode == "DEM_OTHER" || demandCode == "DEM_MANUAL")?'Add':'Calculate'}</button></div>`)
+        }
+      } else {
+        $(this).closest('.demand-item-container').find('#user-inputs').empty();
+        $(this).closest('.demand-item-container').find('#calculation-div').remove();
+        $(this).closest('.demand-item-container').find('.calculation_details').remove();
+        // clear subhead amount from input
+        $(this).closest('.demand-item-container').find('#include-demand-amount').val('');
+        calculateTotalAmount();
       }
-    } else {
-      $(this).closest('.demand-item-container').find('#user-inputs').empty();
-      $(this).closest('.demand-item-container').find('#calculation-div').remove();
-      $(this).closest('.demand-item-container').find('.calculation_details').remove();
-      // clear subhead amount from input
-      $(this).closest('.demand-item-container').find('#include-demand-amount').val('');
-      calculateTotalAmount();
-    }
-  })
+    })
 
-  function appendUserInputs(checkbox) {
-    let selectedSubhead = checkbox.attr('name')
-    let targetElement = checkbox.closest('.demand-item-container').find('#user-inputs')
-    switch (selectedSubhead) {
-      case "DEM_AF_P":
-        appendAllotmentFeeInputs(targetElement);
-        break;
-      case "DEM_LF_GR":
-        appendGroundRentInput(targetElement);
-        break;
-      case "DEM_UEI":
-        appendUnearnedIncreaseInput(targetElement, 1);
-        break;
-      case "DEM_CONV_CHG":
-        appendConversionInput(targetElement);
-        break;
-      case "DEM_LUC_RC":
-        appendLUCInput(targetElement);
-        break;
-      case "DEM_SLET_CHG":
-        appendSublettingInput(targetElement);
-        break;
-      case "DEM_PENAL_STANDARD":
-        appendStandatdPenaltyInput(targetElement);
-        break;
-        /* case "DEM_MANUAL":
-          appendManualInput(targetElement); 
-          break;*/
-      default:
-        appendOthersInput(targetElement);
-        break;
-    }
-  }
-
-  $(document).on('focusout', '.demand-item-container #user-inputs :input:not(:button)', function() {
-    const container = $(this).closest('.demand-item-container');
-    const calculateBtn = container.find('.btn-calculate');
-    if (!calculateBtn.is(':visible')) {
-      container.find('.btn-calculate').show();
-      container.find('.calculation_details').empty().hide();
-      addInputPending++;
+    function appendUserInputs(checkbox) {
+      let selectedSubhead = checkbox.attr('name')
+      let targetElement = checkbox.closest('.demand-item-container').find('#user-inputs')
+      switch (selectedSubhead) {
+        case "DEM_AF_P":
+          appendAllotmentFeeInputs(targetElement);
+          break;
+        case "DEM_LF_GR":
+          appendGroundRentInput(targetElement);
+          break;
+        case "DEM_UEI":
+          appendUnearnedIncreaseInput(targetElement, 1);
+          break;
+        case "DEM_CONV_CHG":
+          appendConversionInput(targetElement);
+          break;
+        case "DEM_LUC_RC":
+          appendLUCInput(targetElement);
+          break;
+        case "DEM_SLET_CHG":
+          appendSublettingInput(targetElement);
+          break;
+        case "DEM_PENAL_STANDARD":
+          appendStandatdPenaltyInput(targetElement);
+          break;
+          /* case "DEM_MANUAL":
+            appendManualInput(targetElement); 
+            break;*/
+        default:
+          appendOthersInput(targetElement);
+          break;
+      }
     }
 
-    $('#btn-submit').attr('disabled', true);
-  });
+    $(document).on('focusout', '.demand-item-container #user-inputs :input:not(:button)', function() {
+      const container = $(this).closest('.demand-item-container');
+      const calculateBtn = container.find('.btn-calculate');
+      if (!calculateBtn.is(':visible')) {
+        container.find('.btn-calculate').show();
+        container.find('.calculation_details').empty().hide();
+        addInputPending++;
+      }
+
+      $('#btn-submit').attr('disabled', true);
+    });
 
 
 
 
-  function appendAllotmentFeeInputs(targetElement) {
+    function appendAllotmentFeeInputs(targetElement) {
     // let html = `
     //     <div class="input-block">
     //         <label class="form-label">Start date</label>
@@ -1641,7 +1614,7 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
 
   }
 
-  function appendGroundRentInput(targetElement) {
+    function appendGroundRentInput(targetElement) {
     const d = new Date();
     const date = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
     fetchLandValue(date, propertyId)
@@ -1662,14 +1635,16 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
 
   }
 
-  function appendUnearnedIncreaseInput(targetElement, inputType) {
-    targetElement = $(targetElement); //ensure targetElement is jquery object
-    if (targetElement.attr('type') == 'radio') {
-      targetElement = targetElement.closest('#user-inputs')
-    }
-    if (inputType == 1) // input for transfer is already done
-    {
-      let html = `<div class="col-lg-12 mt-2">
+
+
+    function appendUnearnedIncreaseInput(targetElement, inputType) {
+      targetElement = $(targetElement); //ensure targetElement is jquery object
+      if (targetElement.attr('type') == 'radio') {
+        targetElement = targetElement.closest('#user-inputs')
+      }
+      if (inputType == 1) // input for transfer is already done
+      {
+        let html = `<div class="col-lg-12 mt-2">
         <div class="form-check form-check-inline custom-check">
             <input class="form-check-input" type="radio" name="is_transfer_done" value="1" onchange="appendUnearnedIncreaseInput(this,3,true)">
             <label class="form-check-label">Transfer completed</label>
@@ -1679,26 +1654,26 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
             <label class="form-check-label">Transfer yet to be completed</label>
         </div>
     </div>`;
-      targetElement.append(html);
-    }
-    if (inputType == 2) {
-      targetElement.find('.input-block').each(function() {
-        $(this).remove();
-      });
-      let html = `
+        targetElement.append(html);
+      }
+      if (inputType == 2) {
+        targetElement.find('.input-block').each(function() {
+          $(this).remove();
+        });
+        let html = `
         <div class="input-block">
             <label class="form-label">Land value</label>
             <input type="number" min="0" class="form-control" value="${Math.round(landValue*100)/100}" readOnly id="unearned_increase_land_value" name="unearned_increase_land_value">
             <div class="error" id="unearned_increase_land_value_error"></div>
         </div>
         `;
-      targetElement.append(html);
-    }
-    if (inputType == 3) {
-      targetElement.find('.input-block').each(function() {
-        $(this).remove();
-      });
-      let html = `
+        targetElement.append(html);
+      }
+      if (inputType == 3) {
+        targetElement.find('.input-block').each(function() {
+          $(this).remove();
+        });
+        let html = `
         <div class="input-block">
             <label class="form-label">Consideration value</label>
             <input type="number" min="0" class="form-control" id="unearned_increase_consideration_value" name="unearned_increase_consideration_value">
@@ -1710,17 +1685,65 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
             <div class="error" id="unearned_increase_transfer_date_error"></div>
         </div>
         `;
-      targetElement.append(html);
+        targetElement.append(html);
+      }
+      /* if (inputType == 4) {
+        let html = `
+          
+          `;
+        targetElement.append(html);
+      } */
     }
-    /* if (inputType == 4) {
-      let html = `
-        
-        `;
-      targetElement.append(html);
-    } */
-  }
 
-  function appendConversionInput(targetElement) {
+    /* function appendConversionInput(targetElement) {
+      let propertyId = $("#selectedOldPropertyId").val()
+      $.ajax({
+        type: "GET",
+        //url: "{{url('/land-use-change/commercial-land-value')}}" + '/' + propertyId,
+        url: "{{route('chargesForProperty')}}",
+                data: {
+                    propertyId: propertyId,
+                    remission: false
+                },
+                success: response => {
+                  var charge = response.charges;
+                  var remission = response.remission;
+                  var formula = response.formula;
+                  var landRate = parseFloat(response.landRate);
+                  var propertyArea = parseFloat(response.propertyArea);
+                  conversionCharges = parseFloat(charge.replaceAll(',',''));
+                  conversionRemission = parseFloat(remission.replaceAll(',',''));
+                   let html = `
+                        <div class="col-lg-12">
+                        <div class="calculation-info"> &diams; <b>Land Rate &rarr;</b> ₹${landRate}<br>
+                        <div class="calculation-info"> &diams; <b>Plot Area &rarr;</b> ${propertyArea}<br>
+                        <div class="calculation-info"> &diams; <b>Total conversion charges &rarr;</b> ₹${charge} [${formula}]<br>
+                        &diams; <b>Applicable remission &rarr;</b> ₹${remission} [40% of converison charges]</div>
+                        </div>
+                        <div class="col-lg-12">
+                        <div class="form-check form-check-inline">
+                            <input type="hidden" name="conversion_land_rate" id="conversion_land_rate" value="${landRate}">
+                            <input type="hidden" name="conversion_plot_area" id="conversion_plot_area" value="${propertyArea}">
+                            <input type="hidden" name="conversion_remission_amount" id="conversion_remission_amount" value="${conversionRemission}">
+                            <input type="hidden" name="conversion_formula" id="conversion_formula" value="${formula}">
+                            <input type="hidden" name="conversion_charges" id="conversion_charges" value="${conversionCharges}">
+                            <input class="form-check-input" type="checkbox" name="conversion_remission" id="conversion_remission">
+                            <label class="form-check-label">Allow Remission</label>
+                        </div>
+                    </div>
+                        `;
+                      targetElement.append(html);
+        }
+      });
+      // <div class="input-block">
+      //       <label class="form-label">Land value</label>
+      //       <input type="number" min="0" class="form-control" value="${Math.round(landValue*100)/100}" readOnly id="conversion_land_value" name="conversion_land_value">
+      //       <div class="error" id="conversion_land_value_error"></div>
+      //   </div>
+     
+    } */
+
+    function appendConversionInput(targetElement) {
     let propertyId = $("#selectedOldPropertyId").val()
     $.ajax({
       type: "GET",
@@ -1747,8 +1770,8 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
                         <div class="calculation-info"> &diams; <b>Land Rate &rarr;</b> ₹${landRate}<br>
                         <div class="calculation-info"> &diams; <b>Plot Area &rarr;</b> ${propertyArea} Sqm.<br>
                         <div class="calculation-info"> &diams; <b>Total coversion charges  </b>[${formula}] &rarr; <b>₹${charge}</b><br>
-                        &diams; <b>Applicable remission &rarr;</b> ₹${remission} [40% of converison charges]<br>
-                        &diams; <b>Applicable surcharge &rarr;</b> ₹${surcharge} [33.33% of converison charges]</div>
+                        &diams; <b>Applicable remission </b> [40% of converison charges]&rarr; <b>₹${remission}</b><br>
+                        &diams; <b>Applicable surcharge </b> [33.33% of converison charges]&rarr;<b>₹${surcharge}</b></div>
                         </div>
                         <div class="col-lg-12">
                         <div class="form-check">
@@ -1783,7 +1806,7 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
 
   }
 
-  function appendLUCInput(targetElement) {
+    function appendLUCInput(targetElement) {
     // let commercialLandValue = 0
     // get commercial land rate of property
     let propertyId = $("#selectedOldPropertyId").val();
@@ -1860,8 +1883,8 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
     })
   }
 
-  function appendSublettingInput(targetElement) {
-    let html = `<div class="col-lg-12 mt-2">
+    function appendSublettingInput(targetElement) {
+      let html = `<div class="col-lg-12 mt-2">
         <div class="form-check form-check-inline">
             <input class="form-check-input" type="checkbox" name="penal_subletting" id="penal_subletting" onchange="togglePenalSublettingInputs(this)">
             <label class="form-check-label">Add Penalty</label>
@@ -1872,11 +1895,11 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
           <input type="number" min="0" class="form-control" id="annual_subletting_income" name="annual_subletting_income">
           <div class="error" id="annual_subletting_income_error"></div>
       </div>`
-    targetElement.append(html);
-  }
+      targetElement.append(html);
+    }
 
-  function appendStandatdPenaltyInput(targetElement) {
-    let html = `<div class="input-block">
+    function appendStandatdPenaltyInput(targetElement) {
+      let html = `<div class="input-block">
             <label class="form-label">Land value</label>
             <input type="number" min="0" class="form-control" value="${landValue}" readOnly id="standard_penalty_land_value" name="standard_penalty_land_value">
             <div class="error" id="standard_penalty_land_value_error"></div>
@@ -1892,11 +1915,11 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
         </div>
     </div>
         `;
-    targetElement.append(html);
-  }
+      targetElement.append(html);
+    }
 
-  function appendManualInput() {
-    let html = `<div class="demand-item-container manual-demand-input">
+    function appendManualInput() {
+      let html = `<div class="demand-item-container manual-demand-input">
       <div class="col-lg-12 my-1">
         <div class="form-check">
           <h6>Others</h6>
@@ -1935,13 +1958,13 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
         </div>
         </div>
       </div>`;
-    $('#demand-subheads-container').append(html);
-    addInputPending++;
-    $('#btn-submit').attr('disabled', true);
-  }
+      $('#demand-subheads-container').append(html);
+      addInputPending++;
+      $('#btn-submit').attr('disabled', true);
+    }
 
-  function appendOthersInput(targetElement) {
-    let html = `<div class="input-block">
+    function appendOthersInput(targetElement) {
+      let html = `<div class="input-block">
             <label class="form-label">Demand Amount</label>
             <input type="number" min="0" class="form-control" id="others_deamnd_amount" step="0.01">
             <div class="error" id="others_deamnd_amount_error"></div>
@@ -1952,15 +1975,15 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
             <div class="error" id="others_description_error"></div>
         </div>
         `;
-    targetElement.append(html);
-  }
+      targetElement.append(html);
+    }
 
-  /* function toggleBuiltUpAreaInputs(checkbox) {
+    function toggleBuiltUpAreaInputs(checkbox) {
 
-    let element = $(checkbox);
-    let target = element.closest('.demand-item-container').find('#user-inputs');
-    if (element.is(':checked')) {
-      let html = `<div class="input-block builtUpAreaInputs">
+      let element = $(checkbox);
+      let target = element.closest('.demand-item-container').find('#user-inputs');
+      if (element.is(':checked')) {
+        let html = `<div class="input-block builtUpAreaInputs">
             <label class="form-label">Total built up area</label>
             <input type="number" min="0" class="form-control" id="luc_TBUA" name="luc_TBUA">
             <div class="error" id="luc_TBUA_error"></div>
@@ -1970,120 +1993,121 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
             <input type="number" min="0" class="form-control" id="luc_BUAC" name="luc_BUAC">
             <div class="error" id="luc_BUAC_error"></div>
         </div>`;
-      target.append(html);
-    } else {
-      target.find('.builtUpAreaInputs').remove();
+        target.append(html);
+      } else {
+        target.find('.builtUpAreaInputs').remove();
+      }
     }
-  } */
 
-  function togglePenalSublettingInputs(checkbox) {
+    function togglePenalSublettingInputs(checkbox) {
 
-    let element = $(checkbox);
-    let target = element.closest('.demand-item-container').find('#user-inputs');
-    if (element.is(':checked')) {
-      let html = `<div class="input-block panalSublettingInputs">
-            <label class="form-label">Date of Start of Subletting</label>
+      let element = $(checkbox);
+      let target = element.closest('.demand-item-container').find('#user-inputs');
+      if (element.is(':checked')) {
+        let html = `<div class="input-block panalSublettingInputs">
+            <label class="form-label">Date of start of subletting</label>
             <input type="date" class="form-control" id="subletting_start_date" name="subletting_start_date">
             <div class="error" id="subletting_start_date_error"></div>
         </div>
         <div class="input-block panalSublettingInputs">
-            <label class="form-label">Date of Confirmation of Subletting</label>
+            <label class="form-label">Date of confirmation of subletting</label>
             <input type="date" class="form-control" id="subletting_confirmation_date" name="subletting_confirmation_date">
             <div class="error" id="subletting_confirmation_date_error"></div>
         </div>`;
-      target.append(html);
-    } else {
-      target.find('.panalSublettingInputs').remove();
-    }
-  }
-
-  /** calculate demand amount */
-
-  $(document).on('click', '.btn-calculate', function(ev) {
-    let container = $(this).closest('.demand-item-container');
-    let checkbox = container.find('.select-head-check');
-    let calculatingFor = (checkbox.length > 0) ? checkbox.attr('name') : "DEM_MANUAL";
-    let inputElements = container.find('#user-inputs');
-    switch (calculatingFor) {
-      case "DEM_AF_P":
-        calculateAllotmentFee(inputElements);
-        break;
-      case "DEM_LF_GR":
-        calculateGroundRent(inputElements);
-        break;
-      case "DEM_UEI":
-        calculateUnearnedIncrease(inputElements);
-        break;
-      case "DEM_CONV_CHG":
-        calculateConversionCharges(inputElements);
-        break;
-      case "DEM_LUC_RC":
-        calculateLUCCharges(inputElements);
-        break;
-      case "DEM_SLET_CHG":
-        calculateSublettingCharges(inputElements);
-        break;
-      case "DEM_PENAL_STANDARD":
-        calculateStandardPenalty(inputElements);
-        break;
-        /* case "DEM_MANUAL":
-          calculateManualDemand(inputElements);
-          break; */
-      case "DEM_MANUAL":
-        calculateManualDemand(inputElements);
-        break;
-      case "DEM_OTHER":
-        calculateOtherDemand(inputElements);
-        break;
-      default:
-        break;
-    }
-    decrementPendingInput();
-  })
-
-  /* function calculateAllotmentFee(inputElements) {
-    inputElements.find('.error').empty();
-    let startDateString = inputElements.find('input[name="allotment_fee_date_from"]').val();
-    let endDateString = inputElements.find('input[name="allotment_fee_date_to"]').val();
-    let startDate = new Date(startDateString);
-    let endDate = new Date(endDateString);
-    let inputError = false;
-    if (isNaN(startDate)) {
-      inputError = true;
-      inputElements.find("#allotment_fee_date_from_error").text('Valid start date is required')
-    }
-    if (isNaN(endDate)) {
-      inputError = true;
-      inputElements.find("#allotment_fee_date_to_error").text('Valid end date is required')
-    }
-    if (endDate < startDate) {
-      inputError = true;
-      inputElements.find("#allotment_fee_date_to_error").text('End date should greater than or equal to start date')
-    }
-    if (!inputError) {
-      let maxAllowedDate = new Date(startDate.getFullYear() + 50, startDate.getMonth(), startDate.getDate());
-      if (endDate > maxAllowedDate) {
-        inputError = true;
-        inputElements.find("#allotment_fee_date_to_error").text("End date is more than 50 years past the start date")
+        target.append(html);
+      } else {
+        target.find('.panalSublettingInputs').remove();
       }
     }
-    if (!inputError) {
 
-      let diffDays = (endDate - startDate) / (86400 * 1000); //calculateDaysBetweenDates(startDate, endDate)
-      let {
-        years,
-        days
-      } = getYearDayDifference(startDate, endDate);
-      let noOfYears = years + (days < 15 ? 15 / 365 : days / 365);
-      let noOfYearsRoundOff = (Math.round(noOfYears * 100) / 100); //round off upto 2 decimal places
-      let demandAmount = Math.round(landValue * noOfYears) / 100;
-      console.log(demandAmount)
-      let result = `${noOfYearsRoundOff}% of ₹ ${customNumFormat(Math.round(landValue*100)/100)} &approx;  ₹ ${customNumFormat(demandAmount)} [N x 1% of land value, where N = Number of years (calculated for ${years} years ${days > 0 ? ' and '+ days+ ' days':''})]`;
-      displayDemandCalculationResult(inputElements, result);
-      fillDemandAmount(inputElements, demandAmount);
-    }
-  } */
-  function calculateAllotmentFee(inputElements) {
+    /** calculate demand amount */
+
+    $(document).on('click', '.btn-calculate', function(ev) {
+      let container = $(this).closest('.demand-item-container');
+      let checkbox = container.find('.select-head-check');
+      let calculatingFor = (checkbox.length > 0) ? checkbox.attr('name') : "DEM_MANUAL";
+      let inputElements = container.find('#user-inputs');
+      switch (calculatingFor) {
+        case "DEM_AF_P":
+          calculateAllotmentFee(inputElements);
+          break;
+        case "DEM_LF_GR":
+          calculateGroundRent(inputElements);
+        break;
+        case "DEM_UEI":
+          calculateUnearnedIncrease(inputElements);
+          break;
+        case "DEM_CONV_CHG":
+          calculateConversionCharges(inputElements);
+          break;
+        case "DEM_LUC_RC":
+          calculateLUCCharges(inputElements);
+          break;
+        case "DEM_SLET_CHG":
+          calculateSublettingCharges(inputElements);
+          break;
+        case "DEM_PENAL_STANDARD":
+          calculateStandardPenalty(inputElements);
+          break;
+          /* case "DEM_MANUAL":
+            calculateManualDemand(inputElements);
+            break; */
+        case "DEM_MANUAL":
+          calculateManualDemand(inputElements);
+          break;
+        case "DEM_OTHER":
+          calculateOtherDemand(inputElements);
+          break;
+        default:
+          break;
+      }
+      decrementPendingInput();
+    })
+
+    /*function calculateAllotmentFee(inputElements) {
+      inputElements.find('.error').empty();
+      let startDateString = inputElements.find('input[name="allotment_fee_date_from"]').val();
+      let endDateString = inputElements.find('input[name="allotment_fee_date_to"]').val();
+      let startDate = new Date(startDateString);
+      let endDate = new Date(endDateString);
+      let inputError = false;
+      if (isNaN(startDate)) {
+        inputError = true;
+        inputElements.find("#allotment_fee_date_from_error").text('Valid start date is required.')
+      }
+      if (isNaN(endDate)) {
+        inputError = true;
+        inputElements.find("#allotment_fee_date_to_error").text('Valid end date is required.')
+      }
+      if (endDate < startDate) {
+        inputError = true;
+        inputElements.find("#allotment_fee_date_to_error").text('End date should be greater than or equal to start date.')
+      }
+      if (!inputError) {
+        let maxAllowedDate = new Date(startDate.getFullYear() + 50, startDate.getMonth(), startDate.getDate());
+        if (endDate > maxAllowedDate) {
+          inputError = true;
+          inputElements.find("#allotment_fee_date_to_error").text("End date cannot be more than 50 years after the start date.")
+        }
+      }
+      if (!inputError) {
+
+        let diffDays = (endDate - startDate) / (86400 * 1000); //calculateDaysBetweenDates(startDate, endDate)
+        let {
+          years,
+          days
+        } = getYearDayDifference(startDate, endDate);
+        let noOfYears = years + (days < 15 ? 15 / 365 : days / 365);
+        let noOfYearsRoundOff = (Math.round(noOfYears * 100) / 100); //round off upto 2 decimal places
+        let demandAmount = Math.round(landValue * noOfYears) / 100;
+        console.log(demandAmount)
+        let result = `${noOfYearsRoundOff}% of ₹ ${customNumFormat(Math.round(landValue*100)/100)} &approx;  ₹ ${customNumFormat(demandAmount)} [N x 1% of land value, where N = Number of years (calculated for ${years} years ${days > 0 ? ' and '+ days+ ' days':''})]`;
+        displayDemandCalculationResult(inputElements, result);
+        fillDemandAmount(inputElements, demandAmount);
+      }
+    } */
+
+      function calculateAllotmentFee(inputElements) {
     let startDate = new Date($('#allocation_start_date').val());
     let endDate = new Date($('#allocation_end_date').val());
     let result;
@@ -2109,6 +2133,7 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
 
   }
   function calculateGroundRent(inputElements) {
+    debugger;
     let startDate = new Date($('#allocation_start_date').val());
     let endDate = new Date($('#allocation_end_date').val());
     let result;
@@ -2123,7 +2148,7 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
       if (allocationType == 1) {
         let gr = (percent/100)*(landArea * allocationLandRate);
         demandAmount = Math.round(gr * 100) / 100;
-        result = `${percent}% of Ground Rent(Land Rate X Are) = &#8377;${customNumFormat(demandAmount)}[Land Rate(${customNumFormat(allocationLandRate)}) X  Area(${customNumFormat(Math.round(landArea*100)/100)})]`
+        result = `${percent}% of Allocation Fee(Land Rate X Are) = &#8377;${customNumFormat(demandAmount)}[Land Rate(${customNumFormat(allocationLandRate)}) X  Area(${customNumFormat(Math.round(landArea*100)/100)})]`
       }
       if (allocationType == 0) {
         let diffDays = (endDate - startDate) / (86400 * 1000);
@@ -2137,333 +2162,330 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
 
   }
 
-  function calculateUnearnedIncrease(inputElements) {
-    inputElements.find('.error').empty();
-    let landValue = 0;
-    let considerationValue = 0;
-    let isTransferComplete = $('input[name="is_transfer_done"]:checked').val() == 1
-    let landValueInput = inputElements.find('#unearned_increase_land_value');
-    let considerationValueInput = inputElements.find('#unearned_increase_consideration_value');
-    if (landValueInput.length > 0) {
-      landValue = parseFloat(landValueInput.val()) || 0;
-    }
-    if (considerationValueInput.length > 0) {
-      considerationValue = parseFloat(considerationValueInput.val()) || 0;
-    }
-    if (isTransferComplete) {
-      if (considerationValue == 0) {
-        $('#unearned_increase_consideration_value_error').text('Consideration value is required');
+    function calculateUnearnedIncrease(inputElements) {
+      inputElements.find('.error').empty();
+      let landValue = 0;
+      let considerationValue = 0;
+      let isTransferComplete = $('input[name="is_transfer_done"]:checked').val() == 1
+      let landValueInput = inputElements.find('#unearned_increase_land_value');
+      let considerationValueInput = inputElements.find('#unearned_increase_consideration_value');
+      if (landValueInput.length > 0) {
+        landValue = parseFloat(landValueInput.val()) || 0;
       }
-      let TransferDateInput = inputElements.find('input[type="date"]');
-      if (TransferDateInput) {
-        let transferDate = new Date(TransferDateInput.val());
-        if (isNaN(transferDate)) {
-          $('#unearned_increase_transfer_date_error').text("Transfer date is required.")
+      if (considerationValueInput.length > 0) {
+        considerationValue = parseFloat(considerationValueInput.val()) || 0;
+      }
+      if (isTransferComplete) {
+        if (considerationValue == 0) {
+          $('#unearned_increase_consideration_value_error').text('Consideration value is required.');
+        }
+        let TransferDateInput = inputElements.find('input[type="date"]');
+        if (TransferDateInput) {
+          let transferDate = new Date(TransferDateInput.val());
+          if (isNaN(transferDate)) {
+            $('#unearned_increase_transfer_date_error').text("Transfer date is required.")
+          }
         }
       }
+      if (landValue == 0) {
+        $('#unearned_increase_land_value_error').text("Land value is not available cannot proceed.")
+      }
+      let isError = landValue == 0 || (isTransferComplete && considerationValue == 0)
+      if (!isError) {
+        let unerarnedIncrease = Math.round((Math.max(landValue, considerationValue) * 10 / 100) * 100) / 100; //callculate and round off to 2 decimal points
+        let result = `Unearned Increase (10 % of ${landValue >= considerationValue ? 'land value':'consideration value'})  = ₹ ${customNumFormat(unerarnedIncrease)} [10% of land value or consideration value whichever is greater.]`;
+        displayDemandCalculationResult(inputElements, result)
+        fillDemandAmount(inputElements, unerarnedIncrease);
+      }
     }
-    if (landValue == 0) {
-      $('#unearned_increase_land_value_error').text("Land value is not available can not proceed.")
-    }
-    let isError = landValue == 0 || (isTransferComplete && considerationValue == 0)
-    if (!isError) {
-      let unerarnedIncrease = Math.round((Math.max(landValue, considerationValue) * 10 / 100) * 100) / 100; //callculate and round off to 2 decimal points
-      let result = `Unearned Increase (10 % of ${landValue >= considerationValue ? 'land value':'consideration value'})  = ₹ ${customNumFormat(unerarnedIncrease)} [10% of land value ${considerationValue > 0? 'or consideration value whichever is greater.':''} ]`;
+
+    /* function calculateConversionCharges(inputElements) {
+      /* let landValueInput = inputElements.find('#conversion_land_value');*
+      let allowRemssionCheck = inputElements.find('#conversion_remission');
+
+
+      /*if (landValueInput.length > 0) {
+        landValue = landValueInput.val();
+      } /
+      let allowRemission = allowRemssionCheck && allowRemssionCheck.is(':checked');
+      conversionCharges = conversionCharges ?? $('#conversion_charges').val();
+      conversionRemission = conversionRemission ?? $('#conversion_remission_amount').val();
+      //let conversionCharges = landValue * (20 / 100); //callculate and round off to 2 decimal points
+      let netConversion = allowRemission ? conversionCharges - conversionRemission : conversionCharges;
+      netConversion = Math.round(netConversion * 100) / 100;
+      let result = `Payable conversion charges ${allowRemission ? 'after remission' : ''} = ₹ ${customNumFormat(netConversion)}`
       displayDemandCalculationResult(inputElements, result)
-      fillDemandAmount(inputElements, unerarnedIncrease);
-    }
-  }
-
-  function calculateConversionCharges(inputElements) {
-    // debugger;
-    /* let landValueInput = inputElements.find('#conversion_land_value');*/
-    let allowRemssionCheck = inputElements.find('#conversion_remission');
-    let allowSurchargeCheck = inputElements.find('#conversion_surcharge');
-
-
-    /*if (landValueInput.length > 0) {
-      landValue = landValueInput.val();
+      fillDemandAmount(inputElements, netConversion);
     } */
-    let allowRemission = allowRemssionCheck && allowRemssionCheck.is(':checked');
-    let allowSurcharge = allowSurchargeCheck && allowSurchargeCheck.is(':checked');
-    conversionCharges = conversionCharges ?? $('#conversion_charges').val();
-    conversionRemission = conversionRemission ?? $('#conversion_remission_amount').val();
-    conversionSurcharge = conversionSurcharge ?? $('#conversion_surcharge_amount').val();
-    //let conversionCharges = landValue * (20 / 100); //callculate and round off to 2 decimal points
-    // let netConversion = allowRemission ? conversionCharges - conversionRemission : conversionCharges;
-    let netConversion = +conversionCharges;
-    if(allowRemission){
-      netConversion -= +conversionRemission;
-    }
-    if(allowSurcharge){
-      netConversion += +conversionSurcharge;
-    }
-    
-    netConversion = Math.round(netConversion * 100) / 100;
-    let result = `Payable conversion charges ${allowRemission ? 'after remission' : ''}${allowSurcharge ? 'after surcharge' : ''} = ₹ ${customNumFormat(netConversion)} (rounded off)`
-    displayDemandCalculationResult(inputElements, result)
-    fillDemandAmount(inputElements, netConversion);
-  }
 
-  /* function calculateLUCCharges(inputElements) {
-    inputElements.find('.error').empty();
-    let landValue = inputElements.find('#luc_land_value').val();
-    let chargesApplicabe = true;
-    let mixedUse = inputElements.find('#partial_change').is(':checked');
-    let inputError = false;
-    let tbuac;
-    let buac;
-    if (mixedUse) {
-      tbuac = parseFloat($('#luc_TBUA').val()) || 0;
-      buac = parseFloat($('#luc_BUAC').val()) || 0;
-      if (tbuac > landArea) {
-        $('#luc_TBUA_error').text(`Total build up area cannot be more than land size ${landArea} Sq.m.`);
-        inputError = true;
-      }
-      if (tbuac != "" && tbuac > 0) {
-        //let buac = parseFloat($('#luc_BUAC').val()) || 0;
-      } else {
-        $('#luc_TBUA_error').text('Total built up area is required');
-        inputError = true;
+      function calculateConversionCharges(inputElements) {
+        // debugger;
+        /* let landValueInput = inputElements.find('#conversion_land_value');*/
+        let allowRemssionCheck = inputElements.find('#conversion_remission');
+        let allowSurchargeCheck = inputElements.find('#conversion_surcharge');
+
+
+        /*if (landValueInput.length > 0) {
+          landValue = landValueInput.val();
+        } */
+        let allowRemission = allowRemssionCheck && allowRemssionCheck.is(':checked');
+        let allowSurcharge = allowSurchargeCheck && allowSurchargeCheck.is(':checked');
+        conversionCharges = conversionCharges ?? $('#conversion_charges').val();
+        conversionRemission = conversionRemission ?? $('#conversion_remission_amount').val();
+        conversionSurcharge = conversionSurcharge ?? $('#conversion_surcharge_amount').val();
+        //let conversionCharges = landValue * (20 / 100); //callculate and round off to 2 decimal points
+        // let netConversion = allowRemission ? conversionCharges - conversionRemission : conversionCharges;
+        let netConversion = +conversionCharges;
+        if(allowRemission){
+          netConversion -= +conversionRemission;
+        }
+        if(allowSurcharge){
+          netConversion += +conversionSurcharge;
+        }
+        
+        netConversion = Math.round(netConversion * 100) / 100;
+        let result = `Payable conversion charges ${allowRemission ? 'after remission' : ''}${allowSurcharge ? 'after surcharge' : ''} = ₹ ${customNumFormat(netConversion)} (rounded off)`
+        displayDemandCalculationResult(inputElements, result)
+        fillDemandAmount(inputElements, netConversion);
       }
 
-      if (buac && buac > 0) {
-        if (buac > tbuac) {
-          $('#luc_BUAC_error').text('Commercial area cannot be more than total built up area');
+    function calculateLUCCharges(inputElements) {
+      inputElements.find('.error').empty();
+      let landValue = inputElements.find('#luc_land_value').val();
+      let chargesApplicabe = true;
+      let mixedUse = inputElements.find('#partial_change').is(':checked');
+      let inputError = false;
+      let tbuac;
+      let buac;
+      if (mixedUse) {
+        tbuac = parseFloat($('#luc_TBUA').val()) || 0;
+        buac = parseFloat($('#luc_BUAC').val()) || 0;
+        if (tbuac > landArea) {
+          $('#luc_TBUA_error').text(`Total built up area cannot be more than land size ${landArea} Sq.m.`);
+          inputError = true;
+        }
+        if (tbuac != "" && tbuac > 0) {
+          //let buac = parseFloat($('#luc_BUAC').val()) || 0;
+        } else {
+          $('#luc_TBUA_error').text('Total built up area is required.');
           inputError = true;
         }
 
-      } else {
-        $('#luc_BUAC_error').text('Area to be used as commercial is required');
-        inputError = true;
-      }
+        if (buac && buac > 0) {
+          if (buac > tbuac) {
+            $('#luc_BUAC_error').text('Commercial area cannot be more than total built up area.');
+            inputError = true;
+          }
 
-    }
-    if (!inputError) {
-      if (mixedUse) {
-        let chargableLimit = 20;
-        let chargableArea = 20 * tbuac / 100;
-        if (buac <= chargableArea) {
-          chargesApplicabe = false;
+        } else {
+          $('#luc_BUAC_error').text('Area to be used as commercial is required.');
+          inputError = true;
         }
+
       }
-      let lucc = chargesApplicabe ? landValue * 10 / 100 : 0;
-      let roundLucc = (Math.round(lucc * 100) / 100).toFixed(2);
-      let result = `Land Use Change Charges  = ₹ ${customNumFormat(lucc)} [${lucc > 0 ? '10% of land value( &#8377; '+ customNumFormat((Math.round(landValue *100)/100).toFixed(2))+')':'0 as commercial area is less than 20% of total built up area'} ${chargesApplicabe && mixedUse ? ', commercial area is more than 20% of total built up area':''}]`;
-      displayDemandCalculationResult(inputElements, result)
-      fillDemandAmount(inputElements, lucc);
+      if (!inputError) {
+        if (mixedUse) {
+          let chargableLimit = 20;
+          let chargableArea = 20 * tbuac / 100;
+          if (buac <= chargableArea) {
+            chargesApplicabe = false;
+          }
+        }
+        let lucc = chargesApplicabe ? landValue * 10 / 100 : 0;
+        let roundLucc = (Math.round(lucc * 100) / 100).toFixed(2);
+        let result = `Land Use Change Charges  = ₹ ${customNumFormat(lucc)} [${lucc > 0 ? '10% of land value( &#8377; '+ customNumFormat((Math.round(landValue *100)/100).toFixed(2))+')':'0 as commercial area is less than 20% of total built up area'} ${chargesApplicabe && mixedUse ? ', commercial area is more than 20% of total built up area':''}]`;
+        displayDemandCalculationResult(inputElements, result)
+        fillDemandAmount(inputElements, lucc);
+      }
+
     }
 
-  } */
-
-  function calculateLUCCharges(inputElements) {
-    inputElements.find('.error').empty();
-
-    let landRate = $('input[name="luc_land_rate"]').val();
-    let inputError = false;
-    let lucArea = $('input[name="luc_BUAC"]').val();
-    let lucLTV = $('input[name="luc_ltv"]').val();
-    if(!lucLTV){
-      inputError = true;
-      $('input[name="luc_ltv"]').next('.error').text('Last transaction value is required');
-    }
-    if (!inputError) {
-      let lucc = 0.5*((landRate*lucArea) - parseInt(lucLTV));
-      lucc = Math.max(lucc, 0);
-      let roundLucc = (Math.round(lucc * 100) / 100).toFixed(2);
-      let result = lucc > 0 ? `Land Use Change Charges [1/2 X(Applicable land rate X Area of sought LUC - Last trasaction value)] = ₹ ${customNumFormat(roundLucc)} (rounded off)`:'Land Use Change Charges = 0'; //[1/2 X(${landRate} X ${lucArea} - ${lucLTV})]
-      displayDemandCalculationResult(inputElements, result)
-      fillDemandAmount(inputElements, lucc);
-    }
-
-  }
-
-  function calculateSublettingCharges(inputElements) {
-    inputElements.find('.error').empty();
-    let annualIncome = parseFloat($('#annual_subletting_income').val()) || 0;
-    let penalty = 0;
-    let addPenalty = $('#penal_subletting').is(":checked");
-    let inputError = false;
-    let penaltyYears = 0;
-    if (!(annualIncome > 0)) {
-      inputError = true
-      $('#annual_subletting_income_error').text('Annual income from subletting is required')
-    }
-    let sublettingCharges = 0.1 * annualIncome; //10% of annual income
-    if (addPenalty) {
-      sublettingStartDate = new Date($('#subletting_start_date').val());
-      sublettingConfirmationDate = new Date($('#subletting_confirmation_date').val());
-      if (isNaN(sublettingStartDate)) {
-        inputError = true;
-        inputElements.find("#subletting_start_date_error").text('Valid start date is required')
+    function calculateSublettingCharges(inputElements) {
+      inputElements.find('.error').empty();
+      let annualIncome = parseFloat($('#annual_subletting_income').val()) || 0;
+      let penalty = 0;
+      let addPenalty = $('#penal_subletting').is(":checked");
+      let inputError = false;
+      let penaltyYears = 0;
+      if (!(annualIncome > 0)) {
+        inputError = true
+        $('#annual_subletting_income_error').text('Annual income from subletting is required')
       }
-      if (isNaN(sublettingConfirmationDate)) {
-        inputError = true;
-        inputElements.find("#subletting_confirmation_date_error").text('Valid confirmation date is required')
-      }
-      if (sublettingStartDate > sublettingConfirmationDate) {
-        inputError = true;
-        inputElements.find("#subletting_confirmation_date_error").text('Confirmation date can not be less than start date')
-      }
-      if (inputError) {
+      let sublettingCharges = 0.1 * annualIncome; //10% of annual income
+      if (addPenalty) {
+        sublettingStartDate = new Date($('#subletting_start_date').val());
+        sublettingConfirmationDate = new Date($('#subletting_confirmation_date').val());
+        if (isNaN(sublettingStartDate)) {
+          inputError = true;
+          inputElements.find("#subletting_start_date_error").text('Valid start date is required.')
+        }
+        if (isNaN(sublettingConfirmationDate)) {
+          inputError = true;
+          inputElements.find("#subletting_confirmation_date_error").text('Valid confirmation date is required.')
+        }
+        if (sublettingStartDate > sublettingConfirmationDate) {
+          inputError = true;
+          inputElements.find("#subletting_confirmation_date_error").text('Confirmation date cannot be less than start date.')
+        }
+        if (inputError) {
+          return false;
+        }
+        let {
+          years,
+        } = getYearDayDifference(sublettingStartDate, sublettingConfirmationDate);
+        penaltyYears = years;
+        penalty = 0.25 * years * annualIncome; //25% of annual income * years
+      } else if (inputError) {
         return false;
       }
-      let {
-        years,
-      } = getYearDayDifference(sublettingStartDate, sublettingConfirmationDate);
-      penaltyYears = years;
-      penalty = 0.25 * years * annualIncome; //25% of annual income * years
-    } else if (inputError) {
-      return false;
-    }
-    let totalSublettingCharges = sublettingCharges + penalty;
-    totalSublettingCharges = (Math.round(totalSublettingCharges * 100) / 100).toFixed(2);
-    let result = `Total Subletting Charges  = ₹ ${customNumFormat(totalSublettingCharges)} (10% of annual income ${penalty> 0 ? '+ penalty for '+penaltyYears+' years at 25% of annual income per year':''})`;
-    displayDemandCalculationResult(inputElements, result)
-    fillDemandAmount(inputElements, totalSublettingCharges);
-  }
-
-  function calculateStandardPenalty(inputElements) {
-    inputElements.find('.error').empty();
-    let landValue = 0;
-    let inputError = false;
-    let landInput = inputElements.find('#standard_penalty_land_value');
-    if (landInput.length > 0) {
-      landValue = parseFloat(landInput.val()) || 0;
-      if (landValue <= 0) {
-        $('#standard_penalty_land_value_error').text('Valid land value is required')
-        inputError = true;
-      }
-    } else {
-      inputError = true;
-    }
-    let descriptionInput = inputElements.find('#standard_penalty_description');
-    let descriptionText = descriptionInput.val() || '';
-    if (descriptionText.length < 50) {
-      $('#standard_penalty_description_error').text("Add description of penalty in min. 50 characters");
-      inputError = true;
-    }
-    if (!inputError) {
-      let standardPenalty = (Math.round(landValue) / 100).toFixed(2);
-      let result = `Calculated standatd penalty = &#8377;${customNumFormat(standardPenalty)}[1% of land value (&#8377;${customNumFormat((Math.round(landValue*100)/100).toFixed(2))})]`;
+      let totalSublettingCharges = sublettingCharges + penalty;
+      totalSublettingCharges = (Math.round(totalSublettingCharges * 100) / 100).toFixed(2);
+      let result = `Total Subletting Charges  = ₹ ${customNumFormat(totalSublettingCharges)} (10% of annual income ${penalty> 0 ? '+ penalty for '+penaltyYears+' years at 25% of annual income per year':''})`;
       displayDemandCalculationResult(inputElements, result)
-      fillDemandAmount(inputElements, standardPenalty);
+      fillDemandAmount(inputElements, totalSublettingCharges);
     }
-  }
 
-  function calculateOtherDemand(inputElements) {
-    inputElements.find('.error').empty();
-    let inputError = false;
-    let amountInput = inputElements.find('#others_deamnd_amount');
-    let amount = 0;
-    if (amountInput.length > 0) {
-      amount = parseFloat(amountInput.val()) || 0;
-      if (amount <= 0) {
-        $('#others_deamnd_amount_error').text('Amount is required')
+    function calculateStandardPenalty(inputElements) {
+      inputElements.find('.error').empty();
+      let landValue = 0;
+      let inputError = false;
+      let landInput = inputElements.find('#standard_penalty_land_value');
+      if (landInput.length > 0) {
+        landValue = parseFloat(landInput.val()) || 0;
+        if (landValue <= 0) {
+          $('#standard_penalty_land_value_error').text('Valid land value is required.')
+          inputError = true;
+        }
+      } else {
         inputError = true;
       }
-    } else {
-      inputError = true;
-    }
-    let descriptionInput = inputElements.find('#others_description');
-    let descriptionText = descriptionInput.val() || '';
-    if (descriptionText.length < 50) {
-      $('#others_description_error').text("Add description of penalty in min. 50 characters");
-      inputError = true;
-    }
-    if (!inputError) {
-      let result = `Demand head for amount &#8377;${customNumFormat((Math.round(amount*100)/100).toFixed(2))} added successfully`;
-      displayDemandCalculationResult(inputElements, result)
-      fillDemandAmount(inputElements, amount);
-    }
-  }
-
-  function calculateManualDemand(inputElements) {
-
-    inputElements.find('.error').empty();
-    let inputError = false;
-    let amountInput = inputElements.find('#manual_amount');
-    let amount = 0;
-    if (amountInput.length > 0) {
-      amount = parseFloat(amountInput.val()) || 0;
-      if (amount <= 0) {
-        inputElements.find('#manual_amount_error').text('Amount is required')
+      let descriptionInput = inputElements.find('#standard_penalty_description');
+      let descriptionText = descriptionInput.val() || '';
+      if (descriptionText.length < 50) {
+        $('#standard_penalty_description_error').text("Add description of penalty in min. 50 characters.");
         inputError = true;
       }
-    } else {
-      inputError = true;
-    }
-
-    let titleInput = inputElements.find('#manual_title');
-    if (titleInput.length > 0) {
-      if (titleInput.val() == "") {
-        inputElements.find('#manual_title_error').text('Title is required')
-        inputError = true;
-      }
-    } else {
-      inputError = true;
-    }
-    let descriptionInput = inputElements.find('#manual_description');
-    let descriptionText = descriptionInput.val() || '';
-    if (descriptionText.length < 50) {
-      inputElements.find('#manual_description_error').text("Add description of demand in min. 50 characters");
-      inputError = true;
-    }
-    let manualDateFromInput = inputElements.find('#manual_date_from');
-    let manualDateToInput = inputElements.find('#manual_date_to');
-
-    let manualDateFromVal = manualDateFromInput.val();
-    let manualDateToVal = manualDateToInput.val();
-
-    // Only validate if at least one date is filled
-    if (manualDateFromVal || manualDateToVal) {
-      let manualDateFrom = new Date(manualDateFromVal);
-      let manualDateTo = new Date(manualDateToVal);
-
-      // If "from" date is filled but invalid
-      if (manualDateFromVal && isNaN(manualDateFrom.getTime())) {
-        manualDateFromInput.siblings('.error').text('Valid date from is required');
-        inputError = true;
-      }
-
-      // If "to" date is filled but invalid
-      if (manualDateToVal && isNaN(manualDateTo.getTime())) {
-        manualDateToInput.siblings('.error').text('Valid date to is required');
-        inputError = true;
-      }
-
-      // If both are valid and "to" < "from"
-      if (
-        !isNaN(manualDateFrom.getTime()) &&
-        !isNaN(manualDateTo.getTime()) &&
-        manualDateTo < manualDateFrom
-      ) {
-        manualDateFromInput.siblings('.error').text('Date To cannot be earlier than Date From');
-        inputError = true;
+      if (!inputError) {
+        let standardPenalty = (Math.round(landValue) / 100).toFixed(2);
+        let result = `Calculated standatd penalty = &#8377;${customNumFormat(standardPenalty)}[1% of land value (&#8377;${customNumFormat((Math.round(landValue*100)/100).toFixed(2))})]`;
+        displayDemandCalculationResult(inputElements, result)
+        fillDemandAmount(inputElements, standardPenalty);
       }
     }
 
-    if (!inputError) {
-      let result = `Demand head for amount &#8377;${customNumFormat((Math.round(amount*100)/100).toFixed(2))} added successfully`;
-      displayDemandCalculationResult(inputElements, result)
-      fillDemandAmount(inputElements, amount);
+    function calculateOtherDemand(inputElements) {
+      inputElements.find('.error').empty();
+      let inputError = false;
+      let amountInput = inputElements.find('#others_deamnd_amount');
+      let amount = 0;
+      if (amountInput.length > 0) {
+        amount = parseFloat(amountInput.val()) || 0;
+        if (amount <= 0) {
+          $('#others_deamnd_amount_error').text('Amount is required')
+          inputError = true;
+        }
+      } else {
+        inputError = true;
+      }
+      let descriptionInput = inputElements.find('#others_description');
+      let descriptionText = descriptionInput.val() || '';
+      if (descriptionText.length < 50) {
+        $('#others_description_error').text("Add description of penalty in min. 50 characters.");
+        inputError = true;
+      }
+      if (!inputError) {
+        let result = `Demand head for amount &#8377;${customNumFormat((Math.round(amount*100)/100).toFixed(2))} added successfully.`;
+        displayDemandCalculationResult(inputElements, result)
+        fillDemandAmount(inputElements, amount);
+      }
     }
-  }
 
-  function displayDemandCalculationResult(target, result) {
-    target.parent().find('.calculation_details').remove();
-    target.parent().append(`<span class="calculation_details mt-2">${result}</span>`)
-    target.parent().find('.btn-calculate').hide();
-  }
+    function calculateManualDemand(inputElements) {
 
-  function fillDemandAmount(target, amount) {
-    let inputElement = target.parent().find('#include-demand-amount');
-    if (inputElement.length > 0)
-      inputElement.val(amount);
-    calculateTotalAmount();
-  }
+      inputElements.find('.error').empty();
+      let inputError = false;
+      let amountInput = inputElements.find('#manual_amount');
+      let amount = 0;
+      if (amountInput.length > 0) {
+        amount = parseFloat(amountInput.val()) || 0;
+        if (amount <= 0) {
+          inputElements.find('#manual_amount_error').text('Amount is required')
+          inputError = true;
+        }
+      } else {
+        inputError = true;
+      }
 
-  function getLandValueAtDate(propertyId, date) {
+      let titleInput = inputElements.find('#manual_title');
+      if (titleInput.length > 0) {
+        if (titleInput.val() == "") {
+          inputElements.find('#manual_title_error').text('Title is required')
+          inputError = true;
+        }
+      } else {
+        inputError = true;
+      }
+      let descriptionInput = inputElements.find('#manual_description');
+      let descriptionText = descriptionInput.val() || '';
+      if (descriptionText.length < 50) {
+        inputElements.find('#manual_description_error').text("Add description of demand in min. 50 characters.");
+        inputError = true;
+      }
+      let manualDateFromInput = inputElements.find('#manual_date_from');
+      let manualDateToInput = inputElements.find('#manual_date_to');
+
+      let manualDateFromVal = manualDateFromInput.val();
+      let manualDateToVal = manualDateToInput.val();
+
+      // Only validate if at least one date is filled
+      if (manualDateFromVal || manualDateToVal) {
+        let manualDateFrom = new Date(manualDateFromVal);
+        let manualDateTo = new Date(manualDateToVal);
+
+        // If "from" date is filled but invalid
+        if (manualDateFromVal && isNaN(manualDateFrom.getTime())) {
+          manualDateFromInput.siblings('.error').text('Valid date from is required.');
+          inputError = true;
+        }
+
+        // If "to" date is filled but invalid
+        if (manualDateToVal && isNaN(manualDateTo.getTime())) {
+          manualDateToInput.siblings('.error').text('Valid date to is required.');
+          inputError = true;
+        }
+
+        // If both are valid and "to" < "from"
+        if (
+          !isNaN(manualDateFrom.getTime()) &&
+          !isNaN(manualDateTo.getTime()) &&
+          manualDateTo < manualDateFrom
+        ) {
+          manualDateFromInput.siblings('.error').text('Date to cannot be earlier than Date from.');
+          inputError = true;
+        }
+      }
+
+      if (!inputError) {
+        let result = `Demand head for amount &#8377;${customNumFormat((Math.round(amount*100)/100).toFixed(2))} added successfully.`;
+        displayDemandCalculationResult(inputElements, result)
+        fillDemandAmount(inputElements, amount);
+      }
+    }
+
+    function displayDemandCalculationResult(target, result) {
+      target.parent().find('.calculation_details').remove();
+      target.parent().append(`<span class="calculation_details mt-2">${result}</span>`)
+      target.parent().find('.btn-calculate').hide();
+    }
+
+    function fillDemandAmount(target, amount) {
+      let inputElement = target.parent().find('#include-demand-amount');
+      if (inputElement.length > 0)
+        inputElement.val(amount);
+      calculateTotalAmount();
+    }
+
+    function getLandValueAtDate(propertyId, date) {
     if (landValue != "" && date != "") {
       /** locate inputs div */
       let findCheckBox = $('input[type="checkbox"][name="DEM_UEI"]');
@@ -2532,7 +2554,7 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
     }
   }
 
-  function fetchLandValue(date, PropertyId) {
+    function fetchLandValue(date, PropertyId) {
     return $.ajax({
       type: 'get',
       url: "{{route('getLandValueAtDate')}}",
@@ -2563,177 +2585,51 @@ $isPending = isset($demand) && getServiceCodeById($demand->status) == "DEM_PENDI
   }
 
 
-  //confirm approval of demand
+    //confirm approval of demand
 
-  let confirmationCallback = null;
+    let confirmationCallback = null;
 
 
-  $('.confirm-approve').click(() => {
-    // If the callback is defined, call it
-    if (confirmationCallback) {
-      confirmationCallback();
-      $('#approveModal').modal('hide'); // Close the modal after confirming
-    }
-  });
-
-  function confirmApprove(url) {
-    confirmationCallback = null;
-
-    document.getElementById('customConfirmationMessage').textContent = 'Are You Surely want to Approve the demand, this will notify the property holder via Email, SMS, and WhatsApp.';
-    confirmationCallback = function() {
-            if (spinnerOverlay) {
+    $('.confirm-approve').click(() => {
+      // If the callback is defined, call it
+      if (confirmationCallback) {
+        confirmationCallback();
+        if (spinnerOverlay) {
                 spinnerOverlay.style.display = "flex";
             }
-             window.location.href = url;
-    };
-    $('#approveModal').modal('show');
-  }
-
-  function removerOthers(element) {
-    let container = $(element).closest('.demand-item-container');
-    let inputValueElement = container.find('#include-demand-amount');
-    let inputValue = inputValueElement.val();
-    if (!inputValue) {
-      decrementPendingInput();
-    }
-    $(container).remove();
-    calculateTotalAmount();
-  }
-
-  function decrementPendingInput() {
-    addInputPending--;
-    if (addInputPending <= 0) {
-      $('#btn-submit').removeAttr('disabled');
-    }
-  }
-
-  function downloadPDF() {
-    const docDefinition = {
-      content: [{
-          text: [{
-              text: 'मांग पत्र / ',
-              font: 'NotoSansDevanagari'
-            },
-            {
-              text: 'Demand Letter',
-              font: 'Roboto'
-            }
-          ],
-          style: 'header'
-        },
-
-
-        {
-          text: [{
-            text: 'प्लॉट सं. 123, दिल्ली/नई दिल्ली के संबंध में...',
-            font: 'NotoSansDevanagari'
-          }],
-          margin: [0, 10]
-        },
-
-        {
-          text: [{
-            text: 'Only Demand / Terms for temporary regularisation...',
-            font: 'Roboto'
-          }],
-          margin: [0, 5]
-        },
-
-        {
-          table: {
-            widths: ['*', '*'],
-            body: [
-              [{
-                  text: 'Subhead',
-                  font: 'Roboto',
-                  bold: true
-                },
-                {
-                  text: 'Amount',
-                  font: 'Roboto',
-                  bold: true
-                }
-              ],
-              [{
-                  text: 'Ground Rent',
-                  font: 'Roboto'
-                },
-                {
-                  text: '₹10,000',
-                  font: 'Roboto'
-                }
-              ],
-              [{
-                  text: 'Penalty',
-                  font: 'Roboto'
-                },
-                {
-                  text: '₹5,000',
-                  font: 'Roboto'
-                }
-              ]
-            ]
-          },
-          layout: 'lightHorizontalLines',
-          margin: [0, 20]
-        },
-
-        {
-          text: [{
-              text: 'भवदीय / ',
-              font: 'NotoSansDevanagari'
-            },
-            {
-              text: 'Yours faithfully',
-              font: 'Roboto'
-            }
-          ],
-          style: 'footer'
-        }
-      ],
-      styles: {
-        header: {
-          fontSize: 16,
-          bold: true,
-          color: 'black',
-          fillColor: '#1fa1a2', // background-color
-          margin: [0, 20, 0, 10], // [left, top, right, bottom]
-          alignment: 'center'
-        }, // explicitly English
-        /* .part-title {
-            background-color: #1fa1a2;
-            color: white;
-            font-size: 16px;
-            padding: 5px;
-            font-weight: bold;
-            margin: 20px 0 10px;
-            text-align: center;
-        } */
-        footer: {
-          fontSize: 12,
-          alignment: 'right'
-        }
-      },
-      defaultStyle: {
-        font: 'NotoSansDevanagari' // fallback
+        $('#approveModal').modal('hide'); // Close the modal after confirming
       }
-    };
+    });
 
-    pdfMake.fonts = {
-      Roboto: {
-        normal: 'Roboto-Regular.ttf',
-        bold: 'Roboto-Regular.ttf', // fallback
-        italics: 'Roboto-Regular.ttf', // fallback
-        bolditalics: 'Roboto-Regular.ttf' // fallback
-      },
-      NotoSansDevanagari: {
-        normal: 'NotoSansDevanagari-Regular.ttf',
-        bold: 'NotoSansDevanagari-Regular.ttf' // fallback
+    function confirmApprove(url) {
+      confirmationCallback = null;
+
+      document.getElementById('customConfirmationMessage').textContent = 'Are You Surely want to Approve the demand, this will notify the property holder via Email, SMS, and WhatsApp.';
+      confirmationCallback = function() {
+        window.location.href = url;
+      };
+      $('#approveModal').modal('show');
+    }
+
+    function removerOthers(element)
+    {
+      let container =  $(element).closest('.demand-item-container');
+      let inputValueElement = container.find('#include-demand-amount');
+      let inputValue = inputValueElement.val();
+      if(!inputValue)
+      {
+        decrementPendingInput();
       }
-    };
+      $(container).remove(); 
+      calculateTotalAmount();
+    }
 
-    // Generate PDF
-    pdfMake.createPdf(docDefinition).download('demand_letter.pdf');
-  }
-</script>
-@endsection
+    function decrementPendingInput()
+    {
+      addInputPending--;
+      if (addInputPending <= 0) {
+        $('#btn-submit').removeAttr('disabled');
+      }
+    }
+  </script>
+  @endsection

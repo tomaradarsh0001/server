@@ -11,39 +11,34 @@ class Item extends Model
     protected $guarded = [];
 
 
-    public static function itemNameById($id)
-    {
+    public static function itemNameById($id){
 
         $data =  Self::select('item_name')->where('id', $id)->first();
-        if ($data) {
+        if($data){
             return $data['item_name'];
         } else {
             return null;
         }
     }
 
-
+    
     //Function to get the item id using item_code
-    public static function getItemIdUsingItemCode($item_code, $group_id)
-    {
+    public static function getItemIdUsingItemCode($item_code, $group_id){
         $item_detail = Item::where('item_code', $item_code)->where('group_id', $group_id)->where('is_active', 1)->first();
         return !empty($item_detail) ? $item_detail->id : "";
     }
 
-    public static function getItemIdByCode($item_code)
-    {
+    public static function getItemIdByCode($item_code){
         $item_detail = Item::where('item_code', $item_code)->where('is_active', 1)->first();
         return !empty($item_detail) ? $item_detail->id : "";
     }
 
-    public static function getItemNameByItemCode($item_code)
-    {
+    public static function getItemNameByItemCode($item_code){
         $item_detail = Item::where('item_code', $item_code)->first();
         return !empty($item_detail) ? $item_detail->item_name : "";
     }
-
-    public function propertyOutsides()
-    {
-        return $this->hasMany(PropertyOutside::class, 'present_status');
-    }
+   public function propertyOutsides()
+{
+    return $this->hasMany(PropertyOutside::class, 'present_status');
+}
 }

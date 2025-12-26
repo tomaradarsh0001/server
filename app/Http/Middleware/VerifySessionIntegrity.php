@@ -23,7 +23,7 @@ class VerifySessionIntegrity
             } elseif ($request->ip() !== session('ip_address')) {
                 Auth::logout();
                 session()->invalidate();
-                return redirect('/login')->withErrors([
+                return redirect('edharti/login')->withErrors([
                     'message' => 'Session mismatch detected (IP changed).',
                 ]);
             }
@@ -34,7 +34,7 @@ class VerifySessionIntegrity
             } elseif ($request->userAgent() !== session('user_agent')) {
                 Auth::logout();
                 session()->invalidate();
-                return redirect('/login')->withErrors([
+                return redirect('edharti/login')->withErrors([
                     'message' => 'Session mismatch detected (device changed).',
                 ]);
             }

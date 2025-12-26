@@ -1,5 +1,5 @@
 <script src="{{ asset('assets/js/map.js') }}"></script>
-<script src="{{ asset('assets/MIS_V3/Geojson_s/Property_16045.js') }}"></script>
+<script src="{{ asset('assets/MIS_V5.1/Geojson_s/Property_25999.js') }}"></script>
 
   <script>
     function locate2(propertyId){
@@ -50,6 +50,7 @@
         width: 50%;
       }
     </style>
+
     <div id="map"></div>
     <div id="pano"></div>
     <script

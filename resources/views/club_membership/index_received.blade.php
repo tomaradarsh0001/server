@@ -24,6 +24,10 @@
 
         /* Ensure responsiveness on smaller screens */
         @media (max-width: 768px) {
+            div.dt-buttons {
+                width:100%;
+            }
+
             div.dt-buttons.btn-group {
                 flex-direction: column;
                 align-items: flex-start;
@@ -35,8 +39,9 @@
             }
         }
 
-        .duplicate-row {
-            background-color: #df7d7d94 !important;
+        .duplicate-row, .duplicate-row > td {
+            /* background-color: #df7d7d94 !important; */
+            background-color: #ecb4b4 !important;
             /* Light red background */
         }
 
@@ -69,40 +74,71 @@
         table.dataTable>thead>tr>td:not(.sorting_disabled) {
             padding-right: 20px !important;
         }
-        
+
         /* commented and adeed by anil for replace the new loader on 24-07-2025  */
         .loader {
             width: 48px;
             height: 48px;
-            border:6px solid #FFF;
+            border: 6px solid #FFF;
             border-radius: 50%;
             position: relative;
-            transform:rotate(45deg);
+            transform: rotate(45deg);
             box-sizing: border-box;
-            }
-            .loader::before {
+        }
+
+        .loader::before {
             content: "";
             position: absolute;
             box-sizing: border-box;
-            inset:-7px;
+            inset: -7px;
             border-radius: 50%;
-            border:8px solid #116d6e;
+            border: 8px solid #116d6e;
             animation: prixClipFix 2s infinite linear;
+        }
+
+        @keyframes prixClipFix {
+            0% {
+                clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
             }
 
-            @keyframes prixClipFix {
-                0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
-                25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
-                50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
-                75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
-                100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+            25% {
+                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
             }
-            /* commented and adeed by anil for replace the new loader on 24-07-2025  */
 
+            50% {
+                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+            }
+
+            75% {
+                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+            }
+
+            100% {
+                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+            }
+        }
+
+        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
     </style>
-    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+    {{-- <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">Public Services</div>
         @include('include.partials.breadcrumbs')
+    </div> --}}
+
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Club Membership</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                    </li>
+                    <li class="breadcrumb-item" aria-current="page">Public Services</li>
+                    <li class="breadcrumb-item" aria-current="page">Club Membership</li>
+                    <li class="breadcrumb-item active" aria-current="page">Received Applications</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
     </div>
     <!--breadcrumb-->
     <hr>
@@ -177,8 +213,8 @@
     @include('include.alerts.ajax-alert')
     <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
     <!-- <div id="spinnerOverlay" style="display:none;">
-        <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
-    </div> -->
+                                                                                                            <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
+                                                                                                        </div> -->
     <div id="spinnerOverlay" style="display:none;">
         <span class="loader"></span>
         <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>

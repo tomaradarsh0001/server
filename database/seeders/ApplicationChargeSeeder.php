@@ -18,7 +18,7 @@ class ApplicationChargeSeeder extends Seeder
         DB::table('application_charges')->truncate();
 
         // Define item codes
-        $itemCodes = ['SUB_MUT', 'LUC', 'DOA', 'CONVERSION', 'NOC'];
+        $itemCodes = ['SUB_MUT', 'LUC', 'DOA', 'CONVERSION'];
 
         // Prepare the common data
         $commonData = [
@@ -37,5 +37,6 @@ class ApplicationChargeSeeder extends Seeder
                 ]));
             }
         }
+        
     }
 }

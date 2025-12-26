@@ -10,5 +10,4 @@ class PropertyMiscDetail extends Model
     use HasFactory;
     protected $guarded = [];
 
-    // protected $fillable = ['is_gr_revised_ever', 'gr_revised_date', 'updated_by'];
 }

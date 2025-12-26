@@ -33,6 +33,7 @@
                                 @forelse ( $sections as $section)
                                 <option value="{{$section->id}}">{{$section->name}}</option>
                                 @empty
+
                                 @endforelse
                                 {{-- <option value="2">Property Section-III</option> --}}
                             </select>
@@ -148,10 +149,10 @@
     @php
     $services = [
     'CONVERSION'=> 'Conversion',
-    //'LUC'=>'Land Use Change (LUC)',
-    //'SUB_MUT'=>'Substitution/Mutation',
+   // 'LUC'=>'Land Use Change (LUC)',
+   // 'SUB_MUT'=>'Substitution/Mutation',
     'NOC'=>'NOC',
-    //'DOA'=>'Deed of Apartment',
+   // 'DOA'=>'Deed of Apartment',
    // 'PRPCERT'=>'Property Certificate',
     //'SEL_PERM'=>'Sale Permission'    
     ];

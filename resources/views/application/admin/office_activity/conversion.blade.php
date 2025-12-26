@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
     <!-- New Design of conversion appliction for Office activty - SOURAV CHAUHAN (9/Jan/2025) -->
     <div class="row border-top-1">
         <!-- For Showing Latest Remark and Showing Revert Button START ********************************************************* -->
@@ -19,7 +8,7 @@
                     <p class="remark-content"> {{ $latestMovement->remarks }}<span class="author-name">-
                             {{ !empty($latestMovement->assigned_by) ? getUserNamebyId($latestMovement->assigned_by) : '' }}
                             <!--(JE)--></span>, <span
-                            class="author-time">{{ date('h:i a - d/m/Y', strtotime($latestMovement->created_at)) }}</span>
+                            class="author-time">{{ date('d-m-Y h:i a', strtotime($latestMovement->created_at)) }}</span>
                     </p>
                 </div>
                 @if ($showRevertButton)
@@ -32,6 +21,8 @@
         @endif
         <!-- For Showing Latest Remark and Showing Revert Button END ********************************************************* -->
 
+         <!-- if application status is not rejected START - 20 Nov 2025 ****************************-->
+  @if(getStatusDetailsById($details->status ?? '')->item_code != 'APP_REJ')
         <!-- For Forwarding the application START ******************************************************************** -->
          @include('application.admin.office_activity.forward_application')
         <!-- For Forwarding the application END ******************************************************************** -->
@@ -44,7 +35,7 @@
                 <div class="col-lg-4 mt-4 text-end">
                     <a href="{{ asset('storage/' . $application->Signed_letter) }}" target="_blank">View
                         Signed
-                        Letter</a>
+                        Conveyance Deed</a>
                 </div>
             @else
                 @if ($application->letter)
@@ -64,7 +55,7 @@
                                         name="application_no" />
                                     <div class="upload-signed-form">
                                         <div class="upload-signed-head">
-                                            <h4 class="upload-signed-title">Upload Signed Letter</h4>
+                                            <h4 class="upload-signed-title">Upload Signed Conveyance Deed</h4>
                                         </div>
                                         <div class="file-upload-wrapper">
                                             <label class="file-upload-box mb-0">
@@ -79,7 +70,7 @@
                                                     <span class="browse-file mb-0">Browse File</span>
                                                 </div>
                                             </label>
-                                            <div id="signedLetterError" class="text-danger" style="display: none;">Please upload a signed letter.</div>
+                                            <div id="signedLetterError" class="text-danger" style="display: none;">Please upload a signed Conveyance Deed.</div>
                                             <div class="file-list">
                                                 <!-- Files will be listed here -->
                                             </div>
@@ -106,7 +97,7 @@
             @if ($showCreateLetterButtons)
                 @if ($application->letter)
                     <div class="col-lg-8 mt-4">
-                        <button type="button" class="btn btn-success" onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Regenerate Draft Letter</button>
+                        <button type="button" class="btn btn-success" onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Regenerate Draft Conveyance Deed</button>
                     </div>
                 @else
                 {{-- @if($pendingAmount > 0)
@@ -122,7 +113,7 @@
                     </div>
                 @else --}}
                     <div class="col-lg-8 mt-4">
-                        <button type="button" class="btn btn-success" onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Generate Draft Letter</button>
+                        <button type="button" class="btn btn-success" onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Generate Draft Conveyance Deed</button>
                     </div>
                 {{-- @endif --}}
                 @endif
@@ -205,24 +196,29 @@
                                 @if($showRecommandForAppoval)
                                     <button type="button" class="btn btn-primary" onclick="handleApplicationAction('RECOMMENDED','{{ $details->application_no }}',this)">Recommend For Approval</button>
                                 @endif
-                                <button type="button" onclick="handleApplicationAction('OBJECT','{{ $details->application_no }}',this)" class="btn btn-warning" id="objectButton">Object</button>
+                               <!-- <button type="button" onclick="handleApplicationAction('OBJECT','{{ $details->application_no }}',this)" class="btn btn-warning" id="objectButton">Object</button> -->
                             @endif
                         @endif
                     @endif
+                    
                     <!-- Hold the application - SOURAV CHAUHAN (17/Dec/2024) END**************************************************-->
-
-                    @if ($roles === 'deputy-lndo')
-                        @if($applicationRecommendeByCdv && !$isSignedLetterAvailable)
-                        @else
+                    @if ($roles === 'deputy-lndo')                                  
+                        @if($applicationRecommendeByCdv && !$isSignedLetterAvailable)                         
+                        @else                        
                             @if($showApproveButton)
-                                <button type="button" class="btn btn-primary" onclick="handleApplicationAction('APPROVE','{{ $details->application_no}}',this)">Approve</button>
-                            @elseif ($latestAppAction['latest_action'] == 'RECOMMENDED' || $latestAppAction['latest_action'] == 'OBJECT')
-                                <button type="button" class="btn btn-primary" onclick="handleApplicationAction('RECOMMENDED','{{ $details->application_no }}',this)">Recommend</button>
-                                <button type="button" class="btn btn-warning" onclick="handleApplicationAction('OBJECT','{{ $details->application_no }}',this)">Object</button>
+                               <button type="button" class="btn btn-primary" onclick="handleApplicationAction('APPROVE','{{ $details->application_no}}',this)">Approve</button>
+                            @elseif (isset($$latestAppAction) && ($latestAppAction['latest_action'] == 'RECOMMENDED' || $latestAppAction['latest_action'] == 'OBJECT'))
+                             @if(!$applicationRecommendeByCdv)
+                                <button type="button" class="btn btn-primary" onclick="handleApplicationAction('RECOMMENDED','{{ $details->application_no }}',this)">Recommend </button> 
+                                @endif
+                                <!-- As user can't edit the application once he attended the proof reading -->
+                                @if(!$isAppointmentAttended)
+                                    <button type="button" class="btn btn-warning" onclick="handleApplicationAction('OBJECT','{{ $details->application_no }}',this)">Object</button>
+                                @endif
                             @endif
-                            @if ($latestAppAction['latest_action'] == 'RECOMMENDED' || $latestAppAction['latest_action'] == 'OBJECT')
-                                <button type="button" class="btn btn-danger"
-                                    onclick="handleApplicationAction('REJECT_APP','{{ $details->application_no }}',this)">Reject</button>
+                            @if (isset($$latestAppAction) && ($latestAppAction['latest_action'] == 'RECOMMENDED' || $latestAppAction['latest_action'] == 'OBJECT'))
+                                <!-- <button type="button" class="btn btn-danger"
+                                    onclick="handleApplicationAction('REJECT_APP','{{ $details->application_no }}',this)">Reject</button> -->
                             @endif
                         @endif
                     @endif
@@ -241,4 +237,11 @@
                 @endif
             </div>
         </div>
- 
+
+ @endif
+ <!-- if application status is not rejected END - 20 Nov 2025 ****************************-->
+ <script>$(document).ready(function() {
+    if ($('#signedLetterForm').length) {
+        $('.view-generated a').css('display', 'none');
+    }
+});</script>

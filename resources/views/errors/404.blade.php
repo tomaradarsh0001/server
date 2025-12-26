@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="{{ asset('assets/images/logo-icon.png') }}" type="image/png" />
     <link href="https://fonts.googleapis.com/css2?family=Jaldi:wght@400;700&family=Jost:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-    <title>Page Expired</title>
+    <title>Page Not Found</title>
     <style>
         body {
             font-family: "Jaldi", serif;
@@ -134,18 +134,18 @@
     <div class="error-wrap">
         <h1>404</h1>
         <div class="error-msg">
-            <img src="../assets/images/close-error.svg" alt="Error Page"/>
+            <img src="{{asset('assets/images/close-error.svg')}}" alt="Error Page"/>
             <p>REQUESTED PAGE NOT FOUND!</p>
             <div class="think-cloud">
-                <!-- <img src="assets/images/think-cloud.svg" alt="Think Cloud"/> -->
-                <img src="../assets/images/cloud-think.png" alt="Think Cloud"/>
+                
+                <img src="{{asset('assets/images/cloud-think.png')}}" alt="Think Cloud"/>
             </div>
         </div>
         <div class="error-foot">
             <div class="foot-left">
                 <span>404</span> NOT FOUND
             </div>
-            <a class="action-btn" href="/"> <img src="../assets/images/arrow_back.svg" alt="Back arrow"/> Back </a>
+            <a class="action-btn" href="{{route('login')}}"> <img src="{{asset('assets/images/arrow_back.svg')}}" alt="Back arrow"/> Back </a>
         </div>
     </div>
 </body>

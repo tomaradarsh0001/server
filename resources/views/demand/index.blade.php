@@ -13,7 +13,7 @@
                 <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
                 </li>
                 <li class="breadcrumb-item" aria-current="page">Demand</li>
-                <li class="breadcrumb-item active" aria-current="page">List</li>
+                <li class="breadcrumb-item active" aria-current="page">Created Demands</li>
             </ol>
         </nav>
     </div>
@@ -31,7 +31,7 @@
                 </li>
             </ul>
         </div> --}}
-        <!-- added table responsive div for make table responsive on 21-11-2025 -->
+        <!-- added div table-responsive by anil on 21-11-2025 -->
         <div class="table-responsive">
             <table id="example" class="table table-striped display nowrap" style="width:100%">
                 <thead>
@@ -61,19 +61,20 @@
                                 <button class="btn btn-info">View</button>
                             </a>
                             @unlessrole('internal-audit-cell')
-                            @if(getServiceCodeById($demand->status) == "DEM_DRAFT")
-                            <a href="{{route('EditDemand',$demand->id)}}">
-                                <button class="btn btn-warning">Edit</button>
-                            </a>
-                            @endif
-                            @if(getServiceCodeById($demand->status) == "DEM_PENDING")
-                            <a href="{{route('withdrawDemand',$demand->id)}}" onclick="withdrawConfirmModal('Are you sure to withdraw this demand?', this); return false;">
-                                <button class="btn btn-danger">Withdraw</button>
-                            </a>
-                            {{-- <a href="javascript;">
-                                <button class="btn btn-success">Send Mail</button>
-                            </a> --}}
-                            @endif
+                                @if(getServiceCodeById($demand->status) == "DEM_DRAFT")
+                                <a href="{{route('EditDemand',$demand->id)}}">
+                                    <button class="btn btn-warning">Edit</button>
+                                </a>
+                                @endif
+                                @if(getServiceCodeById($demand->status) == "DEM_PENDING")
+                                <a href="{{route('withdrawDemand',$demand->id)}}" onclick="withdrawConfirmModal('Are you sure to withdraw this demand?', this); return false;">
+                                    <button class="btn btn-danger">Withdraw</button>
+                                </a>
+                                
+                                {{-- <a href="javascript;">
+                                    <button class="btn btn-success">Send Mail</button>
+                                </a> --}}
+                                @endif
                             @endunlessrole
                         </td>
                     </tr>

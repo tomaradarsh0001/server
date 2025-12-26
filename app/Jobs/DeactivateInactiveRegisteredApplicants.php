@@ -17,11 +17,12 @@ class DeactivateInactiveRegisteredApplicants implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function handle()
-    {
+    {  
+        Log::info("Job is running");
         $users = User::where('user_type', 'applicant')->get();
         $currentDate = Carbon::now();
         $maxInactiveDays = config('constants.MAX_INACTIVE_DAYS_FOR_REGISTERED_USER');
-
+        Log::info("Job is running 2");
         foreach ($users as $user) {
             $daysSinceCreation = $user->created_at->diffInDays($currentDate);
 

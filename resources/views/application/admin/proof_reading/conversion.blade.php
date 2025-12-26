@@ -13,21 +13,21 @@
             <div class="container-fluid pb-3">
                 <div class="row">
                     <div class="col-lg-12">
-                        <!-- added table responsive div for make table responsive on 28-11-2025 -->
+                        <!-- added table-responsive div for make table responsive by anil on 28-11-2025 -->
                         <div class="table-responsive">
                             <table class="table table-bordered particular-document-table">
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Name</th>
+                                        <th style="width:700px;">Name</th>
                                         <th>Action</th>
-                                        <th>Found Correct</th>
-                                        <th>Upload Documents</th>
+                                    <!-- <th>Found Correct</th>-->
+                                        <th style="min-width:300px;">Upload Documents</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td colspan="5" class="document-type-row">
+                                        <td colspan="4" class="document-type-row">
                                             <h4 class="doc-type-title">Required Documents</h4>
                                         </td>
                                     </tr>
@@ -83,10 +83,10 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>
+                                            <!-- <td>
                                                     <div class="checkbox-options" style="display: flex;">
                                                         <div class="form-check form-check-success custom-mr-5">
-                                                            <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="1" id="YesCDVStatus1"> -->
+                                                        
                                                             <input class="form-check-input doc-check-yes required-for-approve"
                                                                 value="{{ $ud['id'] }}" type="radio"
                                                                 name="doc-check-{{ $ud['id'] }}" id="doc-check-yes-{{ $ud['id'] }}"
@@ -99,7 +99,7 @@
                                                                 for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
                                                         </div>
                                                         <div class="form-check form-check-success">
-                                                            <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="0" id="NoCDVStatus1" checked> -->
+                                                        
                                                             <input class="form-check-input doc-check-no required-for-approve"
                                                                 type="radio" name="doc-check-{{ $ud['id'] }}"
                                                                 id="doc-check-no-{{ $ud['id'] }}" value="{{ $ud['id'] }}" 
@@ -127,7 +127,7 @@
                                                         id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
                                                         value="{{ $ud->documentFinalChecklist->remark }}" />
                                                     @endif
-                                                </td>
+                                                </td>  -->
                                                 <td>
                                                     <div class="form-group">
                                                         <div id="file-link-{{$ud['id']}}" class="d-flex justify-content-around">
@@ -144,7 +144,7 @@
                                     @endforeach
 
                                     <tr>
-                                        <td colspan="5" class="document-type-row">
+                                        <td colspan="4" class="document-type-row">
                                             <h4 class="doc-type-title">Optional Documents</h4>
                                         </td>
                                     </tr>
@@ -221,10 +221,10 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>
+                                                <!-- <td>
                                                     <div class="checkbox-options" style="display: flex;">
                                                         <div class="form-check form-check-success custom-mr-5">
-                                                            <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="1" id="YesCDVStatus1"> -->
+                                                        
                                                             <input class="form-check-input doc-check-yes required-for-approve"
                                                                 value="{{ $ud['id'] }}" type="radio"
                                                                 name="doc-check-{{ $ud['id'] }}" id="doc-check-yes-{{ $ud['id'] }}"
@@ -237,7 +237,7 @@
                                                                 for="doc-check-yes-{{ $ud['id'] }}">Yes</label>
                                                         </div>
                                                         <div class="form-check form-check-success">
-                                                            <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="0" id="NoCDVStatus1" checked> -->
+                                                        
                                                             <input class="form-check-input doc-check-no required-for-approve"
                                                                 type="radio" name="doc-check-{{ $ud['id'] }}"
                                                                 id="doc-check-no-{{ $ud['id'] }}" value="{{ $ud['id'] }}" 
@@ -247,7 +247,7 @@
                                                             <label class="form-check-label"
                                                                 for="doc-check-no-{{ $ud['id'] }}">No</label>
                                                         </div>
-                                                    </div>
+                                                    </div> 
                                                     @if (
                                                     $ud->documentFinalChecklist &&
                                                     $ud->documentFinalChecklist->document_id == $ud['id'] &&
@@ -265,7 +265,7 @@
                                                         id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
                                                         value="{{ $ud->documentFinalChecklist->remark }}" />
                                                     @endif
-                                                </td>
+                                                </td> -->
                                                 <td>
                                                 <div class="form-group">
                                                         <div id="file-link-{{$ud['id']}}" class="d-flex justify-content-around">
@@ -284,7 +284,7 @@
 
 
                                     <tr>
-                                        <td colspan="5" class="document-type-row">
+                                        <td colspan="4" class="document-type-row">
                                             <h4 class="doc-type-title">Additional Documents By Applicant</h4>
                                         </td>
                                     </tr>
@@ -323,7 +323,7 @@
                                                         </div>
                                                     </div>
                                                     </td>
-                                                    <td>
+                                                    {{--<td>
                                                         <div class="checkbox-options" style="display: flex;">
                                                             <div class="form-check form-check-success custom-mr-5">
                                                                 <!-- <input class="form-check-input required-for-approve" name="cdvStatus1" type="radio" value="1" id="YesCDVStatus1"> -->
@@ -366,7 +366,7 @@
                                                                 id="fullRemark_{{ $ud->documentFinalChecklist->document_id }}"
                                                                 value="{{ $ud->documentFinalChecklist->remark }}" />
                                                         @endif
-                                                    </td>
+                                                    </td>--}}
                                                     <td>
                                                     <div class="form-group">
                                                         <div id="file-link-{{$ud['id']}}" class="d-flex justify-content-around">
@@ -382,13 +382,13 @@
                                             @endforeach
                                         @else
                                         <tr>
-                                            <td colspan="5" class="">
+                                            <td colspan="4" class="">
                                                 <p class="">No Documents Available</p>
                                             </td>
                                         </tr>
                                         @endif
                                         <tr>
-                                            <td colspan="5" class="document-type-row">
+                                            <td colspan="4" class="document-type-row">
                                                 <h4 class="doc-type-title">Additional Documents By CDV</h4>
                                             </td>
                                         </tr>
@@ -428,8 +428,8 @@
                                                 @endforeach
                                             @else
                                             <tr>
-                                                <td colspan="5" class="">
-                                                    <p class="">No Documents Available</p>
+                                                <td colspan="4" class="">
+                                                    <p class="">No Documents Available.</p>
                                                 </td>
                                             </tr>
                                             @endif

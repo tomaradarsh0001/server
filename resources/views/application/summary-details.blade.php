@@ -13,7 +13,7 @@
 
                 <li class="breadcrumb-item">Applications</li>
                 <!-- <li class="breadcrumb-item active" aria-current="page">History</li> -->
-               <!-- <li class="breadcrumb-item active" aria-current="page">All Applications</li>-->
+                <!-- <li class="breadcrumb-item active" aria-current="page">All Applications</li> -->
             </ol>
         </nav>
     </div>
@@ -26,7 +26,7 @@
         <div class="col-lg-12 mb-4">
             <div class="card widget-card">
                 <div class="card-body">
-                   <!-- <h5 class="card-title">All Applications</h5>-->
+                    <!-- <h5 class="card-title">All Applications</h5> -->
                     <div class="table-responsive mt-2">
                         <table  class="display nowrap" id="tab-all-applications">
                             <thead>

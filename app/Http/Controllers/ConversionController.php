@@ -9,9 +9,9 @@ use App\Models\PropertyMaster;
 use App\Models\SplitedPropertyDetail;
 use App\Services\ColonyService;
 use App\Services\LandRateService;
-use App\Services\PropertyMasterService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\PropertyMasterService;
 
 class ConversionController extends Controller
 {

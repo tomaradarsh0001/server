@@ -22,66 +22,50 @@
 
         /* commented and adeed by anil for replace the new loader on 24-07-2025  */
         /* .spinner {
-                                border: 8px solid rgba(255, 255, 255, 0.3);
-                                border-radius: 50%;
-                                border-top: 8px solid #ffffff;
-                                width: 50px;
-                                height: 50px;
-                                animation: spin 1s linear infinite;
-                            }
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 8px solid #ffffff;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
 
-                            @keyframes spin {
-                                0% {
-                                    transform: rotate(0deg);
-                                }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
 
-                                100% {
-                                    transform: rotate(360deg);
-                                }
-                            } */
+            100% {
+                transform: rotate(360deg);
+            }
+        } */
         .loader {
             width: 48px;
             height: 48px;
-            border: 6px solid #FFF;
+            border:6px solid #FFF;
             border-radius: 50%;
             position: relative;
-            transform: rotate(45deg);
+            transform:rotate(45deg);
             box-sizing: border-box;
         }
-
         .loader::before {
             content: "";
             position: absolute;
             box-sizing: border-box;
-            inset: -7px;
+            inset:-7px;
             border-radius: 50%;
-            border: 8px solid #116d6e;
+            border:8px solid #116d6e;
             animation: prixClipFix 2s infinite linear;
         }
 
         @keyframes prixClipFix {
-            0% {
-                clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
-            }
-
-            25% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
-            }
-
-            50% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
-            }
-
-            75% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
-            }
-
-            100% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
-            }
+            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
         }
-
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
+        /* commented and adeed by anil for replace the new loader on 07-08-2025  */
 
         /* Optional: Adjust the table for better spacing */
         .table th,
@@ -114,8 +98,6 @@
             opacity: 0.5;
         }
     </style>
-    <!-- #Start Custom Tooltip Styles For Reg No. - Lalit Tiwari 01/May/2025 -->
-    <!-- #Start Custom Tooltip Styles For Reg No. - Lalit Tiwari 01/May/2025 -->
     <style>
         .qmark {
             background: #116d6e;
@@ -136,7 +118,6 @@
             white-space: normal;
         }
     </style>
-    <!-- #End Custom Tooltip Styles For Reg No. - Lalit Tiwari 01/May/2025 -->
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">Application</div>
@@ -169,7 +150,7 @@
                 @endif
                 <div class="new-app-form">
                     <h5 class="mb-1">FILL APPLICATION DETAILS</h5>
-                    <p class="mb-4">Enter Your Application Information</p>
+                    <p class="mb-4">Enter your application information.</p>
                     <!-- begin -->
                     <div class="radio-buttons-0">
                         <div class="row">
@@ -307,14 +288,11 @@
                                 <div class="col-12 col-lg-4">
                                     <!-- <button type="button" class="btn btn-primary px-4" id="submitbtn1">Next<i class='bx bx-right-arrow-alt ms-2'></i></button> -->
                                     <!-- <button type="button" class="btn btn-primary px-4" onclick="steppers['stepper3'].next();">Next<i class='bx bx-right-arrow-alt ms-2'></i></button> -->
-
-                                    <!-- <button type="button" class="btn btn-primary px-4" onclick="steppers['stepper3'].next();">
-                                                                                                                                                                                                                                    Next<i class='bx bx-right-arrow-alt ms-2'></i>
-                                                                                                                                                                                                                                </button> -->
+                                    <!-- <button type="button" class="btn btn-primary px-4" onclick="steppers['stepper3'].next();">Next<i
+                                            class='bx bx-right-arrow-alt ms-2'></i></button> -->
                                     <button type="button" class="btn btn-primary px-4 edit-step1">
                                         Next<i class='bx bx-right-arrow-alt ms-2'></i>
                                     </button>
-                                    <!-- changed comment button by anil comment bottom and uncomment top button on 07-04-2025 -->
                                 </div>
                             </div>
                             <!---end row-->
@@ -324,7 +302,7 @@
                             aria-labelledby="stepper3trigger2">
 
                             <h5 class="mb-1 text-uppercase">Mandatory Documents</h5>
-                            <p class="mb-4">Please upload documents</p>
+                            <p class="mb-4">Please upload documents.</p>
 
                             <!-- mutation step two SOURAV CHAUHAN (20/sep/2024)**********************-->
                             @include('application.mutation.include.edit.mutation-step-second')
@@ -337,14 +315,13 @@
                                             onclick="steppers['stepper3'].previous()"><i
                                                 class='bx bx-left-arrow-alt me-2'></i>Previous</button>
 
-                                        <button type="button" onclick="steppers['stepper3'].next();"
-                                            class="btn btn-primary px-4">Next<i
+                                        <button type="button" onclick="steppers['stepper3'].next();" class="btn btn-primary px-4">Next<i
                                                 class='bx bx-right-arrow-alt ms-2'></i></button>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
 
@@ -353,7 +330,7 @@
                         <div id="newstep-vl-3" role="tabpane3" class="bs-stepper-pane content fade"
                             aria-labelledby="stepper3trigger3">
                             <h5 class="mb-1 text-uppercase" id="finalStateTitle">Selected Documents</h5>
-                            <p class="mb-4" id="finalStateSubtitle">Please Enter Additional Details</p>
+                            <p class="mb-4" id="finalStateSubtitle">Please enter additional details.</p>
 
                             <!-- mutation step three SOURAV CHAUHAN (20/sep/2024)**********************-->
                             @include('application.mutation.include.edit.mutation-step-three')
@@ -377,8 +354,8 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
                         </div>
@@ -425,14 +402,13 @@
 
                             <div class="row g-3 mt-2">
                                 <div class="col-12 col-lg-4">
-                                    <button type="button" class="btn btn-primary px-4 edit-step1">Next<i
-                                            class='bx bx-right-arrow-alt ms-2'></i></button>
-                                    <!-- changed comment button by anil comment bottom and uncomment top button on 07-04-2025 -->
-                                    {{-- <button type="button" class="btn btn-primary px-4"
-                                        onclick="steppers['stepper4'].next()">Next<i
+                                    {{-- <button type="button" class="btn btn-primary px-4 submitbtn1">Next<i
                                             class='bx bx-right-arrow-alt ms-2'></i></button> --}}
-
-
+                                    <!-- <button type="button" class="btn btn-primary px-4"
+                                        onclick="steppers['stepper4'].next()">Next<i
+                                            class='bx bx-right-arrow-alt ms-2'></i></button> -->
+                                        <button type="button" class="btn btn-primary px-4 edit-step1">Next<i
+                                            class='bx bx-right-arrow-alt ms-2'></i></button>
 
                                 </div>
                             </div>
@@ -443,7 +419,7 @@
                             aria-labelledby="stepper3trigger2">
 
                             <h5 class="mb-1">Mandatory Documents</h5>
-                            <p class="mb-4">Please upload documents</p>
+                            <p class="mb-4">Please upload documents.</p>
 
                             <!-- Conversion 2 -->
                             @include('application.conversion.include.step-2-edit')
@@ -453,7 +429,7 @@
 
                                 <div class="col-lg-6 col-12">
                                     <div class="d-flex align-items-center gap-3">
-                                        <button type="button" class="btn btn-outline-secondary px-4 edit-step2"
+                                        <button type="button" class="btn btn-outline-secondary px-4"
                                             onclick="steppers['stepper4'].previous()"><i
                                                 class='bx bx-left-arrow-alt me-2'></i>Previous</button>
 
@@ -463,17 +439,17 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
 
                         </div>
 
                         <div id="newstep-vl-3" role="tabpane3" class="bs-stepper-pane content fade"
-                            aria-labelledby="stepper3trigger3" data-applicant="CONVERSION-3">
+                            aria-labelledby="stepper3trigger3">
                             <h5 class="mb-1" id="finalStateTitle">Selected Documents</h5>
-                            <p class="mb-4" id="finalStateSubtitle">Please Enter Additional Details</p>
+                            <p class="mb-4" id="finalStateSubtitle">Please enter additional details.</p>
 
 
                             <!-- Conversion 3 -->
@@ -496,13 +472,14 @@
                                         <button type="button" class="btn btn-outline-secondary px-4"
                                             onclick="steppers['stepper4'].previous()"><i
                                                 class='bx bx-left-arrow-alt me-2'></i>Previous</button>
-                                        <button type="submit" class="btn btn-primary px-4 edit-step3">Submit</button>
+                                        <!-- <button type="submit" class="btn btn-primary px-4">Submit</button> -->
+                                         <button type="submit" class="btn btn-primary px-4 edit-step3">Submit</button>
                                         <!-- add class edit-step3 for additional form validation by anil on 24-04-2025 -->
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div>
                             <!---end row-->
@@ -587,12 +564,11 @@
                                         {{-- <button type="button" class="btn btn-primary px-4 btnfinalsubmit">Proceed to
                                             Pay</button> --}}
                                         <button type="submit" class="btn btn-primary px-4 edit-step3">Submit</button>
-                                        <!-- add class edit-step3 for additional form validation by anil on 11-06-2025 -->
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
 
@@ -646,7 +622,7 @@
                             aria-labelledby="stepper3trigger2">
 
                             {{-- <h5 class="mb-1">Mandatory Documents</h5>
-                            <p class="mb-4">Please Enter Mandatory Details</p> --}}
+                            <p class="mb-4">Please enter mandatory details.</p> --}}
                             <h5 class="mb-1">VIEW UPLOADED DOCUMENTS</h5>
 
                             <!-- =========== Begin Deed of Apartment Div ========== -->
@@ -672,12 +648,11 @@
                                         {{-- <button type="button" class="btn btn-primary px-4 btnfinalsubmit">Proceed to
                                             Pay</button> --}}
                                         <button type="submit" class="btn btn-primary px-4 edit-step3">Submit</button>
-                                        <!-- add class edit-step3 for additional form validation by anil on 11-06-2025 -->
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div><!---end row-->
 
@@ -717,13 +692,9 @@
 
                             <div class="row g-3 mt-2">
                                 <div class="col-12 col-lg-4">
-                                    <!-- <button type="button" class="btn btn-primary px-4" onclick="steppers['stepper7'].next()">
-                                                                                                                                                                                                                                    Next <i class='bx bx-right-arrow-alt ms-2'></i>
-                                                                                                                                                                                                                                </button> -->
-                                    <button type="button" class="btn btn-primary px-4 edit-step1">
-                                        Next <i class='bx bx-right-arrow-alt ms-2'></i>
-                                    </button>
-                                    <!-- changed comment button by anil comment bottom and uncomment top button on 07-04-2025 -->
+                                    <button type="button" class="btn btn-primary px-4"
+                                        onclick="steppers['stepper7'].next()">Next<i
+                                            class='bx bx-right-arrow-alt ms-2'></i></button>
 
                                 </div>
                             </div>
@@ -755,12 +726,12 @@
                                         <button type="button" class="btn btn-outline-secondary px-4"
                                             onclick="steppers['stepper7'].previous()"><i
                                                 class='bx bx-left-arrow-alt me-2'></i>Previous</button>
-                                        <button type="submit" class="btn btn-primary px-4 edit-step3">Submit</button>
+                                        <button type="submit" class="btn btn-primary px-4">Submit</button>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-12 text-end">
-                                    <label class="note text-danger text-sm"><strong>Note :</strong> Upload all documents in
-                                        PDF format (maximum size 5 MB each).</label>
+                                    <label class="note text-danger text-sm"><strong>Note<span
+                                                class="text-danger">*</span>:</strong> Upload all documents in PDF format (maximum size 5MB each).</label>
                                 </div>
                             </div>
                             <!---end row-->
@@ -769,20 +740,21 @@
                     </div>
                 </div>
                 <!-- Stepper7 End -->
+
             </form>
         </div>
     </div>
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 07-08-2025  -->
     <!-- <div id="spinnerOverlay" style="display:none;">
-                            <div class="spinner"></div>
-                        </div>
-                        </div> -->
+        <div class="spinner"></div>
+    </div> -->
     <div id="spinnerOverlay" style="display:none;">
         <span class="loader"></span>
         <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
     </div>
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 07-08-2025  -->
     </div>
+
     @include('include.alerts.application.change-property')
     @include('include.alerts.ajax-alert')
 
@@ -792,15 +764,16 @@
     {{-- Dynamic Element --}}
 @endsection
 @section('footerScript')
-    <script>
-        var isEditing = "{{ isset($application) ? true : false }}";
-    </script>
     <script src="{{ asset('assets/plugins/bs-stepper/js/bs-stepper.min.js') }}"></script>
     <!-- <script src="{{ asset('assets/plugins/bs-stepper/js/main.js') }}"></script> -->
     <!-- <script src="{{ asset('assets/plugins/form-repeater/repeater.js') }}"></script> -->
     <script src="{{ asset('assets/plugins/form-repeater/applicationRepeater.js') }}"></script>
+    <script src="{{ asset('assets/frontend/assets/js/crypto-js.min.js') }}"></script>
+    <script src="{{ asset('assets/frontend/assets/js/commonFunctions.js') }}"></script>
 
     <script>
+      
+        var isEditing = "{{ isset($application) ? true : false }}";
         @if (isset($application))
             var application = @json($application)
         @else
@@ -811,16 +784,13 @@
         window.onload = function() {
             console.log(isEditing, application);
         }
-        const fetchUserDetailsUrl = "{{ route('fetchUserDetails') }}";
+         const fetchUserDetailsUrl = "{{ route('fetchUserDetails') }}";
     </script>
     <script src="{{ asset('assets/js/newApplicant.js') }}"></script>
-    <!-- <script src="{{ asset('assets/js/nocApplicant.js') }}"></script>
-                        <script src="{{ asset('assets/js/conversionApplicant.js') }}"></script>
-                        <script src="{{ asset('assets/js/mutationApplicant.js') }}"></script> -->
     <script>
-        function sqmToSqyard(sqm) {
-            return sqm * 1.19599;
-        }
+          function sqmToSqyard(sqm) {
+    return sqm * 1.19599;
+}
         $('#appChangeProperty').on('hidden.bs.modal', function() {
             var lastPropertyId = $("input[name='lastPropertyId']").val();
             $('#propertyid').val(lastPropertyId);
@@ -922,13 +892,14 @@
                         // for showing property details
                         if (response.data.propertyDetails) {
                             $('#applicationPropertyDetails').empty();
-                            var area = inFavourOf = leaseExectionDate = leaseType = propertyType =
+                            var area = inFavourOf = leaseExectionDate = leaseExectionDateNew = leaseType = propertyType =
                                 propertySubType = '';
                             var propertyDetails = response.data.propertyDetails;
 
                             area = propertyDetails.area
                             inFavourOf = propertyDetails.inFavourOf
                             leaseExectionDate = propertyDetails.leaseExectionDate
+                            leaseExectionDateNew = formatDateToDDMMYYYY(propertyDetails.leaseExectionDate)
                             leaseType = propertyDetails.leaseType
                             propertyType = propertyDetails.propertyType
                             propertySubType = propertyDetails.propertySubType
@@ -948,17 +919,15 @@
                                 leaseType +
                                 `</span></td>
                                                                     <td>Lease Executed On: <span class="highlight_value">` +
-                                leaseExectionDate +
+                                leaseExectionDateNew +
                                 `</span></td>
                                                                     <td>Original Lessee: <span class="highlight_value lessee_address">` +
-                                inFavourOf +
-                                `</span></td>
+                                inFavourOf + `</span></td>
                                                                 </tr>
                                                                 <tr>
-                                                                     <td>Land Size: <span class="highlight_value" id="land-size-span">` +
-                                +Number(area).toFixed(3) +
-                                ` Sq. Mtr.</span> (` + sqmToSqyard(area).toFixed(3) +
-                                ` Sq. Yard)
+                                                                   <td>Land Size: <span class="highlight_value" id="land-size-span">` +
+                                 + Number(area).toFixed(2)+
+                                ` Sq. Mtr.</span> (`+ sqmToSqyard(area).toFixed(2)+ ` Sq. Yard)
                                 
                                 </td>
                                                                     <td>Property Type: <span class="highlight_value">` +
@@ -973,6 +942,9 @@
                                                     `;
 
                             $('#applicationPropertyDetails').append(propertyDetailContent);
+                            if (propertyDetails.status == 'Lease Hold') {
+                                $('#mortgagedMainDivMutationInEdit').show();
+                            }
                         }
                     } else {
                         if (response.data == 'deleteYes') {
@@ -985,23 +957,13 @@
                     // Handle error
                 }
             });
-
-            if (leaseExectionDate) {
-                const dateObj = new Date(leaseExectionDate);
-                const day = ("0" + dateObj.getDate()).slice(-2);
-                const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
-                const year = dateObj.getFullYear();
-                leaseExectionDate = `${day}${month}${year}`; // e.g. 13042025
-            }
         }
 
 
         //handle upload file
         function handleFileUpload(file, name, docType, type, processType) {
             const spinnerOverlay = document.getElementById('spinnerOverlay');
-            if (spinnerOverlay) {
-                spinnerOverlay.style.display = 'flex';
-            }
+            spinnerOverlay.style.display = 'flex';
             const baseUrl = "{{ asset('storage') }}";
 
             const formData = new FormData();
@@ -1042,9 +1004,7 @@
         // upload file duing edit - SOURAV CHAUHAN (07/Jan/2024)
         function handleFileUploadEdit(file, name, docType, type, processType) {
             const spinnerOverlay = document.getElementById('spinnerOverlay');
-            if (spinnerOverlay) {
-                spinnerOverlay.style.display = 'flex';
-            }
+            spinnerOverlay.style.display = 'flex';
             const baseUrl = "{{ asset('storage') }}";
 
             const formData = new FormData();
@@ -1323,11 +1283,6 @@
             inputs.forEach(input => {
                 if (input.type === 'text' || input.type === 'file') {
                     input.value = ''; // Clear text and file inputs
-                    // Clear any sibling with class .text-danger/ added by anil to remove error text on cloning time on 29-04-2025
-                    let errorDiv = input.parentElement.querySelector('.text-danger');
-                    if (errorDiv) {
-                        errorDiv.textContent = '';
-                    }
                 }
             });
 
@@ -1366,57 +1321,57 @@
         updateRemoveButtonState();
 
         // Add 5MB validation for Additional Document & title - Lalit Tiwari (11/02/2025) 
-        // document.addEventListener("DOMContentLoaded", function() {
-        //     document.getElementById("editApplicationForm").addEventListener("submit", function(event) {
-        //         let fileInputs = document.querySelectorAll('input[name="additional_documents[]"]');
-        //         let titleInputs = document.querySelectorAll('input[name="additional_document_titles[]"]');
-        //         let maxSize = 5 * 1024 * 1024; // 5MB
-        //         let allowedTypes = ["application/pdf"];
-        //         let isValid = true;
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("editApplicationForm").addEventListener("submit", function (event) {
+                let fileInputs = document.querySelectorAll('input[name="additional_documents[]"]');
+                let titleInputs = document.querySelectorAll('input[name="additional_document_titles[]"]');
+                let maxSize = 5 * 1024 * 1024; // 5MB
+                let allowedTypes = ["application/pdf"];
+                let isValid = true;
 
-        //         // Clear previous error messages
-        //         document.querySelectorAll(".error-message").forEach(el => el.remove());
+                // Clear previous error messages
+                document.querySelectorAll(".error-message").forEach(el => el.remove());
 
-        //         fileInputs.forEach((fileInput, index) => {
-        //             let titleInput = titleInputs[index];
-        //             let file = fileInput.files[0]; // Get selected file
+                fileInputs.forEach((fileInput, index) => {
+                    let titleInput = titleInputs[index];
+                    let file = fileInput.files[0]; // Get selected file
+                    
+                    // Remove previous error messages (if any)
+                    titleInput.classList.remove("is-invalid");
+                    fileInput.classList.remove("is-invalid");
 
-        //             // Remove previous error messages (if any)
-        //             titleInput.classList.remove("is-invalid");
-        //             fileInput.classList.remove("is-invalid");
+                    if (file) { // Validate only if file is selected
+                        if (!titleInput.value.trim()) {
+                            showError(titleInput, "Please enter a document title.");
+                            isValid = false;
+                        }
+                        if (!allowedTypes.includes(file.type)) {
+                            showError(fileInput, "Only PDF files are allowed.");
+                            isValid = false;
+                        }
+                        if (file.size > maxSize) {
+                            showError(fileInput, "File size must not exceed 5MB.");
+                            isValid = false;
+                        }
+                    }
+                });
 
-        //             if (file) { // Validate only if file is selected
-        //                 if (!titleInput.value.trim()) {
-        //                     showError(titleInput, "Please enter a document title.");
-        //                     isValid = false;
-        //                 }
-        //                 if (!allowedTypes.includes(file.type)) {
-        //                     showError(fileInput, "Only PDF files are allowed.");
-        //                     isValid = false;
-        //                 }
-        //                 if (file.size > maxSize) {
-        //                     showError(fileInput, "File size must not exceed 5MB.");
-        //                     isValid = false;
-        //                 }
-        //             }
-        //         });
+                if (!isValid) {
+                    event.preventDefault(); // Stop form submission
+                }
+            });
 
-        //         if (!isValid) {
-        //             event.preventDefault(); // Stop form submission
-        //         }
-        //     });
-
-        //     function showError(inputElement, message) {
-        //         let errorDiv = document.createElement("div");
-        //         errorDiv.className = "error-message text-danger mt-1";
-        //         errorDiv.textContent = message;
-        //         inputElement.classList.add("is-invalid"); // Add red border
-        //         inputElement.parentNode.appendChild(errorDiv);
-        //     }
-        // });
+            function showError(inputElement, message) {
+                let errorDiv = document.createElement("div");
+                errorDiv.className = "error-message text-danger mt-1";
+                errorDiv.textContent = message;
+                inputElement.classList.add("is-invalid"); // Add red border
+                inputElement.parentNode.appendChild(errorDiv);
+            }
+        });
     </script>
 
-    <script>
+<script>
         //Start Set Visiblity for Power Of Attorney Document on Status of Applicant Dropdown - Lalit Tiwari (01/April/2025)
         $("#applicationType").change(function() {
             let applicationDiv;
@@ -1473,9 +1428,7 @@
         });
         //End Set Visiblity for Power Of Attorney Document on Status of Applicant Dropdown - Lalit Tiwari (01/April/2025)
     </script>
-
-    <!-- #Start Custom Tooltip Styles For Reg No. - Lalit Tiwari 01/May/2025 -->
-    <script>
+     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
             tooltipTriggerList.map(function(tooltipTriggerEl) {
@@ -1488,6 +1441,51 @@
                 $(this).tooltip('hide');
             });
         });
+
+
+
+        const checkboxes = document.querySelectorAll('.documentType');
+        checkboxes.forEach((checkbox) => {
+            checkbox.addEventListener('change', function () {
+                if (!this.checked) {
+                    const uncheckedCheckboxId = this.id;
+                    const cleanedId = uncheckedCheckboxId.replace('_check', '');
+                    const updatedId = $("input[name='updateId']").val();
+                    console.log(updatedId);
+                    
+                    if(updatedId != 0){
+                        $('#' + cleanedId).val('');
+                        deleteValuesForUncheckedDocument(cleanedId,updatedId);
+                    }
+                }
+            });
+        });
+
+        function deleteValuesForUncheckedDocument(id,updatedId) {
+            if (id != '') {
+                $.ajax({
+                    url: "{{ route('applicant.deleteValuesForUncheckedDocument') }}",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        id: id,
+                        updatedId: updatedId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if(response.status != 2){
+                            if (response.status) {
+                                showSuccess(response.message)
+                            } else {
+                                showError(response.message)
+                            }
+                        }
+                    },
+                    error: function(response) {
+                        showError('File not deleted. Please try again.');
+                    }
+                });
+            } 
+        }
     </script>
-    <!-- #End Custom Tooltip Styles For Reg No. - Lalit Tiwari 01/May/2025 -->
 @endsection

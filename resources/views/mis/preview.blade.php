@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'MIS Form Details')
+@section('title', 'Plot Details')
 
 @section('content')
     <style>
@@ -59,10 +59,21 @@
 
         }
     </style>
-    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">MIS</div>
-        @include('include.partials.breadcrumbs')
+      <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+    <div class="breadcrumb-title pe-3">Properties
+</div>
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Properties</li>
+                <li class="breadcrumb-item active" aria-current="page">Views</li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="{{route('propertDetails')}}">Plots</a></li>
+                <li class="breadcrumb-item active" aria-current="page">details</li>
+            </ol>
+        </nav>
     </div>
+</div>
     <!--breadcrumb-->
 
     <hr>
@@ -71,241 +82,205 @@
         <div class="card-body">
 
             <!-- <div class="container"> -->
-            <div class="part-title">
-                <h5>BASIC DETAILS</h5>
-            </div>
-            <div class="part-details">
-                <div class="container-fluid">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td><b>New Property Id: </b> {{ $viewDetails->unique_propert_id }}</td>
-                                <td><b>Old Property Id: </b> {{ $viewDetails->old_propert_id }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>More than 1 Property IDs: </b> {{ $viewDetails->is_multiple_ids ? 'Yes' : 'No' }}
-                                </td>
-                                <td><b>File No.: </b> {{ $viewDetails->file_no }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Computer generated file no: </b> {{ $viewDetails->unique_file_no }} </td>
-                                <td><b>Colony Name(Old): </b> {{ $viewDetails->oldColony->name }} </td>
-                            </tr>
-                            <tr>
-                                <td><b>Colony Name(Present):</b> {{ $viewDetails->newColony->name }} </td>
-                                <td><b>Property Status: </b> {{ $item->itemNameById($viewDetails->status) }} </td>
-
-                            </tr>
-                            <tr>
-                                <td><b>Land Type:</b> {{ $item->itemNameById($viewDetails->land_type) }}</td>
-                                <td> </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
-
-            <!-- <h5 class="mb-4 pt-3 text-decoration-underline">LEASE DETAILS</h5> -->
-            <div class="part-title">
-                <h5>LEASE DETAILS</h5>
-            </div>
-
-            <div class="part-details">
-                <div class="container-fluid">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td><b>Type of Lease: </b>
-                                    {{ $item->itemNameById($viewDetails->propertyLeaseDetail->type_of_lease ?? '') }}</td>
-                                <td><b>Date of Execution: </b>
-                                    {{ !empty($viewDetails->propertyLeaseDetail->doe) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->doe)->format('d-m-Y') : '' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Lease/Allotment No.: </b> {{ $viewDetails->lease_no ?? 'NA' }}</td>
-                                <td><b>Date of Expiration:
-                                    </b>{{ !empty($viewDetails->propertyLeaseDetail->date_of_expiration) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->date_of_expiration)->format('d-m-Y') : '' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Date of Allotment:
-                                    </b>{{ !empty($viewDetails->propertyLeaseDetail->doa) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->doa)->format('d-m-Y') : '' }}
-                                </td>
-                                <td><b>Block No.: </b> {{ $viewDetails->block_no }}</td>
-                            </tr>
-                            <tr>
-                                <td><b>Plot No.: </b> {{ $viewDetails->plot_or_property_no }} </td>
-                                <?php
-                                $names = [];
-                                foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
-                                    $name = $transferDetail->process_of_transfer;
-                                    if ($name == 'Original') {
-                                        $names[] = $transferDetail->lessee_name;
-                                    }
-                                }
-                                ?>
-                                <td><b>In Favour Of: </b>{{ implode(', ', $names) }} </td>
-                            </tr>
-                            <tr>
-                                <td><b>Presently Known As: </b>{{ $viewDetails->propertyLeaseDetail->presently_known_as ?? '' }}
-                                </td>
-                                <td><b>Area: </b> {{ $viewDetails->propertyLeaseDetail->plot_area ?? '' }}
-                                    {{ $item->itemNameById($viewDetails->propertyLeaseDetail->unit ?? '') }} <span
-                                        class="text-secondary">({{ $viewDetails->propertyLeaseDetail->plot_area_in_sqm ?? '' }}
-                                        Sq
-                                        Meter)</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Premium (Re/ Rs): </b>₹
-                                    {{ $viewDetails->propertyLeaseDetail->premium ?? '0' }}.{{ $viewDetails->propertyLeaseDetail->premium_in_paisa }}{{ $viewDetails->propertyLeaseDetail->premium_in_aana }}
-                                </td>
-                                <td><b>Ground Rent (Re/ Rs):
-                                    </b>₹
-                                    {{ $viewDetails->propertyLeaseDetail->gr_in_re_rs ?? '0' }}.{{ $viewDetails->propertyLeaseDetail->gr_in_paisa }}{{ $viewDetails->propertyLeaseDetail->gr_in_aana }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Start Date of Ground Rent:
-                                    </b>{{ !empty($viewDetails->propertyLeaseDetail->start_date_of_gr) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->start_date_of_gr)->format('d-m-Y') : 'NA' }}
-                                </td>
-                                <td><b>RGR Duration (Yrs): </b>
-                                    {{ $viewDetails->propertyLeaseDetail->rgr_duration ?? 'NA' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>First Revision of GR due on:
-                                    </b>{{ !empty($viewDetails->propertyLeaseDetail->first_rgr_due_on) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->first_rgr_due_on)->format('d-m-Y') : 'NA' }}
-                                </td>
-                                <td><b>Purpose for which leased/<br> allotted (As per lease):
-                                    </b>{{ $item->itemNameById($viewDetails->propertyLeaseDetail->property_type_as_per_lease) ?? 'NA' }}
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td><b>Sub-Type (Purpose , at present):
-                                    </b>{{ $item->itemNameById($viewDetails->propertyLeaseDetail->property_sub_type_as_per_lease) ?? 'NA' }}
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td colspan=2><b>Land Use Change:
-                                    </b>{{ $viewDetails->propertyLeaseDetail->is_land_use_changed ? 'Yes' : 'No' }} </td>
-
-                            </tr>
-                            <tr>
-                                <td><b>If yes,<br>Purpose for which leased/<br> allotted (As per lease):
-                                    </b>{{ $item->itemNameById($viewDetails->propertyLeaseDetail->property_type_at_present) ?? 'NA' }}
-                                </td>
-                                <td><b>Sub-Type (Purpose , at present):
-                                    </b>{{ $item->itemNameById($viewDetails->propertyLeaseDetail->property_sub_type_at_present) ?? 'NA' }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
-            <div class="part-title">
-                <h5>LAND TRANSFER DETAILS</h5>
-            </div>
-
-            <div class="part-details">
-                <div class="container-fluid">
-                    @if ($separatedData)
-                        @foreach ($separatedData as $date => $dayTransferDetail)
-                            <!-- Added by Nitin to group land transfer by date ---->
-                            @foreach ($dayTransferDetail as $key => $transferDetail)
-                                <!-- Modified By Nitin--->
-                                <!-- <div class="border border-primary p-3 mt-3"> -->
-                                <!-- <p><b>Process Of Transfer: </b>{{ $key }}</p>
-                                                                                                                                        @if ($key == 'Conversion')
-    <p><b>Date: </b>{{ $viewDetails->propertyLeaseDetail->date_of_conveyance_deed }}
-                                                                                                                                            </p>
-@else
-    <p><b>Date: </b>{{ $date }}</p>
-    @endif -->
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <td colspan="5" class="address_data"><b>Process Of Transfer:
-                                            </b>{{ $key }}<!-- </td> -->
-                                            <!--  <td colspan="2" class="address_data"> -->
-                                            &nbsp;
-                                            @if ($key == 'Conversion')
-                                                <!-- <b>Date: </b> -->({{ !empty($viewDetails->propertyLeaseDetail->date_of_conveyance_deed) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->date_of_conveyance_deed)->format('d-m-Y') : '' }})
-                                            @else
-                                                <!-- <b>Date: </b> -->({{ !empty($date) ? \Carbon\Carbon::parse($date)->format('d-m-Y') : '' }})
-                                            @endif
-                                        </td>
-
-                                    </tr>
-                                    <tr>
-                                        <th>Lessee Name</th>
-                                        <th>Lessee Age (in Years)</th>
-                                        <th>Lessee Share</th>
-                                        <th>Lessee PAN Number</th>
-                                        <th>Lessee Aadhar Number</th>
-                                    </tr>
-                                    @foreach ($transferDetail as $details)
-                                        <tr>
-                                            <td>{{ $details->lessee_name }}</td>
-                                            <td>{{ $details->lessee_age }}</td>
-                                            <td>{{ $details->property_share }}</td>
-                                            <td>{{ $details->lessee_pan_no }}</td>
-                                            <td>{{ $details->lessee_aadhar_no }}</td>
-                                        </tr>
-                                    @endforeach
-                                </table>
-                                <!-- </div> -->
-                            @endforeach
-                        @endforeach
-                    @else
-                        <p class="font-weight-bold">No Records Available</p>
-                    @endif
-                </div>
-            </div>
-
-
-            @if (isset($flatData['flatDetails']->flat_number))
-                <!-- <h5 class="mb-4 pt-3 text-decoration-underline">FLAT DETAILS</h5> -->
                 <div class="part-title">
-                    <h5>FLAT DETAILS</h5>
+                    <h5>BASIC DETAILS</h5>
                 </div>
-
                 <div class="part-details">
                     <div class="container-fluid">
-
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td><b>Flat Id : </b>{{ $flatData['flatDetails']->unique_flat_id }}</td>
-                                    <td><b>Flat File No. : </b>{{ $flatData['flatDetails']->unique_file_no }}</td>
-                                    <td><b>Flat No : </b>{{ $flatData['flatDetails']->flat_number }}</td>
+                                    <td><b>New Property Id: </b> {{ $viewDetails->unique_propert_id }}</td>
+                                    <td><b>Old Property Id: </b> {{ $viewDetails->old_propert_id }}</td>
                                 </tr>
                                 <tr>
-                                    <td><b>Builder / Developer Name :
-                                        </b>{{ $flatData['flatDetails']->builder_developer_name }}</td>
-                                    <td><b>Original Buyer Name : </b>{{ $flatData['flatDetails']->original_buyer_name }}
+                                    <td><b>More than 1 Property IDs: </b> {{ $viewDetails->is_multiple_ids ? 'Yes' : 'No' }}
                                     </td>
-                                    <td><b>Purchase Date :
-                                        </b>{{ \Carbon\Carbon::parse($flatData['flatDetails']->purchase_date)->format('d-m-Y') }}
-                                    </td>
+                                    <td><b>File No.: </b> {{ $viewDetails->file_no }}</td>
                                 </tr>
                                 <tr>
-                                    <td><b>Present Occupent Name :
-                                        </b>{{ $flatData['flatDetails']->present_occupant_name }}</td>
-                                    <td></td>
-                                    <td></td>
+                                    <td><b>Computer generated file no: </b> {{ $viewDetails->unique_file_no }} </td>
+                                    <td><b>Colony Name(Old): </b> {{ $viewDetails->oldColony->name }} </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Colony Name(Present):</b> {{ $viewDetails->newColony->name }} </td>
+                                    <td><b>Property Status: </b> {{ $item->itemNameById($viewDetails->status) }} </td>
+
+                                </tr>
+                                <tr>
+                                    <td><b>Land Type:</b> {{ $item->itemNameById($viewDetails->land_type) }}</td>
+                                    <td> </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            @else
-                @if (!empty($flatData['flatDetails']['flat_number']))
+                    
+                
+
+                <!-- <h5 class="mb-4 pt-3 text-decoration-underline">LEASE DETAILS</h5> -->
+                <div class="part-title">
+                    <h5>LEASE DETAILS</h5>
+                </div>
+
+                <div class="part-details">
+                    <div class="container-fluid">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td><b>Type of Lease: </b>
+                                        {{ $item->itemNameById($viewDetails->propertyLeaseDetail->type_of_lease) }}</td>
+                                    <td><b>Date of Execution: </b>
+                                    {{ !empty($viewDetails->propertyLeaseDetail->doe) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->doe)->format('d-m-Y') : '' }}
+                                </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Lease/Allotment No.: </b> {{ $viewDetails->lease_no ?? 'NA' }}</td>
+                                     <td><b>Date of Expiration:
+                                    </b>{{ !empty($viewDetails->propertyLeaseDetail->date_of_expiration) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->date_of_expiration)->format('d-m-Y') : '' }}
+                                </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Date of Allotment:
+                                    </b>{{ !empty($viewDetails->propertyLeaseDetail->doa) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->doa)->format('d-m-Y') : '' }}
+                                </td>
+                                    <td><b>Block No.: </b> {{ $viewDetails->block_no }}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Plot No.: </b> {{ $viewDetails->plot_or_property_no }} </td>
+                                    <?php
+                                    $names = [];
+                                    foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
+                                        $name = $transferDetail->process_of_transfer;
+                                        if ($name == 'Original') {
+                                            $names[] = $transferDetail->lessee_name;
+                                        }
+                                    }
+                                    ?>
+                                    <td><b>In Favour Of: </b>{{ implode(', ', $names) }} </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Presently Known As: </b>{{ $viewDetails->propertyLeaseDetail->presently_known_as }}
+                                    </td>
+                                    <td><b>Area: </b> {{ $viewDetails->propertyLeaseDetail->plot_area }}
+                                        {{ $item->itemNameById($viewDetails->propertyLeaseDetail->unit) }} <span
+                                            class="text-secondary">({{ $viewDetails->propertyLeaseDetail->plot_area_in_sqm }}
+                                            Sq
+                                            Meter)</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Premium (Re/ Rs): </b>₹
+                                        {{ $viewDetails->propertyLeaseDetail->premium ?? '0' }}.{{ $viewDetails->propertyLeaseDetail->premium_in_paisa }}{{ $viewDetails->propertyLeaseDetail->premium_in_aana }}
+                                    </td>
+                                    <td><b>Ground Rent (Re/ Rs):
+                                        </b>₹
+                                        {{ $viewDetails->propertyLeaseDetail->gr_in_re_rs ?? '0' }}.{{ $viewDetails->propertyLeaseDetail->gr_in_paisa }}{{ $viewDetails->propertyLeaseDetail->gr_in_aana }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>Start Date of Ground Rent:
+                                    </b>{{ !empty($viewDetails->propertyLeaseDetail->start_date_of_gr) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->start_date_of_gr)->format('d-m-Y') : 'NA' }}
+                                </td>
+                                    <td><b>RGR Duration (Yrs): </b>
+                                        {{ $viewDetails->propertyLeaseDetail->rgr_duration ?? 'NA' }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><b>First Revision of GR due on:
+                                    </b>{{ !empty($viewDetails->propertyLeaseDetail->first_rgr_due_on) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->first_rgr_due_on)->format('d-m-Y') : 'NA' }}
+                                </td>
+                                    <td><b>Purpose for which leased/<br> allotted (As per lease):
+                                        </b>{{ $item->itemNameById($viewDetails->propertyLeaseDetail->property_type_as_per_lease) ?? 'NA' }}
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td><b>Sub-Type (Purpose , at present):
+                                        </b>{{ $item->itemNameById($viewDetails->propertyLeaseDetail->property_sub_type_as_per_lease) ?? 'NA' }}
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan=2><b>Land Use Change:
+                                        </b>{{ $viewDetails->propertyLeaseDetail->is_land_use_changed ? 'Yes' : 'No' }} </td>
+
+                                </tr>
+                                <tr>
+                                    <td><b>If yes,<br>Purpose for which leased/<br> allotted (As per lease):
+                                        </b>{{ $item->itemNameById($viewDetails->propertyLeaseDetail->property_type_at_present) ?? 'NA' }}
+                                    </td>
+                                    <td><b>Sub-Type (Purpose , at present):
+                                        </b>{{ $item->itemNameById($viewDetails->propertyLeaseDetail->property_sub_type_at_present) ?? 'NA' }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="part-title">
+                    <h5>LAND TRANSFER DETAILS</h5>
+                </div>
+
+                <div class="part-details">
+                    <div class="container-fluid">
+                        @if ($separatedData)
+                            @foreach ($separatedData as $date => $dayTransferDetail)
+                                <!-- Added by Nitin to group land transfer by date ---->
+                                @foreach ($dayTransferDetail as $key => $transferDetail)
+                                    <!-- Modified By Nitin--->
+                                    <!-- <div class="border border-primary p-3 mt-3"> -->
+                                        <!-- <p><b>Process Of Transfer: </b>{{ $key }}</p>
+                                        @if ($key == 'Conversion')
+                                            <p><b>Date: </b>{{ $viewDetails->propertyLeaseDetail->date_of_conveyance_deed }}
+                                            </p>
+                                        @else
+                                            <p><b>Date: </b>{{ $date }}</p>
+                                        @endif -->
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td colspan="5" class="address_data"><b>Process Of Transfer: </b>{{ $key }}<!-- </td> -->
+                                               <!--  <td colspan="2" class="address_data"> -->
+                                                    &nbsp;
+                                                    @if ($key == 'Conversion')
+                                                       <!-- <b>Date: </b> -->({{ !empty($viewDetails->propertyLeaseDetail->date_of_conveyance_deed) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->date_of_conveyance_deed)->format('d-m-Y') : '' }})
+                                                        
+                                                    @else
+                                                        <!-- <b>Date: </b> -->({{ !empty($date) ? \Carbon\Carbon::parse($date)->format('d-m-Y') : '' }})
+                                                    @endif
+                                                </td>
+                                                
+                                            </tr>
+                                            <tr>
+                                                <th>Lessee Name</th>
+                                                <th>Lessee Age (in Years)</th>
+                                                <th>Lessee Share</th>
+                                                <th>Lessee PAN Number</th>
+                                                <th>Lessee Aadhar Number</th>
+                                            </tr>
+                                            @foreach ($transferDetail as $details)
+                                                <tr>
+                                                    <td>{{ $details->lessee_name }}</td>
+                                                    <td>{{ $details->lessee_age }}</td>
+                                                    <td>{{ $details->property_share }}</td>
+                                                    <td>{{ $details->lessee_pan_no }}</td>
+                                                    <td>{{ $details->lessee_aadhar_no }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </table>
+                                    <!-- </div> -->
+                                @endforeach
+                            @endforeach
+                        @else
+                            <p class="font-weight-bold">No Records Available</p>
+                        @endif
+                    </div>
+                </div>
+
+               
+                    @if(isset($flatData['flatDetails']->flat_number))
                     <!-- <h5 class="mb-4 pt-3 text-decoration-underline">FLAT DETAILS</h5> -->
                     <div class="part-title">
                         <h5>FLAT DETAILS</h5>
@@ -313,87 +288,123 @@
 
                     <div class="part-details">
                         <div class="container-fluid">
+                        
                             <table class="table table-bordered">
                                 <tbody>
                                     <tr>
-                                        <td><b>Flat Number : </b>{{ $flatData['flatDetails']['flat_number'] }}</td>
-                                        <td><b>No MIS Found For This Flat Property </b></td>
+                                        <td><b>Flat Id : </b>{{ $flatData['flatDetails']->unique_flat_id }}</td>
+                                        <td><b>Flat File No. : </b>{{ $flatData['flatDetails']->unique_file_no }}</td>
+                                        <td><b>Flat No : </b>{{ $flatData['flatDetails']->flat_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Builder / Developer Name : </b>{{ $flatData['flatDetails']->builder_developer_name }}</td>
+                                        <td><b>Original Buyer Name : </b>{{ $flatData['flatDetails']->original_buyer_name }}</td>
+                                        <td><b>Purchase Date : </b>{{ \Carbon\Carbon::parse($flatData['flatDetails']->purchase_date)->format('m/d/Y') }}
+                                        </td>                                            </td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Present Occupent Name : </b>{{ $flatData['flatDetails']->present_occupant_name }}</td>
+                                        <td></td>
                                         <td></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                @else
-                    <!-- <h5 class="mb-4 pt-3 text-decoration-underline">PROPERTY STATUS DETAILS</h5> -->
-                    <div class="part-title">
-                        <h5>PROPERTY STATUS DETAILS</h5>
-                    </div>
-                    <div class="part-details">
-                        <div class="container-fluid">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    @if ($viewDetails->propertyLeaseDetail)
-                                        <?php
-                                        $namesConversion = [];
-                                        foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
-                                            $name = $transferDetail->process_of_transfer;
-                                            if ($name == 'Conversion') {
-                                                $namesConversion[] = $transferDetail->lessee_name;
-                                            }
-                                        }
-                                        ?>
-                                        <tr>
-                                            <td><b>Free Hold (F/H): </b>{{ $viewDetails->status == 952 ? 'Yes' : 'No' }}
-                                            </td>
-                                            <td><b>Date of Conveyance Deed:
-                                                </b>{{ $viewDetails->propertyLeaseDetail->date_of_conveyance_deed ?? 'NA' }}
-                                            </td>
-                                            <td>
-                                                <b>In Favour of, Name: </b>{{ implode(', ', $namesConversion) }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Vaccant: </b>{{ $viewDetails->status == 1124 ? 'Yes' : 'No' }}</td>
-                                            <td><b>In Possession Of:
-                                                </b>{{ $viewDetails->propertyLeaseDetail->in_possession_of_if_vacant ?? 'NA' }}
-                                            </td>
-                                            <td><b>Date Of Transfer:
-                                                </b>{{ $viewDetails->propertyLeaseDetail->date_of_transfer ?? 'NA' }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Others: </b>{{ $viewDetails->status == 1342 ? 'Yes' : 'No' }}</td>
-                                            <td><b>Remark: </b>{{ $viewDetails->propertyLeaseDetail->remarks ?? 'NA' }}
-                                            </td>
-                                        </tr>
-                                    @else
-                                        <p class="font-weight-bold">No Records Available</p>
-                                    @endif
-                                </tbody>
-                            </table>
+                            
+                    @else
+                        @if (!empty($flatData['flatDetails']['flat_number']))
+                        <!-- <h5 class="mb-4 pt-3 text-decoration-underline">FLAT DETAILS</h5> -->
+                        <div class="part-title">
+                            <h5>FLAT DETAILS</h5>
                         </div>
-                    </div>
 
-                    <!-- <h5 class="mb-4 pt-3 text-decoration-underline">INSPECTION & DEMAND DETAILS</h5> -->
-                    <div class="part-title">
-                        <h5>INSPECTION & DEMAND DETAILS</h5>
-                    </div>
-                    <div class="part-details">
-                        <div class="container-fluid">
-                            <table class="table table-bordered">
-                                <tbody>
+                        <div class="part-details">
+                            <div class="container-fluid">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><b>Flat Number : </b>{{ $flatData['flatDetails']['flat_number'] }}</td>
+                                            <td><b>No MIS Found For This Flat Property </b></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                                
+                        @else
+                            <!-- <h5 class="mb-4 pt-3 text-decoration-underline">PROPERTY STATUS DETAILS</h5> -->
+                            <div class="part-title">
+                                <h5>PROPERTY STATUS DETAILS</h5>
+                            </div>
+                            <div class="part-details">
+                                <div class="container-fluid">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            @if ($viewDetails->propertyLeaseDetail)
+                                                <?php
+                                                $namesConversion = [];
+                                                foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
+                                                    $name = $transferDetail->process_of_transfer;
+                                                    if ($name == 'Conversion') {
+                                                        $namesConversion[] = $transferDetail->lessee_name;
+                                                    }
+                                                }
+                                                ?>
+                                                <tr>
+                                                    <td><b>Free Hold (F/H): </b>{{ $viewDetails->status == 952 ? 'Yes' : 'No' }}</td>
+                                                    <td><b>Date of Conveyance Deed:
+                                                        </b>
+                                                        {{ !empty($viewDetails->propertyLeaseDetail->date_of_conveyance_deed) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->date_of_conveyance_deed)->format('d-m-Y') : '' }}
+                                                       </td>
+                                                    <td>
+                                                        <b>In Favour of, Name: </b>{{ implode(', ', $namesConversion) }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>Vaccant: </b>{{ $viewDetails->status == 1124 ? 'Yes' : 'No' }}</td>
+                                                    <td><b>In Possession Of:
+                                                        </b>{{ $viewDetails->propertyLeaseDetail->in_possession_of_if_vacant ?? 'NA' }}
+                                                    </td>
+                                                    <td><b>Date Of Transfer:
+                                                        </b>
+                                                        {{ !empty($viewDetails->propertyLeaseDetail->date_of_transfer) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->date_of_transfer)->format('d-m-Y') : '' }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>Others: </b>{{ $viewDetails->status == 1342 ? 'Yes' : 'No' }}</td>
+                                                    <td><b>Remark: </b>{{ $viewDetails->propertyLeaseDetail->remarks ?? 'NA' }}</td>
+                                                </tr>
+                                            @else
+                                                <p class="font-weight-bold">No Records Available</p>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>   
+                            </div>
+
+                            <!-- <h5 class="mb-4 pt-3 text-decoration-underline">INSPECTION & DEMAND DETAILS</h5> -->
+                            <div class="part-title">
+                                <h5>INSPECTION & DEMAND DETAILS</h5>
+                            </div>
+                            <div class="part-details">
+                                <div class="container-fluid">
+                                    <table class="table table-bordered">
+                                        <tbody>
                                     @if (
                                         $viewDetails->propertyInspectionDemandDetail &&
                                             is_null($viewDetails->propertyInspectionDemandDetail->splited_property_detail_id))
                                         <tr>
                                             <td colspan=2><b>Date of Last Inspection Report:
-                                                </b>{{ $viewDetails->propertyInspectionDemandDetail->last_inspection_ir_date ?? 'NA' }}
+                                                </b>
+                                                {{ !empty($viewDetails->propertyInspectionDemandDetail->last_inspection_ir_date) ? \Carbon\Carbon::parse($viewDetails->propertyInspectionDemandDetail->last_inspection_ir_date)->format('d-m-Y') : '' }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td><b>Date of Last Demand Letter:
-                                                </b>{{ $viewDetails->propertyInspectionDemandDetail->last_demand_letter_date ?? 'NA' }}
+                                                </b>
+                                                {{ !empty($viewDetails->propertyInspectionDemandDetail->last_demand_letter_date) ? \Carbon\Carbon::parse($viewDetails->propertyInspectionDemandDetail->last_demand_letter_date)->format('d-m-Y') : '' }}
                                             </td>
                                             <td><b>Demand ID:
                                                 </b>{{ $viewDetails->propertyInspectionDemandDetail->last_demand_id ?? 'NA' }}
@@ -418,181 +429,182 @@
                                         <p class="font-weight-bold">No Records Available</p>
                                     @endif
                                 </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                    </table>
+                                </div>
+                            </div>
 
-                    <!-- <h5 class="mb-4 pt-3 text-decoration-underline">MISCELLANEOUS DETAILS</h5> -->
-                    <div class="part-title">
-                        <h5>MISCELLANEOUS DETAILS</h5>
-                    </div>
-                    <div class="part-details">
-                        <div class="container-fluid">
+                            <!-- <h5 class="mb-4 pt-3 text-decoration-underline">MISCELLANEOUS DETAILS</h5> -->
+                            <div class="part-title">
+                                <h5>MISCELLANEOUS DETAILS</h5>
+                            </div>
+                            <div class="part-details">
+                                <div class="container-fluid">
+                            
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            @if ($viewDetails->propertyMiscDetail)
+                                                <tr>
+                                                    <td><b>GR Revised Ever:
+                                                        </B>{{ $viewDetails->propertyMiscDetail->is_gr_revised_ever ? 'Yes' : 'No' }}
+                                                    </td>
+                                                    <td><b>Date of GR Revised:
+                                                        </b>
+                                                        {{ !empty($viewDetails->propertyMiscDetail->gr_revised_date) ? \Carbon\Carbon::parse($viewDetails->propertyMiscDetail->gr_revised_date)->format('d-m-Y') : '' }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>Supplementary Lease Deed Executed:
+                                                        </b>
+                                                        {{ !empty($viewDetails->propertyMiscDetail->is_supplimentry_lease_deed_executed) ? \Carbon\Carbon::parse($viewDetails->propertyMiscDetail->is_supplimentry_lease_deed_executed)->format('d-m-Y') : '' }}
+                                                       
+                                                    </td>
+                                                    <td><b>Date of Supplementary Lease Deed Executed:
+                                                        </b>
+                                                        {{ !empty($viewDetails->propertyMiscDetail->supplimentry_lease_deed_executed_date) ? \Carbon\Carbon::parse($viewDetails->propertyMiscDetail->supplimentry_lease_deed_executed_date)->format('d-m-Y') : '' }}
+                                                      
+                                                    </td>
+                                                </tr>
+                                                <tr>
 
-                            <table class="table table-bordered">
-                                <tbody>
-                                    @if ($viewDetails->propertyMiscDetail)
-                                        <tr>
-                                            <td><b>GR Revised Ever:
-                                                </B>{{ $viewDetails->propertyMiscDetail->is_gr_revised_ever ? 'Yes' : 'No' }}
-                                            </td>
-                                            <td><b>Date of GR Revised:
-                                                </b>{{ $viewDetails->propertyMiscDetail->gr_revised_date ?? 'NA' }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Supplementary Lease Deed Executed:
-                                                </b>{{ $viewDetails->propertyMiscDetail->is_supplimentry_lease_deed_executed ? 'Yes' : 'No' }}
-                                            </td>
-                                            <td><b>Date of Supplementary Lease Deed Executed:
-                                                </b>{{ $viewDetails->propertyMiscDetail->supplimentry_lease_deed_executed_date ?? 'NA' }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-
-                                            <td><b>Supplementary Area: </b>
-                                                {{ $viewDetails->propertyMiscDetail->supplementary_area }}
-                                                {{ $item->itemNameById($viewDetails->propertyMiscDetail->supplementary_area_unit) }}
-                                                <span
-                                                    class="text-secondary">({{ $viewDetails->propertyMiscDetail->supplementary_area_in_sqm }}
-                                                    Sq
-                                                    Meter)</span>
-                                            </td>
-                                            <td><b>Supplementary Total Premium (in Rs):
-                                                </b>₹
-                                                {{ $viewDetails->propertyMiscDetail->supplementary_total_premium ?? '0' }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Supplementary Total GR (in Rs):
-                                                </b>₹ {{ $viewDetails->propertyMiscDetail->supplementary_total_gr ?? '0' }}
-                                            </td>
-                                            <td><b>Supplementary Remark:
-                                                </b>{{ $viewDetails->propertyMiscDetail->supplementary_remark ?? 'NA' }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Re-entered:
-                                                </b>{{ $viewDetails->propertyMiscDetail->is_re_rented ? 'Yes' : 'No' }}
-                                            </td>
-                                            <td><b>Date of Re-entry:
-                                                </b>{{ $viewDetails->propertyMiscDetail->re_rented_date ?? 'NA' }}
-                                            </td>
-                                        </tr>
-                                    @else
-                                        <p class="font-weight-bold">No Records Available</p>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- <h5 class="mb-4 pt-3 text-decoration-underline">Latest Contact Details</h5> -->
-                    <div class="part-title">
-                        <h5>LATEST CONTACT DETAILS</h5>
-                    </div>
-                    <div class="part-details">
-                        <div class="container-fluid">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    <tr>
-                                        <td><b>Address: </b>{{ $viewDetails->propertyContactDetail->address ?? 'NA' }}</td>
-                                        <td><b>Phone No.: </b>{{ $viewDetails->propertyContactDetail->phone_no ?? 'NA' }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><b>Email: </b>{{ $viewDetails->propertyContactDetail->email ?? 'NA' }}</td>
-                                        <td><b>As on Date: </b>
-                                            @if (isset($viewDetails->propertyContactDetail->as_on_date))
-                                                {{ $viewDetails->propertyContactDetail->as_on_date }}
+                                                    <td><b>Supplementary Area: </b>
+                                                        {{ $viewDetails->propertyMiscDetail->supplementary_area }}
+                                                        {{ $item->itemNameById($viewDetails->propertyMiscDetail->supplementary_area_unit) }}
+                                                        <span
+                                                            class="text-secondary">({{ $viewDetails->propertyMiscDetail->supplementary_area_in_sqm }}
+                                                            Sq
+                                                            Meter)</span>
+                                                    </td>
+                                                    <td><b>Supplementary Total Premium (in Rs):
+                                                        </b>₹ {{ $viewDetails->propertyMiscDetail->supplementary_total_premium ?? '0' }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>Supplementary Total GR (in Rs):
+                                                        </b>₹ {{ $viewDetails->propertyMiscDetail->supplementary_total_gr ?? '0' }}
+                                                    </td>
+                                                    <td><b>Supplementary Remark:
+                                                        </b>{{ $viewDetails->propertyMiscDetail->supplementary_remark ?? 'NA' }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>Re-entered:
+                                                        </b>{{ $viewDetails->propertyMiscDetail->is_re_rented ? 'Yes' : 'No' }}
+                                                    </td>
+                                                    <td><b>Date of Re-entry:
+                                                        </b>{{ $viewDetails->propertyMiscDetail->re_rented_date ?? 'NA' }}
+                                                    </td>
+                                                </tr>
                                             @else
-                                                {{ $viewDetails->propertyLeaseDetail->date_of_conveyance_deed }}
+                                                <p class="font-weight-bold">No Records Available</p>
                                             @endif
-
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-
-                @endif
-            @endif
-
-            @if ($roles === 'section-officer')
-                @if ($isChecked == 1)
-                    <div class="d-flex pb-5 gap-1 flex-row justify-content-end align-items-end ">
-                        @if ($disableButtons)
-                            {{-- @if (empty($applicationStatus->permission_to) && empty($applicationStatus->remarks)) --}}
-                            @if ($hideRequestEditButtons)
-                                <div class="btn-group">
-                                    <button type="button" id="requestMisEdit" class="btn btn-primary ml-2">Request
-                                        Edit</button>
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>
+
+                            <!-- <h5 class="mb-4 pt-3 text-decoration-underline">Latest Contact Details</h5> -->
+                            <div class="part-title">
+                                <h5>LATEST CONTACT DETAILS</h5>
+                            </div>
+                            <div class="part-details">
+                                <div class="container-fluid">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <td><b>Address: </b>{{ $viewDetails->propertyContactDetail->address ?? 'NA' }}</td>
+                                                <td><b>Phone No.: </b>{{ $viewDetails->propertyContactDetail->phone_no ?? 'NA' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><b>Email: </b>{{ $viewDetails->propertyContactDetail->email ?? 'NA' }}</td>
+                                                <td><b>As on Date: </b>
+                                                    @if (isset($viewDetails->propertyContactDetail->as_on_date))
+                                                        {{ !empty($viewDetails->propertyContactDetail->as_on_date) ? \Carbon\Carbon::parse($viewDetails->propertyContactDetail->as_on_date)->format('d-m-Y') : '' }}
+                                                    @else
+                                                         {{ !empty($viewDetails->propertyLeaseDetail->date_of_conveyance_deed) ? \Carbon\Carbon::parse($viewDetails->propertyLeaseDetail->date_of_conveyance_deed)->format('d-m-Y') : '' }}
+                                                    @endif
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                                
                             @endif
-                            {{-- @endif --}}
-                        @else
-                            @if ($disableApproveButtons)
-                                <div class="btn-group">
-                                    <button type="button" id="MISChecked" class="btn btn-primary ml-2">Approve</button>
-                                </div>
-                            @endif
-
-                            @php
-                                $serviceType = !empty($additionalData[0]) ? $additionalData[0] : '';
-                                $modalId = !empty($additionalData[1]) ? $additionalData[1] : '';
-                                $applicantNo = !empty($additionalData[2]) ? $additionalData[2] : '';
-                                $masterId = !empty($additionalData[3]) ? $additionalData[3] : '';
-                                $uniquePropertyId = !empty($additionalData[4]) ? $additionalData[4] : '';
-                                $oldPropertyId = !empty($additionalData[5]) ? $additionalData[5] : '';
-                                $sectionCode = !empty($additionalData[6]) ? $additionalData[6] : '';
-                                //Flat Id added by Lalit on 06/Nov/2024
-                                $flatId = !empty($flatData['flatDetails']->flat_id)
-                                    ? $flatData['flatDetails']->flat_id
-                                    : '';
-                                $additionalData = [
-                                    $serviceType,
-                                    $modalId,
-                                    $applicantNo,
-                                    $masterId,
-                                    $uniquePropertyId,
-                                    $oldPropertyId,
-                                    $sectionCode,
-                                    $flatId,
-                                ]; //service type,modalId, applicant no
-                                $additionalDataJson = json_encode($additionalData);
-                            @endphp
-                            @if (isset($flatData['flatDetails']->id))
-                                <div class="btn-group">
-                                    <a
-                                        href="{{ route('editFlatDetails', ['id' => $flatData['flatDetails']->id]) }}?params={{ urlencode($additionalDataJson) }}">
-                                        <button type="button" class="btn btn-secondary ml-2">Edit</button>
-                                    </a>
-                                </div>
-                            @else
-                                @if (empty($flatData['flatDetails']['is_property_flat']))
+                    @endif
+                
+                @if ($roles === 'section-officer')            
+                    @if ($isChecked == 1)
+                        <div class="d-flex pb-5 gap-1 flex-row justify-content-end align-items-end ">
+                            @if ($disableButtons)
+                                {{-- @if (empty($applicationStatus->permission_to) && empty($applicationStatus->remarks)) --}}
+                                @if ($hideRequestEditButtons)
                                     <div class="btn-group">
-                                        <a
-                                            href="{{ route('editDetails', ['property' => $viewDetails->id]) }}?params={{ urlencode($additionalDataJson) }}">
-                                            <button type="button" id="PropertyIDSearchBtn"
-                                                class="btn btn-secondary ml-2">Edit</button>
-                                        </a>
+                                        <button type="button" id="requestMisEdit" class="btn btn-primary ml-2">Request
+                                            Edit</button>
                                     </div>
                                 @endif
+                                {{-- @endif --}}
+                            @else
+                                @if ($disableApproveButtons)
+                                    <div class="btn-group">
+                                        <button type="button" id="MISChecked" class="btn btn-primary ml-2">Approve</button>
+                                    </div>
+                                @endif
+
+                                @php
+                                    $serviceType = !empty($additionalData[0]) ? $additionalData[0] : '';
+                                    $modalId = !empty($additionalData[1]) ? $additionalData[1] : '';
+                                    $applicantNo = !empty($additionalData[2]) ? $additionalData[2] : '';
+                                    $masterId = !empty($additionalData[3]) ? $additionalData[3] : '';
+                                    $uniquePropertyId = !empty($additionalData[4]) ? $additionalData[4] : '';
+                                    $oldPropertyId = !empty($additionalData[5]) ? $additionalData[5] : '';
+                                    $sectionCode = !empty($additionalData[6]) ? $additionalData[6] : '';
+                                    //Flat Id added by Lalit on 06/Nov/2024
+                                    $flatId = !empty($flatData['flatDetails']->flat_id) ? $flatData['flatDetails']->flat_id : '';
+                                    $additionalData = [
+                                        $serviceType,
+                                        $modalId,
+                                        $applicantNo,
+                                        $masterId,
+                                        $uniquePropertyId,
+                                        $oldPropertyId,
+                                        $sectionCode,
+                                        $flatId,
+                                    ]; //service type,modalId, applicant no
+                                    $additionalDataJson = json_encode($additionalData);
+                                @endphp
+                                @if(isset($flatData['flatDetails']->id))
+                                    <div class="btn-group">
+                                        <a
+                                            href="{{ route('editFlatDetails', ['id' => $flatData['flatDetails']->id]) }}?params={{ urlencode($additionalDataJson) }}">
+                                            <button type="button" class="btn btn-secondary ml-2">Edit</button>
+                                        </a>
+                                    </div>
+                                @else
+                                        @if (empty($flatData['flatDetails']['is_property_flat']))
+                                            <div class="btn-group">
+                                                <a
+                                                    href="{{ route('editDetails', ['property' => $viewDetails->id]) }}?params={{ urlencode($additionalDataJson) }}">
+                                                    <button type="button" id="PropertyIDSearchBtn"
+                                                        class="btn btn-secondary ml-2">Edit</button>
+                                                </a>
+                                            </div>
+                                        @endif
+                                @endif
                             @endif
-                        @endif
+                        </div>
+                    @endif
+                @endif
+                <!-- </div> -->
+                @if ($roles === 'deputy-lndo' && $isApproved)
+                    <div class="d-flex pb-5 gap-1 flex-row justify-content-end align-items-end ">
+                        <div class="btn-group">
+                            <button type="button" id="MISChecked" class="btn btn-primary ml-2">Approve</button>
+                        </div>
                     </div>
                 @endif
-            @endif
-            <!-- </div> -->
-            @if ($roles === 'deputy-lndo' && $isApproved)
-                <div class="d-flex pb-5 gap-1 flex-row justify-content-end align-items-end ">
-                    <div class="btn-group">
-                        <button type="button" id="MISChecked" class="btn btn-primary ml-2">Approve</button>
-                    </div>
-                </div>
-            @endif
         </div>
     </div>
     @include('include.loader')
@@ -614,11 +626,11 @@
                 $('#MISCheckedModal').modal('show');
             });
 
-            $('#confirmApproveMisCheckedCloseBtn').on('click', function() {
+            $('#confirmApproveMisCheckedCloseBtn').on('click', function(){
                 $('#MISChecked').prop('disabled', false).html('Approve');
             })
-
-            $('.btn-close').on('click', function() {
+            
+            $('.btn-close').on('click', function(){
                 $('#MISChecked').prop('disabled', false).html('Approve');
                 $('#requestMisEdit').prop('disabled', false).html('Request Edit');
             })
@@ -640,13 +652,12 @@
                 let formData = $('#misCheckedForm').serialize();
                 // $('#misCheckedForm').submit();
                 // Send AJAX request
-
                 $.ajax({
                     url: "{{ route('approveMis') }}", // Your form action URL
                     type: 'POST',
                     data: formData,
                     success: function(response) {
-                        if (response.status == 'success') {
+                        if(response.status == 'success'){
                             // Handle success response
                             $('#MISCheckedModal').modal('hide');
                             $('.loader_container').addClass('d-none');
@@ -655,9 +666,7 @@
                             showSuccess(response.message);
                             window.location.href = "{{ url()->previous() }}";
                             // Ensure checkbox is checked and disabled after success
-                            // setTimeout(function() {
-                            //     location.reload();
-                            // }, 1000); // Slight delay to ensure modal is fully hidden
+                            // Slight delay to ensure modal is fully hidden
                         } else {
                             // Handle success response
                             $('#MISCheckedModal').modal('hide');
@@ -667,11 +676,8 @@
                             showError(response.message);
                             window.location.href = "{{ url()->previous() }}";
                             // Ensure checkbox is checked and disabled after success
-                            // setTimeout(function() {
-                            //     location.reload();
-                            // }, 100); // Slight delay to ensure modal is fully hidden
+                           // Slight delay to ensure modal is fully hidden
                         }
-
                     },
                     error: function(xhr, status, error) {
                         // Handle error response
@@ -680,7 +686,6 @@
                             $('.results').removeClass('d-none');
                         if (response.responseJSON && response.responseJSON.message) {
                             showError(response.responseJSON.message)
-                            window.location.href = "{{ url()->previous() }}";
                         }
                     }
                 });
@@ -691,7 +696,7 @@
                 $('#requestMisEditModal').modal('show');
             });
 
-            $('#confirmrequestEditMisCheckedCloseBtn').on('click', function() {
+            $('#confirmrequestEditMisCheckedCloseBtn').on('click', function(){
                 $('#requestMisEdit').prop('disabled', false).html('Request Edit');
             })
 
@@ -719,7 +724,7 @@
                     type: 'POST',
                     data: formData,
                     success: function(response) {
-                        if (response.status == 'success') {
+                        if(response.status == 'success'){
                             // Handle success response
                             $('#requestMisEditModal').modal('hide');
                             $('.loader_container').addClass('d-none');

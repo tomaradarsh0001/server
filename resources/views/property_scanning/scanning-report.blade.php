@@ -226,9 +226,30 @@
                         </div>
                         @endif
 
-                        @if(in_array('LS5', $allowedCodes))
+                        @if(in_array('LS4', $allowedCodes))
                         <div class="col-sm-6 col-xl-4 col-lg-6 d-flex mb-2">
                             <div class="card o-hidden border-0 h-100 w-100">
+                                <div class="bg-lightishblue b-r-4 card-body">
+                                    <a href="{{ route('scanning.index', ['section' => 'LS4']) }}">
+                                        <div class="widget-media">
+                                            <div class="align-self-center text-center widget-media-icon">
+                                                <i class="fa-solid fa-house"></i>
+                                            </div>
+                                            <div class="widget-media-body">
+                                                <span class="m-0">Lease Section 4 (LS4)</span>
+                                                <h4 class="mb-0 counter"><span id="scan-ls5">{{ $sectionCounts['LS4'] ?? 0 }}</span></h4>
+                                                <i class="fa-solid fa-copy"></i>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(in_array('LS5', $allowedCodes))
+                        <div class="col-sm-6 col-xl-4 col-lg-6">
+                            <div class="card o-hidden border-0">
                                 <div class="bg-assigned b-r-4 card-body">
                                     <a href="{{ route('scanning.index', ['section' => 'LS5']) }}">
                                         <div class="widget-media">
@@ -238,6 +259,27 @@
                                             <div class="widget-media-body">
                                                 <span class="m-0">Lease Section 5 (LS5)</span>
                                                 <h4 class="mb-0 counter"><span id="scan-ls5">{{ $sectionCounts['LS5'] ?? 0 }}</span></h4>
+                                                <i class="fa-solid fa-copy"></i>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(in_array('RPC', $allowedCodes))
+                        <div class="col-sm-6 col-xl-4 col-lg-6">
+                            <div class="card o-hidden border-0">
+                                <div class="bg-assigned b-r-4 card-body">
+                                    <a href="{{ route('scanning.index', ['section' => 'RPC']) }}">
+                                        <div class="widget-media">
+                                            <div class="align-self-center text-center widget-media-icon">
+                                                <i class="fa-solid fa-house"></i>
+                                            </div>
+                                            <div class="widget-media-body">
+                                                <span class="m-0">RP Cell (RPC)</span>
+                                                <h4 class="mb-0 counter"><span id="scan-ls5">{{ $sectionCounts['RPC'] ?? 0 }}</span></h4>
                                                 <i class="fa-solid fa-copy"></i>
                                             </div>
                                         </div>

@@ -40,16 +40,22 @@
             margin-bottom: 25px !important;
         }
     </style>
- {{-- breadcrumb  --}}
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Logistics</div>
-    @include('include.partials.breadcrumbs')
-</div>
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Logistic</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add Category</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
     <div class="card ">
         <div class="card-body m-3">
 
             <div class="d-flex justify-content-end py-3">
-                <a href="{{ url('logistic/items') }}">
+                <a href="{{ route('logistic.index') }}">
                     <button type="button" class="btn btn-danger px-2 mx-2">← Back</button>
                 </a>
             </div>
@@ -119,7 +125,8 @@
             }
         });
         $('.editable').editable({
-            url: "/logistic/category/update",
+           // url: "/logistic/category/update",
+           url:  "{{ route('category.update') }}",
             type: 'text',
             pk: 1,
             name: 'name',
@@ -174,27 +181,33 @@
                 .appendTo('#myDataTable_wrapper .col-md-6:eq(0)');
         });
 
-        var categoryId; // Store the category ID for the status change
+         let categoryId; // Store the category ID for the status change
 
-        // Event listener for toggle switch
-        $('.toggle-status').on('change', function() {
-            categoryId = $(this).data('id');
-            $('#statusChangeModal').modal('show');
-        });
+    // Predefined route template from Laravel
+    const updateStatusUrlTemplate = "{{ route('category.updateStatus', ['itemId' => '__ID__']) }}";
 
-        // Event listener for the confirm button in the modal
-        $('.confirm-approve').on('click', function() {
-            $('#statusChangeModal').modal('hide');
+    // Event listener for toggle switch
+    $('.toggle-status').on('change', function() {
+        categoryId = $(this).data('id');
+        $('#statusChangeModal').modal('show');
+    });
 
-            // Submit form to update status
-            $('<form>', {
-                "id": "status-form",
-                "html": '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
-                    '<input type="hidden" name="_method" value="POST">',
-                "action": `/logistic/category/${categoryId}/update-status`
-            }).appendTo(document.body).submit();
-        });
+    // Event listener for the confirm button in the modal
+    $('.confirm-approve').on('click', function() {
+        $('#statusChangeModal').modal('hide');
 
+        const finalUrl = updateStatusUrlTemplate.replace('__ID__', categoryId);
+
+        $('<form>', {
+            id: "status-form",
+            method: "POST",
+            action: finalUrl,
+            html: `
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_method" value="POST">
+            `
+        }).appendTo(document.body).submit();
+    });
         $(document).ready(function() {
             $('#name').on('input', function() {
                 var name = $(this).val();

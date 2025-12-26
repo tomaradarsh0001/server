@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit SMS')
+@section('title', 'Edit Sms Settings')
 
 @section('content')
 <style>
@@ -15,11 +15,16 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                 </li>
-                <li class="breadcrumb-item">Application Configuration</li>
-                <li class="breadcrumb-item">SMS</li>
-                <li class="breadcrumb-item active" aria-current="page">Edit SMS</li>
+                <li class="breadcrumb-item active" aria-current="page">Sms</li>
+                <li>
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item">
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit Sms</li>
+                    </ol>
+                </li>
             </ol>
 
         </nav>

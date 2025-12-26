@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Property Details')
+@section('title', 'MIS Form Details')
 
 @section('content')
 
@@ -13,24 +13,36 @@
 
 	}
 </style>
+<!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">MIS</div>
-        @include('include.partials.breadcrumbs')
-    </div>
-    <!--breadcrumb-->
+	<div class="breadcrumb-title pe-3">Properties</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="{{'dashboard'}}"><i class="bx bx-home-alt"></i></a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">Properties</li>
+				<li class="breadcrumb-item active" aria-current="page">View</li>
+				<li class="breadcrumb-item active" aria-current="page">Plots</li>
+                </ol>
+            </nav>
+        </div>
+	<!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
+</div>
 
 <hr>
 
 <div class="card">
 	<div class="card-body">
 		<form id="search-form">
-			<div class="d-flex pb-4 gap-3 flex-wrap"> <!-- added class flex-wrap for fixed the form responsive issue by anil on 27-08-2025 -->
+			<div class="d-flex pb-4 gap-3 flex-wrap">
 
 				<div class="col-md-2">
 					<div class="form-group">
-						<label for="serach" class="form-label">Enter property ID</label>
-						<input type="text" name="serach" id="serach" placeholder="search by property ID" class="form-control" />
-						<span id="propertyIdError" class="text-danger" style="position: absolute;"></span>
+						<label for="serach" class="form-label">Enter property id</label>
+						<input type="text" name="serach" id="serach" placeholder="search by property ID"
+							class="form-control" />
+							<span id="propertyIdError" class="text-danger" style="position: absolute;"></span>
 					</div>
 				</div>
 				<div class="col-md-2">
@@ -58,11 +70,13 @@
 						<div class="form-group">
 
 							<label for="dateEnd" class="form-label">Select Colony</label>
-							<select class="form-select" name="old_colony_name" id="ColonyNameOld" aria-label="Default select example">
+							<select class="form-select" name="old_colony_name" id="ColonyNameOld"
+								aria-label="Default select example">
 								<option value="">Select Colony</option>
 								@foreach($colonyList as $colony)
 									<option value="{{ $colony->id}}">{{$colony->name}}</option>
 								@endforeach
+
 							</select>
 						</div>
 					</div>
@@ -75,7 +89,8 @@
 				</form> -->
 					<div class="col-md-6 align-self-end">
 						<div class="form-group">
-							<button type="button" id="exportBtn" name="exportBtn" class="btn btn-primary px-3 filter-btn export-btn" data-export-format="csv">Export&nbsp;CSV</button>
+							<button type="button" id="exportBtn" name="exportBtn"
+								class="btn btn-primary px-3 filter-btn export-btn" data-export-format="csv">Export&nbsp;CSV</button>
 						</div>
 					</div>
 					@endhaspermission
@@ -87,7 +102,7 @@
 				<thead>
 					<tr>
 						<th>S.No.</th>
-						<th>Property ID</th>
+						<th>Property Id</th>
 						<th>Is Problematic?</th>
 						<th>File Number</th>
 						<th>Joint Properties</th>
@@ -120,9 +135,9 @@
 @section('footerScript')
 <script>
 	$(document).ready(function () {
-		const fetch_data = (page, search_term, date,dateEnd) => {
-			if (search_term === undefined) {
-				search_term = "";
+		const fetch_data = (page, seach_term, date, dateEnd) => {
+			if (seach_term === undefined) {
+				seach_term = "";
 			}
 			if (date === undefined) {
 				date = "";
@@ -131,13 +146,23 @@
 				dateEnd = "";
 			}
 			$.ajax({
-				url: "/mis/view-details/property-details?page=" + page + "&search_term=" + search_term + "&date=" + date + "&dateEnd=" + dateEnd,
+				url: "{{ route('propertDetails')}}" + "?page=" + page + "&seach_term=" + seach_term + "&date=" + date + "&dateEnd=" + dateEnd,
 				success: function (data) {
 					$('tbody').html('');
 					$('tbody').html(data);
 				}
 			})
 		}
+
+		// $('body').on('submit', '#search-form', function (e) {
+		// 	event.preventDefault();
+		// 	var seach_term = $('#serach').val();
+		// 	var date = $('#date').val();
+		// 	var dateEnd = $('#dateEnd').val();
+		// 	var page = $('#hidden_page').val();
+		// 	fetch_data(page, seach_term, date, dateEnd);
+		// });
+
 
 		$('body').on('submit', '#search-form', function(e) {
 			event.preventDefault();
@@ -171,21 +196,24 @@
 
 		});
 
-		$('body').on('click', '.pager a', function(event) {
+
+
+		$('body').on('click', '.pager a', function (event) {
 			event.preventDefault();
 			var page = $(this).attr('href').split('page=')[1];
 			$('#hidden_page').val(page);
-			var search_term = $('#serach').val();
+			var seach_term = $('#serach').val();
 			var date = $('#date').val();
 			var dateEnd = $('#dateEnd').val();
-			fetch_data(page, search_term, date, dateEnd);
+			fetch_data(page, seach_term, date, dateEnd);
 		});
 	});
 </script>
+
 <script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js')}}"></script>
 <script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js')}}"></script>
 <script>
-	$(document).ready(function() {
+	$(document).ready(function () {
 		var table = $('#example2').DataTable({
 			lengthChange: false,
 			buttons: ['copy', 'excel', 'pdf', 'print']
@@ -196,7 +224,8 @@
 	});
 </script>
 <script>
-	$('.export-btn').click(function() {
+
+	$('.export-btn').click(function () {
 		var button = $('.export-btn');
 		button.prop('disabled', true).html('LOADING...');
 
@@ -267,11 +296,10 @@
 				window.URL.revokeObjectURL(url);
 				document.body.removeChild(downloadLink);
 			},
-			error: function(xhr, status, error) {
+			error: function (xhr, status, error) {
 				console.error(error)
 			}
 		})
 	});
 </script>
-
 @endsection

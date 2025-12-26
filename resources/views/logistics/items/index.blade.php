@@ -42,16 +42,21 @@
         }
     </style>
 
-{{-- breadcrumb  --}}
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Logistics</div>
-        @include('include.partials.breadcrumbs')
+        <div class="breadcrumb-title pe-3">Logistic</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Items</li>
+                </ol>
+            </nav>
+        </div>
     </div>
-  
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content py-3">
-                <a href="{{ url('logistic/items/add') }}">
+                <a href="{{ route('logistic.create') }}">
                     <button type="button" class="btn btn-primary py-2">+ Add Items</button>
                 </a>
             </div>
@@ -135,20 +140,26 @@
                 .appendTo('#myDataTable_wrapper .col-md-6:eq(0)');
 
             // Function to reapply event listeners
-            function reapplyEventListeners() {
-                $('.status-switch').off('click').on('click', function(e) {
-                    e.preventDefault();
-                    var itemIdToUpdate = $(this).data('item-id');
-                    $('#statusChangeModal').modal('show');
+              const updateStatusUrlTemplate = "{{ route('items.updateStatus', ['itemId' => '__ID__']) }}";
 
-                    $('.confirm-approve').off('click').on('click', function() {
-                        window.location.href = `/logistic/items/${itemIdToUpdate}/update-status`;
-                        $('#statusChangeModal').modal('hide');
-                    });
-                });
+    function reapplyEventListeners() {
+        $('.status-switch').off('click').on('click', function(e) {
+            e.preventDefault();
+            var itemIdToUpdate = $(this).data('item-id');
+            $('#statusChangeModal').modal('show');
 
-                $('[data-toggle="tooltip"]').tooltip();
-            }
+            $('.confirm-approve').off('click').on('click', function() {
+                const finalUrl = updateStatusUrlTemplate.replace('__ID__', itemIdToUpdate);
+                window.location.href = finalUrl;
+                $('#statusChangeModal').modal('hide');
+            });
+        });
+
+        $('[data-toggle="tooltip"]').tooltip();
+    }
+
+    // Optionally call it right away
+    reapplyEventListeners();
 
             // Initial application of event listeners
             reapplyEventListeners();
@@ -170,7 +181,8 @@
             }
         });
         $('.editablelabel').editable({
-            url: "/logistic/items/updatelabel",
+        //  url: "edharti/logistic/items/updatelabel",
+           url: "{{ route('updatelabel') }}",
             type: 'text',
             pk: 1,
             name: 'name'

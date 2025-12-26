@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Mail')
+@section('title', 'Mail Settings')
 
 @section('content')
 <style>
@@ -51,13 +51,13 @@
 </style>
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Mail</div>
+    <div class="breadcrumb-title pe-3">Settings</div>
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
-                <li class="breadcrumb-item">Application Configuration</li>
-                <li class="breadcrumb-item active" aria-current="page">Mail</li>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Mails</li>
             </ol>
             </li>
             </ol>
@@ -102,7 +102,7 @@
                         <div class="testMailError text-danger text-capitalize"></div>
                         <div class="testMailSuccess text-success text-capitalize"></div>
                     </td>
-                    <td>{{ $items[$email->id] ?? 'Default' }}</td>
+                    <td>{{$email->action}}</td>
                     <td>{{$email->email}}</td>
                     <td>{{$email->host}}</td>
                     <td>{{$email->port}}</td>

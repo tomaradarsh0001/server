@@ -35,25 +35,10 @@ class GenericImport implements ToArray, WithHeadingRow
     /**
      * Handle the array of data from Excel.
      *
+     * @param array $array
      */
-    // public function array(array $array)
-    // {
-    //     $this->data = array_map(function ($row) {
-    //         // Transform date columns if applicable
-    //         foreach ($row as $key => $value) {
-    //             if (in_array($key, $this->dateColumns) && $value) {
-    //                 $row[$key] = $this->transformDate($value);
-    //             }
-    //         }
-    //         return $row;
-    //     }, $array);
-    // }
-
-    public function array(array $array)
+        public function array(array $array)
     {
-        // dd($array);
-        // dd(array_keys($array[0]));
-
         // Get valid columns from the database
         $validColumns = Schema::getColumnListing($this->table);
 
@@ -71,8 +56,6 @@ class GenericImport implements ToArray, WithHeadingRow
             return $filteredRow;
         }, $array);
     }
-
-
     /**
      * Transform Excel date value to \DateTime object.
      *

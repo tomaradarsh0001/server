@@ -30,9 +30,19 @@
             vertical-align: middle;
         }
     </style>
-    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">MIS</div>
-        @include('include.partials.breadcrumbs')
+      <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Properties</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="{{'dashboard'}}"><i class="bx bx-home-alt"></i></a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">Properties</li>
+				<li class="breadcrumb-item active" aria-current="page">Add</li>
+				<li class="breadcrumb-item active" aria-current="page">Flat</li>
+                </ol>
+            </nav>
+        </div>
     </div>
     <!--breadcrumb-->
     <div class="card shadow-sm mb-4">
@@ -96,8 +106,8 @@
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="searchPropertyId" class="form-label">Search Property Id</label>
-                                    <input type="text" id="searchPropertyId" name="searchPropertyId"
-                                        class="form-control numericOnly five-digit" placeholder="Enter Property ID">
+                                    <input type="text" id="searchPropertyId" name="searchPropertyId" class="form-control numericOnly five-digit"
+                                        placeholder="Enter Property ID">
                                     <div id="suggestions" class="list-group" style="display: none;"></div>
                                 </div>
                                 <!-- Display Selected Property Details -->
@@ -124,8 +134,8 @@
                                     @enderror
                                     <div class="text-danger" id="flatNumberError"></div>
                                 </div>
-                                {{-- Add New Field Floor - Lalit Tiwari (19/March/2025) --}}
-                                <div class="col-lg-3">
+                                 {{-- Add New Field Floor - Lalit Tiwari (19/March/2025) --}}
+                                 <div class="col-lg-3">
                                     <label for="floor" class="form-label">Floor</label>
                                     <input type="text" class="form-control" name="floor" id="floor"
                                         placeholder="Enter Flat Number" value="{{ old('floor') }}" maxlength="10">
@@ -206,9 +216,8 @@
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="purchaseDate" class="form-label">Date of Purchase</label>
-                                    <input type="date" name="purchaseDate" class="form-control" id="purchaseDate"
-                                        max="{{ date('Y-m-d') }}" pattern="\d{2} \d{2} \d{4}"
-                                        value="{{ old('purchase_date') }}">
+                                    <input type="date" name="purchaseDate" class="form-control" id="purchaseDate" max="{{ date('Y-m-d') }}"
+                                        pattern="\d{2} \d{2} \d{4}" value="{{ old('purchase_date') }}">
                                     @error('purchaseDate')
                                         <span class="errorMsg">{{ $message }}</span>
                                     @enderror
@@ -354,7 +363,7 @@
                 }
             });
         });
-
+        
         $(document).ready(function() {
             $('#submitflatFormBtn').click(function(e) {
                 e.preventDefault(); // Prevent default form submission
@@ -408,8 +417,7 @@
 
                 // Validate propertyFlatStatus
                 if (!$('#propertyFlatStatus').val()) {
-                    $('#propertyFlatStatus').next('.text-danger').text(
-                        'Please select property flat status.');
+                    $('#propertyFlatStatus').next('.text-danger').text('Please select property flat status.');
                     isValid = false;
                     $('#propertyFlatStatus').focus();
                 }
@@ -430,7 +438,7 @@
                     $('#unit').focus();
                 }*/
 
-                if ($('#area').val().trim() && !$('#unit').val()) {
+                if($('#area').val().trim() && !$('#unit').val()){
                     $('#unitError').text('Please select unit.');
                     isValid = false;
                     $('#unit').focus();
@@ -548,16 +556,16 @@
             }
 
 
-            $(".numericDecimal").on("input", function() {
+            $(".numericDecimal").on("input", function () {
                 var value = $(this).val();
                 if (!/^\d*\.?\d*$/.test(value)) {
-                    $(this).val(value.slice(0, -1));
+                $(this).val(value.slice(0, -1));
                 }
             });
 
-            $(".numericOnly").on("input", function(e) {
+            $(".numericOnly").on("input", function (e) {
                 $(this).val(
-                    $(this)
+                $(this)
                     .val()
                     .replace(/[^0-9]/g, "")
                 );
@@ -565,7 +573,7 @@
 
             //maximum 5 digits allowed for property ID
             document.querySelectorAll('.five-digit').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     // Remove non-numeric characters
                     this.value = this.value.replace(/\D/g, '');
 
@@ -577,8 +585,9 @@
             });
 
             document.querySelectorAll('.name-field').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     // Remove any characters that are not letters, spaces, or hyphens
+                    // this.value = this.value.replace(/[^a-zA-Z0-9./_-\s]/g, '');
                     this.value = this.value.replace(/[^a-zA-Z0-9.,/_-\s]/g, '');
                     // Check the length of the input (optional)
                     if (this.value.length < 2 || this.value.length > 50) {
@@ -590,9 +599,9 @@
             });
 
             document.querySelectorAll('.prasent-occupant').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     // Remove any characters that are not letters, spaces, or hyphens
-                    this.value = this.value.replace(/[^a-zA-Z0-9.,/_-\s]/g, '');
+                    this.value =  this.value.replace(/[^a-zA-Z0-9.,/_-\s]/g, '');
                     // Check the length of the input (optional)
                     if (this.value.length < 2 || this.value.length > 50) {
                         this.setCustomValidity('Name should be between 2 and 50 characters.');
@@ -606,13 +615,12 @@
             document.querySelector('#flatNumber').addEventListener('input', function() {
                 // Regular expression to allow only alphanumeric characters and . / _ -
                 const validCharacters = /^[a-zA-Z0-9./_-\s]*$/;
-
+                
                 if (!validCharacters.test(this.value)) {
                     // Remove invalid characters
                     this.value = this.value.replace(/[^a-zA-Z0-9./_-]/g, '');
                     if (!$('#flatNumber').val().trim()) {
-                        $('#flatNumber').next('.text-danger').text(
-                            'Only alphanumeric characters and . / _ - are allowed!');
+                        $('#flatNumber').next('.text-danger').text('Only alphanumeric characters and . / _ - are allowed!');
                         isValid = false;
                         $('#flatNumber').focus();
                     }

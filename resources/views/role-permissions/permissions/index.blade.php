@@ -58,7 +58,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-end">
                         @haspermission('create permission')
-                            <a href="{{ url('permissions/create') }}"><button class="btn btn-primary">+ Add
+                            <a href="{{ url('edharti/permissions/create') }}"><button class="btn btn-primary">+ Add
                                     Permission</button></a>
                         @endhaspermission
                     </div>

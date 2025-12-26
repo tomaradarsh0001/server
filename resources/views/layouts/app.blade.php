@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--favicon-->
     <link rel="icon" href="{{ asset('assets/images/logo-icon.png') }}" type="image/png" />
+    <!--plugins-->
 
-    <!-- CSS Links -->
     <link href="{{ asset('assets/plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
@@ -18,20 +18,11 @@
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.css') }}">
     <link href="{{ asset('assets/css/pace.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/common.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/bootstrap-extended.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-select.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/googleapi_css1.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/googleapi_css2.css') }}">
-
-    <!-- Google fonts -->
-    <!-- <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800%7CPoppins:400,500,700,800,900%7CRoboto:100,300,400,400i,500,700">
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800;900&amp;display=swap"
-        rel="stylesheet"> -->
-
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
     <link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
-    <!-- add new css file for data table bootstrap styling buttons by anil on 23-05-2025 -->
-    <link href="{{ asset('assets/plugins/datatable/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
@@ -43,13 +34,13 @@
     <link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/buttons.dataTables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.dataTables.min.css') }}">
+           <script src="{{ asset('assets/js/jquery-3.7.1.js') }}"></script>
+
+  {{-- <script src="{{ asset('assets/js/jquery-3.5.1.js') }}"> </script> --}} <!-- script moved to header by Nitin to resolve $ is not defined error for scrips not defined in footer -->
     <!-- Toaster CSS Added by Diwakar Sinha at 20-09-2024 -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <title>e-Dharti | @yield('title')</title>
-    <link href="{{ asset('assets/css/common.css') }}" rel="stylesheet">
-
-    <!-- Jquery moved to headre by nitin to fix $ is not defined error -->
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+   
+    <title>e-Dharti 2.0 | @yield('title')</title>
     <style>
         .dataTables_wrapper .dataTables_paginate .paginate_button {
             padding: 0px !important;
@@ -64,7 +55,7 @@
         }
 
 
-        #spinnerOverlay {
+         #spinnerOverlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -77,7 +68,8 @@
             flex-direction: column;
             z-index: 1000;
         }
-
+        
+        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
         /*.spinner {
             border: 8px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -99,54 +91,40 @@
         .loader {
             width: 48px;
             height: 48px;
-            border: 6px solid #FFF;
+            border:6px solid #FFF;
             border-radius: 50%;
             position: relative;
-            transform: rotate(45deg);
+            transform:rotate(45deg);
             box-sizing: border-box;
-        }
-
-        .loader::before {
+            }
+            .loader::before {
             content: "";
             position: absolute;
             box-sizing: border-box;
-            inset: -7px;
+            inset:-7px;
             border-radius: 50%;
-            border: 8px solid #116d6e;
+            border:8px solid #116d6e;
             animation: prixClipFix 2s infinite linear;
-        }
-
-        @keyframes prixClipFix {
-            0% {
-                clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
             }
 
-            25% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+            @keyframes prixClipFix {
+                0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+                25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+                50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+                75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+                100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
             }
-
-            50% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
-            }
-
-            75% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
-            }
-
-            100% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
-            }
-        }
-
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
+            /* commented and adeed by anil for replace the new loader on 24-07-2025  */
+            
     </style>
 </head>
 
 <body>
-    {{-- @dd(auth()->user()->roles[0]->name) --}}
+    @include('include.loader')
+
     <!--wrapper-->
-    <!-- <div class="wrapper @if (!auth()->user()->hasAnyRole(['section-officer', 'applicant', 'deputy-lndo'])) toggled @endif"> -->
-        <div class="wrapper">
+   <!-- <div class="wrapper @if(!auth()->user()->hasAnyRole(['applicant', 'section-officer', 'deputy-lndo'])) toggled @endif"> -->
+   <div class="wrapper">
         <!--sidebar wrapper -->
         <div class="sidebar-wrapper" data-simplebar="true">
             <div class="sidebar-header">
@@ -154,20 +132,13 @@
                     <img src="{{ asset('assets/images/logo-icon.png') }}" class="logo-icon" alt="logo icon">
                 </div>
                 <div>
-                    <h4 class="logo-text">eDharti<sup>2.0</sup></h4>
+                    <h4 class="logo-text">e-Dharti 2.0</h4>
                 </div>
                 <div class="toggle-icon mobile-toggle"><i class='bx bx-menu'></i></div>
 
             </div>
             <!--navigation-->
             <ul class="metismenu" id="menu">
-                {{-- <li class="{{ request()->is('dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('dashboard') }}">
-                        <div class="parent-icon"><i class='bx bx-home-circle'></i>
-                        </div>
-                        <div class="menu-title">Dashboard</div>
-                    </a>
-                </li> --}}
                 @if (auth()->check() && auth()->user()->hasRole('applicant') && auth()->user()->roles->count() === 1)
                     <li class="loaderRequired {{ request()->is('dashboard') ? 'active' : '' }}">
                         <a href="{{ route('dashboard') }}">
@@ -195,75 +166,94 @@
                         </ul>
                     </li>
                 @endif
-
+          {{--  <li>
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class='bx bx-home-circle'></i></div>
+                        <div class="menu-title">Dashboard</div>
+                    </a>
+                    <ul>
+                        <li class="{{ request()->is('dashboard') ? 'active' : '' }}">
+                            <a href="{{ route('dashboard') }}"><i class="bx bx-right-arrow-alt"></i>My Dashboard</a>
+                        </li>
+                        @haspermission('main.dashboard')
+                        <li class="{{ request()->is('dashboard/main') ? 'active' : '' }}">
+                            <a href="{{ route('dashboard.main') }}"><i class="bx bx-right-arrow-alt"></i>Dashboard</a>
+                        </li>
+                        @endhaspermission
+                    </ul>
+                </li> --}}
                 @haspermission('viewDetails')
-                    <li>
-                        <a href="javascript:;" class="has-arrow">
-                            <div class="parent-icon"><i class="fa-solid fa-file-pen"></i>
-                            </div>
-                            <div class="menu-title">MIS</div>
-                        </a>
-                        <ul>
-                            @haspermission('add.single.property')
-                                <li class="{{ request()->is('property-form') ? 'active' : '' }}"> <a
-                                        href="{{ route('mis.index') }}"><i class="bx bx-right-arrow-alt"></i>Add Single
-                                        Property</a>
+                <li>
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class="fadeIn animated bx bx-buildings"></i>
+                        </div>
+                        <div class="menu-title">Properties (MIS)</div>
+                    </a>
+                    <ul>
+                        @if(auth()->user()->hasAnyPermission(['add.single.property','add.multiple.property','create.flat']))
+                        <li> <a href="javascript:;" class="has-arrow submenu-parent"><i class="bx bx-right-arrow-alt"></i>Add</a>
+                            <ul>
+                                @haspermission('add.single.property')
+                                    <li class="{{ request()->is('property-form') ? 'active' : '' }}"> <a
+                                            href="{{ route('mis.index') }}"><i class="bx bx-right-arrow-alt"></i>Single Plot</a>
+                                    </li>
+                                @endhaspermission
+                                @haspermission('add.multiple.property')
+                                    <li class="{{ request()->is('property-form-multiple') ? 'active' : '' }}"> <a
+                                            href="{{ route('mis.form.multiple') }}"><i class="bx bx-right-arrow-alt"></i>Multiple Plot</a>
+                                    </li>
+                                @endhaspermission
+                                @haspermission('create.flat')
+                                    <li class="{{ request()->is('flat-form') ? 'active' : '' }}"> <a
+                                            href="{{ route('create.flat.form') }}"><i class="bx bx-right-arrow-alt"></i>Flat</a>
+                                    </li>
+                                @endhaspermission
+                                   @haspermission('create.vacant.land')
+    <li class="{{ request()->is('mis/add/vacant/land') ? 'active' : '' }}"> <a
+            href="{{ route('create.vacant.land') }}"><i class="bx bx-right-arrow-alt"></i>Outside Delhi Property</a>
+    </li>
+@endhaspermission
+                            </ul>
+                        </li>
+                        @endif
+
+                        @if(auth()->user()->hasAnyPermission(['viewDetails','view.flat']))
+                        <li> <a href="javascript:;" class="has-arrow submenu-parent"><i class="bx bx-right-arrow-alt"></i>View</a>
+                            <ul>
+                                @haspermission('viewDetails')
+                                <li class="{{ request()->is('property-details') ? 'active' : '' }}"> <a
+                                        href="{{ route('propertDetails') }}"><i class='bx bx-chevron-right'></i>Plots</a>
                                 </li>
-                            @endhaspermission
-                            @haspermission('add.multiple.property')
-                                <li class="{{ request()->is('property-form-multiple') ? 'active' : '' }}"> <a
-                                        href="{{ route('mis.form.multiple') }}"><i class="bx bx-right-arrow-alt"></i>Add
-                                        Multiple Property</a>
+                                @endhaspermission
+                                @haspermission('view.flat')
+                                <li class="{{ request()->is('flats') ? 'active' : '' }}"> <a
+                                        href="{{ route('flats') }}"><i class='bx bx-chevron-right'></i>Flats</a>
                                 </li>
-                            @endhaspermission
-                            @haspermission('create.flat')
-                                <li class="{{ request()->is('flat-form') ? 'active' : '' }}"> <a
-                                        href="{{ route('create.flat.form') }}"><i class="bx bx-right-arrow-alt"></i>Add
-                                        Flat</a>
-                                </li>
-                            @endhaspermission
-                            @haspermission('create.vacant.land')
-                                <li class="{{ request()->is('mis/add/vacant/land') ? 'active' : '' }}"> <a
-                                        href="{{ route('create.vacant.land') }}"><i class="bx bx-right-arrow-alt"></i>Add
-                                        Vacant Land</a>
-                                </li>
-                            @endhaspermission
-                            @if (auth()->user()->hasAnyPermission(['viewDetails', 'view.flat']))
-                                <li> <a href="javascript:;" class="has-arrow submenu-parent"><i
-                                            class="bx bx-right-arrow-alt"></i>View Details</a>
-                                    <ul>
-                                        @haspermission('viewDetails')
-                                            <li class="{{ request()->is('property-details') ? 'active' : '' }}"> <a
-                                                    href="{{ route('propertDetails') }}"><i
-                                                        class='bx bx-chevron-right'></i>Property Details</a>
-                                            </li>
-                                        @endhaspermission
-                                        @haspermission('view.flat')
-                                            <li class="{{ request()->is('flats') ? 'active' : '' }}"> <a
-                                                    href="{{ route('flats') }}"><i class='bx bx-chevron-right'></i>Flat
-                                                    Details</a>
-                                            </li>
-                                        @endhaspermission
-                                        @haspermission('view.vacant.land')
-                                            <li class="{{ request()->is('/get/vacant/land/list') ? 'active' : '' }}">
-                                                <a href="{{ route('vacant.land.list') }}"><i
-                                                        class='bx bx-chevron-right'></i>Vacant Land
-                                                    Details</a>
-                                            </li>
-                                        @endhaspermission
-                                        @haspermission('section.property.mis.update.request')
-                                            <li class="{{ request()->is('mis/update/request/list') ? 'active' : '' }}">
-                                                <a href="{{ route('misUpdateRequestList') }}"><i
-                                                        class="bx bx-right-arrow-alt"></i>Edit Requested</a>
-                                            </li>
-                                        @endhaspermission
-                                    </ul>
-                                </li>
-                            @endif
-                        </ul>
-                    </li>
+                                @endhaspermission
+                                @haspermission('view.vacant.land')
+    <li class="{{ request()->is('/get/vacant/land/list') ? 'active' : '' }}">
+        <a href="{{ route('vacant.land.list') }}"><i
+                class='bx bx-chevron-right'></i>Outside Delhi Property</a>
+    </li>
+@endhaspermission
+@haspermission('view.unallotted')
+    <li class="{{ request()->is('/reports/unalloted-properties') ? 'active' : '' }}">
+        <a href="{{ route('unallotedReport') }}"><i
+                class='bx bx-chevron-right'></i>Unallotted Property</a>
+    </li>
+@endhaspermission
+                            </ul>
+                        </li>
+                        @endif
+                    </ul>
+                </li>
                 @endhaspermission
-                @haspermission('index.application')
+
+
+            
+
+
+                 @haspermission('index.application')
                     <li>
                         <a href="javascript:;" class="has-arrow">
                             <div class="parent-icon"><i class='bx bxs-file'></i></div>
@@ -273,7 +263,7 @@
                             @haspermission('list.application')
                                 <li class="{{ request()->is('admin/applications') ? 'active' : '' }}">
                                     <a href="{{ route('admin.applications') }}"><i
-                                            class="bx bx-right-arrow-alt"></i>Received</a>
+                                            class="bx bx-right-arrow-alt"></i>Submitted</a>
                                 </li>
                                 <li class="{{ request()->is('applications/disposed') ? 'active' : '' }}">
                                     <a href="{{ route('applications.disposed') }}"><i
@@ -283,10 +273,10 @@
                                     <a href="{{ route('admin.myapplications') }}"><i
                                             class="bx bx-right-arrow-alt"></i>Assigned</a>
                                 </li>
-                                @haspermission('view.new.added.properties')
-                                    <li class="{{ request()->is('applicant/new/properties') ? 'active' : '' }}">
-                                        <a href="{{ route('applicantNewProperties') }}"><i class="bx bx-right-arrow-alt"></i>Additional Property </a>
-                                    </li>
+                               @haspermission('view.new.added.properties')
+                                <li class="{{ request()->is('applicant/new/properties') ? 'active' : '' }}">
+                                    <a href="{{ route('applicantNewProperties') }}"><i class="bx bx-right-arrow-alt"></i>Additional Property</a>
+                                </li>
                                 @endhaspermission
                             @endhaspermission
 
@@ -315,6 +305,7 @@
                     </li>
                 @endhaspermission
 
+
                 @php
                     $hasAccess = Auth::user()->can('view.appointment') || Auth::user()->can('view.grievance');
                 @endphp
@@ -327,20 +318,19 @@
                         </a>
                         <ul>
                             @can('view.appointment')
-                                <li class="{{ request()->is('appointments*') ? 'active' : '' }}">
-                                    <a href="{{ route('appointments.index') }}"><i
-                                            class="bx bx-right-arrow-alt"></i>Appointments</a>
-                                </li>
+                            <li class="{{ request()->is('appointments*') ? 'active' : '' }}"> 
+                                <a href="{{ route('appointments.index') }}"><i class="bx bx-right-arrow-alt"></i>Appointments</a>
+                            </li>
                             @endcan
                             @can('view.grievance')
-                                <li class="{{ request()->is('grievances*') ? 'active' : '' }}">
-                                    <a href="{{ route('grievance.index') }}"><i
-                                            class="bx bx-right-arrow-alt"></i>Grievances</a>
-                                </li>
+                            <li class="{{ request()->is('grievances*') ? 'active' : '' }}"> 
+                                <a href="{{ route('grievance.index') }}"><i class="bx bx-right-arrow-alt"></i>Grievances</a>
+                            </li>
                             @endcan
 
 
-                            @can('club.membership')
+
+                             @can('club.membership')
                                 <li> <a href="javascript:;" class="has-arrow submenu-parent"><i
                                             class="bx bx-right-arrow-alt"></i>Club Membership</a>
                                     <ul>
@@ -391,112 +381,13 @@
                             </li>
                             <li class="{{ request()->is('colony-wise-filter-report') ? 'active' : '' }}"> <a
                                     href="{{ route('colony.wise.reports.index') }}"><i
-                                        class="bx bx-right-arrow-alt"></i>Colony Wise
+                                        class="bx bx-right-arrow-alt"></i>Colony-Wise
                                     Report</a>
                             </li>
                         </ul>
                     </li>
-
-                    <li class="{{ request()->is('paymentSummary*') ? 'active' : '' }}">
-                        <a href="{{ route('paymentSummary') }}">
-                            <div class="parent-icon">
-                                <i class="fas fa-receipt"></i>
-                            </div>
-                            <div class="menu-title"> Payment Details</div>
-                        </a>
-                    </li>
-
-                    <li class="{{ request()->is('applicationSummary*') ? 'active' : '' }}">
-                        <a href="{{ route('applicationSummary') }}">
-                            <div class="parent-icon">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <div class="menu-title"> Applications Summary</div>
-                        </a>
-                    </li>
-                    <li class="{{ request()->is('demandSummary*') ? 'active' : '' }}">
-                        <a href="{{ route('demandSummary') }}">
-                            <div class="parent-icon">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <div class="menu-title">Demand Summary</div>
-                        </a>
-                    </li>
                 @endhaspermission
-
-                @can('view.scanning.list')
-                    <li>
-                        <a href="javascript:;" class="has-arrow">
-                            <div class="parent-icon"><i class="bx bx-scan"></i>
-                            </div>
-                            <div class="menu-title">Scanned Files</div>
-                        </a>
-                        <ul>
-                            <li><a href="{{ route('scanning.report') }}"><i class='bx bx-chevron-right'></i>Scanned
-                                    Files Report</a></li>
-                            @can('add.scanning.files')
-                                <li><a href="{{ route('property.scanning.create') }}"><i
-                                            class='bx bx-chevron-right'></i>Upload Scanned File</a></li>
-                            @endcan
-                            @can('add.request.scan')
-                                <li><a href="{{ route('scanned.request.index') }}"><i
-                                            class='bx bx-chevron-right'></i>Scanning
-                                        Request List</a></li>
-                            @endcan
-                        </ul>
-                    </li>
-                @endcan
-
-                @can('applicant.view.property.details')
-                    <li>
-                        <a href="javascript:;" class="has-arrow">
-                            <div class="parent-icon"><i class="fadeIn animated bx bx-book-open"></i>
-                            </div>
-                            <div class="menu-title">My Properties</div>
-                        </a>
-                        <ul>
-                            <!-- <li class="{{ request()->is('applicant/profile') ? 'active' : '' }}"> <a
-                                                                                                                                                                                                                                href="{{ route('applicant.profile') }}"><i class="bx bx-right-arrow-alt"></i>Profile
-                                                                                                                                                                                                                                {{ request()->is() }}</a>
-                                                                                                                                                                                                                        </li> -->
-                            {{-- @can('applicant.view.property.details') --}}
-                            <li class="{{ request()->is('applicant/property/details') ? 'active' : '' }}"> <a
-                                    href="{{ route('applicant.properties') }}"><i
-                                        class="bx bx-right-arrow-alt"></i>Add New Property {{ request()->is() }}</a>
-                            </li>
-                            {{-- @endcan --}}
-                            {{-- @can('section.property.mis.update.request')
-                            <li class="{{ request()->is('mis/update/request/list') ? 'active' : '' }}">
-                                <a href="{{ route('misUpdateRequestList') }}"><i class="bx bx-right-arrow-alt"></i>Mis
-                                    Update Request {{ request()->is() }}</a>
-                            </li>
-                        @endcan --}}
-                        </ul>
-                    </li>
-                @endcan
-                @can('create.demand')
-                    <li>
-                        <a href="javascript:;" class="has-arrow">
-                            <div class="parent-icon"><i class="fa-solid fa-coins"></i>
-                            </div>
-                            <div class="menu-title">Demand</div>
-                        </a>
-                        <ul>
-                            <li class="{{ request()->is('demand') ? 'active' : '' }}"> <a
-                                    href="{{ route('createDemandView') }}"><i class="bx bx-right-arrow-alt"></i>
-                                    Demand</a>
-                            </li>
-                            {{-- <li class="{{ request()->is('demand') ? 'active' : '' }}"> <a
-                                    href="{{ route('manualDemandCreate') }}"><i class="bx bx-right-arrow-alt"></i>Create
-                                    Demand Manually</a>
-                            </li> --}}
-                            <li class="{{ request()->is('demandList') ? 'active' : '' }}"> <a
-                                    href="{{ route('demandList') }}"><i class="bx bx-right-arrow-alt"></i>Created Demand</a>
-                            </li>
-                        </ul>
-                    </li>
-                @endcan
-
+                
                 @can('record.room.list')
                     <li>
                         <a href="javascript:;" class="has-arrow">
@@ -522,31 +413,122 @@
                     </li>
                 @endcan
 
+                @can('view.financial.reports')
+                     <li class="{{ request()->is('paymentSummary') ? 'active' : '' }}">
+                        <a href="{{ route('paymentSummary') }}">
+                            <div class="parent-icon">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <div class="menu-title"> Payment Details</div>
+                        </a>
+                    </li>
+                @endcan
+                @can('view.application.reports')
+                    <li class="{{ request()->is('applicationSummary') ? 'active' : '' }}">
+                        <a href="{{ route('applicationSummary') }}">
+                            <div class="parent-icon">
+                                <i class="fas fa-bar-chart"></i>
+                            </div>
+                            <div class="menu-title"> Applications Summary</div>
+                        </a>
+                    </li>
+                    <li class="{{ request()->is('demandSummary*') ? 'active' : '' }}">
+                        <a href="{{ route('demandSummary') }}">
+                            <div class="parent-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="menu-title">Demand Summary</div>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('view.scanning.list')
+                    <li>
+                        <a href="javascript:;" class="has-arrow">
+                            <div class="parent-icon"><i class="bx bx-scan"></i>
+                            </div>
+                            <div class="menu-title">Scanned Files</div>
+                        </a>
+                        <ul>
+                            <li><a href="{{route('scanning.report')}}"><i class='bx bx-chevron-right'></i>Scanned
+                                    Files Report</a></li>
+                            @can('add.scanning.files')
+                                <li><a href="{{route('property.scanning.create')}}"><i class='bx bx-chevron-right'></i>Upload Scanned File</a></li>
+                            @endcan
+                            
+                            @can('add.request.scan')
+                                <li><a href="{{route('scanned.request.index')}}"><i class='bx bx-chevron-right'></i>Scanning Request List</a></li>
+                            @endcan
+                        </ul>
+                    </li>    
+                @endcan
+                @if(auth()->user()->hasAnyPermission(['applicant.view.property.details','section.property.mis.update.request']))
+
+                <li>
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class="fa-solid fa-house-user"></i>
+                        </div>
+                        <div class="menu-title">Property Details</div>
+                    </a>
+                    <ul>
+                      <!-- <li class="{{ request()->is('applicant/profile') ? 'active' : '' }}"> <a
+                                href="{{ route('applicant.profile') }}"><i class="bx bx-right-arrow-alt"></i>Profile
+                                {{ request()->is() }}</a>
+                        </li>  -->
+                        @can('applicant.view.property.details')
+                        <li class="{{ request()->is('applicant/property/details') ? 'active' : '' }}"> <a
+                                href="{{ route('applicant.properties') }}"><i
+                                    class="bx bx-right-arrow-alt"></i>Add New Property {{ request()->is() }}</a>
+                        </li>
+                        @endcan
+                        @can('section.property.mis.update.request')
+                        <li class="{{ request()->is('mis/update/request/list') ? 'active' : '' }}">
+                            <a href="{{ route('misUpdateRequestList') }}"><i class="bx bx-right-arrow-alt"></i>MIS
+                                Update Request {{ request()->is() }}</a>
+                        </li>
+                        @endcan
+                    </ul>
+                </li>
+                @endif
+
+                @canany(['create.demand', 'view.demand'])
+                <li>
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class="fadeIn animated bx bx-rupee"></i>
+                        </div>
+                        <div class="menu-title">Demand</div>
+                    </a>
+                    <ul>
+                        @can('create.demand')
+                        <li class="{{ request()->is('demand') ? 'active' : '' }}"> <a
+                                href="{{ route('createDemandView') }}"><i class="bx bx-right-arrow-alt"></i>Create</a>
+                        </li>
+                        @endcan
+                        <li class="{{ request()->is('demandList') ? 'active' : '' }}"> <a
+                                href="{{ route('demandList') }}"><i class="bx bx-right-arrow-alt"></i>Created Demands</a>
+                        </li>
+                    </ul>
+                </li>
+                @endcanany
                 @canany(['create.rgr', 'create.rgr.draft', 'send.rgr.draft', 'view.rgr.list'])
                     <li>
                         <a href="javascript:;" class="has-arrow">
-                            <div class="parent-icon"><i class='bx bx-store'></i>
+                            <div class="parent-icon"><i class='fadeIn animated bx bx-rupee'></i>
                             </div>
                             <div class="menu-title">RGR</div>
                         </a>
                         <ul>
                             @can('create.rgr')
-                                <li class="{{ request()->is('rgr') ? 'active' : '' }}"> <a href="{{ route('rgr') }}"><i
-                                            class="bx bx-right-arrow-alt"></i>Calculate RGR</a>
-                                <li class="{{ request()->is('completeList') ? 'active' : '' }}"> <a
-                                        href="{{ route('completeList') }}"><i class="bx bx-right-arrow-alt"></i>Revised
-                                        Property List</a>
-                                </li>
+                            <li class="{{ request()->is('rgr') ? 'active' : '' }}"> <a href="{{ route('rgr') }}"><i class="bx bx-right-arrow-alt"></i>Calculate</a>
+                            <li class="{{ request()->is('completeList') ? 'active' : '' }}"> <a href="{{ route('completeList') }}"><i class="bx bx-right-arrow-alt"></i>Revised Properties</a>
+                            </li>
                             @endcan
                             @can('view.rgr.list')
-                                <li class="{{ request()->is('completeList') ? 'active' : '' }}"><a
-                                        href="{{ route('rgrList') }}"><i class='bx bx-chevron-right'></i> Detailed RGR List
-                                    </a></li>
-                            @endcan
+                                <li class="{{ request()->is('rgrList') ? 'active' : '' }}"><a href="{{ route('rgrList') }}"><i class='bx bx-chevron-right'></i> Detailed Listing </a></li>
+                                @endcan
                         </ul>
                     </li>
                 @endcanany
-
 
                 @can('miscellaneous')
                     <li>
@@ -565,32 +547,378 @@
                         </ul>
                     </li>
                 @endcan
-
-                {{-- @canany(['calculate.conversion', 'calculate.landUseChange'])
-                        <li>
-                            <a href="javascript:;" class="has-arrow">
-                                <div class="parent-icon"><i class="bx bx-calculator"></i>
-                                </div>
-                                <div class="menu-title">Calculation</div>
-                            </a>
+                {{--<li>
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class="bx bx-category"></i>
+                        </div>
+                        <div class="menu-title">MIS</div>
+                    </a>
+                    <ul>
+                        <li class="{{ request()->is('property-form') ? 'active' : '' }}"> <a
+                                href="{{ route('mis.index') }}"><i class="bx bx-right-arrow-alt"></i>Add Property</a>
+                        </li>
+                        @haspermission('add.multiple.property')
+                        <li class="{{ request()->is('property-form-multiple') ? 'active' : '' }}"> <a
+                                href="{{ route('mis.form.multiple') }}"><i class="bx bx-right-arrow-alt"></i>Add
+                                Multiple Property</a>
+                        </li>
+                        @endhaspermission
+                        @haspermission('create.flat')
+                        <li class="{{ request()->is('flat-form') ? 'active' : '' }}"> <a
+                                href="{{ route('create.flat.form') }}"><i class="bx bx-right-arrow-alt"></i>Add
+                                Flat</a>
+                        </li>
+                        @endhaspermission
+                        <li> <a href="javascript:;" class="has-arrow submenu-parent"><i class="bx bx-right-arrow-alt"></i>View Details</a>
                             <ul>
-                                @can('calculate.conversion')
-        <li class="{{ request()->is('conversion/calculate-charges') ? 'active' : '' }}">
-                <a href="{{ route('calculateConversionCharges') }}">
-                    <i class="bx bx-right-arrow-alt"></i>Conversion
-                </a>
-                </li>
-                @endcan
-                @can('calculate.landUseChange')
-                <li class="{{ request()->is('land-use-change/calculate-charges') ? 'active' : '' }}">
-                    <a href="{{ route('calculateLandUseChangeCharges') }}">
-                        <i class="bx bx-right-arrow-alt"></i>Land Use Change
+                                @haspermission('viewDetails')
+                                <li class="{{ request()->is('property-details') ? 'active' : '' }}"> <a
+                                        href="{{ route('propertDetails') }}"><i class='bx bx-chevron-right'></i> View Property Details</a>
+                                </li>
+                                @endhaspermission
+                                @haspermission('view.flat')
+                                <li class="{{ request()->is('flats') ? 'active' : '' }}"> <a
+                                        href="{{ route('flats') }}"><i class='bx bx-chevron-right'></i> View Flat Details</a>
+                                </li>
+                                @endhaspermission
+                                @can('applicant.view.property.details')
+                                <li class="{{ request()->is('applicant/property/details') ? 'active' : '' }}"> <a
+                                        href="{{ route('applicant.properties') }}"><i
+                                            class="bx bx-chevron-right"></i>Property Details {{ request()->is() }}</a>
+                                </li>
+                                @endcan
+                                @can('section.property.mis.update.request')
+                                <li class="{{ request()->is('mis/update/request/list') ? 'active' : '' }}">
+                                    <a href="{{ route('misUpdateRequestList') }}"><i class="bx bx-right-arrow-alt"></i>Mis
+                                        Update Request {{ request()->is() }}</a>
+                                </li>
+                                @endcan
+                            </ul>
+                        </li>
+                    </ul>
+                </li> --}}
+                
+                <!-- <li class="{{ request()->is('/application/deed_of_apartment/fill_application_details') ? 'active' : '' }}">
+                    <a href="{{ route('application.apartment.create') }}">
+                        <div class="parent-icon"><i class='bx bxs-file'></i>
+                        </div>
+                        <div class="menu-title">Deed of Apartment</div>
                     </a>
                 </li>
-                @endcan
-            </ul>
-            </li>
-            @endcanany --}}
+                <li class="menu-label">UI Elements</li>
+                <li>
+                    <a href="widgets.html">
+                        <div class="parent-icon"><i class='bx bx-cookie'></i>
+                        </div>
+                        <div class="menu-title">Widgets</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" class="has-arrow">
+                        <div class="parent-icon"><i class='bx bx-cart'></i>
+                        </div>
+                        <div class="menu-title">eCommerce</div>
+                    </a>
+                    <ul>
+                        <li> <a href="ecommerce-products.html"><i class="bx bx-right-arrow-alt"></i>Products</a>
+                        </li>
+                        <li> <a href="ecommerce-products-details.html"><i class="bx bx-right-arrow-alt"></i>Product
+                                Details</a>
+                        </li>
+                        <li> <a href="ecommerce-add-new-products.html"><i class="bx bx-right-arrow-alt"></i>Add New
+                                Products</a>
+                        </li>
+                        <li> <a href="ecommerce-orders.html"><i class="bx bx-right-arrow-alt"></i>Orders</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class='bx bx-bookmark-heart'></i>
+                        </div>
+                        <div class="menu-title">Components</div>
+                    </a>
+                    <ul>
+                        <li> <a href="component-alerts.html"><i class="bx bx-right-arrow-alt"></i>Alerts</a>
+                        </li>
+                        <li> <a href="component-accordions.html"><i class="bx bx-right-arrow-alt"></i>Accordions</a>
+                        </li>
+                        <li> <a href="component-badges.html"><i class="bx bx-right-arrow-alt"></i>Badges</a>
+                        </li>
+                        <li> <a href="component-buttons.html"><i class="bx bx-right-arrow-alt"></i>Buttons</a>
+                        </li>
+                        <li> <a href="component-cards.html"><i class="bx bx-right-arrow-alt"></i>Cards</a>
+                        </li>
+                        <li> <a href="component-carousels.html"><i class="bx bx-right-arrow-alt"></i>Carousels</a>
+                        </li>
+                        <li> <a href="component-list-groups.html"><i class="bx bx-right-arrow-alt"></i>List Groups</a>
+                        </li>
+                        <li> <a href="component-media-object.html"><i class="bx bx-right-arrow-alt"></i>Media
+                                Objects</a>
+                        </li>
+                        <li> <a href="component-modals.html"><i class="bx bx-right-arrow-alt"></i>Modals</a>
+                        </li>
+                        <li> <a href="component-navs-tabs.html"><i class="bx bx-right-arrow-alt"></i>Navs & Tabs</a>
+                        </li>
+                        <li> <a href="component-navbar.html"><i class="bx bx-right-arrow-alt"></i>Navbar</a>
+                        </li>
+                        <li> <a href="component-paginations.html"><i class="bx bx-right-arrow-alt"></i>Pagination</a>
+                        </li>
+                        <li> <a href="component-popovers-tooltips.html"><i class="bx bx-right-arrow-alt"></i>Popovers
+                                & Tooltips</a>
+                        </li>
+                        <li> <a href="component-progress-bars.html"><i class="bx bx-right-arrow-alt"></i>Progress</a>
+                        </li>
+                        <li> <a href="component-spinners.html"><i class="bx bx-right-arrow-alt"></i>Spinners</a>
+                        </li>
+                        <li> <a href="component-notifications.html"><i
+                                    class="bx bx-right-arrow-alt"></i>Notifications</a>
+                        </li>
+                        <li> <a href="component-avtars-chips.html"><i class="bx bx-right-arrow-alt"></i>Avatrs &
+                                Chips</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class="bx bx-repeat"></i>
+                        </div>
+                        <div class="menu-title">Content</div>
+                    </a>
+                    <ul>
+                        <li> <a href="content-grid-system.html"><i class="bx bx-right-arrow-alt"></i>Grid System</a>
+                        </li>
+                        <li> <a href="content-typography.html"><i class="bx bx-right-arrow-alt"></i>Typography</a>
+                        </li>
+                        <li> <a href="content-text-utilities.html"><i class="bx bx-right-arrow-alt"></i>Text
+                                Utilities</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"> <i class="bx bx-donate-blood"></i>
+                        </div>
+                        <div class="menu-title">Icons</div>
+                    </a>
+                    <ul>
+                        <li> <a href="icons-line-icons.html"><i class="bx bx-right-arrow-alt"></i>Line Icons</a>
+                        </li>
+                        <li> <a href="icons-boxicons.html"><i class="bx bx-right-arrow-alt"></i>Boxicons</a>
+                        </li>
+                        <li> <a href="icons-feather-icons.html"><i class="bx bx-right-arrow-alt"></i>Feather Icons</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-label">Forms & Tables</li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class='bx bx-message-square-edit'></i>
+                        </div>
+                        <div class="menu-title">Forms</div>
+                    </a>
+                    <ul>
+                        <li> <a href="form-elements.html"><i class="bx bx-right-arrow-alt"></i>Form Elements</a>
+                        </li>
+                        <li> <a href="form-input-group.html"><i class="bx bx-right-arrow-alt"></i>Input Groups</a>
+                        </li>
+                        <li> <a href="form-radios-and-checkboxes.html"><i class="bx bx-right-arrow-alt"></i>Radios &
+                                Checkboxes</a>
+                        </li>
+                        <li> <a href="form-layouts.html"><i class="bx bx-right-arrow-alt"></i>Forms Layouts</a>
+                        </li>
+                        <li> <a href="form-validations.html"><i class="bx bx-right-arrow-alt"></i>Form Validation</a>
+                        </li>
+                        <li> <a href="form-wizard.html"><i class="bx bx-right-arrow-alt"></i>Form Wizard</a>
+                        </li>
+                        <li> <a href="form-text-editor.html"><i class="bx bx-right-arrow-alt"></i>Text Editor</a>
+                        </li>
+                        <li> <a href="form-file-upload.html"><i class="bx bx-right-arrow-alt"></i>File Upload</a>
+                        </li>
+                        <li> <a href="form-date-time-pickes.html"><i class="bx bx-right-arrow-alt"></i>Date
+                                Pickers</a>
+                        </li>
+                        <li> <a href="form-select2.html"><i class="bx bx-right-arrow-alt"></i>Select2</a>
+                        </li>
+                        <li> <a href="form-repeater.html"><i class="bx bx-right-arrow-alt"></i>Form Repeater</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class="bx bx-grid-alt"></i>
+                        </div>
+                        <div class="menu-title">Tables</div>
+                    </a>
+                    <ul>
+                        <li> <a href="table-basic-table.html"><i class="bx bx-right-arrow-alt"></i>Basic Table</a>
+                        </li>
+                        <li> <a href="table-datatable.html"><i class="bx bx-right-arrow-alt"></i>Data Table</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-label">Pages</li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class="bx bx-lock"></i>
+                        </div>
+                        <div class="menu-title">Authentication</div>
+                    </a>
+                    <ul>
+                        <li><a class="has-arrow" href="javascript:;"><i class="bx bx-right-arrow-alt"></i>Basic</a>
+                            <ul>
+                                <li><a href="auth-basic-signin.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Sign In</a></li>
+                                <li><a href="auth-basic-signup.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Sign Up</a></li>
+                                <li><a href="auth-basic-forgot-password.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Forgot Password</a></li>
+                                <li><a href="auth-basic-reset-password.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Reset Password</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="has-arrow" href="javascript:;"><i class="bx bx-right-arrow-alt"></i>Cover</a>
+                            <ul>
+                                <li><a href="auth-cover-signin.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Sign In</a></li>
+                                <li><a href="auth-cover-signup.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Sign Up</a></li>
+                                <li><a href="auth-cover-forgot-password.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Forgot Password</a></li>
+                                <li><a href="auth-cover-reset-password.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Reset Password</a></li>
+                            </ul>
+                        </li>
+                        <li><a class="has-arrow" href="javascript:;"><i class="bx bx-right-arrow-alt"></i>With Header
+                                Footer</a>
+                            <ul>
+                                <li><a href="auth-header-footer-signin.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Sign In</a></li>
+                                <li><a href="auth-header-footer-signup.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Sign Up</a></li>
+                                <li><a href="auth-header-footer-forgot-password.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Forgot Password</a></li>
+                                <li><a href="auth-header-footer-reset-password.html" target="_blank"><i
+                                            class="bx bx-right-arrow-alt"></i>Reset Password</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="user-profile.html">
+                        <div class="parent-icon"><i class="bx bx-user-circle"></i>
+                        </div>
+                        <div class="menu-title">User Profile</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="timeline.html">
+                        <div class="parent-icon"> <i class="bx bx-video-recording"></i>
+                        </div>
+                        <div class="menu-title">Timeline</div>
+                    </a>
+                </li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class="bx bx-error"></i>
+                        </div>
+                        <div class="menu-title">Errors</div>
+                    </a>
+                    <ul>
+                        <li> <a href="errors-404-error.html" target="_blank"><i class="bx bx-right-arrow-alt"></i>404
+                                Error</a>
+                        </li>
+                        <li> <a href="errors-500-error.html" target="_blank"><i class="bx bx-right-arrow-alt"></i>500
+                                Error</a>
+                        </li>
+                        <li> <a href="errors-coming-soon.html" target="_blank"><i
+                                    class="bx bx-right-arrow-alt"></i>Coming Soon</a>
+                        </li>
+                        <li> <a href="error-blank-page.html" target="_blank"><i
+                                    class="bx bx-right-arrow-alt"></i>Blank Page</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="faq.html">
+                        <div class="parent-icon"><i class="bx bx-help-circle"></i>
+                        </div>
+                        <div class="menu-title">FAQ</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="pricing-table.html">
+                        <div class="parent-icon"><i class="bx bx-diamond"></i>
+                        </div>
+                        <div class="menu-title">Pricing</div>
+                    </a>
+                </li>
+                <li class="menu-label">Charts & Maps</li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class="bx bx-line-chart"></i>
+                        </div>
+                        <div class="menu-title">Charts</div>
+                    </a>
+                    <ul>
+                        <li> <a href="charts-apex-chart.html"><i class="bx bx-right-arrow-alt"></i>Apex</a>
+                        </li>
+                        <li> <a href="charts-chartjs.html"><i class="bx bx-right-arrow-alt"></i>Chartjs</a>
+                        </li>
+                        <li> <a href="charts-highcharts.html"><i class="bx bx-right-arrow-alt"></i>Highcharts</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class="bx bx-map-alt"></i>
+                        </div>
+                        <div class="menu-title">Maps</div>
+                    </a>
+                    <ul>
+                        <li> <a href="map-google-maps.html"><i class="bx bx-right-arrow-alt"></i>Google Maps</a>
+                        </li>
+                        <li> <a href="map-vector-maps.html"><i class="bx bx-right-arrow-alt"></i>Vector Maps</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-label">Others</li>
+                <li>
+                    <a class="has-arrow" href="javascript:;">
+                        <div class="parent-icon"><i class="bx bx-menu"></i>
+                        </div>
+                        <div class="menu-title">Menu Levels</div>
+                    </a>
+                    <ul>
+                        <li> <a class="has-arrow" href="javascript:;"><i class="bx bx-right-arrow-alt"></i>Level
+                                One</a>
+                            <ul>
+                                <li> <a class="has-arrow" href="javascript:;"><i
+                                            class="bx bx-right-arrow-alt"></i>Level Two</a>
+                                    <ul>
+                                        <li> <a href="javascript:;"><i class="bx bx-right-arrow-alt"></i>Level
+                                                Three</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="https://codervent.com/rocker/documentation/index.html" target="_blank">
+                        <div class="parent-icon"><i class="bx bx-folder"></i>
+                        </div>
+                        <div class="menu-title">Documentation</div>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://themeforest.net/user/codervent" target="_blank">
+                        <div class="parent-icon"><i class="bx bx-support"></i>
+                        </div>
+                        <div class="menu-title">Support</div>
+                    </a>
+                </li> -->
             </ul>
             <!--end navigation-->
         </div>
@@ -603,12 +931,30 @@
                         <img src="{{ asset('assets/images/logo-icon.png') }}" class="logo-icon" alt="logo icon">
                     </div>
                     <div class="toggle-icon"><i class='bx bx-menu'></i></div>
+                    <!-- <div class="mobile-toggle-menu"><i class='bx bx-menu'></i>
+                </div> -->
+                    <!-- <div class="search-bar flex-grow-1">
+                    <div class="position-relative search-bar-box">
+                        <input type="text" class="form-control search-control"
+                            placeholder="Type to search..."> <span
+                            class="position-absolute top-50 search-show translate-middle-y"><i
+                                class='bx bx-search'></i></span>
+                            <span class="position-absolute top-50 search-close translate-middle-y"><i
+                                    class='bx bx-x'></i></span>
+                        </div>
+                    </div> -->
                     <div class="top-menu ms-auto">
                         <ul class="navbar-nav align-items-center">
+                            <!-- <li class="nav-item mobile-search-icon">
+                                <a class="nav-link" href="#"> <i class='bx bx-search'></i>
+                                </a>
+                            </li> -->
+                            @haspermission('setting')
                             @include('layouts.settings')
+                            @endhaspermission
                             <li class="d-none nav-item dropdown dropdown-large">
-                                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative"
-                                    href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#"
+                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="alert-count">7</span>
                                     <i class='bx bx-bell'></i>
                                 </a>
@@ -627,7 +973,8 @@
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <h6 class="msg-name">New Customers<span
-                                                            class="msg-time float-end">14 Sec ago</span></h6>
+                                                            class="msg-time float-end">14 Sec
+                                                            ago</span></h6>
                                                     <p class="msg-info">5 new user registered</p>
                                                 </div>
                                             </div>
@@ -639,8 +986,9 @@
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <h6 class="msg-name">New Orders <span class="msg-time float-end">2
-                                                            min ago</span></h6>
-                                                    <p class="msg-info">You have received new orders</p>
+                                                            min
+                                                            ago</span></h6>
+                                                    <p class="msg-info">You have recived new orders</p>
                                                 </div>
                                             </div>
                                         </a>
@@ -650,9 +998,10 @@
                                                         class="bx bx-file"></i>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="msg-name">24 PDF File<span
-                                                            class="msg-time float-end">19 min ago</span></h6>
-                                                    <p class="msg-info">The PDF files generated</p>
+                                                    <h6 class="msg-name">24 PDF File<span class="msg-time float-end">19
+                                                            min
+                                                            ago</span></h6>
+                                                    <p class="msg-info">The pdf files generated</p>
                                                 </div>
                                             </div>
                                         </a>
@@ -663,7 +1012,8 @@
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <h6 class="msg-name">Time Response <span
-                                                            class="msg-time float-end">28 min ago</span></h6>
+                                                            class="msg-time float-end">28 min
+                                                            ago</span></h6>
                                                     <p class="msg-info">5.1 min avarage time response</p>
                                                 </div>
                                             </div>
@@ -675,7 +1025,8 @@
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <h6 class="msg-name">New Product Approved <span
-                                                            class="msg-time float-end">2 hrs ago</span>
+                                                            class="msg-time float-end">2 hrs
+                                                            ago</span>
                                                     </h6>
                                                     <p class="msg-info">Your new product has approved</p>
                                                 </div>
@@ -687,8 +1038,7 @@
                                                         class="bx bx-message-detail"></i>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="msg-name">New Comments <span
-                                                            class="msg-time float-end">4
+                                                    <h6 class="msg-name">New Comments <span class="msg-time float-end">4
                                                             hrs
                                                             ago</span></h6>
                                                     <p class="msg-info">New customer comments recived</p>
@@ -741,8 +1091,8 @@
                                 </div>
                             </li>
                             <li class="d-none nav-item dropdown dropdown-large">
-                                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative"
-                                    href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" href="#"
+                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="alert-count">8</span>
                                     <i class='bx bx-comment'></i>
                                 </a>
@@ -789,8 +1139,7 @@
                                                         class="msg-avatar" alt="user avatar">
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="msg-name">Oscar Garner <span
-                                                            class="msg-time float-end">8
+                                                    <h6 class="msg-name">Oscar Garner <span class="msg-time float-end">8
                                                             min
                                                             ago</span></h6>
                                                     <p class="msg-info">Various versions have evolved over</p>
@@ -818,8 +1167,7 @@
                                                         class="msg-avatar" alt="user avatar">
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="msg-name">Amelia Doe <span
-                                                            class="msg-time float-end">22
+                                                    <h6 class="msg-name">Amelia Doe <span class="msg-time float-end">22
                                                             min
                                                             ago</span></h6>
                                                     <p class="msg-info">Duis aute irure dolor in reprehenderit</p>
@@ -903,8 +1251,7 @@
                                                         class="msg-avatar" alt="user avatar">
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="msg-name">Johnny Seitz <span
-                                                            class="msg-time float-end">5
+                                                    <h6 class="msg-name">Johnny Seitz <span class="msg-time float-end">5
                                                             days
                                                             ago</span></h6>
                                                     <p class="msg-info">All the Lorem Ipsum generators</p>
@@ -920,8 +1267,8 @@
                         </ul>
                     </div>
                     <div class="user-box dropdown">
-                        <a class="d-flex align-items-center nav-link dropdown-toggle dropdown-toggle-nocaret"
-                            href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="d-flex align-items-center nav-link dropdown-toggle dropdown-toggle-nocaret" href="#"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="{{ Auth::user()->applicantUserDetails ? asset('storage/' . Auth::user()->applicantUserDetails->profile_photo) : asset('assets/images/avatars/avatar-1.png') }}"
                                 class="user-img" alt="user avatar">
                             <div class="user-info ps-3">
@@ -930,36 +1277,17 @@
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <!-- <li><a class="dropdown-item" href="javascript:;"><i
-                                        class="bx bx-user"></i><span>Profile</span></a>
-                            </li>
-                            <li><a class="dropdown-item" href="javascript:;"><i
-                                        class="bx bx-cog"></i><span>Settings</span></a>
-                            </li>
-                            <li><a class="dropdown-item" href="javascript:;"><i
-                                        class='bx bx-home-circle'></i><span>Dashboard</span></a>
-                            </li>
-                            <li><a class="dropdown-item" href="javascript:;"><i
-                                        class='bx bx-dollar-circle'></i><span>Earnings</span></a>
-                            </li>
-                            <li><a class="dropdown-item" href="javascript:;"><i
-                                        class='bx bx-download'></i><span>Downloads</span></a>
-                            </li>
-                            <li>
-                                <div class="dropdown-divider mb-0"></div>
-                            </li> -->
-                            <li><a class="dropdown-item" href="/applicant/profile"><i
+                            <li><a class="dropdown-item" href="{{ route('applicant.profile') }}"><i
                                         class="bx bx-user"></i><span>Profile</span></a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('password.reset') }}"><i
-                                        class="bx bx-user"></i><span>Change Password</span></a>
+                                        class="bx bx-lock"></i><span>Change Password</span></a>
                             </li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
 
-                                    <a class="dropdown-item" href="route('logout')"
-                                        onclick="event.preventDefault();
+                                    <a class="dropdown-item" href="route('logout')" onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                         <i class='bx bx-log-out-circle'></i> <span>{{ __('Log Out') }}</span>
                                     </a>
@@ -973,34 +1301,30 @@
         <!--end header -->
 
 
-
         <!--start page wrapper -->
         <div class="page-wrapper">
             <div class="page-content">
                 @if (session('success'))
-                    <div class="alert alert-success border-0 bg-success alert-dismissible fade show">
-                        <div class="text-white">{{ session('success') }}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                    </div>
+                <div class="alert alert-success border-0 bg-success alert-dismissible fade show">
+                    <div class="text-white">{{ session('success') }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 @endif
 
                 @if (session('failure'))
-                    <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
-                        <div class="text-white">{{ session('failure') }}</div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                    </div>
+                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                    <div class="text-white">{{ session('failure') }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 @endif
 
                 @if ($errors->any())
-                    <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
-                        @foreach ($errors->all() as $error)
-                            <div class="text-white">{{ $error }}</div>
-                        @endforeach
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                            aria-label="Close"></button>
-                    </div>
+                <div class="alert alert-danger border-0 bg-danger alert-dismissible fade show">
+                    @foreach ($errors->all() as $error)
+                    <div class="text-white">{{ $error }}</div>
+                    @endforeach
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 @endif
 
                 @yield('content')
@@ -1009,90 +1333,69 @@
         <!--end page wrapper -->
 
 
-        <!-- Global Back Button START - SOURAV CHAUHAN (31/Jan/2025) -->
-        <div class="fixed-top">
-            <!-- <button type="button" onclick="handleBackButtonClick()" class="backButton" >←</button> -->
-            <!-- <button type="button" onclick="handleBackButtonClick()" class="btn btn-danger backButton"> -->
-            <!-- <i class="bx bx-blanket me-0"></i> -->
-            <!-- <i class="fadeIn animated bx bx-left-arrow-circle me-0"></i> -->
-            <!-- <i class="fadeIn animated bx bx-arrow-back me-0"></i> -->
-            <!-- <i class="fadeIn animated bx bx-left-arrow-alt me-0"></i> -->
-            <!-- </button> -->
-            <div onclick="handleBackButtonClick()" class="backButton icon-badge bg-primary me-lg-5"><i
-                    class="fadeIn animated bx bx-left-arrow-alt align-middle font-22 text-white"></i>
-            </div>
-        </div>
-
-
 
         <!--start overlay-->
-        <!-- <div class="overlay toggle-icon"></div> commneted by anil and added new overlay div after footer on 23-01-2025 -->
+        <div class="overlay toggle-icon"></div>
         <!--end overlay-->
         <!--Start Back To Top Button-->
         <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
         <!--End Back To Top Button-->
         <footer class="page-footer">
-            <p class="mb-0">Copyright © 2024. All right reserved.</p>
+            <p class="mb-0">Copyright © {{date('Y')}}. All right reserved.</p>
         </footer>
     </div>
     <!--end wrapper-->
-
     <div class="overlay"></div>
 
+
     <!--start switcher-->
-    @canany(['calculate.conversion', 'calculate.landUseChange', 'calculate.unearnedIncrease'])
-        <div class="switcher-wrapper">
-            <div class="switcher-btn">
-                <!-- <i class="fa-solid fa-screwdriver-wrench bx-spin"></i> commented by anil on 24-01-2025 for hiding screwdriver-wrench icon-->
-                <h6 class="charges_title"><i class='bx bx-info-circle'></i> Know the Charges</h6>
+    @canany(['calculate.conversion', {{--'calculate.landUseChange','calculate.unearnedIncrease'--}}])
+    <div class="switcher-wrapper">
+        <div class="switcher-btn"> <!--<i class="fa-solid fa-screwdriver-wrench bx-spin"></i>-->
+            <h6 class="charges_title"><i class='bx bx-info-circle'></i> Know the Charges</h6>
+        </div>
+        <div class="switcher-body">
+            <div class="d-flex align-items-center">
+                <h5 class="mb-0 text-uppercase">Utilities</h5>
+                <button type="button" class="btn-close ms-auto close-switcher" aria-label="Close"></button>
             </div>
-            <div class="switcher-body">
-                <div class="d-flex align-items-center">
-                    <h5 class="mb-0 text-uppercase">Utilities</h5>
-                    <button type="button" class="btn-close ms-auto close-switcher" aria-label="Close"></button>
-                </div>
 
-                <hr />
-                <div class="header-colors-indigators">
+            <hr />
+            <div class="header-colors-indigators">
 
-                    <div class="row row-cols-auto g-3">
-                        <div class="col">
-                            <h5 class="utilities-title">Calculator <i class='bx bxs-calculator'></i></h5>
-                        </div>
-                        @can('calculate.conversion')
-                            <div class="col">
-                                <a href="{{ route('calculateConversionCharges') }}">
-                                    <span><i class='bx bx-chevron-right'></i> Conversion</span>
-                                </a>
-                            </div>
-                        @endcan
-                        <!-- @can('calculate.landUseChange')
-                            <div class="col">
-                                <a href="{{ route('calculateLandUseChangeCharges') }}">
-                                    <span><i class='bx bx-chevron-right'></i> Land Use Change</span>
-                                </a>
-                            </div>
-                        @endcan
-                        @can('calculate.unearnedIncrease')
-                            <div class="col">
-                                <a href="{{ route('calculateUnearnedIncrease') }}">
-                                    <span><i class='bx bx-chevron-right'></i> Unearned Increase</span>
-                                </a>
-                            </div>
-                        @endcan -->
+                <div class="row row-cols-auto g-3">
+                    <div class="col">
+                        <h5 class="utilities-title">Calculator <i class='bx bxs-calculator'></i></h5>
                     </div>
-
+                    @can('calculate.conversion')
+                    <div class="col">
+                        <a href="{{ route('calculateConversionCharges') }}">
+                            <span><i class='bx bx-chevron-right'></i> Conversion</span>
+                        </a>
+                    </div>
+                    @endcan
+                    <!-- @can('calculate.landUseChange')
+                    <div class="col">
+                        <a href="{{ route('calculateLandUseChangeCharges') }}">
+                            <span><i class='bx bx-chevron-right'></i> Land Use Change</span>
+                        </a>
+                    </div>
+                    @endcan
+                    @can('calculate.unearnedIncrease')
+                    <div class="col">
+                        <a href="{{ route('calculateUnearnedIncrease') }}">
+                            <span><i class='bx bx-chevron-right'></i> Unearned Increase</span>
+                        </a>
+                    </div>
+                    @endcan -->
                 </div>
+
             </div>
         </div>
+    </div>
     @endcanany
     <!--end switcher-->
 
-    <!-- <div id="spinnerOverlay" style="display:none;">
-        <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
-        <br>
-        <h1 style="color: white;font-size: 20px;">Loading... Please wait</h1>
-    </div> -->
     <div id="spinnerOverlay" style="display:none;">
         <span class="loader"></span>
         <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
@@ -1113,9 +1416,9 @@
         </div>
     </div>
 
-    <!-- JavaScript Files -->
-    {{-- <script src="{{ asset('assets/js/jquery-3.5.1.js') }}"></script> Update Jquery Version From Latest One. Comment on 05/May/2025 <!--found extra jquery library need to check it---Amita--[07-11-2024]--> --}}
-    <script src="{{ asset('assets/js/jquery-3.7.1.js') }}"></script>
+
+    <!-- Bootstrap JS -->
+
     <script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/dataTables.buttons.min.js') }}"></script>
     <script src="{{ asset('assets/js/buttons.flash.min.js') }}"></script>
@@ -1143,76 +1446,32 @@
 
     <script>
 
-        function showPopup(message) {
+         function showPopup(message) {
             document.getElementById("fileSizeModalText").textContent = message;
             var modal = new bootstrap.Modal(document.getElementById("fileSizeModal"));
             modal.show();
         }
-        $(document).ready(function() {
-            $('#myDataTable').DataTable();
-        });
 
-        $('.loaderRequired').on('click', function() {
-            $('#spinnerOverlay').css('display', 'flex');
+        $(document).ready(function () {
+            $('#myDataTable').DataTable();
         });
     </script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var $alertElement = $('.alert');
             if ($alertElement.length) {
-                setTimeout(function() {
+                setTimeout(function () {
                     $alertElement.fadeOut();
-                }, 5000);
+                }, 3000);
             }
+               const spinnerOverlay = document.getElementById('spinnerOverlay');
+               if(spinnerOverlay){
+                spinnerOverlay.style.display = 'none';
+               }
         });
-
-        $(function() {
-            $('[data-toggle="tooltip"]').tooltip()
-        });
-
-
-        function handleBackButtonClick() {
-            window.location.href = "{{ url()->previous() }}";
-        }
     </script>
-    <!-- <script>
-        Toastify({
-            text: "Success",
-            duration: 5000,
-            newWindow: true,
-            close: true,
-            gravity: "bottom", // `top` or `bottom`
-            position: "right", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "linear-gradient(to right, #00b09b, #116d6e)",
-            },
-            offset: {
-                // x: 50, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
-                y: 50 // vertical axis - can be a number or a string indicating unity. eg: '2em'
-            },
-            onClick: function toasterDemo() {} // Callback after click
-        }).showToast();
 
-        Toastify({
-            text: "Failed",
-            duration: 5000,
-            newWindow: true,
-            close: true,
-            gravity: "bottom", // `top` or `bottom`
-            position: "right", // `left`, `center` or `right`
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            style: {
-                background: "linear-gradient(to right, #00b09b, #116d6e)",
-            },
-            offset: {
-                // x: 50, // horizontal axis - can be a number or a string indicating unity. eg: '2em'
-                y: 50 // vertical axis - can be a number or a string indicating unity. eg: '2em'
-            },
-            onClick: function failedtoasterDemo() {} // Callback after click
-        }).showToast();
-    </script> -->
     @yield('footerScript')
 </body>
 

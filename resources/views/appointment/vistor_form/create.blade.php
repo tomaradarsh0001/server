@@ -182,8 +182,8 @@
                                     
                                     <div class="col-lg-6 col-12">
                                         <div class="form-group form-box">
-                                            <label for="app_pan_number" class="quesLabel">PAN Number<span class="text-danger">*</span></label>
-                                            <input type="text" name="pan_number" id="app_pan_number" class="form-control text-transform-uppercase pan_number_format" placeholder="PAN Number" maxlength="10">
+                                            <label for="app_pan_number" class="quesLabel">Pan Number<span class="text-danger">*</span></label>
+                                            <input type="text" name="pan_number" id="app_pan_number" class="form-control text-transform-uppercase pan_number_format" placeholder="Pan Number" maxlength="10">
                                             <div id="app_panNumberError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
@@ -245,10 +245,7 @@
                                                 </div>
                                             </div>
                                         
-                                            <!-- remvoe calss to and container-fluid div to fix the UI by anil on 23-07-2025 -->
-                                            <!-- <div class="ifyes internal_container my-2" id="app_ifyes" style="display: none;"> -->
-                                            <div class="ifyes my-2" id="app_ifyes" style="display: none;">
-                                                <!-- <div class="container-fluid"> -->
+                                           <div class="ifyes my-2" id="app_ifyes" style="display: none;">
                                                     <div class="row less-padding-input">
                                                         <div class="col-lg-6 col-12">
                                                             <div class="form-group form-box">
@@ -282,9 +279,9 @@
                                                                 <input type="text" name="knownasFill" id="app_knownasFill" class="form-control alpha-only" placeholder="Known As">
                                                                 <div id="app_knownasFillError" class="text-danger text-left"></div>
                                                             </div>
-                                                        </div>
+                                                        
                                                     </div>
-                                                <!-- </div> -->
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -301,10 +298,8 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                            <!-- remvoe calss to and container-fluid div to fix the UI by anil on 23-07-2025 -->
-                                            <!-- <div class="ifStakeholder internal_container my-2" id="app_ifStakeholder" style="display: none;"> -->
-                                            <div class="ifStakeholder my-2" id="app_ifStakeholder" style="display: none;">
-                                                <!-- <div class="container-fluid"> -->
+                                                                               <div class="ifStakeholder my-2" id="app_ifStakeholder" style="display: none;">
+
                                                     <div class="row less-padding-input">
                                                         <div class="col-lg-12 col-12">
                                                             <div class="form-group form-box">
@@ -312,9 +307,9 @@
                                                                 <input type="file" name="stakeholderProof" id="app_stakeholderProof" class="form-control">
                                                                 <div id="app_stakeholderProofError" class="text-danger text-left"></div>
                                                             </div>
-                                                        </div>
+                                                        
                                                     </div>
-                                                <!-- </div> -->
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -326,7 +321,7 @@
                                             <label for="app_natureOfVisit" class="quesLabel">Nature of Visit<span class="text-danger">*</span></label>
                                             <select name="natureOfVisit" id="app_natureOfVisit" class="form-select">
                                                 <option value="">Select</option>
-                                                <option value="Online">Online</option>
+                                               {{-- <option value="Online">Online</option> --}}
                                                 <option value="Offline">Offline</option>
                                             </select>
                                             <div id="app_natureOfVisitError" class="text-danger text-left"></div>
@@ -604,6 +599,8 @@
                         },
                         dataType: 'json',
                         success: function (result) {
+                            console.log(result);
+                            
                             if(result.success){
                                 $('#verify_app_email_otp').show();
                                 $('#app_email_loader').hide();
@@ -618,7 +615,11 @@
                                 successDiv.html('')
                                 errorDiv.html(result.message)
                             }
-                        }
+                        },
+                        error: function (e) {
+                           console.log(e);
+                           
+                        },
                     });
                 }
             });
@@ -775,7 +776,7 @@ function handleResendOtp(event, type) {
     errorMessageElem.html('');
 
     // AJAX request to resend OTP
-    fetch('/resend-apt-otp', {
+    fetch(getBaseURL() + '/resend-apt-otp', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

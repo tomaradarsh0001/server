@@ -42,7 +42,6 @@ class FlatService
                         }) // Add floor condition - Lalit (19/March/2025)
                         ->first();
 
-
                     if ($is_property_exist) {
                         // Redirect with a message indicating the flat already exists
                         throw new \Exception('Flat already exists with flat number ' . $request->flatNumber . ' on this property.');
@@ -54,10 +53,10 @@ class FlatService
                         } else {
                             $totalFlats = Flat::where('property_master_id', $request->property_master_id)->count();
                         }
-                        // Increase Flat Limit - Lalit Tiwari (26/March/2025)
-                        if ($totalFlats > 2000) {
+
+                        if ($totalFlats > 350) {
                             // Throw an exception if the flats exceed the allowed limit
-                            throw new \Exception('You cannot create more than 2000 flats on this property.');
+                            throw new \Exception('You cannot create more than 200 flats on this property.');
                         }
 
                         // Store flat details
@@ -314,96 +313,96 @@ class FlatService
             $value = null;
             $area_in_sqm = null;
 
-            // Calculate updated area in square meters if area & unit are provided
-            if (!empty($request->area) && !empty($request->unit)) {
-                $area_in_sqm = FlatService::calculateAreaInSqm($request->area, $request->unit);
+        // Calculate updated area in square meters if area & unit are provided
+        if (!empty($request->area) && !empty($request->unit)) {
+            $area_in_sqm = FlatService::calculateAreaInSqm($request->area, $request->unit);
+        }
+
+        // Fetch rate only if property type is Residential or Commercial
+        if (in_array($propertyTypeName, ['Residential', 'Commercial'])) {
+            $rate = DB::table('flat_rates')
+                ->where('property_type', $propertyTypeId)
+                ->whereNull('date_to')
+                ->value('rate');
+
+            // Calculate value only if area_in_sqm is NOT null
+            if (!is_null($area_in_sqm) && !is_null($rate)) {
+                $value = $area_in_sqm * $rate;
             }
+            // Debugging with dd()
+            // dd([
+            //     'area_in_sqm' => $area_in_sqm,
+            //     'property_master_id' => $request->property_master_id,
+            //     'propertyTypeId' => $propertyTypeId,
+            //     'rate' => $rate,
+            //     'calculated_value' => $value,
+            // ]);
 
-            // Fetch rate only if property type is Residential or Commercial
-            if (in_array($propertyTypeName, ['Residential', 'Commercial'])) {
-                $rate = DB::table('flat_rates')
-                    ->where('property_type', $propertyTypeId)
-                    ->whereNull('date_to')
-                    ->value('rate');
+            // Store old rate and value before updating
+            $old_rate = $flatDetails->rate;
+            $old_value = $flatDetails->value;
 
-                // Calculate value only if area_in_sqm is NOT null
-                if (!is_null($area_in_sqm) && !is_null($rate)) {
-                    $value = $area_in_sqm * $rate;
+            // Keeping your original update logic unchanged
+            $flatDetails->property_master_id = isset($request->property_master_id) ? $request->property_master_id :  $flatDetails->property_master_id;
+            $flatDetails->old_property_id = isset($request->old_propert_id) ? $request->old_propert_id :  $flatDetails->old_property_id;
+            $flatDetails->unique_property_id = isset($request->unique_propert_id) ? $request->unique_propert_id :  $flatDetails->unique_property_id;
+            $flatDetails->splitted_property_id = isset($request->splitted_property_id) ? $request->splitted_property_id :  $flatDetails->splitted_property_id;
+            $flatDetails->unique_file_no = self::getFileNumber($request->land_type, $request->locality, $request->block, $request->plot, $request->flatNumber);
+            $flatDetails->locality = isset($request->locality) ? $request->locality :  $flatDetails->locality;
+            $flatDetails->block = isset($request->block) ? $request->block :  $flatDetails->block;
+            $flatDetails->plot = isset($request->plot) ? $request->plot :  $flatDetails->plot;
+            $flatDetails->known_as = isset($request->knownas) ? $request->knownas :  $flatDetails->known_as;
+            $flatDetails->floor = isset($request->floor) ? $request->floor :  $flatDetails->floor;
+            $flatDetails->flat_number = isset($request->flatNumber) ? $request->flatNumber :  $flatDetails->flat_number;
+            $flatDetails->area = isset($request->area) ? $request->area :  $flatDetails->area;
+            $flatDetails->unit = isset($request->unit) ? $request->unit :  $flatDetails->unit;
+            $flatDetails->area_in_sqm = isset($area_in_sqm) ? $area_in_sqm :  $flatDetails->area_in_sqm;
+            $flatDetails->rate = isset($rate) ? $rate : $flatDetails->rate;
+            $flatDetails->value = isset($value) ? $value : $flatDetails->value;
+            $flatDetails->property_flat_status = isset($request->propertyFlatStatus) ? $request->propertyFlatStatus :  $flatDetails->property_flat_status;
+            $flatDetails->builder_developer_name = isset($request->nameofBuilder) ? $request->nameofBuilder :  $flatDetails->builder_developer_name;
+            $flatDetails->original_buyer_name = isset($request->originalBuyerName) ? $request->originalBuyerName :  $flatDetails->original_buyer_name;
+            $flatDetails->purchase_date = isset($request->purchaseDate) ? $request->purchaseDate :  $flatDetails->purchase_date;
+            $flatDetails->present_occupant_name = isset($request->presentOccupantName) ? $request->presentOccupantName :  $flatDetails->present_occupant_name;
+            $flatDetails->updated_by = Auth::id();
+
+            // dd($flatDetails);
+
+            // If changes detected, save and log history
+            if ($flatDetails->isDirty()) {
+                $flatDetails->save();
+                $changes = $flatDetails->getChanges();
+
+                $flatHistory = new FlatHistory();
+                $flatHistory->flat_id = $request->flatId;
+                $flatHistory->property_master_id = $flatDetails->property_master_id;
+                $flatHistory->new_property_master_id = $request->property_master_id;
+
+                // Keeping your original loop unchanged
+                foreach ($changes as $key => $change) {
+                    if ($key != 'updated_at' && $key != 'updated_by' && $key != 'old_property_id' &&  $key != 'unique_property_id') {
+                        $flatHistory->$key = $oldFlatDetails[$key];
+                        $newKey = 'new_' . $key;
+                        $flatHistory->$newKey = $change;
+                    }
                 }
-                // Debugging with dd()
-                // dd([
-                //     'area_in_sqm' => $area_in_sqm,
-                //     'property_master_id' => $request->property_master_id,
-                //     'propertyTypeId' => $propertyTypeId,
-                //     'rate' => $rate,
-                //     'calculated_value' => $value,
-                // ]);
 
-                // Store old rate and value before updating
-                $old_rate = $flatDetails->rate;
-                $old_value = $flatDetails->value;
+                // Adding rate and value changes
+                $flatHistory->rate = $old_rate;
+                $flatHistory->new_rate = $rate;
+                $flatHistory->value = $old_value;
+                $flatHistory->new_value = $value;
 
-                // Keeping your original update logic unchanged
-                $flatDetails->property_master_id = isset($request->property_master_id) ? $request->property_master_id :  $flatDetails->property_master_id;
-                $flatDetails->old_property_id = isset($request->old_propert_id) ? $request->old_propert_id :  $flatDetails->old_property_id;
-                $flatDetails->unique_property_id = isset($request->unique_propert_id) ? $request->unique_propert_id :  $flatDetails->unique_property_id;
-                $flatDetails->splitted_property_id = isset($request->splitted_property_id) ? $request->splitted_property_id :  $flatDetails->splitted_property_id;
-                $flatDetails->unique_file_no = self::getFileNumber($request->land_type, $request->locality, $request->block, $request->plot, $request->flatNumber);
-                $flatDetails->locality = isset($request->locality) ? $request->locality :  $flatDetails->locality;
-                $flatDetails->block = isset($request->block) ? $request->block :  null;
-                $flatDetails->plot = isset($request->plot) ? $request->plot :  null;
-                $flatDetails->known_as = isset($request->knownas) ? $request->knownas :  null;
-                $flatDetails->floor = isset($request->floor) ? $request->floor :  null; // Add New Field Floor - Lalit Tiwari (19/march/2025)
-                $flatDetails->flat_number = isset($request->flatNumber) ? $request->flatNumber :  null;
-                $flatDetails->area = isset($request->area) ? $request->area :  null;
-                $flatDetails->unit = isset($request->area) ? $request->unit :  null;
-                $flatDetails->area_in_sqm = isset($area_in_sqm) ? $area_in_sqm :  null;
-                $flatDetails->rate = isset($rate) ? $rate : null;
-                $flatDetails->value = isset($value) ? $value : null;
-                $flatDetails->property_flat_status = isset($request->propertyFlatStatus) ? $request->propertyFlatStatus :  null;
-                $flatDetails->builder_developer_name = isset($request->nameofBuilder) ? $request->nameofBuilder :  null;
-                $flatDetails->original_buyer_name = isset($request->originalBuyerName) ? $request->originalBuyerName :  null;
-                $flatDetails->purchase_date = isset($request->purchaseDate) ? $request->purchaseDate :  null;
-                $flatDetails->present_occupant_name = isset($request->presentOccupantName) ? $request->presentOccupantName :  null;
-                $flatDetails->updated_by = Auth::id();
-
-                // dd($flatDetails);
-
-                // If changes detected, save and log history
-                if ($flatDetails->isDirty()) {
-                    $flatDetails->save();
-                    $changes = $flatDetails->getChanges();
-
-                    $flatHistory = new FlatHistory();
-                    $flatHistory->flat_id = $request->flatId;
-                    $flatHistory->property_master_id = $flatDetails->property_master_id;
-                    $flatHistory->new_property_master_id = $request->property_master_id;
-
-                    // Keeping your original loop unchanged
-                    foreach ($changes as $key => $change) {
-                        if ($key != 'updated_at' && $key != 'updated_by' && $key != 'old_property_id' &&  $key != 'unique_property_id') {
-                            $flatHistory->$key = $oldFlatDetails[$key];
-                            $newKey = 'new_' . $key;
-                            $flatHistory->$newKey = $change;
-                        }
-                    }
-
-                    // Adding rate and value changes
-                    $flatHistory->rate = $old_rate;
-                    $flatHistory->new_rate = $rate;
-                    $flatHistory->value = $old_value;
-                    $flatHistory->new_value = $value;
-
-                    $flatHistory->updated_by = Auth::id();
-                    if ($flatHistory->save()) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                $flatHistory->updated_by = Auth::id();
+                if ($flatHistory->save()) {
+                    return true;
+                } else {
+                    return false;
                 }
             }
         }
     }
+}
 
 
     public function propertyTransferLesseeDetailsStore($request, $user, $flatId)

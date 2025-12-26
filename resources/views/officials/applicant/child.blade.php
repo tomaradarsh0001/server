@@ -109,9 +109,10 @@
 
         <td>
             <!-- View Button -->
-            <a href="{{ url('applicant/property/' . $propertyDetail->id . '/view') }}">
+            <a href="{{ route('applicant.properties.details', ['id' => $propertyDetail->id]) }}">
                 <button type="button" class="btn btn-success px-5">View</button>
             </a>
+            
 
         </td>
     </tr>

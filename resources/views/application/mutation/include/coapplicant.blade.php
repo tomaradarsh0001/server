@@ -61,8 +61,8 @@
                                                 <option value="Female"
                                                     {{ $tc->co_applicant_gender == 'Female' ? 'selected' : '' }}>Female
                                                 </option>
-                                                <option value="Other"
-                                                    {{ $tc->co_applicant_gender == 'Other' ? 'selected' : '' }}>Other
+                                                <option value="Transgender"
+                                                    {{ $tc->co_applicant_gender == 'Transgender' ? 'selected' : '' }}>Transgender
                                                 </option>
                                             </select>
                                             <!-- add error span tag by anil on 03-04-2025 for show error in draft view-->
@@ -140,8 +140,7 @@
                                             <label for="aadhar" class="form-label">Aadhaar Number</label>
                                             <input type="text" name="aadhar" class="form-control numericOnly"
                                                 id="aadhar" maxlength="12" placeholder="Aadhaar Number"
-                                                data-name="aadharnumber"
-                                                value="{{ preg_match('/[a-zA-Z]/', $tc->co_applicant_aadhar) ? decryptString($tc->co_applicant_aadhar) : $tc->co_applicant_aadhar }}">
+                                                data-name="aadharnumber" value="{{ $tc->co_applicant_aadhar }}">
                                             <!-- add error span tag by anil on 03-04-2025 for show error in draft view-->
                                             <span class="error-message text-danger"></span>
                                         </div>
@@ -263,7 +262,7 @@
                                             <option value="">Select</option>
                                             <option value="Male">Male</option>
                                             <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
+                                            <option value="Transgender">Transgender</option>
                                         </select>
                                         <span class="error-message text-danger"></span>
                                     </div>

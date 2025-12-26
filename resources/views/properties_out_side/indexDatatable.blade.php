@@ -25,7 +25,7 @@
         /* Ensure responsiveness on smaller screens */
         @media (max-width: 768px) {
             div.dt-buttons {
-                width: 100%;
+                width:100%;
             }
 
             div.dt-buttons.btn-group {
@@ -49,7 +49,7 @@
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Properties</li>
                     <li class="breadcrumb-item active" aria-current="page">View</li>
-                    <li class="breadcrumb-item active" aria-current="page">Vacants</li>
+                    <li class="breadcrumb-item active" aria-current="page">Properties Outside Delhi</li>
                 </ol>
             </nav>
         </div>
@@ -60,6 +60,11 @@
 
     <div class="card">
         <div class="card-body">
+          {{--  <div class="d-flex justify-content-between py-3">
+                <h6 class="mb-0 text-uppercase tabular-record_font align-self-end"></h6>
+                <a href="{{ route('create.vacant.land') }}"><button class="btn btn-primary">+ Add
+                       Outside Delhi Property</button></a>
+            </div>  --}}
             <div class="row align-items-end pb-4">
                 <!-- State Dropdown -->
                 <div class="col-lg-3 col-md-6 col-12">
@@ -106,13 +111,11 @@
                     <div>
                         <label class="d-block">&nbsp;</label>
                         <a href="{{ route('create.vacant.land') }}">
-                            <button type="button" class="btn btn-primary">+ Add Vacant Land</button>
+                            <button type="button" class="btn btn-primary">+ Add Outside Delhi Property</button>
                         </a>
                     </div>
                 </div>
             </div>
-
-
             <table id="example" class="display nowrap" style="width:100%">
                 <thead>
                     <tr>
@@ -147,22 +150,18 @@
                 processing: true,
                 serverSide: false,
                 scrollX: true,
-                /* pageLength: 10, // Default number of entries to show
-                lengthMenu: [
-                    [10, 25, 50, 100, 250, 500], // Available options
-                    [10, 25, 50, 100, 250, 500] // Display text
-                ], */
+         //       ajax: '{{ route('get.vacant.land.list.list') }}',
                 ajax: {
                     url: "{{ route('get.vacant.land.list.list') }}",
                     data: function(d) {
                         d.state = $('#state').val();
                         d.city = $('#city').val();
                         d.status = $('#status').val();
-
+                        
                         // d.searchPropertyId = $('#searchPropertyId').val();
                     }
                 },
-                columns: [{
+                    columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
@@ -217,16 +216,14 @@
                 deleteId = $(this).data('id'); // Get the record ID from the button
                 $('#ModalDelete').modal('show'); // Show the modal
             });
-
-
-            $(document).on('change', '#state', function() {
-                $('#example').DataTable().ajax.reload();
+                     $(document).on('change', '#state', function() {
+               $('#example').DataTable().ajax.reload();
             });
             $(document).on('change', '#city', function() {
                 $('#example').DataTable().ajax.reload();
             });
             $(document).on('change', '#status', function() {
-                $('#example').DataTable().ajax.reload();
+               $('#example').DataTable().ajax.reload();
             });
 
             // Handle delete confirmation
@@ -273,15 +270,14 @@
                 }
             });
         });
+      $('#resetValues').click(function() {
+                $('#state').val('');
+                $('#city').val('');
+                $('#status').val('');
+                $('#example').DataTable().ajax.reload();
+            });
 
-        $('#resetValues').click(function() {
-            $('#state').val('');
-            $('#city').val('');
-            $('#status').val('');
-            $('#example').DataTable().ajax.reload();
-        });
-
-        $(document).ready(function() {
+            $(document).ready(function() {
             $('#state').on('change', function() {
                 let stateId = $(this).val();
 

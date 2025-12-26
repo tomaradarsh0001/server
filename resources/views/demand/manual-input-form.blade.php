@@ -330,9 +330,6 @@ $propertSelectorPath = $propertyAllreadySelected ? null: 'include.parts.property
     @section('footerScript')
     <script src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script>
     <script>
-    function sqmToSqyard(sqm) {
-  return sqm * 1.19599;
-}
       let propertyId;
       let propertyTypes;
       let propertyDetails;

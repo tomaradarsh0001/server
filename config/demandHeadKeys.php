@@ -73,12 +73,12 @@ return [
         ],
     ],
     'DEM_CONV_CHG' => [
-        [
+        /*  [
             'key' => 'conversion_land_value',
             'label' => 'Land Value',
             'type' => 'number',
             'required' => true
-        ],
+        ], */
         [
             'key' => 'conversion_land_rate',
             'label' => 'Land Rate',
@@ -97,11 +97,6 @@ return [
             'type' => 'checkbox'
         ],
         [
-            'key' => 'conversion_surcharge',
-            'label' => 'Add Surcharge',
-            'type' => 'checkbox'
-        ],
-        [
             'key' => 'conversion_charges',
             'label' => 'Conversion Charges',
             'type' => 'number'
@@ -111,7 +106,7 @@ return [
             'label' => 'Allowed Remission Amount',
             'type' => 'number'
         ],
-        [
+          [
             'key' => 'conversion_surcharge_amount',
             'label' => 'Applied Surcharge Amount',
             'type' => 'number'
@@ -124,18 +119,13 @@ return [
     ],
     'DEM_LUC_RC' => [
         [
-            'key' => 'land_use_change_to',
-            'label' => 'Land use change sought to',
-            'type' => 'number'
-        ],
-        [
             'key' => 'partial_change',
             'label' => 'Mixed Use',
             'type' => 'checkbox'
         ],
         [
-            'key' => 'luc_land_rate', //commercial land value of property
-            'label' => 'Land Rate',
+            'key' => 'luc_land_value', //commercial land value of property
+            'label' => 'Land Value',
             'type' => 'number',
             'required' => true
         ],
@@ -147,16 +137,10 @@ return [
         ],
         [
             'key' => 'luc_BUAC',
-            'label' => 'Area land use change sought',
+            'label' => 'Area to be used as commercial',
             'type' => 'number',
             'requiredIf' => 'partial_change'
-        ],
-        [
-            'key' => 'luc_ltv',
-            'label' => 'Last Transaction Value',
-            'type' => 'number',
-            'required' => true
-        ],
+        ]
     ],
     'DEM_SLET_CHG' => [
         [

@@ -86,8 +86,8 @@ $(document).ready(function () {
               <div class="items" data-group="test">
                   <div class="item-content">
                       <div class="mb-3">
-                          <label for="inFavorNew" class="form-label">Name</label>
-                          <input type="text" class="form-control form-required alpha-only" name="in_favor_new[]" placeholder="Name" data-name="name">
+                          <label for="inFavorNew" class="form-label">Name <small class="text-red">*</small></label>
+                          <input type="text" class="form-control form-required alpha-only" id="in_favor_new" name="in_favor_new[]" placeholder="Name" data-name="name">
                           <div class="text-danger"></div>
                       </div>
                   </div>
@@ -105,7 +105,7 @@ $(document).ready(function () {
           <div class="items" data-group="test">
               <div class="item-content row">
                   <div class="mb-3 col-lg-12 col-12">
-                      <label for="newInFavourConversion" class="form-label">Name</label>
+                      <label for="newInFavourConversion" class="form-label">Name <small class="text-red">*</small></label>
                       <input type="text" name="newInFavourConversion[]" id="newInFavourConversion" class="form-control form-required alpha-only" placeholder="Name" data-name="name">
                       <div class="text-danger"></div>
                   </div>

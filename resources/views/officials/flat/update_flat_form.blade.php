@@ -36,7 +36,7 @@
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                     </li>
                     <li class="breadcrumb-item">Flat Form</li>
                 </ol>
@@ -137,9 +137,8 @@
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="searchPropertyId" class="form-label">Search Property Id</label>
-                                    <input type="text" id="searchPropertyId" name="searchPropertyId"
-                                        class="form-control numericOnly five-digit" placeholder="Enter Property ID"
-                                        value="{{ $property['oldPropertyId'] }}">
+                                    <input type="text" id="searchPropertyId" name="searchPropertyId" class="form-control numericOnly five-digit"
+                                        placeholder="Enter Property ID" value="{{ $property['oldPropertyId'] }}">
                                     <div id="suggestions" class="list-group" style="display: none;"></div>
                                 </div>
                                 <!-- Display Selected Property Details -->
@@ -199,15 +198,14 @@
                                     <label for="flatNumber" class="form-label">Flat No.</label>
                                     <input type="text" class="form-control" name="flatNumber" id="flatNumber"
                                         placeholder="Enter Flat Number"
-                                        value="{{ isset($flatData->flat_number) ? $flatData->flat_number : old('flatNumber') }}"
-                                        maxlength="15">
+                                        value="{{ isset($flatData->flat_number) ? $flatData->flat_number : old('flatNumber') }}" maxlength="15">
                                     @error('flatNumber')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                     <div class="text-danger" id="flatNumberError"></div>
                                 </div>
-                                {{-- Add New Field Floor - Lalit Tiwari (19/March/2025) --}}
-                                <div class="col-lg-3">
+                                 {{-- Add New Field Floor - Lalit Tiwari (19/March/2025) --}}
+                                 <div class="col-lg-3">
                                     <label for="floor" class="form-label">Floor</label>
                                     <input type="text" class="form-control" name="floor" id="floor"
                                         placeholder="Enter Flat Number"
@@ -272,8 +270,7 @@
                                     {{-- Removing class name-field - Lalit on 10/03/2025 --}}
                                     <input type="text" class="form-control" name="nameofBuilder" id="nameofBuilder"
                                         placeholder="Enter Name"
-                                        value="{{ isset($flatData->builder_developer_name) ? $flatData->builder_developer_name : old('nameofBuilder') }}"
-                                        maxlength="200">
+                                        value="{{ isset($flatData->builder_developer_name) ? $flatData->builder_developer_name : old('nameofBuilder') }}" maxlength="200">
                                     @error('nameofBuilder')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -284,8 +281,7 @@
                                     {{-- Removing class name-field - Lalit on 10/03/2025 --}}
                                     <input type="text" class="form-control" name="originalBuyerName"
                                         id="originalBuyerName" placeholder="Enter Name of Original Buyer"
-                                        value="{{ isset($flatData->original_buyer_name) ? $flatData->original_buyer_name : old('originalBuyerName') }}"
-                                        maxlength="200">
+                                        value="{{ isset($flatData->original_buyer_name) ? $flatData->original_buyer_name : old('originalBuyerName') }}" maxlength="200">
                                     @error('originalBuyerName')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -293,8 +289,8 @@
                                 </div>
                                 <div class="col-lg-3">
                                     <label for="purchaseDate" class="form-label">Date of Purchase</label>
-                                    <input type="date" name="purchaseDate" class="form-control" id="purchaseDate"
-                                        max="{{ date('Y-m-d') }}" pattern="\d{2} \d{2} \d{4}"
+                                    <input type="date" name="purchaseDate" class="form-control" id="purchaseDate" max="{{ date('Y-m-d') }}"
+                                        pattern="\d{2} \d{2} \d{4}"
                                         value="{{ isset($flatData->purchase_date) ? $flatData->purchase_date : old('purchase_date') }}">
                                     @error('purchaseDate')
                                         <span class="errorMsg">{{ $message }}</span>
@@ -306,8 +302,7 @@
                                     {{-- removing class prasent-occupant - Lalit on 10/03/2025 --}}
                                     <input type="text" class="form-control" name="presentOccupantName"
                                         id="presentOccupantName" placeholder="Enter Name of Present Occupant"
-                                        value="{{ isset($flatData->present_occupant_name) ? $flatData->present_occupant_name : old('presentOccupantName') }}"
-                                        maxlength="200">
+                                        value="{{ isset($flatData->present_occupant_name) ? $flatData->present_occupant_name : old('presentOccupantName') }}" maxlength="200">
                                     @error('presentOccupantName')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -444,7 +439,7 @@
             });
         });
         $(document).ready(function() {
-            $('#submitflatFormBtn').click(function(e) {
+            $('#submitflatFormBtn').click(function (e) {
                 e.preventDefault(); // Prevent default form submission
                 // Clear previous error messages
                 $('.text-danger').text('');
@@ -452,8 +447,7 @@
 
                 // Validate the 'presentOccupantName' field
                 //Commented on Dated - Lalit (06/March/2025)
-                /*if (!$('#presentOccupantName').val()
-                    .trim()) { // Use .trim() to remove any leading/trailing whitespace
+                /*if (!$('#presentOccupantName').val().trim()) { // Use .trim() to remove any leading/trailing whitespace
                     $('#presentOccupantNameError').text('Please enter the present occupant\'s name.');
                     isValid = false;
                     $('#presentOccupantName').focus();
@@ -489,7 +483,6 @@
                     isValid = false;
                     $('#originalBuyerName').focus();
                 }*/
-
                 //Commented on Dated - Lalit (06/March/2025)
                 /*if (!$('#nameofBuilder').val().trim()) {
                     $('#nameofBuilder').next('.text-danger').text('Please enter the name of builder.');
@@ -498,8 +491,7 @@
                 }*/
 
                 if (!$('#propertyFlatStatus').val().trim()) {
-                    $('#propertyFlatStatus').next('.text-danger').text(
-                        'Please select property flat status.');
+                    $('#propertyFlatStatus').next('.text-danger').text('Please select property flat status.');
                     isValid = false;
                     $('#propertyFlatStatus').focus();
                 }
@@ -523,7 +515,7 @@
                     $('#unitError').text(''); // Clear error message if valid
                 }*/
 
-                if ($('#area').val().trim() && !$('#unit').val()) {
+                if($('#area').val().trim() && !$('#unit').val()){
                     $('#unitError').text('Please select unit.');
                     isValid = false;
                     $('#unit').focus();
@@ -639,16 +631,16 @@
                 });
             }
 
-            $(".numericDecimal").on("input", function() {
+            $(".numericDecimal").on("input", function () {
                 var value = $(this).val();
                 if (!/^\d*\.?\d*$/.test(value)) {
-                    $(this).val(value.slice(0, -1));
+                $(this).val(value.slice(0, -1));
                 }
             });
 
-            $(".numericOnly").on("input", function(e) {
+            $(".numericOnly").on("input", function (e) {
                 $(this).val(
-                    $(this)
+                $(this)
                     .val()
                     .replace(/[^0-9]/g, "")
                 );
@@ -656,7 +648,7 @@
 
             //maximum 5 digits allowed for property ID
             document.querySelectorAll('.five-digit').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     // Remove non-numeric characters
                     this.value = this.value.replace(/\D/g, '');
 
@@ -668,7 +660,7 @@
             });
 
             document.querySelectorAll('.name-field').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     // Remove any characters that are not letters, spaces, or hyphens
                     // this.value = this.value.replace(/[^a-zA-Z0-9./_-\s]/g, '');
                     this.value = this.value.replace(/[^a-zA-Z0-9.,/_-\s]/g, '');
@@ -683,7 +675,7 @@
             });
 
             document.querySelectorAll('.prasent-occupant').forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     // Remove any characters that are not letters, spaces, or hyphens
                     this.value = this.value.replace(/[^a-zA-Z0-9.,/_-\s]/g, '');
                     // Check the length of the input (optional)
@@ -699,14 +691,13 @@
             document.querySelector('#flatNumber').addEventListener('input', function() {
                 // Regular expression to allow only alphanumeric characters and . / _ -
                 const validCharacters = /^[a-zA-Z0-9./_-\s]*$/;
-
+                
                 if (!validCharacters.test(this.value)) {
                     // Remove invalid characters
                     this.value = this.value.replace(/[^a-zA-Z0-9./_-]/g, '');
                     // alert("Only alphanumeric characters and . / _ - are allowed!");
                     if (!$('#flatNumber').val().trim()) {
-                        $('#flatNumber').next('.text-danger').text(
-                            'Only alphanumeric characters and . / _ - are allowed!');
+                        $('#flatNumber').next('.text-danger').text('Only alphanumeric characters and . / _ - are allowed!');
                         isValid = false;
                         $('#flatNumber').focus();
                     }
@@ -716,7 +707,7 @@
                     isValid = true;
                 }
             });
-
+            
         });
     </script>
 @endsection

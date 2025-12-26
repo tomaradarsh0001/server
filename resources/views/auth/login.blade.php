@@ -2,14 +2,6 @@
 @section('title', 'Login')
 
 @section('content')
-
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800%7CPoppins:400,500,700,800,900%7CRoboto:100,300,400,400i,500,700" />
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800;900&amp;display=swap"
-        rel="stylesheet" />
-
-
     <div class="login-8">
 
         <div class="container">
@@ -18,44 +10,33 @@
                     <div class="fixed_login_container">
                         <div class="title">
                             <div class="bottom-container">
-                                Welcome to eDharti<sup>2.0</sup>
+                                Welcome to eDharti2.0
                             </div>
                             <div class="top-container">
-                                Welcome to eDharti<sup>2.0</sup>
+                                Welcome to eDharti2.0
                             </div>
                         </div>
 
                     </div>
                 </div>
                 <!-- <div class="col-lg-3">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <figure class="swing">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="wall-swing">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <p>Important Notice</p>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="marquee">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <ul>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> e-Dharti Geo-Portal 2.0</a>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> e-Dharti</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="/appointment-detail"><i class="fas fa-chevron-right"></i> Office Visit
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Appointment</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> Club Membership</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> Order dt 19-3-2024 reg Public
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        meetings in LDO English version</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> Public Notice reg. Public
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Hearing in Land and Development Office</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> Public Notice in News Paper -
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        instructions</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> Public Notice in News Paper -
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        instructions</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> Public Notice in News Paper -
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        instructions</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <li><a href="#"><i class="fas fa-chevron-right"></i> Public Notice in News Paper -
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        instructions</a></li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </ul>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </figure>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
+                    <figure class="swing">
+                        <div class="wall-swing">
+                            <p>Important Notice</p>
+                            <div class="marquee">
+                                <ul>
+                                    <li><a href="#"><i class="fas fa-chevron-right"></i> e-Dharti Geo-Portal
+                                            2.0</a></li>
+                                    <li><a href="#"><i class="fas fa-chevron-right"></i> e-Dharti</a></li>
+                                    <li><a href="{{ route('appointmentDetail') }}"><i class="fas fa-chevron-right"></i> Office
+                                            Visit Appointment</a></li>
+                                    <li><a href="#"><i class="fas fa-chevron-right"></i> Club Membership</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </figure>
+                </div> commented by anil ui chagnes on 12-06-2025 -->
                 <div class="col-lg-6 mx-auto form-section">
                     <div class="form-inner">
 
@@ -70,18 +51,18 @@
                                 <div class="form-group form-box">
                                     <input id="otpMobile" maxlength="10" type="text" name="otpMobile"
                                         :value="old('otpMobile')" required autofocus class="form-control numericOnly"
-                                        placeholder="Registered Mobile Number">
+                                        placeholder="Registered Mobile Number" autocomplete="off">
                                     <div class="text-danger text-start" id="login_verify_mobile_otp_error"></div>
                                 </div>
                                 <div class="form-group">
                                     <button id="getOtp" type="button" class="btn btn-primary btn-lg btn-theme">Get
                                         OTP</button>
                                 </div>
-                                <h6 class="text-divider"><span>OR</span></h6>
-                                <p><a href="{{ url('login') }}" class="thembo">Login with Username</a></p>
+                                <h6 class="text-divider" ><span>OR</span></h6>
+                                <p><a href="{{ route('login') }}" class="thembo">Login with Username</a></p>
                             </div>
                             <div id="LoginWithOTP">
-                                <form autocomplete="off">
+                                 <form autocomplete="off">
                                     @csrf
                                     <div class="form-group form-box">
                                         <input id="mobile" maxlength="10" type="text" name="mobile"
@@ -92,23 +73,18 @@
                                         <input id="otp" maxlength="6" type="text" name="otp"
                                             class="form-control numericOnly" placeholder="Enter 6 digit OTP">
                                     </div>
-                                    <!-- added by Swati on 12092025 for resend otp -->
-                                    <div class="form-group d-flex align-items-center gap-2 justify-content-end resend-otp"
-                                        id="resendBlock" style="display:none;">
-                                        <button type="button" id="resendLoginOtp" class="btn btn-link p-0 resend-btn"
-                                            disabled>Resend OTP</button>
+                                  <!-- added by Swati on 12092025 for resend otp -->
+                                    <div class="form-group d-flex align-items-center gap-2 justify-content-end resend-otp" id="resendBlock" style="display:none;">
+                                        <button type="button" id="resendLoginOtp" class="btn btn-link p-0 resend-btn" disabled>Resend OTP</button>
                                         <span id="loginOtpTimer" class="text-muted small otp-timer"></span>
                                     </div>
-
-                                    <!-- added bootstrap class d-flex flex-column gap-3 to fix spacing input and captcha by anil on 12-09-2025 -->
                                     <div class="form-group form-box d-flex flex-column gap-3">
                                         <input type="text" name="mobileCaptcha" id="mobileCaptcha" class="form-control"
                                             placeholder="Enter captcha from below image">
                                         <div class="d-flex align-items-center gap-1">
-                                            <img src="{{ captcha_src() }}" alt="captcha" id="captchaMobileImage"
+                                            <img src="{{  route('captcha', ['config' => 'default'])  }}" alt="captcha" id="captchaMobileImage"
                                                 class="captcha-image">
-                                            <span class="btn btn-primary btn-sm refresh-captcha"
-                                                id="refreshMobileCaptcha">
+                                            <span class="btn btn-primary btn-sm refresh-captcha" id="refreshMobileCaptcha">
                                                 <i class="fas fa-sync-alt"></i>
                                             </span>
                                         </div>
@@ -117,13 +93,11 @@
                                         <div class="text-danger text-start" id="mobileOtpError"></div>
                                     </div>
                                     <div class="form-group">
-                                        <button type="button" id="verifyLoginOtp"
-                                            class="btn btn-primary btn-lg btn-theme">
+                                        <button type="button" id="verifyLoginOtp" class="btn btn-primary btn-lg btn-theme">
                                             {{ __('Log in') }}
                                         </button>
                                     </div>
                                 </form>
-
                             </div>
                         </div>
                         <h6 class="text-divider" id="dividerLogin"><span>OR</span></h6>
@@ -132,8 +106,8 @@
                                 placeholder="Email Address">
                         </div>
                         <div id="emailLoginForm">
-                            <span id="loginErrors" class="text-danger"></span>
-                            <form method="POST" action="{{ route('login') }}" id="loginForm" autocomplete="off">
+                             <span id="loginErrors" class="text-danger"></span>
+                            <form method="POST" action="{{ route('login') }}" id="loginForm">
                                 @csrf
                                 <div class="form-group form-box">
                                     <input id="email" type="email" name="email" :value="old('email')" required
@@ -143,42 +117,48 @@
                                 <div class="form-group form-box">
                                     <input id="password" type="password" required class="form-control"
                                         autocomplete="off" placeholder="Password" aria-label="Password">
-                                    <input id="encryptedPassword" type="hidden" name="password">
+                                        <input id="encryptedPassword" type="hidden" name="password">
 
-                                    <!-- Eye Icon -->
-                                    <span class="position-absolute top-50 end-0 translate-middle-y me-3"
-                                        style="cursor: pointer;" id="togglePassword">
-                                        <i class="fas fa-eye"></i>
-                                    </span>
+                                        <!-- Eye Icon -->
+                                        <span class="position-absolute top-50 end-0 translate-middle-y me-3" 
+                                            style="cursor: pointer;" id="togglePassword">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
                                 </div>
                                 <div class="checkbox form-group d-flex flex-column gap-3">
-                                    <input type="text" autocomplete="off" name="emailCaptcha" id="emailCaptcha"
-                                        class="form-control" placeholder="Enter captcha from below image">
+                                    <input type="text" autocomplete="off" name="emailCaptcha" id="emailCaptcha" class="form-control" placeholder="Enter captcha from below image">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
                                     <div class="d-flex align-items-center gap-1">
-                                        <img src="{{ captcha_src() }}" alt="captcha" id="captchaImage"
+                                        <img src="{{ route('captcha', ['config' => 'default']) }}" alt="captcha" id="captchaImage"
                                             class="captcha-image">
-                                        <span class="btn btn-primary btn-sm refresh-captcha" id="refreshCaptcha"
-                                            style="padding: 10px 13px;">
+                                        <span class="btn btn-primary btn-sm refresh-captcha" id="refreshCaptcha" style="padding: 10px 13px;">
                                             <i class="fas fa-sync-alt"></i>
                                         </span>
                                     </div>
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
                                 </div>
                                 <div class="checkbox form-group clearfix">
-                                    <a href="{{ route('password.request') }}"
-                                        class="float-end forgot-password pb-2">Forgot password?</a>
+                                    <!-- <div class="form-check float-start">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <input class="form-check-input" type="checkbox" id="rememberme">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <label class="form-check-label" for="rememberme">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Remember me
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </label>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div> -->
+                                    <a href="{{ route('password.request') }}" class="float-end forgot-password">Forgot
+                                        Password?</a>
                                 </div>
                                 <div class="form-group">
                                     <button class="btn btn-primary btn-lg btn-theme"
                                         id="loginButton">{{ __('Log in') }}</button>
+
                                 </div>
+
                             </form>
 
                             <h6 class="text-divider" id="dividerLogin"><span>OR</span></h6>
 
-                            <p><a href="{{ url('login') }}" class="thembo">Login with Mobile Number</a></p>
+                            <p><a href="{{ route('login') }}" class="thembo">Login with Mobile Number</a></p>
                         </div>
-                        <x-input-error :messages="$errors->get('email')" class="mt-2 fs-6 text-danger" />
+                       <x-input-error :messages="$errors->get('email')" class="mt-2 fs-6 text-danger" />
                         <x-input-error :messages="$errors->get('password')" class="mt-2 fs-6 text-danger" />
                         <x-input-error :messages="$errors->get('emailCaptcha')" class="mt-2 fs-6 text-danger" />
                         @if (session('failure'))
@@ -194,55 +174,55 @@
                     </div>
                 </div>
                 <!-- <div class="col-lg-3">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="gallery">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="block-33 display--inline-top">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="gutter relative">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="gallery-h">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="gallery-image relative">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="gallery-image__img relative">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="fill-dimensions cover-img"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            style="background-image:url('{{ asset('assets/frontend/assets/img/slider/Golf-Course-Club.jpg') }}')">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <h5>Golf Course Club</h5>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="gallery-image">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="gallery-image__img relative">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="fill-dimensions cover-img"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            style="background-image:url('{{ asset('assets/frontend/assets/img/slider/habitat-center.jpg') }}')">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <h5>Habitat Center</h5>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="gallery-image">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="gallery-image__img relative">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="fill-dimensions cover-img"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            style="background-image:url('{{ asset('assets/frontend/assets/img/slider/india-gate.jpg') }}')">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <h5>India Gate</h5>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="gallery-image">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="gallery-image__img relative">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="fill-dimensions cover-img"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            style="background-image:url('{{ asset('assets/frontend/assets/img/slider/Parliament-house.jpg') }}')">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <h5>Parliament House</h5>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <div class="gallery-image">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="gallery-image__img relative">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="fill-dimensions cover-img"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            style="background-image:url('{{ asset('assets/frontend/assets/img/slider/rasthtrapati-bhawan.jpg') }}')">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <h5>Rasthtrapati Bhawan</h5>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div> -->
+                    <div class="gallery">
+                        <div class="block-33 display--inline-top">
+                            <div class="gutter relative">
+                                <div class="gallery-h">
+                                    <div class="gallery-image relative">
+                                        <div class="gallery-image__img relative">
+                                            <div class="fill-dimensions cover-img"
+                                                style="background-image:url('{{ asset('assets/frontend/assets/img/slider/Golf-Course-Club.jpg') }}')">
+                                            </div>
+                                            <h5>Golf Course Club</h5>
+                                        </div>
+                                    </div>
+                                    <div class="gallery-image">
+                                        <div class="gallery-image__img relative">
+                                            <div class="fill-dimensions cover-img"
+                                                style="background-image:url('{{ asset('assets/frontend/assets/img/slider/habitat-center.jpg') }}')">
+                                            </div>
+                                            <h5>Habitat Center</h5>
+                                        </div>
+                                    </div>
+                                    <div class="gallery-image">
+                                        <div class="gallery-image__img relative">
+                                            <div class="fill-dimensions cover-img"
+                                                style="background-image:url('{{ asset('assets/frontend/assets/img/slider/india-gate.jpg') }}')">
+                                            </div>
+                                            <h5>India Gate</h5>
+                                        </div>
+                                    </div>
+                                    <div class="gallery-image">
+                                        <div class="gallery-image__img relative">
+                                            <div class="fill-dimensions cover-img"
+                                                style="background-image:url('{{ asset('assets/frontend/assets/img/slider/Parliament-house.jpg') }}')">
+                                            </div>
+                                            <h5>Parliament House</h5>
+                                        </div>
+                                    </div>
+                                    <div class="gallery-image">
+                                        <div class="gallery-image__img relative">
+                                            <div class="fill-dimensions cover-img"
+                                                style="background-image:url('{{ asset('assets/frontend/assets/img/slider/rasthtrapati-bhawan.jpg') }}')">
+                                            </div>
+                                            <h5>Rasthtrapati Bhawan</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> commented by anil ui chagnes on 12-06-2025 -->
             </div>
         </div>
         <div class="ocean">
@@ -250,16 +230,17 @@
             <div class="wave"></div>
         </div>
     </div>
+    <!-- added by anil ui change is login page on 12-06-2025 -->
     <div class="footer-marquee">
         <div class="marquee-title">Important Links</div>
         <div class="marquee-animation">
             <ul>
                 <li><a href="#"><i class="fas fa-chevron-right"></i> e-Dharti Geo-Portal 2.0</a>
                 </li>
-                <li><a href="#"><i class="fas fa-chevron-right"></i> e-Dharti</a></li>
-                <li><a href="/appointment-detail"><i class="fas fa-chevron-right"></i> Office Visit
+                <li><a href="{{ route('login') }}"><i class="fas fa-chevron-right"></i> e-Dharti</a></li>
+                <li><a href="{{ route('appointmentDetail') }}"><i class="fas fa-chevron-right"></i> Office Visit
                         Appointment</a></li>
-                <li><a href="#"><i class="fas fa-chevron-right"></i> Club Membership</a></li>
+                <li><a href="/club-membership"><i class="fas fa-chevron-right"></i> Club Membership</a></li>
                 <li><a href="#"><i class="fas fa-chevron-right"></i> Order dt 19-3-2024 reg Public
                         meetings in LDO English version</a></li>
                 <li><a href="#"><i class="fas fa-chevron-right"></i> Public Notice reg. Public
@@ -275,90 +256,88 @@
             </ul>
         </div>
     </div>
-
-
-
-
+    <!-- end comment by anil ui change is login page on 12-06-2025 -->
 @endsection
 
 @section('footerScript')
-    <script src="{{ asset('assets/frontend/assets/js/crypto-js.min.js') }}"></script>
-    <script src="{{ asset('assets/frontend/assets/js/commonFunctions.js') }}"></script>
-    <script>
-        // For login with mobile and email By SOURAV CHAUHAN - 13 Aug 2024
-        $(document).ready(function() {
-            $('#emailInput').focus(function() {
-                $(this).hide();
-                $('#dividerLogin').hide();
-                $('#mobileOtp').hide();
-                $('#mobileInput').hide();
-                $('#emailLoginForm').slideDown();
-                $('#email').focus();
-            });
+<script src="{{ asset('assets/frontend/assets/js/crypto-js.min.js')}}"></script>
+<script src="{{ asset('assets/frontend/assets/js/commonFunctions.js') }}"></script>
+<script>
+    // For login with mobile and email By SOURAV CHAUHAN - 13 Aug 2024
+    $(document).ready(function() {
+        $('#emailInput').focus(function() {
+            $(this).hide();
+            $('#dividerLogin').hide();
+            $('#mobileOtp').hide();
+            $('#mobileInput').hide();
+            $('#emailLoginForm').slideDown();
+            $('#email').focus();
+        });
 
-            $('#mobileInput').focus(function() {
-                $(this).hide();
-                $('#dividerLogin').hide();
-                $('#emailLoginForm').hide();
-                $('#emailInput').hide();
-                $('#mobileOtp').slideDown();
-                $('#otpMobile').focus();
-            });
+        $('#mobileInput').focus(function() {
+            $(this).hide();
+            $('#dividerLogin').hide();
+            $('#emailLoginForm').hide();
+            $('#emailInput').hide();
+            $('#mobileOtp').slideDown();
+            $('#otpMobile').focus();
+        });
 
+        
             // ===== Resend timer helpers =====
-            // added by Swati on 12092025 for resend otp
-            let loginOtpInterval = null;
-            // added by Swati on 12092025 for resend otp
-            function startLoginOtpTimer(seconds) {
-                clearInterval(loginOtpInterval);
-                const $btn = $('#resendLoginOtp');
-                const $blk = $('#resendBlock');
-                const $timer = $('#loginOtpTimer');
+        // added by Swati on 12092025 for resend otp
+        let loginOtpInterval = null;
+        // added by Swati on 12092025 for resend otp
+        function startLoginOtpTimer(seconds) {
+            clearInterval(loginOtpInterval);
+            const $btn   = $('#resendLoginOtp');
+            const $blk   = $('#resendBlock');
+            const $timer = $('#loginOtpTimer');
 
-                let remaining = Number(seconds || 600);
-                $blk.show();
-                $btn.prop('disabled', true);
+            let remaining = Number(seconds || 600);
+            $blk.show();
+            $btn.prop('disabled', true);
 
-                function fmt(s) {
-                    const m = String(Math.floor(s / 60)).padStart(2, '0');
-                    const ss = String(s % 60).padStart(2, '0');
-                    return `${m}:${ss}`;
+            function fmt(s){
+                const m = String(Math.floor(s/60)).padStart(2,'0');
+                const ss = String(s%60).padStart(2,'0');
+                return `${m}:${ss}`;
+            }
+            $timer.text(`(${fmt(remaining)})`);
+
+            loginOtpInterval = setInterval(function(){
+                remaining -= 1;
+                if (remaining <= 0) {
+                    clearInterval(loginOtpInterval);
+                    $timer.text('');
+                    $btn.prop('disabled', false).text('Resend OTP');
+                    return;
                 }
                 $timer.text(`(${fmt(remaining)})`);
-
-                loginOtpInterval = setInterval(function() {
-                    remaining -= 1;
-                    if (remaining <= 0) {
-                        clearInterval(loginOtpInterval);
-                        $timer.text('');
-                        $btn.prop('disabled', false).text('Resend OTP');
-                        return;
-                    }
-                    $timer.text(`(${fmt(remaining)})`);
-                }, 1000);
-            }
+            }, 1000);
+        }
 
 
-            $('#getOtp').click(function() {
-                var mobile = $('#otpMobile').val().trim();
-                var errorDiv = $('#login_verify_mobile_otp_error');
-                var button = $(this);
-                if (mobile == '') {
-                    errorDiv.html('Mobile number is required')
-                } else if (!isValidMobile(mobile)) {
-                    errorDiv.html('Invalid mobile number');
-                } else {
-                    button.prop('disabled', true);
-                    button.html('Sending...');
-                    $.ajax({
-                        url: "{{ route('sendLoginOtp') }}",
-                        type: "POST",
-                        data: {
-                            mobile: mobile,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        dataType: 'json',
-                        success: function(result) {
+        $('#getOtp').click(function() {
+            var mobile = $('#otpMobile').val().trim();
+            var errorDiv = $('#login_verify_mobile_otp_error');
+            var button = $(this);
+            if (mobile == '') {
+                errorDiv.html('Mobile number is required')
+            } else if (!isValidMobile(mobile)) {
+                errorDiv.html('Invalid mobile number');
+            } else {
+                button.prop('disabled', true);
+                button.html('Sending...');
+                $.ajax({
+                    url: "{{route('sendLoginOtp')}}",
+                    type: "POST",
+                    data: {
+                        mobile: mobile,
+                        _token: '{{csrf_token()}}'
+                    },
+                    dataType: 'json',
+                   success: function(result) {
                             if (result.success) {
                                 errorDiv.html('')
                                 $('#mobileOtp').hide()
@@ -378,20 +357,22 @@
                                 startLoginOtpTimer(result.retry_after ?? 600);
                                 errorDiv.text('Please wait before requesting a new OTP.');
                                 button.prop('disabled', false).text('Get OTP');
-                            } else {
+                            }
+                            
+                            else {
                                 errorDiv.html(result.message)
                                 button.prop('disabled', false);
                                 button.html('Get OTP');
                             }
                         }
-                    });
+                });
 
-                }
+            }
 
-            });
+        });
 
 
-            $('#verifyLoginOtp').click(function() {
+         $('#verifyLoginOtp').click(function() {
                 var mobile = $('#mobile').val().trim();
                 var otp = $('#otp').val().trim();
                 var captcha = $('#mobileCaptcha').val().trim();
@@ -454,7 +435,7 @@
 
             // ===== Resend OTP (login) =====
             // added by Swati on 12092025 for resend otp
-            $('#resendLoginOtp').on('click', function() {
+            $('#resendLoginOtp').on('click', function () {
                 const mobile = $('#mobile').val().trim();
                 const $btn = $(this);
                 const errorDiv = $('#mobileOtpError');
@@ -469,12 +450,9 @@
                 $.ajax({
                     url: "{{ route('resendLoginOtp') }}",
                     type: "POST",
-                    data: {
-                        mobile: mobile,
-                        _token: '{{ csrf_token() }}'
-                    },
+                    data: { mobile: mobile, _token: '{{ csrf_token() }}' },
                     dataType: 'json',
-                    success: function(res) {
+                    success: function (res) {
                         if (res.success) {
                             // added by Swati on 12092025
                             startLoginOtpTimer(res.cooldown ?? 600);
@@ -488,7 +466,7 @@
                             $btn.prop('disabled', false).text('Resend OTP');
                         }
                     },
-                    error: function() {
+                    error: function () {
                         errorDiv.text('An unexpected error occurred.');
                         $btn.prop('disabled', false).text('Resend OTP');
                     }
@@ -512,37 +490,37 @@
                 refreshMobileCaptcha();
             });
 
-            $('#loginButton').on('click', function() {
-                const email = $('#email').val().trim();
-                const password = $('#password').val();
-                const emailCaptcha = $('#emailCaptcha').val();
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                var loginErrors = $('#loginErrors');
+        $('#loginButton').on('click',function(){
+             const email = $('#email').val().trim();
+            const password = $('#password').val();
+            const emailCaptcha = $('#emailCaptcha').val();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            var loginErrors = $('#loginErrors');
 
-                if (!email) {
-                    loginErrors.text('Email address is required.');
-                    $('#email').focus();
-                    return false;
-                } else if (!emailRegex.test(email)) {
-                    loginErrors.text('Enter a valid email address.');
-                    $('#email').focus();
-                    return false;
-                } else if (password == '') {
-                    loginErrors.html('Password is required.');
-                    return false;
-                } else if (emailCaptcha == '') {
-                    loginErrors.html('Captcha is required.');
-                    return false;
-                } else {
-                    loginErrors.text('');
-                }
-                $(this).prop('disabled', true);
-                $(this).html('Logging in...');
-                $('#loginForm').submit();
+            if (!email) {
+                loginErrors.text('Email address is required.');
+                $('#email').focus();
+                return false;
+            } else if (!emailRegex.test(email)) {
+                loginErrors.text('Enter a valid email address.');
+                $('#email').focus();
+                return false;
+            } else if (password == '') {
+                loginErrors.html('Password is required.');
+                return false;
+            } else if(emailCaptcha == ''){
+                loginErrors.html('Captcha is required.');
+                return false;
+            } else {
+                loginErrors.text('');
+            }
+            $(this).prop('disabled', true);
+            $(this).html('Logging in...');
+            $('#loginForm').submit();  
+        })
 
-            })
 
-            $('#refreshCaptcha').on('click', function() {
+         $('#refreshCaptcha').on('click', function() {
                 $.ajax({
                     url: "{{ route('refresh.captcha') }}",
                     type: "GET",
@@ -551,11 +529,9 @@
                     }
                 });
             });
-        });
+    });
 
-        //function added by Nitin to send encrypted password
-
-        $('#password').blur(function() {
+    $('#password').blur(function() {
             let InputValue = $(this).val();
             let encryptedInput = $(this).parent().find('#encryptedPassword');
             if (InputValue !== "") {
@@ -567,7 +543,8 @@
             }
         });
 
-        document.getElementById("togglePassword").addEventListener("click", function() {
+        
+    document.getElementById("togglePassword").addEventListener("click", function () {
             const passwordField = document.getElementById("password");
             const icon = this.querySelector("i");
 
@@ -581,6 +558,6 @@
                 icon.classList.add("fa-eye");
             }
         });
-    </script>
+</script>
 
 @endsection

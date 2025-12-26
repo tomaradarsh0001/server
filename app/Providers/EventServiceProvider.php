@@ -7,12 +7,6 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
-use App\Events\MailSentSuccess;
-use App\Listeners\EmailSentListener;
-
-use Illuminate\Queue\Events\JobProcessed;
-use Illuminate\Queue\Events\JobFailed;
-
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -24,12 +18,7 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        MailSentSuccess::class => [
-            EmailSentListener::class,
-        ],
     ];
-
-    
 
     /**
      * Register any events for your application.

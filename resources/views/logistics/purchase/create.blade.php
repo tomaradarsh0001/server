@@ -47,11 +47,17 @@
         }
     </style>
 
-{{-- breadcrumb  --}}
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Logistics</div>
-    @include('include.partials.breadcrumbs')
-</div>
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Logistic</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Purchase</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-body">
@@ -70,7 +76,7 @@
                         <div class="form-group col-md-6">
                             <label class="form-label" for="vendor_supplier_id">Vendor Supplier Name: <span
                                     class="text-danger">*</span></label>
-                            <a href="{{ url('logistic/vendor/') }}" class="add-btn">&plus;&nbsp;Add Vendors</a>
+                            <a href="{{ route('supplier.index') }}" class="add-btn">&plus;&nbsp;Add Vendors</a>
                             <select id="vendor_supplier_id" name="vendor_supplier_id" class="form-select mb-3"
                                 aria-label="Default select example">
                                 <option value="">Select</option>

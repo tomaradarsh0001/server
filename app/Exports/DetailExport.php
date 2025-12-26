@@ -25,7 +25,6 @@ class DetailExport implements FromArray, WithHeadings, WithStyles
         return [
             'Property Id',
             'Old Property ID',
-            'Joint Properties',
             'File Number',
             'Old File Number',
             'Land Type',

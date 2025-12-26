@@ -151,11 +151,11 @@
 
                 <div class="form-group">
                     <label for="pageno" class="form-label">Page Number<span class="text-danger">*</span></label>
-                    <!-- <i class="bi bi-info-circle-fill text-primary qmark" data-toggle="tooltip" data-placement="top"
-                        title=" Page Nos. are mentioned on the document with Registration details."
+                                       <i class="bi bi-info-circle-fill text-primary qmark" data-toggle="tooltip" data-placement="top"
+                        title=" Page Nos. as per registration details."
                         data-bs-custom-class="tooltip-info">
                         <span class="qmark">&#8505;</span>
-                    </i> -->
+                    </i>
                     <div class="row merge-inputs">
                         <div class="col-lg-6">
                             <input type="text" name="mutPagenoFrom" class="form-control numericDecimalHyphen"
@@ -237,7 +237,7 @@
         <!-- row end -->
         <div class="row g-3 align-items-end mt-3">
 
-            <div class="col-lg-6">
+            <div class="col-lg-6" id="mortgagedMainDivMutationInEdit" style="display: none;"> 
                 <div class="d-flex align-items-center">
                     <!-- commented by anil keep text title same as create and draft applicatnt on 02-05-2025 -->
                     <!-- <h6 class="mr-5 mb-0">Whether property stands mortgaged?</h6> -->

@@ -5,7 +5,6 @@
     <title>eDharti 2.0 | @yield('title')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- External CSS libraries -->
     <link type="text/css" rel="stylesheet" href="{{ asset('assets/frontend/assets/css/bootstrap.min.css') }}">
     <link type="text/css" rel="stylesheet"
@@ -13,7 +12,7 @@
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link type="text/css" rel="stylesheet"
         href="{{ asset('assets/frontend/assets/fonts/flaticon/font/flaticon.css') }}">
-
+ <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons/css/all/all.css" rel="stylesheet">
@@ -21,20 +20,19 @@
     <!-- Favicon icon -->
     <link rel="icon" href="{{ asset('assets/images/logo-icon.png') }}" type="image/png" />
 
-    <link rel="stylesheet" href="{{ asset('assets/css/googleapi_css1.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/googleapi_css2.css') }}">
     <!-- Google fonts -->
-    
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800%7CPoppins:400,500,700,800,900%7CRoboto:100,300,400,400i,500,700">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet">
 
     <!-- Custom Stylesheet -->
     <link type="text/css" rel="stylesheet" href="{{ asset('assets/frontend/assets/css/style.css') }}">
-    <link rel="stylesheet" type="text/css" id="style_sheet"
+   <link type="text/css" rel="stylesheet" href="{{ asset('assets/css/common.css') }}">
+     <link rel="stylesheet" type="text/css" id="style_sheet"
         href="{{ asset('assets/frontend/assets/css/skins/default.css') }}">
     <link rel="stylesheet" type="text/css" id="style_sheet" href="{{ asset('assets/frontend/assets/css/custom.css') }}">
-    <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/css/common.css') }}" rel="stylesheet">
-
-    <!-- toastify added by nitin to show toast messages to guest user -->
+    <!-- Toaster CSS Added by Diwakar Sinha at 20-09-2024 -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <style>
@@ -98,14 +96,42 @@
             background: white;
             z-index: -1;
         }
-        .notice-modal .modal-body{
-            padding:1rem 4rem
+
+        /* for Edharti loader - SOURAV CHAUHAN (11 April 2025) */
+    #spinnerOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1000;
+            /* Ensure it covers other content */
         }
-        @media screen and (max-width: 480px) {
-            .notice-modal .modal-body{
-                padding:1rem;
+
+        /* .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 8px solid #ffffff;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
             }
-        }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        } */
+
         #modalCloseBtn.fade-in {
             animation: fadeIn 0.7s ease-in-out forwards;
         }
@@ -147,13 +173,16 @@
         <div class="text-white">{{ session('success') }}</div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    
     <div class="page-wrapper public-wrap">
         <div class="page-content">
             @yield('content')
         </div>
     </div>
+
+
     <footer>
-        <span>Copyright &copy; 2024. All Rights Reserved.</span>
+        <span>Copyright &copy; {{date('Y')}}. All Rights Reserved.</span>
     </footer>
     <!-- Login 8 end -->
     <!-- Begin OTP -->
@@ -166,7 +195,7 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="otp-title">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Mobile Phone Verification</h1>
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Mobile Number Verification</h1>
                         <p class="otp-description">Enter the 4-digit verification code that was sent to your phone
                             number.</p>
                     </div>
@@ -182,13 +211,13 @@
                             </div>
                             <button type="button" id="verifyMobileOtpBtn" class="otp_verify_btn">Verify Mobile
                                 Number</button>
-
+                            
                             <div id="otpTimerContainerMobile" style="display:none;">
                                 <p>OTP expire in <span id="otpTimerMobile"></span> seconds</p>
                             </div>
                             <div class="text-success text-center" id="mobileResendOptSuccess"></div>
                             <p class="resent_otp">Didn't receive code? <a href="#" id="reSentOtpMobileBtn">Resend</a></p>
-
+                            
                         </div>
                     </form>
                 </div>
@@ -218,13 +247,13 @@
                                 <input type="text" class="otp_input_email otp_input" maxlength="1" />
                             </div>
                             <button type="button" id="verifyEmailOtpBtn" class="otp_verify_btn">Verify Email</button>
-
+                            
                             <div id="otpTimerContainerEmail" style="display:none;">
                                 <p>OTP expire in <span id="otpTimerEmail"></span> seconds</p>
                             </div>
                             <div class="text-success text-center" id="emailResendOptSuccess"></div>
                             <p class="resent_otp">Didn't receive code? <a href="#" id="reSentOtpEmailBtn">Resend</a></p>
-
+                            
                         </div>
                     </form>
                 </div>
@@ -241,7 +270,7 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="otp-title">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Mobile Phone Verification</h1>
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Mobile Number Verification</h1>
                         <p class="otp-description">Enter the 4-digit verification code that was sent to your phone
                             number.</p>
                     </div>
@@ -258,13 +287,13 @@
                             </div>
                             <button type="button" id="orgVerifyMobileOtpBtn" class="otp_verify_btn">Verify Mobile
                                 Number</button>
-
+                            
                             <div id="otpTimerContainerOrgMobile" style="display:none;">
                                 <p>OTP expire in <span id="otpTimerOrgMobile"></span> seconds</p>
                             </div>
                             <div class="text-success text-center" id="orgMobileResendOptSuccess"></div>
                             <p class="resent_otp">Didn't receive code? <a href="#" id="reSentOtpOrgMobileBtn">Resend</a></p>
-
+                            
                         </div>
                     </form>
                 </div>
@@ -296,14 +325,14 @@
                             </div>
                             <button type="button" id="orgVerifyEmailOtpBtn" class="otp_verify_btn">Verify
                                 Email</button>
-
+                            
                             <div id="otpTimerContainerOrgEmail" style="display:none;">
                                 <p>OTP expire in <span id="otpTimerOrgEmail"></span> seconds</p>
                             </div>
                             <div class="text-success text-center" id="orgEmailResendOptSuccess"></div>
-
+                            
                             <p class="resent_otp">Didn't receive code? <a href="#" id="reSentOtpOrgEmailBtn">Resend</a></p>
-
+                            
                         </div>
                     </form>
                 </div>
@@ -317,6 +346,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-center">
                 
+                <!-- Header -->
                 <div class="modal-header justify-content-center position-relative">
                     <h3 class="modal-title" id="noticeModalLabel">Notice</h3>
                     <button 
@@ -328,11 +358,13 @@
                     </button>
                 </div>
 
+                <!-- Body -->
                 <div class="modal-body">
                     This site is under construction. Please click the link
                     below to visit ldo.gov.in.
                 </div>
 
+                <!-- Footer -->
                 <div class="modal-footer justify-content-center">
                     <a href="https://ldo.gov.in/" target="_blank" class="btn btn-primary">
                         Go to Older Portal
@@ -344,19 +376,37 @@
     <!-- End Notice Modal -->
 
 
+    <!-- commented and adeed by anil for replace the new loader on 13-08-2025  -->
+    <!-- <div id="spinnerOverlay">
+        <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
+        <br>
+        <h1 style="color: white;font-size: 20px;">Logging, Please wait...</h1>
+    </div> -->
+    <div id="spinnerOverlay" style="display:none;">
+        <span class="loader"></span>
+        <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
+    </div>
+    <!-- commented and adeed by anil for replace the new loader on 13-08-2025  -->
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!-- External JS libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
+    <!-- <script src="{{ asset('assets/frontend/assets/js/jquery3.7.1.min.js') }}"></script> -->
+                <script src="{{ asset('assets/js/jquery-3.7.1.js') }}"></script>
+
     <script src="{{ asset('assets/frontend/assets/js/popper.min.js') }}"></script>
     <script src="{{ asset('assets/frontend/assets/js/bootstrap.bundle.min.js') }}"></script>
 
     <!-- Custom JS Script -->
     <script src="{{ asset('assets/frontend/assets/js/custom.js') }}"></script>
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
     @yield('footerScript')
+
+    
+    <!-- Toast JS Added by Diwakar Sinha at 20-09-2024 -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <!-- Chat JS added by Diwakar & Adarsh -->
     <!-- Developed by Adarsh -->
@@ -382,8 +432,8 @@
             headerTextColor: '#fff',
             bubbleBackground: '#116d6e',
             aboutText: '',
-            bubbleAvatarUrl: "{{ asset('assets/images/chatbot_icongif.gif') }}",
-            backgroundImage: "{{ asset('assets/images/chatbot_bg.png') }}",
+            bubbleAvatarUrl: '{{ asset('assets/images/chatbot_icongif.gif') }}',
+            backgroundImage: '{{ asset('assets/images/chatbot_bg.png') }}',
             backgroundColor: '#f8f8f8',
             className: 'bhoomiChatBot'
         };
@@ -399,8 +449,7 @@
                 }, 5000);
             }, 500);
         };
-
-
+        
         //function added by Nitin on 20/nov/24 and copeied from app.js by nitin on 22-01-2025
         // Minified by Diwakar Sinha at 30-12-2024
         function customNumFormat(t) {
@@ -420,25 +469,26 @@
     <div id="tooltip" class="tooltip-message">
         Hello, I am Bhoomi How can I assist you?
     </div>
+    {{-- <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script> --}}
 
-    <script src="{{ asset('/assets/js/widget.js') }}"></script>
+    <script id="botmanWidget" src="{{ asset('/assets/js/widget.js') }}"></script>
 
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // Show modal on page load
-      var noticeModal = new bootstrap.Modal(document.getElementById("noticeModal"));
-      noticeModal.show();
+        document.addEventListener("DOMContentLoaded", function () {
+        // Show modal on page load
+        var noticeModal = new bootstrap.Modal(document.getElementById("noticeModal"));
+        noticeModal.show();
 
-      // Get close button
-      var closeBtn = document.getElementById("modalCloseBtn");
+        // Get close button
+        var closeBtn = document.getElementById("modalCloseBtn");
 
-      // Show close button after 5 seconds with fade-in
-      setTimeout(() => {
-        closeBtn.classList.remove("d-none");
-        closeBtn.classList.add("fade-in");
-      }, 1000);
-    });
-  </script>
+        // Show close button after 5 seconds with fade-in
+        setTimeout(() => {
+            closeBtn.classList.remove("d-none");
+            closeBtn.classList.add("fade-in");
+        }, 5000);
+        });
+    </script>
 </body>
 
 </html>

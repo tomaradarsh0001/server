@@ -31,12 +31,9 @@ class ModulesTableSeeder extends Seeder
             ['name' => 'importCircleRates', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['name' => 'searchProperty', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['name' => 'login', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['name' => 'logout', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['name' => 'purchase', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['name' => 'itemIssued', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'flats', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'appointments', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'grievances', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'filterReport', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ];
         DB::table('modules')->insert($modules);
         // Enable foreign key checks

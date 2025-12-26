@@ -47,7 +47,6 @@
         body {
             margin: 0 !important;
             padding: 0 !important;
-            background:#ffffff!important;
         }
         .wrapper.toggled .page-wrapper,
         .wrapper .page-wrapper{
@@ -72,7 +71,7 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                 </li>
                 <li class="breadcrumb-item active" aria-current="page">MIS Form Preview</li>
             </ol>
@@ -90,8 +89,9 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-4 pt-3 text-decoration-underline text-uppercase">Property Details</h5>
                 @haspermission('edit.child')
-                <a href="{{ url('property-details/' . $childData->id . '/child-edit') }}"><button type="button"
-                        class="btn btn-primary px-5">Edit</button></a>
+                <a href="{{ route('editChildDetails', ['property' => $childData->id]) }}">
+                    <button type="button" class="btn btn-primary px-5">Edit</button>
+                </a>                
                 @endhaspermission
             </div>
             <div class="container pb-3">
@@ -101,9 +101,11 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td><b>New Property Id: </b> <a
-                                            href="{{ url('property-details/' . $viewDetails->id . '/view') }}">{{$viewDetails->unique_propert_id}}</a>
-                                    </td>
+                                    <td><b>New Property Id: </b> 
+                                        <a href="{{ route('viewDetails', ['property' => $viewDetails->id]) }}">
+                                            {{ $viewDetails->unique_propert_id }}
+                                        </a>
+                                    </td>                                    
                                     <td><b>Old Property Id: </b> {{$viewDetails->old_propert_id}}</td>
                                 </tr>
                                 <tr>
@@ -135,19 +137,20 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td><b>New Splited Property Id: </b> {{$childData->child_prop_id}}</td>
-                                    <td><b>Old Property Id: </b> {{$childData->old_property_id}}</td>
+                                    <td><b>New Splited Property Id: </b> {{$childData->child_prop_id ?? 'NA'}}</td>
+                                    <td><b>Old Property Id: </b> {{$childData->old_property_id ?? 'NA'}}</td>
                                 </tr>
                                 <tr>
-                                    <td><b>Plot /Flat no: </b> {{$childData->plot_flat_no}} </td>
-                                    <td><b>Area: </b> {{$childData->original_area}}
+                                    <td><b>Plot /Flat no: </b> {{$childData->plot_flat_no ?? 'NA'}} </td>
+                                    <td><b>Area: </b> {{$childData->original_area ?? '0'}}
                                         {{$item->itemNameById($childData->unit)}} <span
-                                            class="text-secondary">({{$childData->area_in_sqm}} Sq Meter)</span>
+                                            class="text-secondary">({{$childData->area_in_sqm ?? '0'}} Sq Meter)</span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><b>Presently Known As:</b> {{$childData->presently_known_as}}</td>
-                                    <td><b>Property Status:</b> {{$item->itemNameById($childData->property_status)}}
+                                    <td><b>Presently Known As:</b> {{$childData->presently_known_as ?? 'NA'}}</td>
+                                    <td><b>Property Status:</b>
+                                        {{$item->itemNameById($childData->property_status ?? 'NA')}}
                                     </td>
                                 </tr>
                             </tbody>
@@ -168,7 +171,8 @@
                         </tr>
                         <tr>
                             <td><b>Lease/Allotment No.: </b> {{$viewDetails->lease_no ?? 'NA'}}</td>
-                            <td><b>Date of Expiration: </b>{{$viewDetails->propertyLeaseDetail->date_of_expiration ?? 'NA'}}
+                            <td><b>Date of Expiration:
+                                </b>{{$viewDetails->propertyLeaseDetail->date_of_expiration ?? 'NA'}}
                             </td>
                         </tr>
                         <tr>
@@ -186,10 +190,11 @@ foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
     }
 }
                                             ?>
-                            <td><b>In Favour Of: </b>{{ implode(", ", $names) }} </td>
+                            <td><b>In Favour Of: </b>{{ $names ? implode(", ", $names) : 'NA' }} </td>
                         </tr>
                         <tr>
-                            <td><b>Presently Known As: </b>{{$viewDetails->propertyLeaseDetail->presently_known_as ?? 'NA'}}
+                            <td><b>Presently Known As:
+                                </b>{{$viewDetails->propertyLeaseDetail->presently_known_as ?? 'NA'}}
                             </td>
                             <td><b>Area: </b> {{$viewDetails->propertyLeaseDetail->plot_area}}
                                 {{$item->itemNameById($viewDetails->propertyLeaseDetail->unit)}} <span
@@ -209,19 +214,20 @@ foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
                         <tr>
                             <td><b>Start Date of Ground Rent:
                                 </b>{{$viewDetails->propertyLeaseDetail->start_date_of_gr ?? 'NA'}} </td>
-                            <td><b>RGR Duration (Yrs): </b> {{$viewDetails->propertyLeaseDetail->rgr_duration ?? 'NA'}}</td>
+                            <td><b>RGR Duration (Yrs): </b> {{$viewDetails->propertyLeaseDetail->rgr_duration ?? 'NA'}}
+                            </td>
                         </tr>
                         <tr>
                             <td><b>First Revision of GR due on:
                                 </b>{{$viewDetails->propertyLeaseDetail->first_rgr_due_on ?? 'NA'}} </td>
                             <td><b>Purpose for which leased/<br> allotted (As per lease):
-                                </b>{{$item->itemNameById($viewDetails->propertyLeaseDetail->property_type_as_per_lease ?? 'NA')}}
+                                </b>{{$item->itemNameById($viewDetails->propertyLeaseDetail->property_type_as_per_lease) ?? 'NA'}}
                             </td>
                         </tr>
 
                         <tr>
                             <td><b>Sub-Type (Purpose , at present):
-                                </b>{{$item->itemNameById($viewDetails->propertyLeaseDetail->property_sub_type_as_per_lease ?? 'NA')}}
+                                </b>{{$item->itemNameById($viewDetails->propertyLeaseDetail->property_sub_type_as_per_lease) ?? 'NA'}}
                             </td>
                             <td></td>
                         </tr>
@@ -246,51 +252,55 @@ foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
             <h5 class="mb-4 pt-3 text-decoration-underline">LAND TRANSFER DETAILS</h5>
             <div class="container pb-3">
                 @if($separatedData)
-                @foreach($separatedData as $date => $dayTransferDetail)
-                <!-- Added by Sourav to group land transfer by date ---->
-                @foreach($dayTransferDetail as $key => $transferDetail)
-                <div class="border border-primary p-3 mt-3">
-                    @if($key == 'Conversion')
-                    <p><b>Date: </b>{{$viewDetails->propertyLeaseDetail->date_of_conveyance_deed}}</p>
-                    @else
-                    <p><b>Date: </b>{{$date}}</p>
-                    @endif
-                    <p><b>Process Of Transfer: </b>{{$key}}</p>
-                    <table class="table table-bordered table-striped">
-                        <tr>
-                            <th>Lessee Name</th>
-                            <th>Lessee Age (in Years)</th>
-                            <th>Lessee Share</th>
-                            <th>Lessee PAN Number</th>
-                            <th>Lessee Aadhar Number</th>
-                        </tr>
-                        @foreach($transferDetail as $details)
-                        <tr>
-                            <td>{{$details->lessee_name}}</td>
-                            <td>{{$details->lessee_age}}</td>
-                            <td>{{$details->property_share}}</td>
-                            <td>{{$details->lessee_pan_no}}</td>
-                            <td>{{$details->lessee_aadhar_no}}</td>
-                        </tr>
+                    @foreach($separatedData as $date => $dayTransferDetail)
+                        <!-- Added by Sourav to group land transfer by date ---->
+                        @foreach($dayTransferDetail as $key => $transferDetail)
+
+
+                            <div class="border border-primary p-3 mt-3">
+                                <p><b>Process Of Transfer: </b>{{$key}}</p>
+                                @if($key == 'Conversion')
+                                    <p><b>Date: </b>{{$viewDetails->propertyLeaseDetail->date_of_conveyance_deed}}</p>
+                                @else
+                                    <p><b>Date: </b>{{$date}}</p>
+                                @endif
+
+                                <table class="table table-bordered table-striped">
+                                    <tr>
+                                        <th>Lessee Name</th>
+                                        <th>Lessee Age (in Years)</th>
+                                        <th>Lessee Share</th>
+                                        <th>Lessee PAN Number</th>
+                                        <th>Lessee Aadhar Number</th>
+                                    </tr>
+                                    @foreach($transferDetail as $details)
+                                        <tr>
+                                            <td>{{$details->lessee_name}}</td>
+                                            <td>{{$details->lessee_age}}</td>
+                                            <td>{{$details->property_share}}</td>
+                                            <td>{{$details->lessee_pan_no}}</td>
+                                            <td>{{$details->lessee_aadhar_no}}</td>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            </div>
                         @endforeach
-                    </table>
-                </div>
-                @endforeach
-                @endforeach
+                    @endforeach
                 @else
-                <p class="font-weight-bold">No Records Available</p>
+                    <p class="font-weight-bold">No Records Available</p>
                 @endif
             </div>
             <hr>
 
             <h5 class="mb-4 pt-3 text-decoration-underline">PROPERTY STATUS DETAILS</h5>
+           
             <div class="container pb-3">
                 <table class="table table-bordered">
                     <tbody>
                         @if($viewDetails->propertyLeaseDetail)
-                        <?php
+                                                <?php
                             $namesConversion = [];
-							$transferDate = 'NA';
+                            $transferDate = 'NA';
                             foreach ($childData->propertyTransferredLesseeDetails as $transferDetail) {
                                 $name = $transferDetail->process_of_transfer;
                                 if ($name == 'Conversion') {
@@ -298,28 +308,28 @@ foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
                                     $transferDate = $transferDetail->transferDate;
                                 }
                             }
-                                                                    ?>
-                        <tr>
-                            <td><b>Free Hold (F/H): </b>{{($childData->property_status == 952) ? 'Yes' : 'No'}}</td>
-                            <td><b>Date of Conveyance Deed:
-                                </b>{{($viewDetails->status == 952) ?
-                                $viewDetails->propertyLeaseDetail->date_of_conveyance_deed : $transferDate}}
-                            </td>
-                            <td>
-                                <b>In Favour of, Name: </b>{{ implode(", ", $namesConversion) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>Vaccant: </b>NA</td>
-                            <td><b>In Possession Of: </b>NA</td>
-                            <td><b>Date Of Transfer: </b>NA</td>
-                        </tr>
-                        <tr>
-                            <td><b>Others: </b>NA</td>
-                            <td><b>Remark: </b>NA</td>
-                        </tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ?>
+                                                <tr>
+                                                    <td><b>Free Hold (F/H): </b>{{($childData->property_status == 952) ? 'Yes' : 'No'}}</td>
+                                                    <td><b>Date of Conveyance Deed:
+                                                        </b>{{($childData->status == 952) ? $viewDetails->propertyLeaseDetail->date_of_conveyance_deed : $transferDate}}
+                                                    </td>
+                                                    <td>
+                                                        <b>In Favour of, Name:
+                                                        </b>{{ $namesConversion ? implode(", ", $namesConversion) : 'NA' }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>Vaccant: </b>NA</td>
+                                                    <td><b>In Possession Of: </b>NA</td>
+                                                    <td><b>Date Of Transfer: </b>NA</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>Others: </b>NA</td>
+                                                    <td><b>Remark: </b>NA</td>
+                                                </tr>
                         @else
-                        <p class="font-weight-bold">No Records Available</p>
+                            <p class="font-weight-bold">No Records Available</p>
                         @endif
                     </tbody>
                 </table>
@@ -331,28 +341,30 @@ foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
                 <table class="table table-bordered">
                     <tbody>
                         @if($childData->propertyInspectionDemandDetail)
-                        <tr>
-                            <td colspan=2><b>Date of Last Inspection Report:
-                                </b>{{$childData->propertyInspectionDemandDetail->last_inspection_ir_date ?? 'NA'}} </td>
-                        </tr>
-                        <tr>
-                            <td><b>Date of Last Demand Letter:
-                                </b>{{$childData->propertyInspectionDemandDetail->last_demand_letter_date ?? 'NA'}}</td>
-                            <td><b>Demand ID: </b>{{$childData->propertyInspectionDemandDetail->last_demand_id ?? 'NA'}}</td>
-                        </tr>
-                        <tr>
-                            <td colspan=2><b>Amount of Last Demand Letter:
-                                </b>₹ {{$childData->propertyInspectionDemandDetail->last_demand_amount ?? '0'}} </td>
-                        </tr>
-                        <tr>
-                            <td><b>Last Amount Received:
-                                </b>₹ {{$childData->propertyInspectionDemandDetail->last_amount_received ?? '0'}} </td>
-                            <td><b>Date of Last Amount Received:
-                                </b>{{$childData->propertyInspectionDemandDetail->last_amount_received_date ?? 'NA'}}
-                            </td>
-                        </tr>
+                            <tr>
+                                <td colspan=2><b>Date of Last Inspection Report:
+                                    </b>{{$childData->propertyInspectionDemandDetail->last_inspection_ir_date ?? 'NA'}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Date of Last Demand Letter:
+                                    </b>{{$childData->propertyInspectionDemandDetail->last_demand_letter_date ?? 'NA'}}</td>
+                                <td><b>Demand ID: </b>{{$childData->propertyInspectionDemandDetail->last_demand_id ?? 'NA'}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=2><b>Amount of Last Demand Letter:
+                                    </b>₹ {{$childData->propertyInspectionDemandDetail->last_demand_amount ?? '0'}} </td>
+                            </tr>
+                            <tr>
+                                <td><b>Last Amount Received:
+                                    </b>₹ {{$childData->propertyInspectionDemandDetail->last_amount_received ?? '0'}} </td>
+                                <td><b>Date of Last Amount Received:
+                                    </b>{{$childData->propertyInspectionDemandDetail->last_amount_received_date ?? 'NA'}}
+                                </td>
+                            </tr>
                         @else
-                        <p class="font-weight-bold">No Records Available</p>
+                            <p class="font-weight-bold">No Records Available</p>
                         @endif
                     </tbody>
                 </table>
@@ -364,27 +376,28 @@ foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
                 <table class="table table-bordered">
                     <tbody>
                         @if($childData->propertyMiscDetail)
-                        <tr>
-                            <td><b>GR Revised Ever:
-                                </B>{{($childData->propertyMiscDetail->is_gr_revised_ever) ? 'Yes' : 'No'}}</td>
-                            <td><b>Date of GR Revised: </b>{{$childData->propertyMiscDetail->gr_revised_date ?? 'NA'}}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Supplementary Lease Deed Executed:
-                                </b>{{($childData->propertyMiscDetail->is_supplimentry_lease_deed_executed) ? 'Yes' :
-                                'No'}}
-                            </td>
-                            <td><b>Date of Supplementary Lease Deed Executed:
-                                </b>{{$childData->propertyMiscDetail->supplimentry_lease_deed_executed_date ?? 'NA'}}
-                            </td>
-                        </tr>
-                        <tr>
-                               
+                            <tr>
+                                <td><b>GR Revised Ever:
+                                    </B>{{($childData->propertyMiscDetail->is_gr_revised_ever) ? 'Yes' : 'No'}}</td>
+                                <td><b>Date of GR Revised: </b>{{$childData->propertyMiscDetail->gr_revised_date ?? 'NA'}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Supplementary Lease Deed Executed:
+                                    </b>{{($childData->propertyMiscDetail->is_supplimentry_lease_deed_executed) ? 'Yes' : 'No'}}
+                                </td>
+                                <td><b>Date of Supplementary Lease Deed Executed:
+                                    </b>{{$childData->propertyMiscDetail->supplimentry_lease_deed_executed_date ?? 'NA'}}
+                                </td>
+                            </tr>
+                            <tr>
+
                                 <td><b>Supplementary Area: </b> {{$childData->propertyMiscDetail->supplementary_area}}
-                                {{$item->itemNameById($childData->propertyMiscDetail->supplementary_area_unit)}} <span
-                                    class="text-secondary">({{$childData->propertyMiscDetail->supplementary_area_in_sqm}} Sq
-                                    Meter)</span>
-                            </td>
+                                    {{$item->itemNameById($childData->propertyMiscDetail->supplementary_area_unit)}} <span
+                                        class="text-secondary">({{$childData->propertyMiscDetail->supplementary_area_in_sqm}}
+                                        Sq
+                                        Meter)</span>
+                                </td>
                                 <td><b>Supplementary Total Premium (in Rs):
                                     </b>₹ {{$childData->propertyMiscDetail->supplementary_total_premium ?? '0'}}
                                 </td>
@@ -397,13 +410,13 @@ foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
                                     </b>{{$childData->propertyMiscDetail->supplementary_remark ?? 'NA'}}
                                 </td>
                             </tr>
-                        <tr>
-                            <td><b>Re-entered: </b>{{($childData->propertyMiscDetail->is_re_rented) ? 'Yes' : 'No'}}
-                            </td>
-                            <td><b>Date of Re-entry: </b>{{$childData->propertyMiscDetail->re_rented_date ?? 'NA'}}</td>
-                        </tr>
+                            <tr>
+                                <td><b>Re-entered: </b>{{($childData->propertyMiscDetail->is_re_rented) ? 'Yes' : 'No'}}
+                                </td>
+                                <td><b>Date of Re-entry: </b>{{$childData->propertyMiscDetail->re_rented_date ?? 'NA'}}</td>
+                            </tr>
                         @else
-                        <p class="font-weight-bold">No Records Available</p>
+                            <p class="font-weight-bold">No Records Available</p>
                         @endif
                     </tbody>
                 </table>
@@ -415,40 +428,37 @@ foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
                 <table class="table table-bordered">
                     <tbody>
                         @if($childData->propertyContactDetail)
-                        <tr>
-                            <td><b>Address: </b>{{$childData->propertyContactDetail->address ?? 'NA'}}</td>
-                            <td><b>Phone No.: </b>{{$childData->propertyContactDetail->phone_no ?? 'NA'}}</td>
-                        </tr>
-                        <tr>
-                            <td><b>Email: </b>{{$childData->propertyContactDetail->email ?? 'NA'}}</td>
-                            <td><b>As on Date: </b>
-                                {{$childData->propertyContactDetail->as_on_date ?? 'NA'}}
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><b>Address: </b>{{$childData->propertyContactDetail->address ?? 'NA'}}</td>
+                                <td><b>Phone No.: </b>{{$childData->propertyContactDetail->phone_no ?? 'NA'}}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Email: </b>{{$childData->propertyContactDetail->email ?? 'NA'}}</td>
+                                <td><b>As on Date: </b>
+                                    {{$childData->propertyContactDetail->as_on_date ?? 'NA'}}
+                                </td>
+                            </tr>
                         @else
-                        <tr>
-                            <td><b>Address:
-                                </b>{{isset($viewDetails->propertyContactDetail->address) ?
-                                $viewDetails->propertyContactDetail->address : 'NA'}}
-                            </td>
-                            <td><b>Phone No.:
-                                </b>{{isset($viewDetails->propertyContactDetail->phone_no) ?
-                                $viewDetails->propertyContactDetail->phone_no : 'NA'}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><b>Email:
-                                </b>{{isset($viewDetails->propertyContactDetail->email) ?
-                                $viewDetails->propertyContactDetail->email : 'NA'}}
-                            </td>
-                            <td><b>As on Date: </b>
-                                @if(isset($viewDetails->propertyContactDetail->as_on_date))
-                                {{$viewDetails->propertyContactDetail->as_on_date}}
-                                @else
-                                {{$viewDetails->propertyLeaseDetail->date_of_conveyance_deed}}
-                                @endif
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><b>Address:
+                                    </b>{{isset($viewDetails->propertyContactDetail->address) ? $viewDetails->propertyContactDetail->address : 'NA'}}
+                                </td>
+                                <td><b>Phone No.:
+                                    </b>{{isset($viewDetails->propertyContactDetail->phone_no) ? $viewDetails->propertyContactDetail->phone_no : 'NA'}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Email:
+                                    </b>{{isset($viewDetails->propertyContactDetail->email) ? $viewDetails->propertyContactDetail->email : 'NA'}}
+                                </td>
+                                <td><b>As on Date: </b>
+                                    @if(isset($viewDetails->propertyContactDetail->as_on_date))
+                                        {{$viewDetails->propertyContactDetail->as_on_date}}
+                                    @else
+                                        {{$viewDetails->propertyLeaseDetail->date_of_conveyance_deed}}
+                                    @endif
+                                </td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>

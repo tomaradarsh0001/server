@@ -8,7 +8,7 @@ select.selectpicker {
   display: block !important;
 }
 
-.bootstrap-select > .dropdown-toggle {
+.bootstrap-select>.dropdown-toggle {
   max-width: 100% !important;
 }
 
@@ -17,6 +17,7 @@ select.selectpicker {
   color: #dc3545 !important;
   padding: 2px 6px;
 }
+
 /* .table th,.table td{
     text-align: center !important;
 } */
@@ -39,6 +40,7 @@ select.selectpicker {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+
 .table-info th {
   background-color: #f2f5f2;
   padding-top: 5px;
@@ -112,7 +114,7 @@ a.view-icons {
   width: auto;
 }
 
-.toast-container > :not(:last-child) {
+.toast-container> :not(:last-child) {
   margin-bottom: 10px !important;
 }
 
@@ -162,9 +164,10 @@ a.btn-danger {
   display: inline;
 }
 
-.transfer-details .qmark:hover ~ .transfer-list {
+.transfer-details .qmark:hover~.transfer-list {
   display: inline-block;
 }
+
 .transfer-list:hover {
   display: inline-block;
 }
@@ -178,7 +181,8 @@ ul.transfer-list {
   width: auto;
   margin: 0;
   padding: 10px 0px;
-  opacity: 0.85;
+  /* commented by anil for change optcity on 21-11-2025 */
+  /* opacity: 0.85; */
   min-width: 785px;
   bottom: 0px;
   left: 15px;
@@ -226,12 +230,14 @@ ul.transfer-list {
   align-items: center;
   justify-content: center;
 }
+
 /* span.qmark:hover ul.transfer-list {
   display: block;
 } */
 li.transfer-list-item.row.row-lg-4 {
   margin: 0px !important;
 }
+
 .highlightedRow {
   background: #dfd;
 }
@@ -246,6 +252,7 @@ li.transfer-list-item.row.row-lg-4 {
   font-weight: 500;
   font-style: italic;
 }
+
 .money::after {
   content: "/-";
   display: inline;

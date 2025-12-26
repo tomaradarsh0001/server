@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\FirebaseNotificationController;
 use App\Http\Controllers\Api\PropertyCountController;
 use App\Http\Controllers\Api\ClubMembershipController;
-
+use App\Http\Controllers\Api\TestMailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,21 +26,14 @@ use App\Http\Controllers\Api\ClubMembershipController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-//Route for login api Swati Mishra
 Route::post('/login', [AuthController::class, 'login']);
-
-//Route for frontend Public Grievance Post Api 
 Route::post('/public-grievances', [PublicGrievanceController::class, 'store']);
-
-//Routes for logistic apis for logistic app Swati Mishra 20-01-2025
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('items/details', [ItemsListController::class, 'getItemsDetails']);
     Route::post('logistic/user-request-store', [RequestController::class, 'store']);
     Route::post('logistic/user-request-update/{requestId}', [RequestController::class, 'update']);
     Route::get('logistic/user-history', [RequestController::class, 'requestHistory']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    
 });
 Route::get('/colonylist', [ColonyController::class, 'getAllcolonies'])->name('colonylist');
 
@@ -48,6 +41,7 @@ Route::post('/send-notification', [FirebaseNotificationController::class, 'sendN
 
 // Route for fetching property summary for website Swati Mishra 20-01-2025
 Route::get('/property-count/summary', [PropertyCountController::class, 'propertyCountSummary']); 
+
 
 //Post Api for posting club membership form of IHC and DGC (website) Swati Mishra 26-01-2025
 Route::post('/club-memberships/club_type={club_type}', [ClubMembershipController::class, 'store']);
@@ -62,6 +56,7 @@ Route::post('/membership/filter', [ClubMembershipController::class, 'filterByClu
 //added new api for fetching record by unique_id on 29052025
 Route::get('/club-memberships/{unique_id}', [ClubMembershipController::class, 'showByUniqueId']);
 Route::put('club-memberships/update/{id}', [ClubMembershipController::class, 'update']);
+
 
 
 

@@ -22,6 +22,8 @@ use App\Services\MisService;
 use App\Services\CommunicationService;
 use App\Helpers\GeneralFunctions;
 use App\Services\SettingsService;
+use App\Models\UserProperty;
+use Illuminate\Support\Facades\Validator;
 
 
 use App\Mail\OtpVerification;
@@ -31,11 +33,8 @@ use Illuminate\Support\Facades\Log;
 
 use App\Mail\CommonMail;
 use App\Models\Country;
-use App\Models\PropertyMaster;
 use App\Models\Section;
-use App\Models\UserProperty;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Validator;
 
 class RegisteredUserController extends Controller
 {
@@ -95,6 +94,7 @@ class RegisteredUserController extends Controller
 
     public function publicRegisterCreate(Request $request, CommunicationService $communicationService)
     {
+        // dd($request->all());
         try {
             if (isset($request->purposeReg)) {
                 $purposeOfRegistration = $request->purposeReg;
@@ -165,7 +165,6 @@ class RegisteredUserController extends Controller
                                 }
                             }
                         }
-
                         $isIndian = $request->isIndian ? true : false;
                         $documentType = $request->documentType ? $request->documentType : '';
                         $documentTypeNumber = $request->documentTypeNumber ? $request->documentTypeNumber : '';
@@ -225,25 +224,24 @@ class RegisteredUserController extends Controller
                         $documentTypeNumber = $request->documentTypeNumberOrg ? $request->documentTypeNumberOrg : '';
                     }
 
-
                     //Check is Property related to flat - Lalit Tiwari (15/Oct/2024)
-                    //Comment given below code on 03/March/2025
                     /*if ($request->has('isPropertyFlat') || $request->has('isPropertyFlatOrg')) {
                         if (is_null($locality)) {
                             //to check is any registration done for the same  flat property - Lalit Tiwari (15/Oct/2024)
                             $isRegistrationAvailable = UserRegistration::where('locality', $locality_name)
-                                ->where('block', $block)
-                                ->where('plot', $plot)
-                                ->where('flat_no', $flat_no)
-                                ->first();
+                            ->where('block', $block)
+                            ->where('plot', $plot)
+                            ->where('flat_no', $flat_no)
+                            ->first();
                         } else {
                             //to check is any registration done for the same  flat property - Lalit Tiwari (15/Oct/2024)
                             $isRegistrationAvailable = UserRegistration::where('locality', $locality)
-                                ->where('block', $block)
-                                ->where('plot', $plot)
-                                ->where('flat_no', $flat_no)
-                                ->first();
+                            ->where('block', $block)
+                            ->where('plot', $plot)
+                            ->where('flat_no', $flat_no)
+                            ->first();
                         }
+                        
                     } else {
                         if (is_null($locality)) {
                             //to check is any registration done for the same property - Sourav Chauhan (10/sep/2024)
@@ -254,9 +252,9 @@ class RegisteredUserController extends Controller
                         } else {
                             //to check is any registration done for the same property - Sourav Chauhan (10/sep/2024)
                             $isRegistrationAvailable = UserRegistration::where('locality', $locality)
-                                ->where('block', $block)
-                                ->where('plot', $plot)
-                                ->first();
+                            ->where('block', $block)
+                            ->where('plot', $plot)
+                            ->first();    
                         }
                     }*/
 
@@ -290,11 +288,11 @@ class RegisteredUserController extends Controller
                                 $section = Section::where('section_code', 'ITC')->pluck('id')->first();
                             } else {
                                 $section = PropertySectionMapping::where('colony_id', $locality)
-                                    ->where('property_type', $landUseType)
-                                    ->where('property_subtype', $landUseSubType)
-                                    ->pluck('section_id')->first();
+                                ->where('property_type', $landUseType)
+                                ->where('property_subtype', $landUseSubType)
+                                ->pluck('section_id')->first();
                             }
-                            if (empty($section)) {
+                            if(empty($section)){
                                 return redirect()->back()->with('failure', 'Section not found for added property');
                             }
 
@@ -315,7 +313,7 @@ class RegisteredUserController extends Controller
                                     $colony = OldColony::find($locality);
                                     $colonyCode = $colony->code;
                                 }
-
+                               
                                 if ($request->hasFile('profile_photo')) {
                                     $profilePhoto = GeneralFunctions::uploadFile($request->profile_photo, $registrationNumber . '/' . $colonyCode . '/registration', 'profilePhoto');
                                 } else {
@@ -324,31 +322,45 @@ class RegisteredUserController extends Controller
 
                                 if (isset($saleDeedDoc) && $saleDeedDoc != '') {
                                     $saleDeedDoc = GeneralFunctions::uploadFile($saleDeedDoc, $registrationNumber . '/' . $colonyCode . '/registration', 'saledeed');
+                                }else {
+                                    $saleDeedDoc = null;
                                 }
                                 if (isset($BuilAgreeDoc) && $BuilAgreeDoc != '') {
                                     $builAgreeDoc = GeneralFunctions::uploadFile($BuilAgreeDoc, $registrationNumber . '/' . $colonyCode . '/registration', 'BuilderAgreement');
+                                }else {
+                                    $builAgreeDoc = null;
                                 }
                                 if (isset($leaseDeedDoc) && $leaseDeedDoc != '') {
                                     $leaseDeedDoc = GeneralFunctions::uploadFile($leaseDeedDoc, $registrationNumber . '/' . $colonyCode . '/registration', 'leaseDeed');
+                                }else {
+                                    $leaseDeedDoc = null;
                                 }
                                 if (isset($subMutLtrDoc) && $subMutLtrDoc != '') {
                                     $subMutLtrDoc = GeneralFunctions::uploadFile($subMutLtrDoc, $registrationNumber . '/' . $colonyCode . '/registration', 'subsMutLetter');
+                                }else {
+                                    $subMutLtrDoc = null;
                                 }
                                 if (isset($otherDoc) && $otherDoc != '') {
                                     $otherDoc = GeneralFunctions::uploadFile($otherDoc, $registrationNumber . '/' . $colonyCode . '/registration', 'otherDocuments');
+                                }else {
+                                    $otherDoc = null;
                                 }
                                 if (isset($request->ownLeaseDocInv) && $request->ownLeaseDocInv != '') {
                                     $ownLeaseDoc = GeneralFunctions::uploadFile($request->ownLeaseDocInv, $registrationNumber . '/' . $colonyCode . '/registration', 'ownerLessee');
+                                }else {
+                                    $ownLeaseDoc = null;
                                 }
                                 if (isset($request->propDoc) && $request->propDoc != '') {
-                                    $authSignatory = GeneralFunctions::uploadFile($request->propDoc, $registrationNumber . '/' . $colonyCode . '/registration', 'authSignatory');
+                                    $authSignatory = GeneralFunctions::uploadFile($request->propDoc, $registrationNumber . '/' . $colonyCode . '/registration', 'ownerLessee');
+                                }else {
+                                    $authSignatory = null;
                                 }
                                 if (isset($request->scannedIDOrg) && $request->scannedIDOrg != '') {
-                                    $chainOfOwnershipDoc = GeneralFunctions::uploadFile($request->scannedIDOrg, $registrationNumber . '/' . $colonyCode . '/registration', 'scannedIDOrg');
-                                } else {
-                                    $chainOfOwnershipDoc = null;
+                                    $scannedIDOrg = GeneralFunctions::uploadFile($request->scannedIDOrg, $registrationNumber . '/' . $colonyCode . '/registration', 'scannedIDOrg');
+                                }else {
+                                    $scannedIDOrg = null;
                                 }
-
+                               
                                 $userRegistration = UserRegistration::create([
                                     'applicant_number' => $registrationNumber,
                                     'status' => getStatusName('RS_NEW'),
@@ -394,19 +406,20 @@ class RegisteredUserController extends Controller
                                     'other_doc' => $otherDoc,
                                     'owner_lessee_doc' => $ownLeaseDoc,
                                     'authorised_signatory_doc' => $authSignatory,
-                                    'chain_of_ownership_doc' => $chainOfOwnershipDoc,
+                                    'chain_of_ownership_doc' => $scannedIDOrg ?? '',
                                     'consent' => $consent
                                 ]);
-
                                 if ($userRegistration) {
-                                    $data = [
+                                    /* $data = [
                                         'regNo' => $registrationNumber,
-                                        'date' => Carbon::now()->format('d-m-Y'),
-                                        'time' => Carbon::now('Asia/Kolkata')->format('h:i:s A'),
-                                    ];
-                                    $action = 'REG_SUC';
-                                    $checkEmailTemplateExists = checkTemplateExists('email', $action);
-                                    /* if (!empty($checkEmailTemplateExists)) {
+                                        // 'date' => Carbon::now()->format('d-m-Y'),
+                                        // 'time' => Carbon::now('Asia/Kolkata')->format('h:i:s A'),
+                                    ]; */
+                                    
+                                    
+                                    // $action = 'REG_SUC';
+                                    /* $checkEmailTemplateExists = checkTemplateExists('email', $action);
+                                    if (!empty($checkEmailTemplateExists)) {
                                         // Apply the mail settings before sending the email
                                         $this->settingsService->applyMailSettings($action);
                                         $mailSent = Mail::to($email)->send(new CommonMail($data, $action));
@@ -419,6 +432,93 @@ class RegisteredUserController extends Controller
                                     if (!empty($checkWhatsappTemplateExists)) {
                                         $communicationService->sendWhatsAppMessage($data, $mobileNo, $action);
                                     } */
+                                   $data = [
+                                        'regNo' => $registrationNumber,
+                                        'date' => Carbon::now()->format('d-m-Y'),
+                                        'time' => Carbon::now('Asia/Kolkata')->format('h:i:s A'),
+                                    ];
+                                    $action = 'REG_SUC';
+
+                                    // --- EMAIL ---
+                                    try {
+                                        $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                                        $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                                        $mailResponse = $mailer->send($email, $mailSettings);
+
+                                        Log::info("Email sent successfully.", [
+                                            'action' => $action,
+                                            'email'  => $email,
+                                            'data'   => $data,
+                                        ]);
+                                    } catch (\Exception $e) {
+                                        Log::error("Email sending failed.", [
+                                            'action' => $action,
+                                            'email'  => $email,
+                                            'error'  => $e->getMessage(),
+                                        ]);
+                                    }
+
+                                    // --- SMS ---
+                                    try {
+                                        $isSmsSuccess = $communicationService->sendSmsMessage(
+                                            $data,
+                                            $userRegistration->mobile,
+                                            $action
+                                        );
+
+                                        if ($isSmsSuccess) {
+                                            Log::info("SMS sent successfully.", [
+                                                'mobile'      => $userRegistration->mobile,
+                                                'countryCode' => $userRegistration->country_code,
+                                                'action'      => $action,
+                                            ]);
+                                        } else {
+                                            Log::warning("SMS sending failed.", [
+                                                'mobile'      => $userRegistration->mobile,
+                                                'countryCode' => $userRegistration->country_code,
+                                                'action'      => $action,
+                                            ]);
+                                        }
+                                    } catch (\Exception $e) {
+                                        Log::error("SMS sending threw exception.", [
+                                            'mobile'      => $userRegistration->mobile,
+                                            'countryCode' => $userRegistration->country_code,
+                                            'action'      => $action,
+                                            'error'       => $e->getMessage(),
+                                        ]);
+                                    }
+
+                                    // --- WHATSAPP ---
+                                    try {
+                                        $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                                            $data,
+                                            $userRegistration->mobile,
+                                            $action
+                                        );
+
+                                        if ($isWhatsAppSuccess) {
+                                            Log::info("WhatsApp sent successfully.", [
+                                                'mobile'      => $userRegistration->mobile,
+                                                'countryCode' => $userRegistration->countryCode,
+                                                'action'      => $action,
+                                            ]);
+                                        } else {
+                                            Log::warning("WhatsApp sending failed.", [
+                                                'mobile'      => $userRegistration->mobile,
+                                                'countryCode' => $userRegistration->countryCode,
+                                                'action'      => $action,
+                                            ]);
+                                        }
+                                    } catch (\Exception $e) {
+                                        Log::error("WhatsApp sending threw exception.", [
+                                            'mobile'      => $userRegistration->mobile,
+                                            'countryCode' => $userRegistration->countryCode,
+                                            'action'      => $action,
+                                            'error'       => $e->getMessage(),
+                                        ]);
+                                    }
+
+                               
 
                                     // return redirect()->back()->with('success', 'You are Registared successfully, and your registration no. is:- ' . $registrationNumber);
                                     return view('auth.registration-success', compact(['registrationNumber']));
@@ -455,13 +555,14 @@ class RegisteredUserController extends Controller
         try {
             if (!empty($request->mobile)) {
                 $isMobileAvailable = true;
-                $isUserRegistered = UserRegistration::where('mobile', $request->mobile)->where('status', '!=', $statusId)->first();
-                if ($isUserRegistered) {
+
+                $isUserRegistered = UserRegistration::where('mobile',$request->mobile)->where('status','!=',$statusId)->first();
+                if($isUserRegistered){
                     $isMobileAvailable = false;
                 }
-
-                $isUserAvailable = User::where('mobile_no', $request->mobile)->first();
-                if ($isUserAvailable) {
+                
+                $isUserAvailable = User::where('mobile_no',$request->mobile)->first();
+                if($isUserAvailable){
                     $isMobileAvailable = false;
                 }
 
@@ -486,8 +587,8 @@ class RegisteredUserController extends Controller
                                     'otp' => $generateOtp
                                 ];
                                 Log::info("your otp is " . $generateOtp);
-                                // $communicationService->sendSmsMessage($data, $request->mobile, $action, null, $request->countryCode);
-                                // $communicationService->sendWhatsAppMessage($data, $request->mobile, $action, null, $request->countryCode);
+                                $communicationService->sendSmsMessage($data, $request->mobile, $action, $request->countryCode);
+                                $communicationService->sendWhatsAppMessage($data, $request->mobile, $action, $request->countryCode);
                                 return response()->json(['success' => true, 'message' => 'OTP sent to mobile number ' . $request->mobile . ' successfully']);
                             } else {
                                 return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
@@ -513,8 +614,8 @@ class RegisteredUserController extends Controller
                             'otp' => $generateOtp
                         ];
                         Log::info("your otp is " . $generateOtp);
-                        // $communicationService->sendSmsMessage($data, $request->mobile, $action, null, $request->countryCode);
-                        // $communicationService->sendWhatsAppMessage($data, $request->mobile, $action, null, $request->countryCode);
+                        $communicationService->sendSmsMessage($data, $request->mobile, $action, $request->countryCode);
+                        $communicationService->sendWhatsAppMessage($data, $request->mobile, $action, $request->countryCode);
                         return response()->json(['success' => true, 'message' => 'OTP sent to mobile number ' . $request->mobile . ' successfully']);
                     } else {
                         return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
@@ -527,13 +628,13 @@ class RegisteredUserController extends Controller
 
                 $isEmailAvailable = true;
 
-                $isUserRegistered = UserRegistration::where('email', $request->email)->where('status', '!=', $statusId)->first();
-                if ($isUserRegistered) {
+                $isUserRegistered = UserRegistration::where('email',$request->email)->where('status','!=',$statusId)->first();
+                if($isUserRegistered){
                     $isEmailAvailable = false;
                 }
-
-                $isUserAvailable = User::where('email', $request->email)->first();
-                if ($isUserAvailable) {
+                
+                $isUserAvailable = User::where('email',$request->email)->first();
+                if($isUserAvailable){
                     $isEmailAvailable = false;
                 }
 
@@ -547,42 +648,46 @@ class RegisteredUserController extends Controller
                     $action = 'OTP_VALID';
                     $checkEmailTemplateExists = checkTemplateExists('email', $action);
                     if (!empty($checkEmailTemplateExists)) {
+                        $this->settingsService->applyMailSettings($action);
                         $data = [
                             'otp' => $generateOtp
                         ];
                         Log::info("your email otp is " . $generateOtp);
-                        // $this->settingsService->applyMailSettings($action);
-                        $type = 'email';
-                        // $this->communicationService->sendMailWithTracking($action, $data, $request, $type);
 
-                        // $mailSent = Mail::to($request->email)->send(new CommonMail($data, $action));
-
-                        // if ($mailSent) {
-                        if (isset($request->mobileToVerify)) {
-                            $isMobileVerified = Otp::where('mobile', $request->mobileToVerify)->first();
-                            if ($isMobileVerified) {
-                                $isMobileVerified->email = $request->email;
-                                $isMobileVerified->email_otp = $generateOtp;
-                                $isMobileVerified->email_otp_sent_at = now();
-                                $isMobileVerified->save();
-                                return response()->json(['success' => true, 'message' => 'OTP sent to email ' . $request->email . ' successfully']);
-                            }
+                        $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                        try {
+                            $mailer = new \App\Mail\CommonPHPMail($data, $action, $communicationTrackingId ?? null);
+                            $mailResponse = $mailer->send($request->email, $mailSettings);
+                        } catch (\Throwable $e) {
+                            Log::error('Mail sending error: ' . $e->getMessage());
+                            $mailResponse = false;
                         }
-                        // Create or update OTP record for the email
-                        $otp = Otp::updateOrCreate(
-                            ['email' => $request->email],
-                            ['email_otp' => $generateOtp, 'email_otp_sent_at' => now()]
-                        );
-                        Log::info("your email otp is " . $generateOtp);
+                        if ($mailResponse) {
+                            if (isset($request->mobileToVerify)) {
+                                $isMobileVerified = Otp::where('mobile', $request->mobileToVerify)->first();
+                                if ($isMobileVerified) {
+                                    $isMobileVerified->email = $request->email;
+                                    $isMobileVerified->email_otp = $generateOtp;
+                                    $isMobileVerified->email_otp_sent_at = now();
+                                    $isMobileVerified->save();
+                                    return response()->json(['success' => true, 'message' => 'OTP sent to email ' . $request->email . ' successfully']);
+                                }
+                            }
+                            // Create or update OTP record for the email
+                            $otp = Otp::updateOrCreate(
+                                ['email' => $request->email],
+                                ['email_otp' => $generateOtp, 'email_otp_sent_at' => now()]
+                            );
+                            Log::info("your email otp is " . $generateOtp);
 
-                        if ($otp) {
-                            return response()->json(['success' => true, 'message' => 'OTP sent to email ' . $request->email . ' successfully']);
+                            if ($otp) {
+                                return response()->json(['success' => true, 'message' => 'OTP sent to email ' . $request->email . ' successfully']);
+                            } else {
+                                return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
+                            }
                         } else {
                             return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
                         }
-                        // } else {
-                        //     return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
-                        // }
                     }
                 } else {
                     return response()->json(['success' => false, 'message' => 'Email already in use']);
@@ -596,7 +701,66 @@ class RegisteredUserController extends Controller
 
 
     //To verify the otp - Sourav Chauhan (25/july/2024)
-    public function verifyOtp(Request $request)
+  /*  public function verifyOtp(Request $request)
+    {
+        try {
+            if (isset($request->mobileOtp)) {
+                //Check OTP expiratin time - Lalit (25/10/2024)
+                $mobileOtpSentAt = Otp::where('country_code', $request->countryCode)->where('mobile', $request->mobile)->value('mobile_otp_sent_at');
+                // Convert the string to a Carbon instance
+                $generatedOtpDateTime = Carbon::parse($mobileOtpSentAt);
+                $now = Carbon::now();  // Current date-time
+                $minutesDifference = $generatedOtpDateTime->diffInMinutes($now);
+                if ($minutesDifference < config('constants.OTP_EXPIRY_TIME')) {
+                    $databaseOtp = Otp::where('mobile', $request->mobile)->where('mobile_otp', $request->mobileOtp)->first();
+                    if ($databaseOtp) {
+                        $databaseOtp->is_mobile_verified = '1';
+                        $databaseOtp->mobile_otp = null;
+                        if ($databaseOtp->save()) {
+                            return response()->json(['success' => true, 'message' => 'Mobile number ' . $request->mobile . ' verified successfully']);
+                        } else {
+                            return response()->json(['success' => false, 'message' => 'Mobile number not verified']);
+                        }
+                    } else {
+                        return response()->json(['success' => false, 'message' => 'Otp not matched. Please enter correct otp']);
+                    }
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Otp has been expiered. Please resend again']);
+                }
+            } else if ($request->emailOtp) {
+                //Check OTP expiratin time - Lalit (25/10/2024)
+                $emailOtpSentAt = Otp::where('email', $request->email)->value('email_otp_sent_at');
+                // Convert the string to a Carbon instance
+                $generatedOtpDateTime = Carbon::parse($emailOtpSentAt);
+                $now = Carbon::now();  // Current date-time
+                $minutesDifference = $generatedOtpDateTime->diffInMinutes($now);
+                if ($minutesDifference < config('constants.OTP_EXPIRY_TIME')) {
+                    //email otp
+                    $databaseOtp = Otp::where('email', $request->email)->where('email_otp', $request->emailOtp)->first();
+                    if ($databaseOtp) {
+                        $databaseOtp->is_email_verified = '1';
+                        $databaseOtp->email_otp = null;
+                        if ($databaseOtp->save()) {
+                            return response()->json(['success' => true, 'message' => 'Email ' . $request->email . ' verified successfully']);
+                        } else {
+                            return response()->json(['success' => false, 'message' => 'Email not verified']);
+                        }
+                    } else {
+                        return response()->json(['success' => false, 'message' => 'Otp not matched. Please enter correct otp']);
+                    }
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Otp has been expiered. Please resend again']);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::info($e);
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+*/
+
+
+public function verifyOtp(Request $request)
     {
         try {
 
@@ -628,7 +792,7 @@ class RegisteredUserController extends Controller
                 $now = Carbon::now();  // Current date-time
                 $minutesDifference = $generatedOtpDateTime->diffInMinutes($now);
                 if ($minutesDifference < config('constants.OTP_EXPIRY_TIME')) {
-                    $databaseOtp = Otp::where('mobile', $request->mobile)->where('mobile_otp', $request->mobileOtp)->first();
+                    $databaseOtp = Otp::where('mobile', $request->mobile)->where('mobile_otp', $request->mobileOtp)->whereNull('service_type')->first();
                     if ($databaseOtp) {
                         if ($databaseOtp->is_email_verified == '1') {
                             $showUploadDocumentField = true;
@@ -648,7 +812,8 @@ class RegisteredUserController extends Controller
                 }
             } else if ($request->emailOtp) {
                 //Check OTP expiratin time - Lalit (25/10/2024)
-                $emailOtpSentAt = Otp::where('email', $request->email)->value('email_otp_sent_at');
+                $emailOtpSentAt = Otp::where('email', $request->email)->whereNull('service_type')->value('email_otp_sent_at');
+                // dd($emailOtpSentAt);
                 // Check if OTP for email is not available - Lalit Tiwari (05/May/2025)
                 if (!$emailOtpSentAt) {
                     return response()->json(['success' => false, 'message' => 'No OTP sent to this email address.'], 404);
@@ -658,16 +823,17 @@ class RegisteredUserController extends Controller
                 $generatedOtpDateTime = Carbon::parse($emailOtpSentAt);
                 $now = Carbon::now();  // Current date-time
                 $minutesDifference = $generatedOtpDateTime->diffInMinutes($now);
+                // dd($minutesDifference,config('constants.OTP_EXPIRY_TIME'));
                 if ($minutesDifference < config('constants.OTP_EXPIRY_TIME')) {
                     //email otp
-                    // $databaseOtp = Otp::where('email', $request->email)->where('email_otp', $request->emailOtp)->first();
+                  //  $databaseOtp = Otp::where('email', $request->email)->where('email_otp', $request->emailOtp)->first();
                     if ($request->emailOtp === '1234') {
                         // Bypass OTP match for testing
                         $databaseOtp = Otp::where('email', $request->email)->first();
                     } else {
-                        $databaseOtp = Otp::where('email', $request->email)->where('email_otp', $request->emailOtp)->first();
+                        $databaseOtp = Otp::where('email', $request->email)->where('email_otp', $request->emailOtp)->whereNull('service_type')->first();
                     }
-                    if ($databaseOtp) {
+                     if ($databaseOtp) {
                         if ($databaseOtp->is_mobile_verified == '1') {
                             $showUploadDocumentField = true;
                         }
@@ -696,14 +862,110 @@ class RegisteredUserController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
-
     public function registrationStatus()
     {
         return view('auth.registration-status');
     }
 
     // Routes for Resent OTP - Lalit (25/Oct/2024)
-    public function reSendOtp(Request $request, CommunicationService $communicationService)
+/*    public function reSendOtp(Request $request, CommunicationService $communicationService)
+    {
+        try {
+            if (!empty($request->mobile)) {
+                //Added multiple where condition in single where - Lalit tiwari (25/Oct/2024)
+                $isMobileAvailable = Otp::where([['country_code', $request->countryCode], ['mobile', $request->mobile], ['is_mobile_verified', '1']])->first();
+
+                if (!$isMobileAvailable) {
+                    $generateOtp = GeneralFunctions::generateUniqueRandomNumber(4);
+
+                    // Create or update OTP record for the mobile - Lalit tiwari (25/Oct/2024)
+                    $otp = Otp::updateOrCreate(
+                        [
+                            'country_code' => $request->countryCode,
+                            'mobile' => $request->mobile,
+                        ],
+                        [
+                            'mobile_otp' => $generateOtp,
+                            'mobile_otp_sent_at' => now()
+                        ]
+                    );
+
+                    if ($otp) {
+                        $action = 'OTP_VALID';
+                        $data = [
+                            'otp' => $generateOtp
+                        ];
+                        Log::info("your otp is " . $generateOtp);
+                        $communicationService->sendSmsMessage($data, $request->mobile, $action, $request->countryCode);
+                        $communicationService->sendWhatsAppMessage($data, $request->mobile, $action, $request->countryCode);
+                        return response()->json([
+                            'message' => 'OTP sent successfully',
+                            'expires_at' => $otp->expires_at, // Send expiration time to the frontend
+                            'otp' => $otp, // For development purposes; remove this in production
+                        ], 200);
+                    } else {
+                        return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
+                    }
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Mobile already in use']);
+                }
+            } else {
+                //for email otp
+                $isEmailAvailable = Otp::where('email', $request->email)->where('is_email_verified', '1')->first();
+
+                if (!$isEmailAvailable) {
+                    $generateOtp = GeneralFunctions::generateUniqueRandomNumber(4);
+
+                    // Apply the mail settings before sending the email
+                    $action = 'OTP_VALID';
+                    $checkEmailTemplateExists = checkTemplateExists('email', $action);
+                    if (!empty($checkEmailTemplateExists)) {
+                        $this->settingsService->applyMailSettings($action);
+                        $data = [
+                            'otp' => $generateOtp
+                        ];
+                        Log::info("your email otp is " . $generateOtp);
+
+                        $mailSent = Mail::to($request->email)->send(new CommonMail($data, $action));
+
+                        if ($mailSent) {
+                            if (isset($request->mobileToVerify)) {
+                                $isMobileVerified = Otp::where('mobile', $request->mobileToVerify)->first();
+                                if ($isMobileVerified) {
+                                    $isMobileVerified->email = $request->email;
+                                    $isMobileVerified->email_otp = $generateOtp;
+                                    $isMobileVerified->email_otp_sent_at = now();
+                                    $isMobileVerified->save();
+                                    return response()->json(['success' => true, 'message' => 'OTP sent to email ' . $request->email . ' successfully']);
+                                }
+                            }
+                            // Create or update OTP record for the email
+                            $otp = Otp::updateOrCreate(
+                                ['email' => $request->email],
+                                ['email_otp' => $generateOtp, 'email_otp_sent_at' => now()]
+                            );
+                            Log::info("your email otp is " . $generateOtp);
+
+                            if ($otp) {
+                                return response()->json(['success' => true, 'message' => 'OTP sent to email ' . $request->email . ' successfully']);
+                            } else {
+                                return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
+                            }
+                        } else {
+                            return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
+                        }
+                    }
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Email already in use']);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::info($e);
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }   */
+
+public function reSendOtp(Request $request, CommunicationService $communicationService)
     {
         try {
             $validator = Validator::make($request->all(), [
@@ -736,15 +998,15 @@ class RegisteredUserController extends Controller
                             'mobile_otp_sent_at' => now()
                         ]
                     );
-
+                    
                     if ($otp) {
                         $action = 'OTP_VALID';
                         $data = [
                             'otp' => $generateOtp
                         ];
-                        Log::info("your otp is " . $generateOtp);
-                        $communicationService->sendSmsMessage($data, $request->mobile, $action, null,  $request->countryCode);
-                        $communicationService->sendWhatsAppMessage($data, $request->mobile, $action, null, $request->countryCode);
+                        Log::info("your regenerated otp is " . $generateOtp);
+                        $communicationService->sendSmsMessage($data, $request->mobile, $action);
+                        $communicationService->sendWhatsAppMessage($data, $request->mobile, $action);
                         return response()->json([
                             'message' => 'OTP sent successfully',
                             'expires_at' => $otp->expires_at, // Send expiration time to the frontend

@@ -29,19 +29,19 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\CommonMail;
 use App\Services\CommunicationService;
 use App\Services\SettingsService;
+use App\Services\ApplicationForwardService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\View;
 use App\Models\PropertyLeaseDetail;
 use App\Models\SplitedPropertyDetail;
 use App\Models\CurrentLesseeDetail;
 use App\Models\Section;
 use App\Models\Designation;
-use App\Services\ApplicationForwardService;
 use Exception;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Route;
+use App\Services\DemandService;
+
 
 use function PHPUnit\Framework\isNull;
 
@@ -49,11 +49,13 @@ class DemandController extends Controller
 {
     protected $communicationService;
     protected $settingsService;
+    protected $demandService;
 
-    public function __construct(CommunicationService $communicationService, SettingsService $settingsService)
+    public function __construct(CommunicationService $communicationService, SettingsService $settingsService, DemandService $demandService)
     {
         $this->communicationService = $communicationService;
         $this->settingsService = $settingsService;
+          $this->demandService = $demandService;
     }
     public function createDemandView(Request $request, ColonyService $colonyService)
     {
@@ -61,7 +63,6 @@ class DemandController extends Controller
             $applicationNo = $request->applicationNo;
             $application = Application::where('application_no', $applicationNo)->first();
             $data['applicationData'] = $application->applicationData;
-            $data['applicationData']['type'] = base64_encode($application->model_name);
         }
         $data['colonies'] = $colonyService->misDoneForColonies(true);
         // $data['demandSubheads'] = Item::where('group_id', 7003)->where('is_active', 1)->orderBy('item_name')->get();
@@ -75,105 +76,114 @@ class DemandController extends Controller
         }
         $data = $this->getDemandData($demand);
         $data['demand'] = $demand;
-        if (!is_null($applicationData)) {
-            $data['applicationData'] = json_decode($applicationData);
-        }
         // $viewBlade = $demand->is_manual == 1 ? 'demand.manual-input-form' : 'demand.input-form';
         /* if ($demand->is_manual) {
             $data['demandSubheads'] = Item::where('group_id', 7003)->where('is_active', 1)->orderBy('item_name')->get();
         } */
+         if (!is_null($applicationData)) {
+            $data['applicationData'] = json_decode($applicationData);
+        }
         return view('demand.input-form', $data);
     }
 
-    public function demandLetterPdf($id)
-    {
-        $demand = Demand::findOrFail($id);
+   public function demandLetterPdf($id)
+        {
+            $demand = Demand::findOrFail($id);
 
-        if (is_null($demand->splited_property_detail_id)) {
-            // Non-split property
-            $userProperty = UserProperty::where('new_property_id', $demand->property_master_id)->first();
+            if (is_null($demand->splited_property_detail_id)) {
+                // Non-split property
+                $userProperty = UserProperty::where('new_property_id', $demand->property_master_id)->first();
 
-            if ($userProperty) {
-                $user = User::find($userProperty->user_id);
-                $name = $user->name;
+                if ($userProperty) {
+                    $user = User::find($userProperty->user_id);
+                    $name = $user->name;
+                } else {
+                    $contactDetails = CurrentLesseeDetail::where('property_master_id', $demand->property_master_id)->first();
+                    $name = $contactDetails->lessees_name ?? "Sir/Madam";
+                }
+
+
+                // Address from property_lease_details
+                $leaseDetail = PropertyLeaseDetail::where('property_master_id', $demand->property_master_id)->first();
+                $address = $leaseDetail?->presently_known_as ?? 'N/A';
+                
+                $getUniquePropertyId = PropertyMaster::where('id', $demand->property_master_id)->first();
+                $uniquePropertyId = $getUniquePropertyId?->unique_propert_id ?? 'N/A';
+
             } else {
-                $contactDetails = CurrentLesseeDetail::where('property_master_id', $demand->property_master_id)->first();
-                $name = $contactDetails->lessees_name ?? "Sir/Madam";
+                // Split property
+                $splitId = $demand->splited_property_detail_id;
+                $userProperty = UserProperty::where('splitted_property_id', $splitId)->first();
+
+                if ($userProperty) {
+                    $user = User::find($userProperty->user_id);
+                    $name = $user->name;
+                } else {
+                    $contactDetails = CurrentLesseeDetail::where('property_master_id', $demand->property_master_id)->get();
+                    $matchedContact = $contactDetails->firstWhere('splited_property_detail_id', $splitId);
+
+                    $name = $matchedContact->lessees_name ?? "Sir/Madam";
+                }
+
+                // Address from splited_property_details
+                $splitDetail = SplitedPropertyDetail::find($splitId);
+                $address = $splitDetail?->presently_known_as ?? 'N/A';
+                
+                $uniquePropertyId = $splitDetail?->child_prop_id ?? 'N/A';
             }
 
-            // Address from property_lease_details
-            $leaseDetail = PropertyLeaseDetail::where('property_master_id', $demand->property_master_id)->first();
-            $address = $leaseDetail?->presently_known_as ?? 'N/A';
-        } else {
-            // Split property
-            $splitId = $demand->splited_property_detail_id;
-            $userProperty = UserProperty::where('splitted_property_id', $splitId)->first();
+            // Fetch related data
+            $demandDetails = DemandDetail::where('demand_id', $demand->id)->get();
+            $items = Item::where('group_id', 7003)
+                ->whereIn('id', $demandDetails->pluck('subhead_id'))
+                ->pluck('item_name', 'id');
+            $formulas = DemandFormula::whereIn('id', $demandDetails->pluck('formula_id')->filter())
+                ->pluck('formula', 'id');
 
-            if ($userProperty) {
-                $user = User::find($userProperty->user_id);
-                $name = $user->name;
-            } else {
-                $contactDetails = CurrentLesseeDetail::where('property_master_id', $demand->property_master_id)->get();
-                $matchedContact = $contactDetails->firstWhere('splited_property_detail_id', $splitId);
+            //fetching approved_by data
+            $approvedBy = 'N/A'; // Default
 
-                $name = $matchedContact->lessees_name ?? "Sir/Madam";
-            }
+            $propertyMaster = PropertyMaster::find($demand->property_master_id);
 
-            // Address from splited_property_details
-            $splitDetail = SplitedPropertyDetail::find($splitId);
-            $address = $splitDetail?->presently_known_as ?? 'N/A';
-        }
+            if ($propertyMaster) {
+                $sectionCode = $propertyMaster->section_code;
 
-        // Fetch related data
-        $demandDetails = DemandDetail::where('demand_id', $demand->id)->get();
-        $items = Item::where('group_id', 7003)
-            ->whereIn('id', $demandDetails->pluck('subhead_id'))
-            ->pluck('item_name', 'id');
-        $formulas = DemandFormula::whereIn('id', $demandDetails->pluck('formula_id')->filter())
-            ->pluck('formula', 'id');
+                // Assuming section_code maps to Sections.code
+                $section = Section::where('section_code', $sectionCode)->first();
+                
 
-        //fetching approved_by data
-        $approvedBy = 'N/A'; // Default
+                if ($section) {
+                    // Get the deputy-lndo role id
+                    $designation = Designation::where('name', 'DEPUTY L&amp;DO')->first();
+                    
 
-        $propertyMaster = PropertyMaster::find($demand->property_master_id);
+                    if ($designation) {
+                        $approvedByDesignation = $designation->name;
+                        $sectionUser = DB::table('section_user')
+                                        ->where('section_id', $section->id)
+                                        ->where('designation_id', $designation->id)
+                                        ->first();
 
-        if ($propertyMaster) {
-            $sectionCode = $propertyMaster->section_code;
+                        if ($sectionUser) {
+                            $approvedUser = User::find($sectionUser->user_id);
 
-            // Assuming section_code maps to Sections.code
-            $section = Section::where('section_code', $sectionCode)->first();
-
-
-            if ($section) {
-                // Get the deputy-lndo role id
-                $designation = Designation::where('name', 'DEPUTY L&amp;DO')->first();
-
-
-                if ($designation) {
-                    $approvedByDesignation = $designation->name;
-                    $sectionUser = DB::table('section_user')
-                        ->where('section_id', $section->id)
-                        ->where('designation_id', $designation->id)
-                        ->first();
-
-                    if ($sectionUser) {
-                        $approvedUser = User::find($sectionUser->user_id);
-
-                        if ($approvedUser) {
-                            $approvedBy = $approvedUser->name;
+                            if ($approvedUser) {
+                                $approvedBy = $approvedUser->name;
+                            }
                         }
                     }
                 }
             }
+
+            $applicationName= getServiceNameById($demand->application?->service_type);
+            $applicationNo= $demand->application?->application_no;
+            $applicationDate = $demand->application?->created_at;
+
+            // // Pass demand, name, and address to the view
+            $pdf = Pdf::loadView('demand.demand_letter_pdf', compact('demand', 'name', 'address', 'demandDetails', 'items', 'formulas', 'approvedBy', 'approvedByDesignation', 'uniquePropertyId','applicationName','applicationNo','applicationDate'));
+
+            return $pdf->stream('demand_letter.pdf');
         }
-
-        // // Pass demand, name, and address to the view
-        $pdf = Pdf::loadView('demand.demand_letter_pdf', compact('demand', 'name', 'address', 'demandDetails', 'items', 'formulas', 'approvedBy', 'approvedByDesignation'));
-
-        return $pdf->stream('demand_letter.pdf');
-    }
-
-
     public function ViewDemand($demandId)
     {
         $demand = Demand::find($demandId);
@@ -181,7 +191,6 @@ class DemandController extends Controller
             return redirect()->back()->with('failure', "No data found!!");
         }
         $data = $this->getDemandData($demand);
-        // dd($data);
         $data['demand'] = $demand;
         /* $data['demandSubheads'] = Item::where('group_id', 7003)->where('is_active', 1)->orderBy('item_name')->orderBy('item_name')->get(); */
         $data['openInReadOnlyMode'] = true;
@@ -278,6 +287,112 @@ class DemandController extends Controller
         // dd($data);
         return $data;
     }
+
+    /* public function getExistingPropertyDemand($oldPropertyId, $formatToJson = true, $checkApiDemand = true)
+    {
+        /** get unpaid or partiallly paid demands for property
+        if first demand record is not created then - 
+        check for pending demands in old application /
+        $isFirstDemand = !Demand::where('old_property_id', $oldPropertyId)->exists();
+        if ($checkApiDemand && $isFirstDemand) {
+
+            $pms = new PropertyMasterService();
+            $oldDemandData = $pms->getPreviousDemands($oldPropertyId);
+            // dd($oldDemandData);
+            if ($oldDemandData && is_array($oldDemandData) && $oldDemandData['status']) {
+                return response()->json(['status' => false, 'details' => 'Could not fetch old demand details. Please try again.']);
+            }
+            if ($oldDemandData) {
+                /** handle the case when user checks previous pending dues but do not proceed with creating new demand -- 
+                 * delete the previous saved demands and subheads
+                 /
+                $previousSavedDemands = OldDemand::where('property_id', $oldPropertyId)->get();
+                if ($previousSavedDemands->isNotEmpty()) {
+                    foreach ($previousSavedDemands as $psd) {
+                        OldDemandSubhead::where('DemandID', $psd->demand_id)->delete();
+                    }
+                    OldDemand::where('property_id', $oldPropertyId)->delete();
+                }
+                /** get old Demand data /
+                $demands = $oldDemandData->LatestDemanddetails;
+                $previousDemandData = [];
+                foreach ($demands as $demand) {
+                    // $paidKey = collect($demand)->keys()->first(fn($key) => str_ends_with($key, 'Paid'));'
+                    $paidAmount = $demand->Amount - $demand->Outstanding;
+                    $demandData = collect($demand)->merge(['PaidAmount' => $paidAmount])->only([
+                        'PropertyID',
+                        'DemandID',
+                        'Amount',
+                        'PaidAmount',
+                        'Outstanding',
+                        'DemandDate'
+                    ])->mapWithKeys(function ($value, $key) {
+                        return [
+                            match ($key) {
+                                'DemandID' => 'demand_id',
+                                'PropertyID' => 'property_id',
+                                'Amount' => 'amount',
+                                'PaidAmount' => 'paid_amount',
+                                'Outstanding' => 'outstanding',
+                                'DemandDate' => 'demand_date',
+                                default => $key
+                            } => $value
+                        ];
+                    })->toArray();
+                    $demandData['property_status'] = getProperyStatusFromOldPropetyId($oldPropertyId);
+                    OldDemand::create($demandData);
+                    $previousDemandData[] = $demandData;
+                }
+                $demandSubheads = $oldDemandData->SubHeadwiseBreakup;
+                foreach ($demandSubheads as $oldSubhead) {
+                    $oldSubheadData = collect($oldSubhead)->all();
+                    OldDemandSubhead::create($oldSubheadData);
+                }
+                $previousDues =  ['previousDemands' => $previousDemandData, 'dues' => collect($previousDemandData)->sum('outstanding')/* , 'demandSubheads' => $demandSubheads /];
+            }
+        }
+        /** 
+         get previous unpaid demand on this aplication 
+         /
+
+        $proeprtyMasterService = new PropertyMasterService();
+        $findProperty = $proeprtyMasterService->propertyFromSelected($oldPropertyId);
+        if ($findProperty['status'] == 'error') {
+            return $formatToJson ? response()->json([
+                'status' => false,
+                'details' => $findProperty['details']
+            ]) : false;
+        } else {
+            $masterProperty = $findProperty['masterProperty'];
+            $propertyMasterId = $masterProperty->id;
+            $childProperty = isset($findProperty['childProperty']) ? $findProperty['childProperty'] : null;
+            $childId = is_null($childProperty) ? null : $childProperty->id;
+            if (isset($previousDues)) {
+                return  $formatToJson ? response()->json([
+                    'status' => true,
+                    'data' => $previousDues
+                ]) : ['propertyMasterId' => $propertyMasterId, 'childId' => $childId, 'dues' => $previousDues['dues'], 'previousDemands' => $previousDues['previousDemands']];
+            } else {
+                $existingDemand = Demand::where('property_master_id', $propertyMasterId)
+                    ->where(function ($query) use ($childId) {
+                        if (is_null($childId)) {
+                            return $query->whereNull('splited_property_detail_id');
+                        } else {
+                            return $query->where('splited_property_detail_id', $childId);
+                        }
+                    })
+                    ->where(function ($query) {
+                        return $query->whereNull('model')->orWhere('model', '<>', 'PropertyRevivisedGroundRent'); // do  not consider rgr demands
+                    })
+                    ->whereIn('status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_PENDING'), getServiceType('DEM_PART_PAID')])
+                    ->first();
+                return $formatToJson ? response()->json([
+                    'status' => true,
+                    'data' => ['demand' => $existingDemand, 'demandDetails' => !empty($existingDemand) ? $existingDemand->demandDetails : null, 'applicationData' => $this->getActiveApplicationData($oldPropertyId)]
+                ]) : ['propertyMasterId' => $propertyMasterId, 'childId' => $childId, 'demand' => $existingDemand];
+            }
+        }
+    } */
 
     public function getExistingPropertyDemand($oldPropertyId, $formatToJson = true, $checkApiDemand = true)
     {
@@ -527,7 +642,7 @@ class DemandController extends Controller
                                     }
                                 }
                             }
-                        } 
+                        }
 
                         //previous dues logic is to be revised - commented on 26-03-2025
                         /* if (isset($prevDues)) {
@@ -634,12 +749,12 @@ class DemandController extends Controller
                                 ]);
                             }
                         }
+                        // dd(__LINE__);
 
                         $validationErrors = [];
                         $subheadKeysConfig = config('demandHeadKeys');
                         $requestSubheads = array_keys(array_filter($amounts, fn($val) => !is_null($val)));
                         // dd($amounts, $requestSubheads);
-                        // dd($subheadKeysConfig, $requestSubheads);
                         foreach ($subheadKeysConfig as $subheadCode => $inputs) {
                             if (!in_array($subheadCode, $requestSubheads)) continue;
 
@@ -696,6 +811,7 @@ class DemandController extends Controller
                                 }
                             }
                         }
+
                         if (!empty($validationErrors)) {
                             // return response()->json(['status' => false, 'details' => $validationErrors]);
                             throw new Exception(json_encode([
@@ -708,10 +824,10 @@ class DemandController extends Controller
                         // Delete old keys
                         DemandHeadKey::where('demand_id', $newDemandId)->delete();
 
-                        // Handle 'no_demand_head' special case
-                        $noDemandHeads = $subheadKeysConfig['no_demand_head'];
-                        // dd($singlePropertyCheck);
-                        /*  $key = $singlePropertyCheck['key'];
+                         // Handle 'no_demand_head' special case
+                    $noDemandHeads = $subheadKeysConfig['no_demand_head'];
+                    // dd($singlePropertyCheck);
+                    /*  $key = $singlePropertyCheck['key'];
                         // if (in_array($key, array_keys((array) $request)) && ($request->{$key} == 0 || $request->{$key} == 1)) {
                         if (isset($request->{$key}) && ($request->{$key} == 0 || $request->{$key} == 1)) {
                             DemandHeadKey::create([
@@ -721,27 +837,28 @@ class DemandController extends Controller
                             ]);
                             unset($subheadKeysConfig['no_demand_head']);
                         } */
-                        // dd($request->all());
-                        // $counter = 0;
-                        foreach ($noDemandHeads as $key => $head) {
-                            // ++$counter;
-                            if (in_array($head['key'], array_keys((array) $request->all())) && ($request->{$head['key']} != '')) {
-                                // echo ('in request==' . $head['key'] . '...' . $counter . '&val=' . $request->{$head['key']} . '<br>');
-                                $value = $request->input($head['key']);
+                    // dd($request->all());
+                    // $counter = 0;
+                    foreach ($noDemandHeads as $key => $head) {
+                        // ++$counter;
+                        if (in_array($head['key'], array_keys((array) $request->all())) && ($request->{$head['key']} != '')) {
+                            // echo ('in request==' . $head['key'] . '...' . $counter . '&val=' . $request->{$head['key']} . '<br>');
+                            $value = $request->input($head['key']);
 
-                                if ($value !== "" && $value !== null) {
-                                    DemandHeadKey::create([
-                                        'demand_id' => $newDemandId,
-                                        'key' => $head['key'],
-                                        'value' => $value
-                                    ]);
-                                }
-                            } /* else {
+                            if ($value !== "" && $value !== null) {
+                                DemandHeadKey::create([
+                                    'demand_id' => $newDemandId,
+                                    'key' => $head['key'],
+                                    'value' => $value
+                                ]);
+                            }
+                        } /* else {
                                 echo (' not in request--->' . $head['key'] . '%%' . $counter . '<br>');
                             } */
-                        }
+                    }
                         // dd('loop completed');
                         unset($subheadKeysConfig['no_demand_head']);
+
                         foreach ($subheadKeysConfig as $subheadCode => $inputs) {
                             if (!in_array($subheadCode, $requestSubheads)) continue;
 
@@ -816,6 +933,7 @@ class DemandController extends Controller
                                 ]);
                             }
                         } */
+
                         if (!isset($request->id)) {
                             /** check active applications */
                             $activeApplication = $this->getActiveApplicationData($oldPropertyId, true);
@@ -838,6 +956,7 @@ class DemandController extends Controller
                             }
                         }
 
+
                         return response()->json(['status' => true, 'message' => 'Demand created successfully']);
                     } else {
                         return response()->json(['status' => false, 'details' => 'Demand not created.']);
@@ -854,132 +973,82 @@ class DemandController extends Controller
         }
     }
 
+    // public function ApproveDemand($demandId)
+    // {
+    //     $demand = Demand::find($demandId);
+    //     if (empty($demand)) {
+    //         return redirect()->back()->with('failure', "No data found!!");
+    //     }
+    //     if ($demand->status == getServiceType('DEM_DRAFT')) {
+    //         $demand->update(['status' => getServiceType('DEM_PENDING'), 'updated_by' => Auth::id()]);
 
-    public function ApproveDemand($demandId)
+    //         //send email to peoprty owner abt new demand created
+    //         return redirect()->route('demandList')->with('success', "Demand approved successfully");
+    //     } else {
+    //         return redirect()->back()->with('failure', "Can not approve this demand");
+    //     }
+    // }
+
+    //Updated by Swati Mishra to integrate mail, sms, whatsapp while approving demand on 17-04-2025
+   /*  public function ApproveDemand($demandId)
     {
         $demand = Demand::find($demandId);
 
+        // if (empty($demand)) {
+        //     return redirect()->back()->with('failure', "No data found!!");
+        // }
+
         if ($demand->status == getServiceType('DEM_DRAFT')) {
+            $notificationData = [
+                'demand_id' => $demand->unique_id,
+                'amount' => $demand->net_total
+            ];
 
             $email = null;
             $mobile = null;
             $action = 'DEMAND_GEN';
             $address = null;
-            $name = 'Sir/Madam';
 
-            $propertyMaster = PropertyMaster::find($demand->property_master_id);
-            $blockNo = $propertyMaster->block_no ?? 'N/A';
-            $plotNo  = $propertyMaster->plot_or_property_no ?? 'N/A';
-
-            // Resolve name and address
             if (is_null($demand->splited_property_detail_id)) {
-                // Non-split property
                 $userProperty = UserProperty::where('new_property_id', $demand->property_master_id)->first();
 
                 if ($userProperty) {
                     $user = User::find($userProperty->user_id);
-                    $name = $user->name;
                     $email = $user->email;
                     $mobile = $user->mobile_no;
                 } else {
-                    $contactDetails = CurrentLesseeDetail::where('property_master_id', $demand->property_master_id)->first();
-                    $name = $contactDetails->lessees_name ?? "Sir/Madam";
-
                     $contactDetails = PropertyContactDetail::where('property_master_id', $demand->property_master_id)->first();
                     $email = $contactDetails->email ?? null;
                     $mobile = $contactDetails->mobile_no ?? null;
                 }
-
+                // Get address from property_lease_details
                 $leaseDetail = PropertyLeaseDetail::where('property_master_id', $demand->property_master_id)->first();
                 $address = $leaseDetail?->presently_known_as ?? 'N/A';
             } else {
-                // Split property
                 $splitId = $demand->splited_property_detail_id;
-                $userProperty = UserProperty::where('splitted_property_id', $splitId)->first();
+
+                $userProperty = UserProperty::where('new_property_id', $splitId)->first();
 
                 if ($userProperty) {
                     $user = User::find($userProperty->user_id);
-                    $name = $user->name;
                     $email = $user->email;
                     $mobile = $user->mobile_no;
                 } else {
-                    $contactDetails = CurrentLesseeDetail::where('property_master_id', $demand->property_master_id)->get();
-                    $matchedContact = $contactDetails->firstWhere('splited_property_detail_id', $splitId);
-                    $name = $matchedContact->lessees_name ?? "Sir/Madam";
-
                     $contactDetails = PropertyContactDetail::where('property_master_id', $demand->property_master_id)->get();
                     $matchedContact = $contactDetails->firstWhere('splited_property_detail_id', $splitId);
+
                     if ($matchedContact) {
                         $email = $matchedContact->email ?? null;
                         $mobile = $matchedContact->mobile_no ?? null;
                     }
                 }
-
+                // Get address from splited_property_details
                 $splitDetail = SplitedPropertyDetail::find($splitId);
                 $address = $splitDetail?->presently_known_as ?? 'N/A';
-
-                if ($splitDetail) {
-                    // $blockNo = $splitDetail->block_no ?? $blockNo;
-                    $plotNo  = $splitDetail->plot_flat_no ?? $plotNo;
-                }
             }
-
-
-            // Get approval info
-            $approvedBy = 'N/A';
-            $approvedByDesignation = 'N/A';
-
-            $propertyMaster = PropertyMaster::find($demand->property_master_id);
-            if ($propertyMaster) {
-                $section = Section::where('section_code', $propertyMaster->section_code)->first();
-                if ($section) {
-                    $designation = Designation::where('name', 'DEPUTY L&DO')->first();
-                    if ($designation) {
-                        $sectionUser = DB::table('section_user')
-                            ->where('section_id', $section->id)
-                            ->where('designation_id', $designation->id)
-                            ->first();
-
-                        if ($sectionUser) {
-                            $approvedUser = User::find($sectionUser->user_id);
-                            if ($approvedUser) {
-                                $approvedBy = $approvedUser->name;
-                                $approvedByDesignation = $designation->name;
-                            }
-                        }
-                    }
-                }
-            }
-            //  dd($demand->application);
-            $application_name = getServiceNameById($demand->application?->service_type);
-            $application_no = $demand->application?->application_no;
-
-            // Prepare notification data
-            $notificationData = [
-                'demand_id' => $demand->unique_id,
-                'amount' => $demand->net_total,
-                'amountinwords' => ucfirst(convertNumberToWords($demand->net_total)),
-                'property_id' => $demand->splited_property_detail_id !== null ? $demand->splited_property_detail_id : $demand->old_property_id,
-                'demand_date' => now()->format('d-m-Y'),
-                'name' => $name,
-                'address' => $address,
-                'approvedBy' => $approvedBy,
-                'approvedByDesignation' => $approvedByDesignation,
-                'blockNo' => $blockNo,
-                'plotNo'  => $plotNo,
-                'applicationName' => $application_name,
-                'applicationNo' => $application_no,
-            ];
-
-            $email = 'nitinrag@gmail.com'; // override for testing
-            // $mobile = ''
+            $email = 'nitinrag@gmail.com';
             if ($email || $mobile) {
-                // dd($demand);
-                // $demand->update([
-                //     'status' => getServiceType('DEM_PENDING'),
-                //     'updated_by' => Auth::id(),
-                //     'approved_at' => date('Y-m-d H:i:s')
-                // ]);
+                $demand->update(['status' => getServiceType('DEM_PENDING'), 'updated_by' => Auth::id(), 'approved_at' => date('Y-m-d H:i:s')]); //updating demand only if contact details are available   //approved at added by nitin on 30-04-2025
 
                 // Fetch related data
                 $demandDetails = DemandDetail::where('demand_id', $demand->id)->get();
@@ -990,23 +1059,12 @@ class DemandController extends Controller
                     ->pluck('formula', 'id');
 
                 // Generate PDF
-                // $pdf = Pdf::loadView('demand.demand_pdf', [
-                //     'demand' => $demand,
-                //     'demandDetails' => $demandDetails,
-                //     'items' => $items,
-                //     'formulas' => $formulas,
-                //     'address' => $address
-                // ]);
-                // === Generate DEMAND LETTER PDF instead of demand.demand_pdf ===
-                $pdf = Pdf::loadView('demand.demand_letter_pdf', [
-                    'demand'                => $demand,
-                    'name'                  => $name,
-                    'address'               => $address,
-                    'demandDetails'         => $demandDetails,
-                    'items'                 => $items,
-                    'formulas'              => $formulas,
-                    'approvedBy'            => $approvedBy,
-                    'approvedByDesignation' => $approvedByDesignation,
+                $pdf = Pdf::loadView('demand.demand_pdf', [
+                    'demand' => $demand,
+                    'demandDetails' => $demandDetails,
+                    'items' => $items,
+                    'formulas' => $formulas,
+                    'address' => $address
                 ]);
 
                 $timestamp = now()->setTimezone('Asia/Kolkata')->format('d-m-Y_H-i-s');
@@ -1039,6 +1097,284 @@ class DemandController extends Controller
                         Log::error("Failed to send demand WhatsApp: " . $e->getMessage());
                     }
                 }
+
+                return redirect()->route('demandList')->with('success', "Demand approved successfully");
+            } else {
+                Log::info("Demand not approved. No contact details found.");
+                return redirect()->back()->with('failure', "Cannot approve demand — no contact details found, please update it.");
+            }
+        } else {
+            return redirect()->back()->with('failure', "Can not approve this demand");
+        }
+    } */
+
+   public function ApproveDemand($demandId)
+    {
+        $demand = Demand::find($demandId);
+
+        if ($demand->status == getServiceType('DEM_DRAFT')) {
+
+            $email = null;
+            $mobile = null;
+            $action = 'DEMAND_GEN';
+            $address = null;
+            $name = 'Sir/Madam';
+
+            $propertyMaster = PropertyMaster::find($demand->property_master_id);
+            $blockNo = $propertyMaster->block_no ?? 'N/A';
+            $plotNo = $propertyMaster->plot_or_property_no  ?? 'N/A';
+
+            // Resolve name and address
+            if (is_null($demand->splited_property_detail_id)) {
+                // Non-split property
+                $userProperty = UserProperty::where('new_property_id', $demand->property_master_id)->first();
+
+                if ($userProperty) {
+                    $user = User::find($userProperty->user_id);
+                    $name = $user->name;
+                    $email = $user->email;
+                    $mobile = $user->mobile_no;
+                } else {
+                    $contactDetails = CurrentLesseeDetail::where('property_master_id', $demand->property_master_id)->first();
+                    $name = $contactDetails->lessees_name ?? "Sir/Madam";
+
+                    $contactDetails = PropertyContactDetail::where('property_master_id', $demand->property_master_id)->first();
+                    $email = $contactDetails->email ?? null;
+                    $mobile = $contactDetails->mobile_no ?? null;
+                }
+
+                $leaseDetail = PropertyLeaseDetail::where('property_master_id', $demand->property_master_id)->first();
+                $address = $leaseDetail?->presently_known_as ?? 'N/A';
+
+                 $getUniquePropertyId = PropertyMaster::where('id', $demand->property_master_id)->first();
+                $uniquePropertyId = $getUniquePropertyId?->unique_propert_id ?? 'N/A';
+            } else {
+                // Split property
+                $splitId = $demand->splited_property_detail_id;
+                $userProperty = UserProperty::where('splitted_property_id', $splitId)->first();
+
+                if ($userProperty) {
+                    $user = User::find($userProperty->user_id);
+                    $name = $user->name;
+                    $email = $user->email;
+                    $mobile = $user->mobile_no;
+                } else {
+                    $contactDetails = CurrentLesseeDetail::where('property_master_id', $demand->property_master_id)->get();
+                    $matchedContact = $contactDetails->firstWhere('splited_property_detail_id', $splitId);
+                    $name = $matchedContact->lessees_name ?? "Sir/Madam";
+
+                    $contactDetails = PropertyContactDetail::where('property_master_id', $demand->property_master_id)->get();
+                    $matchedContact = $contactDetails->firstWhere('splited_property_detail_id', $splitId);
+                    if ($matchedContact) {
+                        $email = $matchedContact->email ?? null;
+                        $mobile = $matchedContact->mobile_no ?? null;
+                    }
+                }
+
+                $splitDetail = SplitedPropertyDetail::find($splitId);
+                $address = $splitDetail?->presently_known_as ?? 'N/A';
+
+                if($splitDetail){
+                    $plotNo = $splitDetail->plot_flat_no ?? $plotNo;
+                }
+                $uniquePropertyId = $splitDetail?->child_prop_id ?? 'N/A';
+            }
+
+            // Get approval info
+            $approvedBy = 'N/A';
+            $approvedByDesignation = 'N/A';
+
+            $propertyMaster = PropertyMaster::find($demand->property_master_id);
+            // dd($propertyMaster);
+            if ($propertyMaster) {
+                $section = Section::where('section_code', $propertyMaster->section_code)->first();
+                if ($section) {
+                    $designation = Designation::where('name', 'DEPUTY L&amp;DO')->first();
+                    if ($designation) {
+                        $sectionUser = DB::table('section_user')
+                            ->where('section_id', $section->id)
+                            ->where('designation_id', $designation->id)
+                            ->first();
+                        if ($sectionUser) {
+                            $approvedUser = User::find($sectionUser->user_id);
+                            if ($approvedUser) {
+                                $approvedBy = $approvedUser->name;
+                                $approvedByDesignation = $designation->name == 'DEPUTY L&DO' ? 'DEPUTY L&amp;DO':$designation->name;
+                            }
+                        }
+                    }
+                }
+            }
+            // dd($demand);
+            // dd([
+            //     'app_no_on_demand' => $demand->app_no,
+            //     'application_model' => $demand->application,
+            // ]);
+
+            // dd($demand->application);
+            $application_name= getServiceNameById($demand->application?->service_type);
+            $application_no= $demand->application?->application_no;
+            $application_date = $demand->application?->created_at;
+            // dd($application_name);
+
+            // Prepare notification data
+            $notificationData = [
+                'demand_id' => $demand->unique_id,
+                'amount' => $demand->net_total,
+                'amountinwords' => ucfirst(convertNumberToWords($demand->net_total)),
+                'property_id' => $demand->splited_property_detail_id !== null ? $demand->splited_property_detail_id : $demand->old_property_id,
+                'demand_date' => now()->format('d-m-Y'),
+                'name' => $name,
+                'address' => $address,
+                'approvedBy' => $approvedBy,
+                'approvedByDesignation' => $approvedByDesignation,
+                'blockNo' => $blockNo,
+                'plotNo' => $plotNo,
+                'applicationName' => $application_name,
+                'applicationNo' =>$application_no,
+            ];
+
+            $email = 'nitinrag@gmail.com'; // override for testing
+            // $email = 'swati180296@gmail.com';
+            
+            if ($email || $mobile) {
+                
+                // dd($demand);
+                $demand->update([
+                    'status' => getServiceType('DEM_PENDING'),
+                    'updated_by' => Auth::id(),
+                    'approved_at' => date('Y-m-d H:i:s')
+                ]);
+
+                // Fetch related data
+                $demandDetails = DemandDetail::where('demand_id', $demand->id)->get();
+                $items = Item::where('group_id', 7003)
+                    ->whereIn('id', $demandDetails->pluck('subhead_id'))
+                    ->pluck('item_name', 'id');
+                $formulas = DemandFormula::whereIn('id', $demandDetails->pluck('formula_id')->filter())
+                    ->pluck('formula', 'id');
+
+                // Generate PDF
+                $pdf = Pdf::loadView('demand.demand_letter_pdf', [
+                    'demand' => $demand,
+                    'name' => $name,
+                    'approvedBy' => $approvedBy,
+                    'approvedByDesignation' =>$approvedByDesignation,
+                    'applicationNo' => $application_no,
+                    'demandDetails' => $demandDetails,
+                    'items' => $items,
+                    'formulas' => $formulas,
+                    'address' => $address,
+                    'applicationDate' => $application_date,
+                    'uniquePropertyId' => $uniquePropertyId
+                ]);
+                
+                $timestamp = now()->setTimezone('Asia/Kolkata')->format('d-m-Y_H-i-s');
+                $filename = "{$demand->unique_id}_{$timestamp}.pdf";
+                $path = "Demand/{$filename}";
+
+                Storage::put("public/{$path}", $pdf->output());
+                $attachment = "storage/public/{$path}";
+                // dd($path, $attachment);
+                // $this->settingsService->applyMailSettings($action);
+
+                if ($email) {
+                    // try {
+                    //     Mail::to($email)->send(new CommonMail($notificationData, $action));
+                    // } catch (\Exception $e) {
+                    //     Log::error("Failed to send demand email: " . $e->getMessage());
+                    // }
+                    try {
+                        $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                        $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null, $attachment);
+                        $mailResponse = $mailer->send($email, $mailSettings);
+
+                        Log::info("Email sent successfully.", [
+                            'action' => $action,
+                            'email'  => $email,
+                            'data'   => $notificationData,
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error("Email sending failed.", [
+                            'action' => $action,
+                            'email'  => $email,
+                            'error'  => $e->getMessage(),
+                        ]);
+                    }
+                }
+
+                if ($mobile) {
+                    // try {
+                    //     $this->communicationService->sendSmsMessage($notificationData, $mobile, $action);
+                    // } catch (\Exception $e) {
+                    //     Log::error("Failed to send demand SMS: " . $e->getMessage());
+                    // }
+                    try {
+                        $isSmsSuccess = $communicationService->sendSmsMessage(
+                            $notificationData,
+                            $mobile,
+                            $action
+                        );
+
+                        if ($isSmsSuccess) {
+                            Log::info("SMS sent successfully.", [
+                                'mobile'      => $mobile,
+                                // 'countryCode' => $appointment->country_code,
+                                'action'      => $action,
+                            ]);
+                        } else {
+                            Log::warning("SMS sending failed.", [
+                                'mobile'      => $mobile,
+                                // 'countryCode' => $appointment->country_code,
+                                'action'      => $action,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("SMS sending threw exception.", [
+                            'mobile'      => $mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
+
+                    // try {
+                    //     $this->communicationService->sendWhatsAppMessage($notificationData, $mobile, $action);
+                    // } catch (\Exception $e) {
+                    //     Log::error("Failed to send demand WhatsApp: " . $e->getMessage());
+                    // }
+
+                    // --- WHATSAPP ---
+                    try {
+                        $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                            $notificationData,
+                            $mobile,
+                            $action
+                        );
+
+                        if ($isWhatsAppSuccess) {
+                            Log::info("WhatsApp sent successfully.", [
+                                'mobile'      => $mobile,
+                                // 'countryCode' => $appointment->country_code,
+                                'action'      => $action,
+                            ]);
+                        } else {
+                            Log::warning("WhatsApp sending failed.", [
+                                'mobile'      => $mobile,
+                                // 'countryCode' => $appointment->country_code,
+                                'action'      => $action,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("WhatsApp sending threw exception.", [
+                            'mobile'      => $mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
+                }
+
                 /** revert application if demand was created for demand Id */
                 $activeApplication = $this->getActiveApplicationData($demand->old_property_id, true);
                 if (count($activeApplication) > 0) {
@@ -1056,6 +1392,7 @@ class DemandController extends Controller
                         return response()->json(['status' => false, 'details' => 'Application can not be forwarded']);
                     }
                 }
+
                 return redirect()->route('demandList')->with('success', "Demand approved successfully");
             } else {
                 Log::info("Demand not approved. No contact details found.");
@@ -1067,32 +1404,39 @@ class DemandController extends Controller
     }
 
 
-
-    public function withdrawDemand($demandId)
+    // public function withdrawDemand($demandId)
+    // {
+    //     $demand = Demand::find($demandId);
+    //     if (empty($demand)) {
+    //         return redirect()->back()->with('failure', "No data found!!");
+    //     }
+    //     if ($demand->carried_amount && $demand->carried_amount > 0) {
+    //         $carriedDetails = CarriedDemandDetail::where('new_demand_id', $demandId)->first();
+    //         if (!empty($carriedDetails)) {
+    //             $oldDemand = Demand::find($carriedDetails->old_demand_id);
+    //             if (!empty($oldDemand)) {
+    //                 $statusToUpdate = getServiceType('DEM_PART_PAID');
+    //                 if ($oldDemand->net_total == $oldDemand->balance_amount) {
+    //                     $statusToUpdate = getServiceType('DEM_PENDING');
+    //                 }
+    //                 $oldDemand->update(['status' => $statusToUpdate, 'updated_by' => Auth::id()]);
+    //             } else {
+    //                 return redirect()->back()->with('failure', "Something went wrong. Required data is missing");
+    //             }
+    //         } else {
+    //             return redirect()->back()->with('failure', "Something went wrong. Required data is missing");
+    //         }
+    //     }
+    //     $demand->update(['status' => getServiceType('DEM_WD'), 'updated_by' => Auth::id()]);
+    //     return redirect()->back()->with('success', "Demand withdrawn successfully");
+    // }
+        public function withdrawDemand($demandId)
     {
-        $demand = Demand::find($demandId);
-        if (empty($demand)) {
-            return redirect()->back()->with('failure', "No data found!!");
+        $result = $this->demandService->withdrawDemand($demandId, Auth::id(), false);
+        if ($result['status']) {
+            return redirect()->back()->with('success', $result['message']);
         }
-        if ($demand->carried_amount && $demand->carried_amount > 0) {
-            $carriedDetails = CarriedDemandDetail::where('new_demand_id', $demandId)->first();
-            if (!empty($carriedDetails)) {
-                $oldDemand = Demand::find($carriedDetails->old_demand_id);
-                if (!empty($oldDemand)) {
-                    $statusToUpdate = getServiceType('DEM_PART_PAID');
-                    if ($oldDemand->net_total == $oldDemand->balance_amount) {
-                        $statusToUpdate = getServiceType('DEM_PENDING');
-                    }
-                    $oldDemand->update(['status' => $statusToUpdate, 'updated_by' => Auth::id()]);
-                } else {
-                    return redirect()->back()->with('failure', "Something went wrong. Required data is missing");
-                }
-            } else {
-                return redirect()->back()->with('failure', "Something went wrong. Required data is missing");
-            }
-        }
-        $demand->update(['status' => getServiceType('DEM_WD'), 'updated_by' => Auth::id()]);
-        return redirect()->back()->with('success', "Demand withdrawn successfully");
+        return redirect()->back()->with('failure', $result['message']);
     }
 
 
@@ -1204,7 +1548,7 @@ class DemandController extends Controller
                 'installation_id' => '11136',
                 'amount' => $paidAmount,
                 'currency_code' => "INR",
-                'order_content' => '23092',
+                'order_content' => '15777',
                 'payemnt_type_id' => config('constants.payment_type_id'),
                 'code' => getServiceNameByCode($request->payment_mode),
                 'email' => $request->payer_email,
@@ -1239,7 +1583,6 @@ class DemandController extends Controller
                 }
             }
         }
-        // dd($oldDeamands);
         if ($dataOnly) {
             return isset($oldDeamands) ? $oldDeamands : [];
         }
@@ -1393,80 +1736,384 @@ class DemandController extends Controller
             ->select('old_demands.*', 'items.item_name as propertyStatus')->paginate(3);
         return view('demand.outstanding-dues-list', compact('data'));
     }
-    // =============================================================================
 
-    public function demandSummary(Request $request)
-    {
-        $user = Auth::user();
-        //$sections = $user->hasAnyRole(['super-admin', 'lndo', 'minister']) ? getRequiredSections() : $user->sections;
-        $sections = $user->hasAnyRole(['super-admin', 'lndo', 'minister'])
-            ? Section::where('has_property', 1)->get()
-            : $user->sections()->where('has_property', 1)->get();
-        //dd(Section::where('has_property', 1)->get());
-        $filters = $request->all();
-        $filterSectionIds = [];
+// public function demandSummary(Request $request)
+// {
+//     $user = Auth::user();
+//     $sections = $user->hasAnyRole(['super-admin', 'lndo', 'minister']) ? getRequiredSections() : $user->sections;
+//     $filters = $request->all(); 
+//     $filterSectionIds = [];
 
-        if (isset($filters['section_id'])) {
-            $filterSectionIds = [$filters['section_id']];
-        } else if (!$user->hasAnyRole(['super-admin', 'lndo', 'minister'])) {
-            $filterSectionIds = $user->sections->pluck('id')->toArray();
+//     if (isset($filters['section_id'])) {
+//         $filterSectionIds = [$filters['section_id']];
+//     } else if (!$user->hasAnyRole(['super-admin', 'lndo', 'minister'])) {
+//         $filterSectionIds = $user->sections->pluck('id')->toArray();
+//     }       
+
+//     $deputlndousers = User::role('deputy-lndo')->with(['sections', 'designation'])->get();
+
+//     $filterDateFrom = $filters['startDate'] ?? null;
+//     $filterDateTo = $filters['endDate'] ?? null;
+//     $demandType = $filters['demandType'] ?? 0;
+
+//     $sectionCodes = [];
+//     $selectedId = 0;
+//     $deputyUser = null;
+
+//     if (!empty($filters['filterType'])) {
+//         if ($filters['filterType'] === 'dyLDoWise') {
+//             $selectedId = $filters['selectedId'] ?? 0;
+//             $deputyUser = User::with('sections')->find($selectedId);
+//             if ($deputyUser) {
+//                 $sectionCodes = $deputyUser->sections->pluck('section_code')->toArray();
+//             }
+//         } elseif ($filters['filterType'] === 'sectionWise') {
+//             $selectedId = $filters['selectedId'] ?? 0;
+//             $sectionCodes = Section::where('id', $selectedId)->pluck('section_code')->toArray(); 
+//         } elseif ($filters['filterType'] === 'yearWise') {
+//             $selectedId = $filters['selectedId'] ?? 0;
+//         }
+//     }
+
+//     $filtertype = $filters['filterType'] ?? 0; 
+//     if ($demandType == 0) {
+//         $latestDemandsSub = Demand::query()
+//             ->whereNotIn('status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')])
+//             ->selectRaw('MAX(id) as latest_id')
+//             ->groupBy('property_master_id');
+//     } else {
+//         // When demandType != 0, just use a normal Demand query without groupBy or MAX id
+//         $latestDemandsSub = Demand::query()
+//             ->whereNotIn('status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+//     }
+
+//     // Build main query depending on demandType (joinSub only if demandType==0)
+//     $query = Demand::query()
+//         ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+//         ->when(!empty($sectionCodes), function ($query) use ($sectionCodes) {
+//             return $query->whereIn('property_masters.section_code', $sectionCodes);
+//         })
+//         ->when($filterDateFrom, function ($query) use ($filterDateFrom) {
+//             return $query->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+//         })
+//         ->when($filterDateTo, function ($query) use ($filterDateTo) {
+//             return $query->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+//         });
+
+//     if ($demandType == 0) {
+//         $query->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+//             $join->on('demands.id', '=', 'latest_demands.latest_id');
+//         });
+//     } else {        
+//         $query->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+//     }
+//     $queryResult = $query->select('demands.*', 'property_masters.old_propert_id', 'property_masters.unique_propert_id', 'property_masters.unique_file_no')->get();
+
+//     $totalSummary = null;
+//     $dyLdoWiseSummary = [];
+//     $sectionWiseSummary = [];
+//     $dySectionWiseSummary = [];    
+//     if ($filtertype === 'dyLDoWise' && $deputyUser) {
+//         foreach ($deputyUser->sections as $section) {
+//             $sectionCode = $section->section_code;
+//             $secQuery = Demand::query()
+//                 ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+//                 ->where('property_masters.section_code', $sectionCode)
+//                 ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
+//                     return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+//                 })
+//                 ->when($filterDateTo, function ($q) use ($filterDateTo) {
+//                     return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+//                 });
+
+//             if ($demandType == 0) {
+//                 $secQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+//                     $join->on('demands.id', '=', 'latest_demands.latest_id');
+//                 });
+//             } else {
+//                 $secQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+//             }
+
+//             $secSummary = $secQuery->selectRaw('
+//                 COUNT(demands.id) as total_demands,
+//                 SUM(demands.net_total) as total_amount,
+//                 SUM(demands.paid_amount) as total_paid,
+//                 SUM(demands.balance_amount) as total_balance
+//             ')->first();
+
+//             $dySectionWiseSummary[] = [
+//                 'section_name' => $section->name,
+//                 'section_code' => $sectionCode,
+//                 'total_demands' => $secSummary->total_demands ?? 0,
+//                 'total_amount' => $secSummary->total_amount ?? 0,
+//                 'total_paid' => $secSummary->total_paid ?? 0,
+//                 'total_balance' => $secSummary->total_balance ?? 0,
+//             ];
+//         }
+//     }
+//     if ($filtertype === 'yearWise') {
+//         $totalQuery = Demand::query()
+//             ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+//             ->when($filterDateFrom, function ($query) use ($filterDateFrom) {
+//                 return $query->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+//             })
+//             ->when($filterDateTo, function ($query) use ($filterDateTo) {
+//                 return $query->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+//             });
+
+//         if ($demandType == 0) {
+//             $totalQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+//                 $join->on('demands.id', '=', 'latest_demands.latest_id');
+//             });
+//         } else {
+//             $totalQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+//         }
+//         $totalSummary = $totalQuery->selectRaw('
+//             GROUP_CONCAT(DISTINCT property_masters.section_code ORDER BY property_masters.section_code) as section_codes,
+//             COUNT(demands.id) as total_demands,
+//             SUM(demands.net_total) as total_amount,
+//             SUM(demands.paid_amount) as total_paid,
+//             SUM(demands.balance_amount) as total_balance
+//         ')->first();
+//         foreach ($deputlndousers as $dyUser) {
+//             $userSections = $dyUser->sections->pluck('section_code')->toArray();
+//             if (empty($userSections)) continue;
+
+//             $dyQuery = Demand::query()
+//                 ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+//                 ->whereIn('property_masters.section_code', $userSections)
+//                 ->when($filterDateFrom, function ($query) use ($filterDateFrom) {
+//                     return $query->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+//                 })
+//                 ->when($filterDateTo, function ($query) use ($filterDateTo) {
+//                     return $query->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+//                 });
+
+//             if ($demandType == 0) {
+//                 $dyQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+//                     $join->on('demands.id', '=', 'latest_demands.latest_id');
+//                 });
+//             } else {
+//                 $dyQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+//             }
+
+//             $dySummary = $dyQuery->selectRaw('
+//                 COUNT(demands.id) as total_demands,
+//                 SUM(demands.net_total) as total_amount,
+//                 SUM(demands.paid_amount) as total_paid,
+//                 SUM(demands.balance_amount) as total_balance
+//             ')->first();
+
+//             $dyLdoWiseSummary[] = [
+//                 'dyassingsection' => implode(',', $userSections),
+//                 'user' => $dyUser->name,
+//                 'user_id' => $dyUser->id,
+//                 'designation' => $dyUser->designation->name ?? 'N/A',
+//                 'total_demands' => $dySummary->total_demands ?? 0,
+//                 'total_amount' => $dySummary->total_amount ?? 0,
+//                 'total_paid' => $dySummary->total_paid ?? 0,
+//                 'total_balance' => $dySummary->total_balance ?? 0,
+//             ];
+//         }
+//         $assignedSectionCodes = $deputlndousers
+//             ->pluck('sections')
+//             ->flatten()
+//             ->pluck('section_code')
+//             ->unique()
+//             ->toArray();
+
+//         foreach ($assignedSectionCodes as $sectionCode) {
+//             $section = Section::where('section_code', $sectionCode)->first();
+//             if (!$section) continue;
+//             $secQuery = Demand::query()
+//                 ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+//                 ->where('property_masters.section_code', $sectionCode)
+//                 ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
+//                     return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+//                 })
+//                 ->when($filterDateTo, function ($q) use ($filterDateTo) {
+//                     return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+//                 });
+
+//             if ($demandType == 0) {
+//                 $secQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+//                     $join->on('demands.id', '=', 'latest_demands.latest_id');
+//                 });
+//             } else {
+//                 $secQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+//             }
+//             $secSummary = $secQuery->selectRaw('
+//                 COUNT(demands.id) as total_demands,
+//                 SUM(demands.net_total) as total_amount,
+//                 SUM(demands.paid_amount) as total_paid,
+//                 SUM(demands.balance_amount) as total_balance
+//             ')->first();
+
+//             $sectionWiseSummary[] = [
+//                 'section_name' => $section->name,
+//                 'section_code' => $section->section_code,
+//                 'total_demands' => $secSummary->total_demands ?? 0,
+//                 'total_amount' => $secSummary->total_amount ?? 0,
+//                 'total_paid' => $secSummary->total_paid ?? 0,
+//                 'total_balance' => $secSummary->total_balance ?? 0,
+//             ];
+//         }
+//     }
+//     $data['sections'] = $sections;
+//     $data['deputlndousers'] = $deputlndousers;
+//     $data['queryResult'] = $queryResult;
+//     $data['filtertype'] = $filtertype;
+//     $data['totalSummary'] = $totalSummary;
+//     $data['dyLdoWiseSummary'] = $dyLdoWiseSummary;
+//     $data['sectionWiseSummary'] = $sectionWiseSummary;
+//     $data['dySectionWiseSummary'] = $dySectionWiseSummary;
+//     $data['selectedDyUser'] = $deputyUser;
+//     $data['demandType'] = $demandType;
+//     $data['filterDateFrom']= $filterDateFrom;
+//     $data['filterDateTo']= $filterDateTo;
+//     if ($request->ajax()) {
+//         $html = view('include.partials.filtered_demand_data', $data)->render();
+//         return response()->json(['html' => $html]);
+//     }
+
+//     return empty($filters) 
+//         ? view('demand.demand-summary', $data) 
+//         : response()->json(['success' => true, 'data' => $data]);
+// }
+
+public function demandSummary(Request $request)
+{
+    $user = Auth::user();
+    //$sections = $user->hasAnyRole(['super-admin', 'lndo', 'minister']) ? getRequiredSections() : $user->sections;
+    $sections = $user->hasAnyRole(['super-admin', 'lndo', 'minister']) 
+    ? Section::where('has_property', 1)->get() 
+    : $user->sections()->where('has_property', 1)->get();
+    //dd(Section::where('has_property', 1)->get());
+    $filters = $request->all(); 
+    $filterSectionIds = [];
+
+    if (isset($filters['section_id'])) {
+        $filterSectionIds = [$filters['section_id']];
+    } else if (!$user->hasAnyRole(['super-admin', 'lndo', 'minister'])) {
+        $filterSectionIds = $user->sections->pluck('id')->toArray();
+    }       
+$deputlndousers = User::role('deputy-lndo')
+    ->whereHas('sections', function ($query) {
+        $query->where('has_property', 1);
+    })
+    ->with([
+        'sections' => function ($query) {
+            $query->where('has_property', 1);
+        },
+        'designation'    ])
+    ->get();
+    $filterDateFrom = $filters['startDate'] ?? null;
+    $filterDateTo = $filters['endDate'] ?? null;
+    $demandType = $filters['demandType'] ?? 0;
+
+    $sectionCodes = [];
+    $selectedId = 0;
+    $deputyUser = null;
+
+    if (!empty($filters['filterType'])) {
+        if ($filters['filterType'] === 'dyLDoWise') {
+            $selectedId = $filters['selectedId'] ?? 0;
+				$deputyUser = User::with(['sections' => function($q) {
+				        $q->where('has_property', 1);
+				    }])->find($selectedId);
+				$sectionCodes = [];
+				if ($deputyUser) {
+				    // Collection now already only has sections with has_property = 1
+				    $sectionCodes = $deputyUser->sections->pluck('section_code')->toArray();
+				}
+
+        } elseif ($filters['filterType'] === 'sectionWise') {
+            $selectedId = $filters['selectedId'] ?? 0;
+            $sectionCodes = Section::where('id', $selectedId)->pluck('section_code')->toArray(); 
+        } elseif ($filters['filterType'] === 'yearWise') {
+            $selectedId = $filters['selectedId'] ?? 0;
         }
-        $deputlndousers = User::role('deputy-lndo')
-            ->whereHas('sections', function ($query) {
-                $query->where('has_property', 1);
-            })
-            ->with([
-                'sections' => function ($query) {
-                    $query->where('has_property', 1);
-                },
-                'designation'
-            ])
-            ->get();
-        $filterDateFrom = $filters['startDate'] ?? null;
-        $filterDateTo = $filters['endDate'] ?? null;
-        $demandType = $filters['demandType'] ?? 0;
+    }
 
-        $sectionCodes = [];
-        $selectedId = 0;
-        $deputyUser = null;
+    $filtertype = $filters['filterType'] ?? 0; 
+    if ($demandType == 0) {
+        $latestDemandsSub = Demand::query()
+            ->whereNotIn('status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')])
+            ->selectRaw('MAX(id) as latest_id')
+            ->groupBy('property_master_id');
+    } else {
+        // When demandType != 0, just use a normal Demand query without groupBy or MAX id
+        $latestDemandsSub = Demand::query()
+            ->whereNotIn('status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+    }
 
-        if (!empty($filters['filterType'])) {
-            if ($filters['filterType'] === 'dyLDoWise') {
-                $selectedId = $filters['selectedId'] ?? 0;
-                $deputyUser = User::with(['sections' => function ($q) {
-                    $q->where('has_property', 1);
-                }])->find($selectedId);
-                $sectionCodes = [];
-                if ($deputyUser) {
-                    // Collection now already only has sections with has_property = 1
-                    $sectionCodes = $deputyUser->sections->pluck('section_code')->toArray();
-                }
-            } elseif ($filters['filterType'] === 'sectionWise') {
-                $selectedId = $filters['selectedId'] ?? 0;
-                $sectionCodes = Section::where('id', $selectedId)->pluck('section_code')->toArray();
-            } elseif ($filters['filterType'] === 'yearWise') {
-                $selectedId = $filters['selectedId'] ?? 0;
+    // Build main query depending on demandType (joinSub only if demandType==0)
+    $query = Demand::query()
+        ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+        ->when(!empty($sectionCodes), function ($query) use ($sectionCodes) {
+            return $query->whereIn('property_masters.section_code', $sectionCodes);
+        })
+        ->when($filterDateFrom, function ($query) use ($filterDateFrom) {
+            return $query->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+        })
+        ->when($filterDateTo, function ($query) use ($filterDateTo) {
+            return $query->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+        });
+
+    if ($demandType == 0) {
+        $query->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+            $join->on('demands.id', '=', 'latest_demands.latest_id');
+        });
+    } else {        
+        $query->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+    }
+    $queryResult = $query->select('demands.*', 'property_masters.old_propert_id', 'property_masters.unique_propert_id','property_masters.section_code', 'property_masters.unique_file_no')->get();
+
+    $totalSummary = null;
+    $dyLdoWiseSummary = [];
+    $sectionWiseSummary = [];
+    $dySectionWiseSummary = [];    
+    if ($filtertype === 'dyLDoWise' && $deputyUser) {
+        foreach ($deputyUser->sections as $section) {
+            $sectionCode = $section->section_code;
+            $secQuery = Demand::query()
+                ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+                ->where('property_masters.section_code', $sectionCode)
+                ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
+                    return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+                })
+                ->when($filterDateTo, function ($q) use ($filterDateTo) {
+                    return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+                });
+
+            if ($demandType == 0) {
+                $secQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+                    $join->on('demands.id', '=', 'latest_demands.latest_id');
+                });
+            } else {
+                $secQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
             }
-        }
 
-        $filtertype = $filters['filterType'] ?? 0;
-        if ($demandType == 0) {
-            $latestDemandsSub = Demand::query()
-                ->whereNotIn('status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')])
-                ->selectRaw('MAX(id) as latest_id')
-                ->groupBy('property_master_id');
-        } else {
-            // When demandType != 0, just use a normal Demand query without groupBy or MAX id
-            $latestDemandsSub = Demand::query()
-                ->whereNotIn('status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
-        }
+            $secSummary = $secQuery->selectRaw('
+                COUNT(demands.id) as total_demands,
+                SUM(demands.net_total) as total_amount,
+                SUM(demands.paid_amount) as total_paid,
+                SUM(demands.balance_amount) as total_balance
+            ')->first();
 
-        // Build main query depending on demandType (joinSub only if demandType==0)
-        $query = Demand::query()
+            $dySectionWiseSummary[] = [
+                'section_name' => $section->name,
+                'section_code' => $sectionCode,
+                'total_demands' => $secSummary->total_demands ?? 0,
+                'total_amount' => $secSummary->total_amount ?? 0,
+                'total_paid' => $secSummary->total_paid ?? 0,
+                'total_balance' => $secSummary->total_balance ?? 0,
+            ];
+        }
+    }
+    if ($filtertype === 'yearWise') {
+        $totalQuery = Demand::query()
             ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
-            ->when(!empty($sectionCodes), function ($query) use ($sectionCodes) {
-                return $query->whereIn('property_masters.section_code', $sectionCodes);
-            })
             ->when($filterDateFrom, function ($query) use ($filterDateFrom) {
                 return $query->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
             })
@@ -1475,59 +2122,27 @@ class DemandController extends Controller
             });
 
         if ($demandType == 0) {
-            $query->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+            $totalQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
                 $join->on('demands.id', '=', 'latest_demands.latest_id');
             });
         } else {
-            $query->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+            $totalQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
         }
-        $queryResult = $query->select('demands.*', 'property_masters.old_propert_id', 'property_masters.unique_propert_id', 'property_masters.unique_file_no')->get();
+        $totalSummary = $totalQuery->selectRaw('
+            GROUP_CONCAT(DISTINCT property_masters.section_code ORDER BY property_masters.section_code) as section_codes,
+            COUNT(demands.id) as total_demands,
+            SUM(demands.net_total) as total_amount,
+            SUM(demands.paid_amount) as total_paid,
+            SUM(demands.balance_amount) as total_balance
+        ')->first();
+       
+        foreach ($deputlndousers as $dyUser) {
+            $userSections = $dyUser->sections->pluck('section_code')->toArray();
+            if (empty($userSections)) continue;
 
-        $totalSummary = null;
-        $dyLdoWiseSummary = [];
-        $sectionWiseSummary = [];
-        $dySectionWiseSummary = [];
-        if ($filtertype === 'dyLDoWise' && $deputyUser) {
-            foreach ($deputyUser->sections as $section) {
-                $sectionCode = $section->section_code;
-                $secQuery = Demand::query()
-                    ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
-                    ->where('property_masters.section_code', $sectionCode)
-                    ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
-                        return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
-                    })
-                    ->when($filterDateTo, function ($q) use ($filterDateTo) {
-                        return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
-                    });
-
-                if ($demandType == 0) {
-                    $secQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
-                        $join->on('demands.id', '=', 'latest_demands.latest_id');
-                    });
-                } else {
-                    $secQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
-                }
-
-                $secSummary = $secQuery->selectRaw('
-                COUNT(demands.id) as total_demands,
-                SUM(demands.net_total) as total_amount,
-                SUM(demands.paid_amount) as total_paid,
-                SUM(demands.balance_amount) as total_balance
-            ')->first();
-
-                $dySectionWiseSummary[] = [
-                    'section_name' => $section->name,
-                    'section_code' => $sectionCode,
-                    'total_demands' => $secSummary->total_demands ?? 0,
-                    'total_amount' => $secSummary->total_amount ?? 0,
-                    'total_paid' => $secSummary->total_paid ?? 0,
-                    'total_balance' => $secSummary->total_balance ?? 0,
-                ];
-            }
-        }
-        if ($filtertype === 'yearWise') {
-            $totalQuery = Demand::query()
+            $dyQuery = Demand::query()
                 ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+                ->whereIn('property_masters.section_code', $userSections)
                 ->when($filterDateFrom, function ($query) use ($filterDateFrom) {
                     return $query->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
                 })
@@ -1536,187 +2151,167 @@ class DemandController extends Controller
                 });
 
             if ($demandType == 0) {
-                $totalQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+                $dyQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
                     $join->on('demands.id', '=', 'latest_demands.latest_id');
                 });
             } else {
-                $totalQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+                $dyQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
             }
-            $totalSummary = $totalQuery->selectRaw('
-            GROUP_CONCAT(DISTINCT property_masters.section_code ORDER BY property_masters.section_code) as section_codes,
-            COUNT(demands.id) as total_demands,
-            SUM(demands.net_total) as total_amount,
-            SUM(demands.paid_amount) as total_paid,
-            SUM(demands.balance_amount) as total_balance
-        ')->first();
 
-            foreach ($deputlndousers as $dyUser) {
-                $userSections = $dyUser->sections->pluck('section_code')->toArray();
-                if (empty($userSections)) continue;
-
-                $dyQuery = Demand::query()
-                    ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
-                    ->whereIn('property_masters.section_code', $userSections)
-                    ->when($filterDateFrom, function ($query) use ($filterDateFrom) {
-                        return $query->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
-                    })
-                    ->when($filterDateTo, function ($query) use ($filterDateTo) {
-                        return $query->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
-                    });
-
-                if ($demandType == 0) {
-                    $dyQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
-                        $join->on('demands.id', '=', 'latest_demands.latest_id');
-                    });
-                } else {
-                    $dyQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
-                }
-
-                $dySummary = $dyQuery->selectRaw('
+            $dySummary = $dyQuery->selectRaw('
                 COUNT(demands.id) as total_demands,
                 SUM(demands.net_total) as total_amount,
                 SUM(demands.paid_amount) as total_paid,
                 SUM(demands.balance_amount) as total_balance
             ')->first();
 
-                $dyLdoWiseSummary[] = [
-                    'dyassingsection' => implode(',', $userSections),
-                    'user' => $dyUser->name,
-                    'user_id' => $dyUser->id,
-                    'designation' => $dyUser->designation->name ?? 'N/A',
-                    'total_demands' => $dySummary->total_demands ?? 0,
-                    'total_amount' => $dySummary->total_amount ?? 0,
-                    'total_paid' => $dySummary->total_paid ?? 0,
-                    'total_balance' => $dySummary->total_balance ?? 0,
-                ];
-            }
-            $assignedSectionCodes = $deputlndousers
-                ->pluck('sections')
-                ->flatten()
-                ->pluck('section_code')
-                ->unique()
-                ->toArray();
-            //dd($assignedSectionCodes);
-            foreach ($assignedSectionCodes as $sectionCode) {
-                $section = Section::where('section_code', $sectionCode)->first();
-                if (!$section) continue;
-                $secQuery = Demand::query()
-                    ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
-                    ->where('property_masters.section_code', $sectionCode)
-                    ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
-                        return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
-                    })
-                    ->when($filterDateTo, function ($q) use ($filterDateTo) {
-                        return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
-                    });
-
-                if ($demandType == 0) {
-                    $secQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
-                        $join->on('demands.id', '=', 'latest_demands.latest_id');
-                    });
-                } else {
-                    $secQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
-                }
-                $secSummary = $secQuery->selectRaw('
-                COUNT(demands.id) as total_demands,
-                SUM(demands.net_total) as total_amount,
-                SUM(demands.paid_amount) as total_paid,
-                SUM(demands.balance_amount) as total_balance
-            ')->first();
-
-                $sectionWiseSummary[] = [
-                    'section_name' => $section->name,
-                    'section_code' => $section->section_code,
-                    'total_demands' => $secSummary->total_demands ?? 0,
-                    'total_amount' => $secSummary->total_amount ?? 0,
-                    'total_paid' => $secSummary->total_paid ?? 0,
-                    'total_balance' => $secSummary->total_balance ?? 0,
-                ];
-            }
+            $dyLdoWiseSummary[] = [
+                'dyassingsection' => implode(',', $userSections),
+                'user' => $dyUser->name,
+                'user_id' => $dyUser->id,
+                'designation' => $dyUser->designation->name ?? 'N/A',
+                'total_demands' => $dySummary->total_demands ?? 0,
+                'total_amount' => $dySummary->total_amount ?? 0,
+                'total_paid' => $dySummary->total_paid ?? 0,
+                'total_balance' => $dySummary->total_balance ?? 0,
+            ];
         }
-        $data['sections'] = $sections;
-        $data['deputlndousers'] = $deputlndousers;
-        $data['queryResult'] = $queryResult;
-        $data['filtertype'] = $filtertype;
-        $data['totalSummary'] = $totalSummary;
-        $data['dyLdoWiseSummary'] = $dyLdoWiseSummary;
-        $data['sectionWiseSummary'] = $sectionWiseSummary;
-        $data['dySectionWiseSummary'] = $dySectionWiseSummary;
-        $data['selectedDyUser'] = $deputyUser;
-        $data['demandType'] = $demandType;
-        $data['filterDateFrom'] = $filterDateFrom;
-        $data['filterDateTo'] = $filterDateTo;
-        if ($request->ajax()) {
-            $html = view('include.partials.filtered_demand_data', $data)->render();
-            return response()->json(['html' => $html]);
-        }
+        $assignedSectionCodes = $deputlndousers
+            ->pluck('sections')
+            ->flatten()
+            ->pluck('section_code')
+            ->unique()
+            ->toArray();
+//dd($assignedSectionCodes);
+        foreach ($assignedSectionCodes as $sectionCode) {
+            $section = Section::where('section_code', $sectionCode)->first();
+            if (!$section) continue;
+            $secQuery = Demand::query()
+                ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+                ->where('property_masters.section_code', $sectionCode)
+                ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
+                    return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+                })
+                ->when($filterDateTo, function ($q) use ($filterDateTo) {
+                    return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+                });
 
-        return empty($filters)
-            ? view('demand.demand-summary', $data)
-            : response()->json(['success' => true, 'data' => $data]);
-    }
-
-    public function demandSummaryDetails(Request $request)
-    {
-        //    $serviceType = $request->type;
-        //    $filterDateFrom = $request->from;
-        //    $filterDateTo = $request->to;
-        //    $sectionCodes = explode(',', $request->service);
-        if ($request->has('data')) {
-            $decoded = base64_decode($request->get('data'));
-            parse_str($decoded, $params);
-            $serviceType = $params['type'] ?? 0;
-            $filterDateFrom = $params['from'] ?? null;
-            $filterDateTo = $params['to'] ?? null;
-            $sectionCodes = isset($params['service']) ? explode(',', $params['service']) : [];
-        } else {
-            $serviceType = $request->type ?? 0;
-            $filterDateFrom = $request->from ?? null;
-            $filterDateTo = $request->to ?? null;
-            $sectionCodes = $request->has('service') ? explode(',', $request->service) : [];
-        }
-        if ($serviceType == 0) {
-            // Latest demands only
-            $latestDemandsSub = Demand::query()
-                ->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')])
-                ->selectRaw('MAX(id) as latest_id')
-                ->groupBy('property_master_id');
-
-            $queryResult = Demand::query()
-                ->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
+            if ($demandType == 0) {
+                $secQuery->joinSub($latestDemandsSub, 'latest_demands', function ($join) {
                     $join->on('demands.id', '=', 'latest_demands.latest_id');
-                })
-                ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
-                ->when(!empty($sectionCodes), function ($query) use ($sectionCodes) {
-                    return $query->whereIn('property_masters.section_code', $sectionCodes);
-                })
-                ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
-                    return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
-                })
-                ->when($filterDateTo, function ($q) use ($filterDateTo) {
-                    return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
-                })
-                ->select('demands.*', 'property_masters.old_propert_id', 'property_masters.unique_propert_id', 'property_masters.unique_file_no')
-                ->get();
-        } else {
-            $queryResult = Demand::query()
-                ->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')])
-                ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
-                ->when(!empty($sectionCodes), function ($query) use ($sectionCodes) {
-                    return $query->whereIn('property_masters.section_code', $sectionCodes);
-                })
-                ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
-                    return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
-                })
-                ->when($filterDateTo, function ($q) use ($filterDateTo) {
-                    return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
-                })
-                ->select('demands.*', 'property_masters.old_propert_id', 'property_masters.unique_propert_id', 'property_masters.unique_file_no')
-                ->get();
+                });
+            } else {
+                $secQuery->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')]);
+            }
+            $secSummary = $secQuery->selectRaw('
+                COUNT(demands.id) as total_demands,
+                SUM(demands.net_total) as total_amount,
+                SUM(demands.paid_amount) as total_paid,
+                SUM(demands.balance_amount) as total_balance
+            ')->first();
+
+            $sectionWiseSummary[] = [
+                'section_name' => $section->name,
+                'section_code' => $section->section_code,
+                'total_demands' => $secSummary->total_demands ?? 0,
+                'total_amount' => $secSummary->total_amount ?? 0,
+                'total_paid' => $secSummary->total_paid ?? 0,
+                'total_balance' => $secSummary->total_balance ?? 0,
+            ];
         }
-
-        $data['queryResult'] = $queryResult;
-
-        return view('demand.demand-summary-details', $data);
     }
+    $data['sections'] = $sections;
+    $data['deputlndousers'] = $deputlndousers;
+    $data['queryResult'] = $queryResult;
+    $data['filtertype'] = $filtertype;
+    $data['totalSummary'] = $totalSummary;
+    $data['dyLdoWiseSummary'] = $dyLdoWiseSummary;
+    $data['sectionWiseSummary'] = $sectionWiseSummary;
+    $data['dySectionWiseSummary'] = $dySectionWiseSummary;
+    $data['selectedDyUser'] = $deputyUser;
+    $data['demandType'] = $demandType;
+    $data['filterDateFrom']= $filterDateFrom;
+    $data['filterDateTo']= $filterDateTo;
+    if ($request->ajax()) {
+        $html = view('include.partials.filtered_demand_data', $data)->render();
+        return response()->json(['html' => $html]);
+    }
+
+    return empty($filters) 
+        ? view('demand.demand-summary', $data) 
+        : response()->json(['success' => true, 'data' => $data]);
+}
+
+
+public function demandSummaryDetails(Request $request)
+{  
+//    $serviceType = $request->type;
+//    $filterDateFrom = $request->from;
+//    $filterDateTo = $request->to;
+//    $sectionCodes = explode(',', $request->service);
+		if ($request->has('data')) {
+		        $decoded = base64_decode($request->get('data'));
+		        parse_str($decoded, $params);
+		        $serviceType = $params['type'] ?? 0;
+		        $filterDateFrom = $params['from'] ?? null;
+		        $filterDateTo = $params['to'] ?? null;
+		        $sectionCodes = isset($params['service']) ? explode(',', $params['service']) : [];
+		    } else {		        
+		        $serviceType = $request->type ?? 0;
+		        $filterDateFrom = $request->from ?? null;
+		        $filterDateTo = $request->to ?? null;
+		        $sectionCodes = $request->has('service') ? explode(',', $request->service) : [];
+		    }
+    if ($serviceType == 0) {
+        // Latest demands only
+        $latestDemandsSub = Demand::query()
+            ->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')])
+            ->selectRaw('MAX(id) as latest_id')
+            ->groupBy('property_master_id');
+
+        $queryResult = Demand::query()
+            ->joinSub($latestDemandsSub, 'latest_demands', function($join) {
+                $join->on('demands.id', '=', 'latest_demands.latest_id');
+            })
+            ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+            ->when(!empty($sectionCodes), function ($query) use ($sectionCodes) {
+                return $query->whereIn('property_masters.section_code', $sectionCodes);
+            })
+            ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
+                    return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+                })
+                ->when($filterDateTo, function ($q) use ($filterDateTo) {
+                    return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+                })
+            ->select('demands.*', 'property_masters.old_propert_id', 'property_masters.unique_propert_id','property_masters.section_code', 'property_masters.unique_file_no')
+            ->get(); 
+    } else {        
+        $queryResult = Demand::query()
+            ->whereNotIn('demands.status', [getServiceType('DEM_DRAFT'), getServiceType('DEM_WD')])
+            ->join('property_masters', 'demands.property_master_id', '=', 'property_masters.id')
+            ->when(!empty($sectionCodes), function ($query) use ($sectionCodes) {
+                return $query->whereIn('property_masters.section_code', $sectionCodes);
+            })
+            ->when($filterDateFrom, function ($q) use ($filterDateFrom) {
+                    return $q->whereDate('demands.created_at', '>=', Carbon::createFromFormat('d-m-Y', $filterDateFrom)->format('Y-m-d'));
+                })
+                ->when($filterDateTo, function ($q) use ($filterDateTo) {
+                    return $q->whereDate('demands.created_at', '<=', Carbon::createFromFormat('d-m-Y', $filterDateTo)->format('Y-m-d'));
+                })
+            ->select('demands.*', 'property_masters.old_propert_id', 'property_masters.unique_propert_id', 'property_masters.unique_file_no')
+            ->get();
+    }
+
+    $data['queryResult'] = $queryResult;
+
+    return view('demand.demand-summary-details', $data);
+}
+public function getBreakup(Request $request)
+{
+    $demand_id = $request->demand_id;
+    $details = DemandDetail::where('demand_id', $demand_id)
+                    ->get();
+    return view('include.partials.demand_breakup', compact('details'));
+}
+
 }

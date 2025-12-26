@@ -645,7 +645,7 @@
 
 						<div class="row g-3">
 							<div class="col-lg-12">
-								<div class="transferred-container">
+								<div class="transferred-container" id="transferredContainer">
 									<div class="row">
 										<div class="col-12 col-lg-12">
 											<div>
@@ -672,7 +672,7 @@
 													<div class="row mb-3">
 														<div class="col-12 col-lg-4 my-4">
 															<label for="ProcessTransfer" class="form-label">Process of
-																transfer</label>
+																transfer <small class="text-red">*</small></label>
 															<select name="pre_land_transfer_type[]"
                                                                                                             class="form-select processtransfer form-required"
                                                                                                             data-name="processtransfer" id="ProcessTransfer"
@@ -697,7 +697,7 @@
 															<div id="ProcessTransferError" class="text-danger"></div>
 														</div>
 														<div class="col-12 col-lg-4 my-4">
-															<label for="transferredDate" class="form-label">Date</label>
+															<label for="transferredDate" class="form-label">Date <small class="text-red">*</small></label>
 															<input type="date" name="pre_transferDate[]"
 															class="form-control form-required"
 															value="{{$date}}"
@@ -727,7 +727,7 @@
 																	name="pre_id{{$count}}[]"/>
 																	<div class="col-lg-4 mb-3">
 																		<label for="name"
-                                                                                                                            class="form-label">Name</label>
+                                                                                                                            class="form-label">Name <small class="text-red">*</small></label>
 																		<input type="text" name="pre_name{{$count}}[]"
 																		class="form-control form-required" id="name"
 																		placeholder="Name"
@@ -746,7 +746,7 @@
 																	</div>
 																	<div class="col-lg-4 mb-3">
 																		<label for="share"
-                                                                                                                            class="form-label">Share</label>
+                                                                                                                            class="form-label">Share <small class="text-red">*</small></label>
 																		<input type="text"
 																		class="form-control form-required"
 																		id="share" name="pre_share{{$count}}[]"
@@ -892,12 +892,13 @@
 										@if($childDetails->property_status == 952)
 										<div class="col-12 col-lg-4">
 											<label for="ConveyanceDate" class="form-label">Date of
-												Conveyance Deed</label>
+												Conveyance Deed <small class="text-red">*</small></label>
 
 											@if(!empty($conversion))
 											<input type="date"
 											value="{{($conversion[0]->transferDate) ? $conversion[0]->transferDate : $propertyLeaseDetail->date_of_conveyance_deed}}"
 											class="form-control" name="conveyanc_date" id="ConveyanceDate">
+											<div class="text-danger"></div>
 											@endif
 										</div>
 										<div class="col-12 col-lg-12 mt-4">
@@ -907,46 +908,37 @@
 													<label for="plotno" class="form-label">In favour
 														of</label>
 
-													<!-- <button class="btn btn-primary repeater-add-btn px-4"><i class="fadeIn animated bx bx-plus"></i></button> -->
+													<button type="button"
+		class="btn btn-outline-primary repeater-add-btn-in-favor-conversion"
+		data-toggle="tooltip" data-placement="bottom" data-index="0"
+		title="Click on Add More to add more options below"><i
+		class="bx bx-plus me-0"></i></button>
 												</div>
 												<!-- Repeater Items -->
-												<div class="duplicate-field-tab">
-													@foreach($conversion as $conver)
-													<div class="items">
-														<!-- Repeater Content -->
-														<!-- <div class="item-content">
-														<div class="mb-3">
-														<label for="inputName1" class="form-label">Name</label>
-														<input type="text" name="free_hold_in_favour_name[]" class="form-control" id="inputName1" placeholder="Name" data-name="name">
-														</div>
-														</div> -->
+												<div class="duplicate-field-tab-conversion">
+													@php $j = 0; @endphp
+		@foreach ($conversion as $conver)
+		                    @php    $j++; @endphp
+													<div class="items">														
 														<div class="item-content row">
 
 															<div class="mb-3 col-lg-8 col-12">
-																<label for="inputName1" class="form-label">Name</label>
+																<label for="inputName1" class="form-label">Name <small class="text-red">*</small></label>
 																<input type="text" name="conversion[{{$conver->id}}]"
-																class="form-control" id="inputName1"
+																class="form-control" id="conversion"
 																placeholder="Name" data-name="name"
-																value="{{$conver->lessee_name}}">
-															</div>
-															<!-- <div class="mb-3 col-lg-4 col-12">
-															<label for="InputProperty_known_as"
-															class="form-label">Property Known as
-															(Present)</label>
-															<input type="text"
-															name="free_hold_in_property_known_as_present[]"
-															class="form-control" id="InputProperty_known_as"
-															placeholder="Property Known as (Present)"
-															data-name="pkap">
-															</div> -->
-															<!-- <div class="mb-3 col-lg-4 col-12">
-															<label for="inputArea" class="form-label">Area</label>
-															<input type="text" name="free_hold_in_favour_name[]"
-															class="form-control" id="inputArea"
-															placeholder="Area" data-name="area">
-															</div> -->
+																value="{{$conver->lessee_name}}"><div class="text-danger"></div>
+															</div>															
 														</div>
-
+<div class="repeater-remove-btn">
+		                            <button type="button"
+		                                class="btn btn-danger remove-btn-conversion px-4"
+		                                data-toggle="tooltip" data-placement="bottom"
+		                                title="Click on to delete this form" {{ $j == 1
+		? 'disabled' : '' }}>
+		                                <i class="fadeIn animated bx bx-trash"></i>
+		                            </button>
+		                        </div>
 													</div>
 													@endforeach
 												</div>
@@ -957,63 +949,7 @@
 								</div>
 
 
-								<div class="col-lg-12">
-									<div class="freehold-container" id="freeHoldContainer">
-										@if($childDetails->property_status != 952)
-										<div class="col-12 col-lg-4">
-											<label for="ConveyanceDate" class="form-label">Date of
-												Conveyance Deed</label>
-											<input type="date" class="form-control" name="conveyanc_date"
-											id="ConveyanceDate">
-										</div>
-										@endif
-										<div class="col-12 col-lg-12 mt-4">
-											<!-- Repeater Content -->
-											<div id="repeater4">
-												<div class="col-12 col-lg-12">
-													<label for="plotno" class="form-label">In favour
-														of</label>
-													<button type="button"
-                                                    class="btn btn-outline-primary repeater-add-btn"
-                                                    data-toggle="tooltip" data-placement="bottom"
-                                                    title="Click on Add More to add more options below">
-														<i
-                                                        class="bx bx-plus me-0"></i></button>
-													<!-- <button class="btn btn-primary repeater-add-btn px-4"><i class="fadeIn animated bx bx-plus"></i></button> -->
-												</div>
-												<!-- Repeater Items -->
-												<div class="duplicate-field-tab">
-													<div class="items" data-group="stepFour">
-														<!-- Repeater Content -->
-														<!-- <div class="item-content">
-														<div class="mb-3">
-														<label for="inputName1" class="form-label">Name</label>
-														<input type="text" name="free_hold_in_favour_name[]" class="form-control" id="inputName1" placeholder="Name" data-name="name">
-														</div>
-														</div> -->
-
-														<div class="item-content row">
-															<div class="mb-3 col-lg-12 col-12">
-																<label for="inputName1" class="form-label">Name</label>
-																<input type="text" name="free_hold_in_favour_name[]"
-																class="form-control" id="inputName1"
-																placeholder="Name" data-name="name">
-															</div>
-														</div>
-														<!-- Repeater Remove Btn -->
-														<div class="repeater-remove-btn">
-															<button class="btn btn-danger remove-btn px-4"
-                                                            data-toggle="tooltip" data-placement="bottom"
-                                                            title="Click on delete this form">
-																<i class="fadeIn animated bx bx-trash"></i>
-															</button>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
+							
 							</div>
 
 
@@ -1116,7 +1052,7 @@
 
 
 
-									<button type="button" class="btn btn-primary px-4" onclick="stepper3.next()">Next
+									<button type="button" class="btn btn-primary px-4" id="submitButton4">Next
 										<i
                                         class='bx bx-right-arrow-alt ms-2'></i></button>
 								</div>
@@ -1224,9 +1160,10 @@
 								<div class="GR-container" id="GRContainer">
 									@if($propertyMiscDetail->is_gr_revised_ever == 1)
 									<div class="col-12 col-lg-4">
-										<label for="GRrevisedDate" class="form-label">Date</label>
+										<label for="GRrevisedDate" class="form-label">Date <small class="text-red">*</small></label>
 										<input type="date" name="gr_revised_date" class="form-control"
 										id="GRrevisedDate" value="{{$propertyMiscDetail->gr_revised_date}}">
+										<div class="text-danger"></div>
 									</div>
 									@endif
 								</div>
@@ -1253,9 +1190,9 @@
 							<div class="col-lg-12">
 								<div class="GR-container" id="GRContainer" style="display: none;">
 									<div class="col-12 col-lg-4">
-										<label for="GRrevisedDate" class="form-label">Date</label>
+										<label for="GRrevisedDate" class="form-label">Date <small class="text-red">*</small></label>
 										<input type="date" name="gr_revised_date" class="form-control"
-										id="GRrevisedDate">
+										id="GRrevisedDate"><div class="text-danger"></div>
 									</div>
 								</div>
 							</div>
@@ -1327,8 +1264,8 @@
 								<div class="Supplementary-container row" id="SupplementaryContainer" {{ $propertyMiscDetail->is_supplimentry_lease_deed_executed == 1 ? '' : 'style="display: none;"' }}>
 									<div class="row">
 										<div class="col-12 col-lg-6">
-											<label for="SupplementaryDate" class="form-label">Date</label>
-											<input type="date" min="1600-01-01" max="2050-12-31" class="form-control" name="supplementary_date" value="{{ $propertyMiscDetail->supplimentry_lease_deed_executed_date }}" id="SupplementaryDate">
+											<label for="SupplementaryDate" class="form-label">Date <small class="text-red">*</small></label>
+											<input type="date" min="1600-01-01" max="2050-12-31" class="form-control" name="supplementary_date" value="{{ $propertyMiscDetail->supplimentry_lease_deed_executed_date }}" id="SupplementaryDate"><div class="text-danger"></div>
 										</div>
 										<div class="col-12 col-lg-6">
 											<label for="areaunitname" class="form-label">Area</label>
@@ -1462,8 +1399,8 @@
 								<div class="Supplementary-container row" id="SupplementaryContainer" style="display: none;">
 									<div class="row">
 										<div class="col-12 col-lg-6">
-											<label for="SupplementaryDate" class="form-label">Date</label>
-											<input type="date" min="1600-01-01" max="2050-12-31" class="form-control" name="supplementary_date" id="SupplementaryDate">
+											<label for="SupplementaryDate" class="form-label">Date <small class="text-red">*</small></label>
+											<input type="date" min="1600-01-01" max="2050-12-31" class="form-control" name="supplementary_date" id="SupplementaryDate"><div class="text-danger"></div>
 										</div>
 										<div class="col-12 col-lg-6">
 											<label for="areaunitname" class="form-label">Area</label>
@@ -1545,9 +1482,9 @@
 								<div class="Reentered-container row" id="ReenteredContainer">
 									@if($propertyMiscDetail->is_re_rented == 1)
 									<div class="col-12 col-lg-4">
-										<label for="reentryDate" class="form-label">Date of re-entry</label>
+										<label for="reentryDate" class="form-label">Date of re-entry <small class="text-red">*</small> </label>
 										<input type="date" class="form-control" id="reentryDate" name="date_of_reentry"
-										value="{{$propertyMiscDetail->re_rented_date}}">
+										value="{{$propertyMiscDetail->re_rented_date}}"><div class="text-danger"></div>
 									</div>
 									@endif
 								</div>
@@ -1576,8 +1513,8 @@
 								<div class="Reentered-container row" id="ReenteredContainer" style="display: none;">
 
 									<div class="col-12 col-lg-4">
-										<label for="reentryDate" class="form-label">Date of re-entry</label>
-										<input type="date" class="form-control" id="reentryDate" name="date_of_reentry">
+										<label for="reentryDate" class="form-label">Date of re-entry <small class="text-red">*</small></label>
+										<input type="date" class="form-control" id="reentryDate" name="date_of_reentry"><div class="text-danger"></div>
 									</div>
 								</div>
 							</div>
@@ -1590,7 +1527,7 @@
 										<i
                                         class='bx bx-left-arrow-alt me-2'></i>Previous</button>
 
-									<button type="button" class="btn btn-primary px-4" onclick="stepper3.next()">Next
+									<button type="button" class="btn btn-primary px-4" id="submitButton6">Next
 										<i
                                         class='bx bx-right-arrow-alt ms-2'></i></button>
 								</div>
@@ -1675,6 +1612,13 @@
 		</div>
 	</div>
 </div>
+<style>.text-red{color:red;}.btn i {
+    vertical-align: middle;
+    font-size: 1.2rem;
+     margin-top: -0.2em  !important;
+     margin-bottom: -0.2em !important;
+    margin-right: 5px;
+}</style>
 <!--end stepper three-->
 @include('mis.partials.delete-model-template')
 @endsection
@@ -1685,18 +1629,24 @@
 <script src="{{asset('assets/plugins/form-repeater/repeaterEdit.js')}}"> </script>
 <script src="{{asset('assets/plugins/form-repeater/repeater2Edit.js')}}"> </script>
 <script src="{{asset('assets/plugins/form-repeater/repeaterChild.js')}}"> </script>
-<script src="{{asset('assets/js/mis.js')}}"> </script>
+<script src="{{asset('assets/js/misEdit.js')}}"> </script>
 <script src="{{ asset('assets/js/masterMis.js') }}"> </script>
-
-
 <script>
 	let deleteItem;
 	let deleteUrl;
 	let childItemIds = [];
 	let batchTransferId = null;
-
+$('.remove-btn-conversion').on('click', function (e) {	
+		e.preventDefault();
+		deleteItem = $(this).closest('.items'); // Store the item to delete
+		var id = $(this).closest('.items').find('input[name^="conversion"]').attr('name').match(
+		/\d+/)[0]; // Extract ID from input name
+		deleteUrl = "{{ route('original.destroy', ':id') }}".replace(':id', id);
+		$('#ModalDelete').modal('show');
+		});
 	$('.remove-parent-btn').on('click', function(e) {
 		e.preventDefault();
+		
 
 		deleteItem = $(this).closest('.parent-container');
 		const propertyMasterId = $(this).data('property-master-id');

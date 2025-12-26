@@ -23,15 +23,14 @@
 </style>
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Calculator</div>
+    <div class="breadcrumb-title pe-3">Calculation for Unearned Increase</div>
     <div class="ps-3">
         <nav aria-label="breadcrumb">
-            <!-- breadcrumb correction by Swati Mishra on 20-03-2025 -->
             <ol class="breadcrumb mb-0 p-0">
                 <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
                 </li>
-                <!-- <li class="breadcrumb-item"><a href="javascript:;">Utilities</a>
-                </li> -->
+                <li class="breadcrumb-item"><a href="javascript:;">Utilities</a>
+                </li>
                 <li class="breadcrumb-item" aria-current="page">Calculator</li>
                 <li class="breadcrumb-item active" aria-current="page">Unearned Increase</li>
             </ol>
@@ -61,7 +60,7 @@
                     <th>Address</th>
                     <td> <span id="address"></span></td>
                 </tr>
-                <tr>
+               <tr>
                     <th>Area (Sqm.)</th>
                     <td> <span id="area"></span></td>
                 </tr>
@@ -92,9 +91,6 @@
 @section('footerScript')
 <script src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script>
 <script>
-function sqmToSqyard(sqm) {
-  return sqm * 1.19599;
-}
     let propertyId;
     let propertyTypes;
     let propertyDetails;
@@ -110,12 +106,14 @@ function sqmToSqyard(sqm) {
             getPropertyDetails(propertyId);
         }
     })
-
+function sqmToSqyard(sqm) {
+    return sqm * 1.19599;
+}
 
     function getPropertyDetails(propertyId) {
         $.ajax({
             type: 'get',
-            url: "{{url('unearned-increase/property-details')}}" + '/' + propertyId,
+            url: "{{ route('calculateUnearnedIncreaseForProperty', ':propertyId') }}".replace(':propertyId', propertyId),
 
             success: response => {
                 if (response.status == 'error') {
@@ -130,10 +128,10 @@ function sqmToSqyard(sqm) {
                     keys.forEach((key, index) => {
                         target = $('#' + key);
                         if (target.length > 0) {
+                       console.log(key);
                         	if(key === 'area'){
-                                		$("#area1").html(customNumFormat(sqmToSqyard(propertyDetails[key]).toFixed(3)));
+                                		$("#area1").html(customNumFormat(sqmToSqyard(propertyDetails[key]).toFixed(2)));
                                 	}
-
                             target.html(propertyDetails[key]);
                         }
                     })

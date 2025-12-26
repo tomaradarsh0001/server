@@ -11,11 +11,4 @@ class PropertyLeaseDetail extends Model
 
     protected $guarded = [];
 
-    public function getLeaseTypeNameAttribute()
-    {
-        if (!is_null($this->type_of_lease)) {
-            return Item::itemNameById($this->type_of_lease);
-        }
-        return null;
-    }
 }

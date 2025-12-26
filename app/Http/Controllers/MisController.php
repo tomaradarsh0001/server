@@ -34,18 +34,20 @@ use App\Models\Flat;
 use App\Models\NewlyAddedProperty;
 use App\Models\SectionMisHistory;
 use App\Models\UserRegistration;
+use App\Models\Department;
 use DB;
-use Auth;
+// use Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Str;
-use App\Models\Department;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\PropertySectionMapping;
 
+
 class MisController extends Controller
 {
-    public function index(Request $request, MisService $misService, ColonyService $colonyService)
+    public function index(MisService $misService, ColonyService $colonyService,Request $request)
     {
         // Get Registration Id from query params to update locality,generated_pid & section_id in user_registration table when It-Cell Creating Property For Manual Registeration for Property - Lalit Tiwari (15/Jan/2025)
         $regUserId = $newPropUserId = '';
@@ -64,16 +66,13 @@ class MisController extends Controller
         $propertyTypes = $misService->getItemsByGroupId(1052);
         $landTransferTypes = $misService->getItemsByGroupId(1057);
         $areaUnit = $misService->getItemsByGroupId(1008);
-        $areaUnit = $misService->getItemsByGroupId(1008);
-        $departments = Department::where('is_active', 1)->get();
-
-        return view('mis', compact(['colonyList', 'propertyStatus', 'landTypes', 'leaseTypes', 'propertyTypes', 'landTransferTypes', 'areaUnit', 'departments', 'regUserId', 'newPropUserId']));
+		$departments = Department::where('is_active',1)->get();
+		
+        return view('mis', compact(['colonyList', 'propertyStatus', 'landTypes', 'leaseTypes', 'propertyTypes', 'landTransferTypes', 'areaUnit','departments','regUserId','newPropUserId']));
     }
-
-    //for storing data for unallocated properties - SOURAV CHAUHAN (06/Dec/2024)
-    public function unallottedPropertiesStore(Request $request, MisService $misService)
-    {
-        // dd($request->all());
+	
+	//for storing data for unallocated properties - SOURAV CHAUHAN (06/Dec/2024)
+    public function unallottedPropertiesStore(Request $request,MisService $misService){
         //validation rules
         $rules = [
             'property_id' => 'unique:property_masters,old_propert_id|unique:splited_property_details,old_property_id',
@@ -85,7 +84,6 @@ class MisController extends Controller
             'plot_no' => 'required',
             'area' => 'required',
             'area_unit' => 'required',
-            'ispropertyDocumentExist' => 'required',
             'islitigation' => 'required',
             'isencroachment' => 'required',
             'landparceltype' => 'required'
@@ -93,7 +91,7 @@ class MisController extends Controller
 
         //Validation
         $validated = $request->validate($rules);
-        try {
+        //try {
             $response = $misService->storeUnallottedMisData($request);
             if ($response === true) {
                 // Transaction was successful
@@ -104,10 +102,11 @@ class MisController extends Controller
             } else {
                 return redirect()->back()->with('failure', $response);
             }
-        } catch (\Exception $e) {
+
+       /*  } catch (\Exception $e) {
             Log::info($e);
             return redirect()->back()->with('failure', $e->getMessage());
-        }
+         } */
     }
 
     public function misFormMultiple(MisService $misService, ColonyService $colonyService)
@@ -128,12 +127,13 @@ class MisController extends Controller
     {
         $subTypes = $misService->getRelatedSubTypes($request);
         return response()->json($subTypes);
+
     }
 
     //store the MIS Form data
     public function store(Request $request, MisService $misService)
     {
-        // dd($request->all());
+
         //validation rules
         $rules = [
             'property_id' => 'unique:property_masters,old_propert_id|unique:splited_property_details,old_property_id',
@@ -240,32 +240,30 @@ class MisController extends Controller
     {
         $userId = Auth::id();
         $user = Auth::user();
-        // $colonyList = $colonyService->misDoneForColonies();
+
+        // for showing section assigned properties only
         $colonyList = $colonyService->sectionWiseColonies();
         $loginUserSections = $user->sections;
         $allSections = [];
         $allSectionIds = [];
         $allTypes = [];
         $allSubTypes = [];
-        foreach ($loginUserSections as $loginUserSection) {
-            // dd($loginUserSection);
+        foreach($loginUserSections as $loginUserSection){
             $sectionCode = $loginUserSection->section_code;
             $allSections[] = $sectionCode;
             $sectionId = $loginUserSection->id;
             $allSectionIds[] = $sectionId;
         }
-        $propertySectionMappings = PropertySectionMapping::whereIn('section_id', $allSectionIds)->get();
-        foreach ($propertySectionMappings as $propertySectionMapping) {
+        $propertySectionMappings = PropertySectionMapping::whereIn('section_id',$allSectionIds)->get();
+        foreach($propertySectionMappings as $propertySectionMapping){
             $type = $propertySectionMapping->property_type;
             $allTypes[] = $type;
             $subType = $propertySectionMapping->property_subtype;
             $allSubTypes[] = $subType;
         }
-        // dd($allSections,$allTypes,$allSubTypes);
-        // dd($propertySectionMapping);
         if ($user->can('view.all.details')) {
-            if ($user->roles[0]->id == 7 || $user->roles[0]->id == 8 || $user->roles[0]->id == 10 || $user->roles[0]->id == 9) {
-                $dataWithPagination = PropertyMaster::query()->whereIn('section_code', $allSections)->whereIn('property_type', $allTypes)->whereIn('property_sub_type', $allSubTypes)->latest()->paginate(20);
+            if($user->roles[0]->id == 7 || $user->roles[0]->id == 8 || $user->roles[0]->id == 9 || $user->roles[0]->id == 10){
+                $dataWithPagination = PropertyMaster::query()->whereIn('section_code',$allSections)->whereIn('property_type',$allTypes)->whereIn('property_sub_type',$allSubTypes)->latest()->paginate(20);
             } else {
                 $dataWithPagination = PropertyMaster::query()->latest()->paginate(20);
             }
@@ -274,90 +272,88 @@ class MisController extends Controller
             $dataWithPagination = PropertyMaster::where('created_by', $userId)->latest()->paginate(20);
         }
 
+        // $colonyList = $colonyService->misDoneForColonies();
+        // if ($user->can('view.all.details')) {
+        //     // $misData = PropertyMaster::latest()->get();
+        //     $dataWithPagination = PropertyMaster::query()->latest()->paginate(20);
+        // } else {
+        //     // $misData = PropertyMaster::where('created_by', $userId)->latest()->get();
+        //     $dataWithPagination = PropertyMaster::where('created_by', $userId)->latest()->paginate(20);
+        // }
 
         $item = new Item();
+        $user = Auth::user();
         if ($request->ajax()) {
             if ($user->can('view.all.details')) {
-                if ($user->roles[0]->id == 7 || $user->roles[0]->id == 8 || $user->roles[0]->id == 10 || $user->roles[0]->id == 9) {
-                    $dataWithSectionFilter = PropertyMaster::query()->whereIn('section_code', $allSections)->whereIn('property_type', $allTypes)->whereIn('property_sub_type', $allSubTypes);
+                if($user->roles[0]->id == 7 || $user->roles[0]->id == 8 || $user->roles[0]->id == 9 || $user->roles[0]->id == 10){
+                    
+                    $dataWithSectionFilter = PropertyMaster::query()->whereIn('section_code',$allSections)->whereIn('property_type',$allTypes)->whereIn('property_sub_type',$allSubTypes);
                 } else {
                     $dataWithSectionFilter = PropertyMaster::query();
                 }
-                $dataWithPagination = $dataWithSectionFilter->when($request->search_term, function ($q) use ($request) {
-                    $q->where('old_propert_id', 'like', '%' . $request->search_term . '%')
-                        ->orWhere('unique_propert_id', 'like', '%' . $request->search_term . '%')
-                        ->orWhereHas('splitedPropertyDetail', function ($query) use ($request) {
-                            $query->where('old_property_id', 'like', '%' . $request->search_term . '%');
-                        });
-                })
-                    ->when($request->date && $request->dateEnd, function ($q) use ($request) {
-                        $q->where('created_at', '>=', date('Y-m-d 00:00:00', strtotime($request->date)))
-                            ->where('created_at', '<=',  date('Y-m-d 23:59:00', strtotime($request->dateEnd)));
-                        // dd($q->toSql(),$q->getBindings());
+                $dataWithPagination = $dataWithSectionFilter->when($request->seach_term, function ($q) use ($request) {
+                        $q->where('old_propert_id', 'like', '%' . $request->seach_term . '%');
+                            // ->orWhere('unique_propert_id', 'like', '%' . $request->seach_term . '%');
 
                     })
-                    ->when($request->date && $request->dateEnd == null, function ($q) use ($request) {
-                        $q->whereDate('created_at', $request->date);
+                    ->when($request->date && $request->dateEnd, function ($q) use ($request) {
+                        $q->where('created_at', '>=', date('Y-m-d 00:00:00', strtotime($request->date)))
+                            ->where('created_at', '<=', date('Y-m-d 23:59:00', strtotime($request->dateEnd)));
                     })
-                    ->latest()
-                    ->paginate(20);
+                    ->when($request->date, function ($q) use ($request) {
+                        $q->whereDate('created_at', '=', date('Y-m-d', strtotime($request->date)));
+                    })
+                    ->latest()->paginate(20);
+
             } else {
                 $dataWithPagination = PropertyMaster::query()
                     ->when($request->seach_term, function ($q) use ($request) {
-                        $q->where('old_propert_id', 'like', '%' . $request->seach_term . '%')
-                            ->orWhere('unique_propert_id', 'like', '%' . $request->seach_term . '%');
+                        $q->where('old_propert_id', 'like', '%' . $request->seach_term . '%');
+                            // ->orWhere('unique_propert_id', 'like', '%' . $request->seach_term . '%');
                     })
                     ->when($request->date && $request->dateEnd, function ($q) use ($request) {
                         $q->where('created_at', '>=', date('Y-m-d 00:00:00', strtotime($request->date)))
-                            ->where('created_at', '<=',  date('Y-m-d 23:59:00', strtotime($request->dateEnd)));
+                            ->where('created_at', '<=', date('Y-m-d 23:59:00', strtotime($request->dateEnd)));
                     })
                     ->when($request->date, function ($q) use ($request) {
-                        $q->where('created_at', 'like', '%' . $request->date . '%');
+                        $q->whereDate('created_at', '=', date('Y-m-d', strtotime($request->date)));
                     })
                     ->where('created_by', $userId)->latest()->paginate(20);
-            }
-
-            // Manage user search report action activity lalit on 22/07/24
-            if (isset($request->seach_term) && isset($request->date) && isset($request->dateEnd)) {
-                $action_link = '<a href="' . url("/property-details/" . $request->seach_term . "/view") . '" target="_blank">' . $request->seach_term . '</a>';
-                UserActionLogHelper::UserActionLog('search', url("/property-details/" . $request->seach_term . "/view"), 'searchProperty', "Property " . $action_link . " has been searched by " . Auth::user()->name . ".");
-            } else if (isset($request->date) && isset($request->dateEnd)) {
-                UserActionLogHelper::UserActionLog('search', url("/property-details"), 'searchProperty', "Property from " . date('Y-m-d', strtotime($request->date)) . " To " . date('Y-m-d', strtotime($request->dateEnd)) . " has been searched by " . Auth::user()->name . ".");
-            } else if (isset($request->seach_term)) {
-                $action_link = '<a href="' . url("/property-details/" . $request->seach_term . "/view") . '" target="_blank">' . $request->seach_term . '</a>';
-                UserActionLogHelper::UserActionLog('search', url("/property-details/" . $request->seach_term . "/view"), 'searchProperty', "Property " . $action_link . " has been searched by " . Auth::user()->name . ".");
             }
             return view('mis.pagination_child', compact(['item', 'user', 'dataWithPagination', 'colonyList']))->render();
         }
         return view('mis.details', compact(['item', 'user', 'dataWithPagination', 'colonyList']));
     }
 
-
-    public function isMisPropertyAvailable(Request $request)
-    {
+//for checking property is available in the assigned section of user or not - SOURAV CHAUHAN (30/Dec/2024)
+    public function isMisPropertyAvailable(Request $request){
         $isPropertyAvailable = PropertyMaster::where('old_propert_id', 'like', '%' . $request->search_term . '%')
-            ->orWhere('unique_propert_id', 'like', '%' . $request->search_term . '%')
-            ->orWhereHas('splitedPropertyDetail', function ($query) use ($request) {
-                $query->where('old_property_id', 'like', '%' . $request->search_term . '%');
-            })->first();
-        if ($isPropertyAvailable) {
+        // ->orWhere('unique_propert_id', 'like', '%' . $request->search_term . '%')
+        ->first();
+        if($isPropertyAvailable){
             $user = Auth::user();
             $loginUserSections = $user->sections;
             $allSections = [];
-            foreach ($loginUserSections as $loginUserSection) {
+            foreach($loginUserSections as $loginUserSection){
                 $sectionCode = $loginUserSection->section_code;
                 $allSections[] = $sectionCode;
             }
-            if (in_array(str_replace(' ', '', $isPropertyAvailable->section_code), $allSections)) {
+            if (in_array(str_replace(' ', '', $isPropertyAvailable->section_code), $allSections)){
+
 
                 $response = ['status' => true, 'message' => 'Property Id avialable'];
             } else {
-                $response = ['status' => false, 'message' => 'Property Id not belongs to your sections'];
+                if($user->roles[0]->id == 7 || $user->roles[0]->id == 8 || $user->roles[0]->id == 10){
+                    $response = ['status' => false, 'message' => 'Property Id not belongs to your sections'];
+                } else {
+
+                    $response = ['status' => false];
+                }
             }
         } else {
             $response = ['status' => false, 'message' => 'Property Id not avialable'];
         }
-        return json_encode($response);
+        return json_encode($response);   
     }
 
 
@@ -368,142 +364,45 @@ class MisController extends Controller
         $viewDetails = $propertyChildDetails['ParentData'];
         $childData = $propertyChildDetails['childData'];
         $separatedData = [];
+        // foreach ($childData->propertyTransferredLesseeDetails as $transferDetail) {
 
+        //     $processOfTransfer = $transferDetail->process_of_transfer;
+
+        //     // Check if the process_of_transfer value is already a key in $separatedData
+        //     if (!array_key_exists($processOfTransfer, $separatedData)) {
+        //         // If not, create a new array for this process_of_transfer value
+        //         $separatedData[$processOfTransfer] = [];
+        //     }
+
+        //     // Add the current $transferDetail to the corresponding array in $separatedData
+        //     $separatedData[$processOfTransfer][] = $transferDetail;
+        // }
         // added for showing same precess seperatly if eecuted on different dates;
         $separatedData = self::getSeparatedPropertyTransferDetails($childData->propertyTransferredLesseeDetails);
-        // dd($separatedData);
-
-
         return view('mis.child-preview', compact(['viewDetails', 'item', 'separatedData', 'childData']));
+
+
     }
 
 
 
     //for single property full details page
-    /*public function viewDetails($property, MisService $misService, Request $request)
-    {
-        // Retrieve the user's roles
-        $roles = Auth::user()->roles[0]->name;
-        $additionalDataJson = $request->query('params');
-        $isChecked = 0;
-        $additionalData =  $flatData['flatDetails'] = [];
-        $disableButtons = false;
-        $disableApproveButtons = $hideRequestEditButtons =  true;
-    
-        if (isset($additionalDataJson)) {
-            $additionalData = json_decode($additionalDataJson, true);
-            $serviceType = getServiceType($additionalData[0]);
-            //Get Flat Details - Lalit Tiwari (15/Oct/2024)
-            if(!empty($additionalData[2])){
-                $uRegData = UserRegistration::where('applicant_number', $additionalData[2])->first();
-                if($uRegData->is_property_flat){
-                    if(!empty($uRegData->flat_id)){
-                        $flatDetails = Flat::find($uRegData->flat_id);
-                        $flatData['flatDetails'] = $flatDetails;
-                    } else {
-                        if(!empty($uRegData->flat_no) && !empty($additionalData[3])){
-                            $flatDetails = Flat::where('property_master_id', $additionalData[3])->where('locality',$uRegData->locality)->where('block',$uRegData->block)->where('plot',$uRegData->plot)->where('flat_number',$uRegData->flat_no)->first();
-                            if(!empty($flatDetails)){
-                                $flatData['flatDetails'] = $flatDetails;
-                                $flatData['flatDetails']['flat_number'] = $flatDetails->flat_number;
-                                $disableButtons = false;
-                                $hideRequestEditButtons = true;
-                            } else {
-                                $flatData['flatDetails']['flat_number'] = $uRegData->flat_no;
-                                $disableButtons = false;
-                                $disableApproveButtons = false;
-                                $hideRequestEditButtons = false;
-                            } 
-                        }
-                        
-                    }
-                    $flatData['flatDetails']['is_property_flat'] = 1;
-                } else {
-                    $flatData['flatDetails']['is_property_flat'] = 0;
-                }
-            }
-            $isChecked = 1;
-            $applicationStatus = SectionMisHistory::where('service_type', $serviceType)
-                ->where('model_id', $additionalData[1])
-                ->where('property_master_id', $property)
-                ->orderBy('id', 'desc')
-                ->first();
-            if ($applicationStatus) {
-                //Lalit (18/09/2024) :- Check if Edit Request is active, so disable approve button
-                $checkEditRequestexists = SectionMisHistory::where([['section_code', $applicationStatus->section_code], ['old_property_id', $applicationStatus->old_property_id], ['is_active', $applicationStatus->is_active]])->exists();
-                if ($checkEditRequestexists) {
-                    $disableApproveButtons = false;
-                }
-
-                if($additionalData[0] === 'RS_NEW_REG'){
-                    //Lalit (18/09/2024) :- Check if User Registration is approved, so hide request edit button
-                    $checkRegistrationStatus = UserRegistration::with('item')->where('id', $applicationStatus->model_id)->first();
-                    if ($checkRegistrationStatus && $checkRegistrationStatus->item->item_code == 'RS_APP') {
-                        $hideRequestEditButtons = false;
-                    }
-                }
-                
-                if($additionalData[0] === 'RS_NEW_PRO'){
-                    //Lalit (03/10/2024) :- Check if User Registration is approved, so hide request edit button
-                    $checkNewPropertyStatus = NewlyAddedProperty::with('item')->where('id', $applicationStatus->model_id)->first();
-                    if ($checkNewPropertyStatus && $checkNewPropertyStatus->item->item_code == 'RS_APP') {
-                        $hideRequestEditButtons = false;
-                    }
-                }
-            
-                
-                if ($applicationStatus->is_active == 1) {
-
-                    $permissionTo = User::find($applicationStatus->permission_to);
-                    $permissionTosection = $permissionTo->sections;
-
-                    $loginUser = User::find(Auth::user()->id);
-                    $loginUsersection = $loginUser->sections;
-
-                    $permissionTosectionCodes = $permissionTosection->pluck('section_code')->toArray();
-                    $loginUsersectionCodes = $loginUsersection->pluck('section_code')->toArray();
-
-                    $commonSectionCodes = array_intersect($permissionTosectionCodes, $loginUsersectionCodes);
-
-                    if (!empty($commonSectionCodes)) {
-                        $disableButtons = false;
-                    } else {
-                        $disableButtons = true;
-                    }
-                } else {
-
-                    $disableButtons = true;
-                }
-            }
-
-            // Add user action logs for mis details checked by user - Lalit (28/Oct/2024)
-            $property_id_link = '<a href="' . url("/property-details/{$property}/view") . '" target="_blank">' . $property . '</a>';
-            UserActionLogHelper::UserActionLog('mis_checked', url("/property-details/$property/view"), 'propertyProfarma', "Property mis details ".$property_id_link." has been checked by user " . Auth::user()->name . ".");
-        } else {
-            $applicationStatus = '';
-        }
-
-        $item = new Item();
-        $viewDetails = $misService->viewDetails($property);
-        $separatedData = [];
-        $separatedData = self::getSeparatedPropertyTransferDetails($viewDetails->propertyTransferredLesseeDetails->where('splited_property_detail_id', null));
-        return view('mis.preview', compact(['viewDetails', 'item', 'separatedData', 'isChecked', 'additionalData', 'disableButtons', 'applicationStatus', 'disableApproveButtons','hideRequestEditButtons','flatData','roles']));
-    }*/
-
     public function viewDetails($property, MisService $misService, Request $request)
     {
+        //Start :- code added on 31 dec for view property details after migratting is_mis,scanned,upload file checked by lalit tiwari
         // Retrieve the user's roles
         $roles = Auth::user()->roles[0]->name;
         $additionalDataJson = $request->query('params');
+
         $isChecked = 0;
         $additionalData =  $flatData['flatDetails'] = [];
         $disableButtons = false;
         $disableApproveButtons = $hideRequestEditButtons =  true;
+
         if (isset($additionalDataJson)) {
             $additionalDataJson = urldecode($additionalDataJson);
             $additionalDataJson = html_entity_decode($additionalDataJson);
             $additionalData = json_decode($additionalDataJson, true);
-            // dd($additionalData);
             $serviceType = getServiceType($additionalData[0]);
             //Get Flat Details - Lalit Tiwari (15/Oct/2024)
             if (!empty($additionalData[7])) {
@@ -528,8 +427,6 @@ class MisController extends Controller
                             $flatData['flatDetails']['flat_id'] = $flatDetails->id;
                             $flatData['flatDetails'] = $flatDetails;
                         } else {
-                            dd($uRegData->flat_no, $additionalData[3]);
-
                             if (!empty($uRegData->flat_no) && !empty($additionalData[3])) {
                                 $flatDetails = Flat::where([
                                     ['property_master_id', $additionalData[3]],
@@ -559,6 +456,7 @@ class MisController extends Controller
                     }
                 }
             }
+
             $isChecked = 1;
             if (!empty($additionalData[7])) {
                 $applicationStatus = SectionMisHistory::where('service_type', $serviceType)
@@ -577,12 +475,7 @@ class MisController extends Controller
             }
             if ($applicationStatus) {
                 //Lalit (18/09/2024) :- Check if Edit Request is active, so disable approve button
-                // $checkEditRequestexists = SectionMisHistory::where([['section_code', $applicationStatus->section_code], ['old_property_id', $applicationStatus->old_property_id], ['is_active', $applicationStatus->is_active]])->exists();
-                $checkEditRequestexists = SectionMisHistory::where([
-                    'section_code' => $applicationStatus->section_code,
-                    'old_property_id' => $applicationStatus->old_property_id,
-                    'is_active' => $applicationStatus->is_active
-                ])->orderBy('id', 'desc')->first();
+                $checkEditRequestexists = SectionMisHistory::where([['section_code', $applicationStatus->section_code], ['old_property_id', $applicationStatus->old_property_id], ['is_active', $applicationStatus->is_active]])->exists();
                 if ($checkEditRequestexists) {
                     $disableApproveButtons = false;
                 }
@@ -602,6 +495,8 @@ class MisController extends Controller
                         $hideRequestEditButtons = false;
                     }
                 }
+
+
                 if ($applicationStatus->is_active == 1) {
 
                     $permissionTo = User::find($applicationStatus->permission_to);
@@ -633,27 +528,46 @@ class MisController extends Controller
             $applicationStatus = '';
         }
 
+        //End :- code added on 31 dec for view property details after migratting is_mis,scanned,upload file checked by lalit tiwari
+
+
+
+
+
         $item = new Item();
         $viewDetails = $misService->viewDetails($property);
         $separatedData = [];
+
+        // foreach ($viewDetails->propertyTransferredLesseeDetails as $transferDetail) {
+        //     $processOfTransfer = $transferDetail->process_of_transfer;
+        //     $dateOfTransfer = $transferDetail->transferDate;
+
+
+        //     // Check if the process_of_transfer value is already a key in $separatedData
+        //     if (!array_key_exists($processOfTransfer, $separatedData)) {
+        //         // If not, create a new array for this process_of_transfer value
+        //         $separatedData[$processOfTransfer] = [];
+        //     }
+        //     /** Added By Nitin to grup transfers by date */
+        //     if (!array_key_exists($dateOfTransfer, $separatedData[$processOfTransfer])) {
+        //         $separatedData[$processOfTransfer][$dateOfTransfer] = [];
+        //     }
+        //     /**  ====================added by Nitin */
+
+        //     // Add the current $transferDetail to the corresponding array in $separatedData
+        //     $separatedData[$processOfTransfer][$dateOfTransfer][] = $transferDetail;  // modified by Nitin
+        // }
+
         $separatedData = self::getSeparatedPropertyTransferDetails($viewDetails->propertyTransferredLesseeDetails->where('splited_property_detail_id', null));
+        // return view('mis.preview', compact(['viewDetails', 'item', 'separatedData']));
+        // Allow Deputy to approve new user registrtion when action not taken by section till 5 days - Lalit (18/Sept/2025)
         $isApproved = false;
-       if (
-    isset($additionalData[0], $additionalData[1]) &&  // check both keys exist
-    $additionalData[0] === 'RS_NEW_REG' &&
-    !empty($additionalData[1])
-) {
-    $userRegDetails = UserRegistration::where('id', $additionalData[1])->first();
-
-    if (
-        !empty($roles) &&
-        !empty($userRegDetails?->action_taken_by) && // null-safe operator
-        $roles == $userRegDetails->action_taken_by
-    ) {
-        $isApproved = true;
-    }
-}
-
+        if (!empty($additionalData[0]) && $additionalData[0] === 'RS_NEW_REG' && !empty($additionalData[1])) {
+            $userRegDetails = UserRegistration::where('id', $additionalData[1])->first();
+            if (!empty($roles) && !empty($userRegDetails->action_taken_by) && $roles == $userRegDetails->action_taken_by) {
+                $isApproved = true;
+            }
+        }
         return view('mis.preview', compact(['viewDetails', 'item', 'separatedData', 'isChecked', 'additionalData', 'disableButtons', 'applicationStatus', 'disableApproveButtons', 'hideRequestEditButtons', 'flatData', 'roles', 'isApproved']));
     }
 
@@ -666,6 +580,18 @@ class MisController extends Controller
 
         $propertyDetail = $misService->viewDetails($id);
         $separatedData = [];
+        // foreach ($propertyDetail->propertyTransferredLesseeDetails as $transferDetail) {
+        //     $processOfTransfer = $transferDetail->process_of_transfer;
+
+        //     // Check if the process_of_transfer value is already a key in $separatedData
+        //     if (!array_key_exists($processOfTransfer, $separatedData)) {
+        //         // If not, create a new array for this process_of_transfer value
+        //         $separatedData[$processOfTransfer] = [];
+        //     }
+
+        //     // Add the current $transferDetail to the corresponding array in $separatedData
+        //     $separatedData[$processOfTransfer][] = $transferDetail;
+        // }
 
         $separatedData = self::getSeparatedPropertyTransferDetails($propertyDetail->propertyTransferredLesseeDetails->where('splited_property_detail_id', null), true);
         //Lease Details
@@ -688,8 +614,6 @@ class MisController extends Controller
 
         $keysToRemove = ['Original', 'Conversion'];
         $filteredTransferDetails = collect($separatedData)->except($keysToRemove)->toArray();
-        //dd($filteredTransferDetails);
-
         $colonyList = $colonyService->getColonyList();
         $propertyStatus = $misService->getItemsByGroupId(109);
         $landTypes = $misService->getItemsByGroupId(1051);
@@ -699,6 +623,9 @@ class MisController extends Controller
         $areaUnit = $misService->getItemsByGroupId(1008);
 
         //SubTypes Old
+        // if($propertyLeaseDetail){
+
+        // }
         $propertytypeSubtpeMapping = DB::table('property_type_sub_type_mapping')->where('type', $propertyLeaseDetail->property_type_as_per_lease)->get();
         $subTypeIds = [];
         foreach ($propertytypeSubtpeMapping as $data) {
@@ -738,8 +665,6 @@ class MisController extends Controller
         $parentId = $childDetails['property_master_id'];
         $propertyDetail = $misService->viewDetails($parentId);
         $separatedData = [];
-
-        //comented by sourav - 29/july/2024
         // foreach ($childDetails->propertyTransferredLesseeDetails as $transferDetail) {
         //     $processOfTransfer = $transferDetail->process_of_transfer;
 
@@ -776,7 +701,7 @@ class MisController extends Controller
 
         $keysToRemove = ['Original', 'Conversion'];
         $filteredTransferDetails = collect($separatedData)->except($keysToRemove)->toArray();
-
+        //dd($filteredTransferDetails);
 
         $colonyList = $colonyService->getColonyList();
         $propertyStatus = $misService->getItemsByGroupId(109);
@@ -820,19 +745,6 @@ class MisController extends Controller
 
 
         return view('mis.edit-multiple', compact(['colonyList', 'propertyStatus', 'landTypes', 'leaseTypes', 'propertyTypes', 'landTransferTypes', 'areaUnit', 'propertyDetail', 'original', 'conversion', 'propertyLeaseDetail', 'subTypes', 'subTypesNew', 'filteredTransferDetails', 'propertyInspectionDemandDetail', 'propertyMiscDetail', 'propertyContactDetail', 'childContactDetail', 'childDetails']));
-    }
-    public function update($id, Request $request, MisService $misService)
-    {
-        $response = $misService->update($id, $request);
-        if ($response) {
-            // Transaction was successful
-            return redirect()->back()->with('success', 'Property details Updated successfully.');
-        } else if ($response == false) {
-            // Transaction failed
-            return redirect()->back()->with('failure', 'Property details not updated');
-        } else {
-            return redirect()->back()->with('failure', $response);
-        }
     }
 
     // Delete Leasee details in favour of
@@ -915,18 +827,28 @@ class MisController extends Controller
         return response()->json(['success' => true, 'message' => 'soft deleted successfully.']);
     }
 
-
-
+    public function update($id, Request $request, MisService $misService)
+    {
+        $response = $misService->update($id, $request);
+        if ($response) {
+            // Transaction was successful
+            return redirect()->back()->with('success', 'Property details Updated successfully.');
+        } else if ($response == false) {
+            // Transaction failed
+            return redirect()->back()->with('failure', 'Property details not updated');
+        } else {
+            return redirect()->back()->with('failure', $response);
+        }
+    }
 
     /** function added by nitin  -  to get seprataed details */
 
     private function getSeparatedPropertyTransferDetails($rows, $editing = false)
     {
-
         $separatedData = [];
         $keysToRemove = $editing ? ['Original', 'Conversion'] : []; // if not editing then do not remove any process types
         foreach ($rows as $transferDetail) {
-            //added for only showing parent details - SOURAV CHAUHAN (18/July/2024)
+            //added for only showing parent details - SOURAV CHAUHAN (19/July/2024)
             $propertyDetails = PropertyMaster::where('id', $transferDetail->property_master_id)->first();
             if ($transferDetail->splited_property_detail_id == null) {
                 $processOfTransfer = $transferDetail->process_of_transfer;
@@ -937,15 +859,19 @@ class MisController extends Controller
                         // If not, create a new array for this process_of_transfer value
                         $separatedData[$dateOfTransfer] = [];
                     }
+
                     if (!array_key_exists($processOfTransfer, $separatedData[$dateOfTransfer])) {
                         $separatedData[$dateOfTransfer][$processOfTransfer] = [];
                     }
+
                     // Add the current $transferDetail to the corresponding array in $separatedData
                     $separatedData[$dateOfTransfer][$processOfTransfer][] = $transferDetail;  // modified by Nitin}
+
                 } else { //original and conversoin processes are handled sapearately in case of edit
                     if (!array_key_exists($processOfTransfer, $separatedData)) {
                         $separatedData[$processOfTransfer] = [];
                     }
+
                     // Add the current $transferDetail to the corresponding array in $separatedData
                     $separatedData[$processOfTransfer][] = $transferDetail;  // modified by Nitin}
                 }
@@ -970,12 +896,14 @@ class MisController extends Controller
                     // Add the current $transferDetail to the corresponding array in $separatedData
                     $separatedData[$processOfTransfer][] = $transferDetail;  // modified by Nitin}
                 }
+
             }
         }
         // dd($separatedData);
         ksort($separatedData);
         return $separatedData;
     }
+
 
     public function updateChild($id, Request $request, MisMultiplePropertyService $misMultiplePropertyService)
     {
@@ -991,85 +919,24 @@ class MisController extends Controller
             return redirect()->back()->with('failure', $response);
         }
     }
-    public function viewPropertyDetails($property, MisService $misService)
-    {
-        $item = new Item();
-        $viewDetails = $misService->viewDetails($property);
+    // public function viewPropertyDetails($property, MisService $misService)
+    // {
+    //     $item = new Item();
+    //     $viewDetails = $misService->viewDetails($property);
 
-        // code modified by nitin created new function to ge sapated data;
-        $separatedData = self::getSeparatedPropertyTransferDetails($viewDetails->propertyTransferredLesseeDetails);
+    //     // code modified by nitin created new function to ge sapated data;
+    //     $separatedData = self::getSeparatedPropertyTransferDetails($viewDetails->propertyTransferredLesseeDetails);
 
-        // 🔁 Demand Fallback: always fetch from API using ReportController
-        $demandFallback = null;
-        $fakeRequest = new Request(['property_id' => $viewDetails->old_propert_id]);
-        $demandResponse = app(ReportController::class)->getDemandDetails($fakeRequest)->getData();
-
-        if ($demandResponse->status) {
-            $d = $demandResponse->data;
-
-            $demandFallback = (object)[
-                'last_demand_id' => $d->demand_id,
-                'last_demand_letter_date' => $d->demand_date,
-                'last_demand_amount' => $d->amount,
-                'last_amount_received' => $d->paid,
-                'last_amount_received_date' => 'N/A' // API doesn't return it
-            ];
-        }
-
-        return view('mis.view_property_details', compact([
-            'viewDetails',
-            'item',
-            'separatedData',
-            'demandFallback'
-        ]));
-    }
-
-    //Swati Mishra for Downloading Pdf of Detailed Report 16-01-2024
-
-    public function downloadPdf($property, MisService $misService)
-    {
-        $viewDetails = $misService->viewDetails($property);
-        $item = new Item();
-
-        $separatedData = self::getSeparatedPropertyTransferDetails($viewDetails->propertyTransferredLesseeDetails);
-
-        // Demand fallback via API only
-        $demandFallback = null;
-        $fakeRequest = new Request(['property_id' => $viewDetails->old_propert_id]);
-        $demandResponse = app(ReportController::class)->getDemandDetails($fakeRequest)->getData();
-
-        if ($demandResponse->status) {
-            $d = $demandResponse->data;
-
-            $demandFallback = (object)[
-                'last_demand_id' => $d->demand_id,
-                'last_demand_letter_date' => $d->demand_date,
-                'last_demand_amount' => $d->amount,
-                'last_amount_received' => $d->paid,
-                'last_amount_received_date' => 'N/A'
-            ];
-        }
-
-        $pdfContent = view('mis.download_pdf_property_details', compact(
-            'viewDetails',
-            'item',
-            'separatedData',
-            'demandFallback' // ✅ passed to blade
-        ))->render();
-
-        $timestamp = date('Ymd_His');
-
-        $pdf = Pdf::loadHTML($pdfContent)
-            ->setPaper('a4', 'portrait')
-            ->setOption('defaultFont', 'DejaVu Sans');
-
-        return $pdf->download("property_details_{$property}_{$timestamp}.pdf");
-    }
+    //     return view('mis.view_property_details', compact(['viewDetails', 'item', 'separatedData']));
+    // }
 
     //Get user action log details Lalit On 18/07/2024
-    /*public function actionLogListings(Request $request)
+    /* public function actionLogListings(Request $request)
     {
         if ($request->ajax()) {
+            // $data = UserActionLog::with(['user', 'module'])
+            //     ->whereDate('created_at', Carbon::today())
+            //     ->orderBy('created_at', 'desc')->get();
             $query = UserActionLog::with(['user', 'module'])
                 ->orderBy('created_at', 'desc');
             if ($request->has('start_date') && $request->has('end_date')) {
@@ -1083,6 +950,11 @@ class MisController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->filter(function ($instance) use ($request) {
+                    // if (!empty($request->get('email'))) {
+                    //     $instance->collection = $instance->collection->filter(function ($row) use ($request) {
+                    //         return Str::contains($row['email'], $request->get('email')) ? true : false;
+                    //     });
+                    // }
                     if (!empty($request->get('search'))) {
                         $instance->collection = $instance->collection->filter(function ($row) use ($request) {
                             if (Str::contains(Str::lower($row['user_name']), Str::lower($request->get('search')))) {
@@ -1100,6 +972,10 @@ class MisController extends Controller
                         });
                     }
                 })
+                // ->addColumn('action', function($row){
+                //        $btn = '<a href="javascript:void(0)" class="edit btn btn-primary btn-sm">View</a>';
+                //         return $btn;
+                // })
                 ->addColumn('user_name', function ($row) {
                     return $row->user->name;
                 })
@@ -1114,7 +990,7 @@ class MisController extends Controller
                 ->make(true);
         }
         return view('user-action-logs.index');
-    }*/
+    } */
 
     public function actionLogListings(Request $request)
     {
@@ -1191,6 +1067,100 @@ class MisController extends Controller
         return response()->json($json_data);
     }
 
+      //Swati Mishra for Downloading Pdf of Detailed Report
+    //   public function downloadPdf($property, MisService $misService)
+    //   {
+    //       $viewDetails = $misService->viewDetails($property);
+    //       $item = new Item();
+      
+    //       $separatedData = self::getSeparatedPropertyTransferDetails($viewDetails->propertyTransferredLesseeDetails);
+              
+    //       $pdfContent = view('mis.download_pdf_property_details', compact('viewDetails', 'item', 'separatedData'))->render();
+      
+    //       $timestamp = date('Ymd_His'); 
+      
+    //       $pdf = Pdf::loadHTML($pdfContent)
+    //           ->setPaper('a4', 'portrait')
+    //           ->setOption('defaultFont', 'DejaVu Sans');
+      
+    //       return $pdf->download("property_details_{$property}_{$timestamp}.pdf");
+    //   }
+
+    public function viewPropertyDetails($property, MisService $misService)
+    {
+        $item = new Item();
+        $viewDetails = $misService->viewDetails($property);
+
+        // code modified by nitin created new function to ge sapated data;
+        $separatedData = self::getSeparatedPropertyTransferDetails($viewDetails->propertyTransferredLesseeDetails);
+
+        // 🔁 Demand Fallback: always fetch from API using ReportController
+        $demandFallback = null;
+        $fakeRequest = new Request(['property_id' => $viewDetails->old_propert_id]);
+        $demandResponse = app(ReportController::class)->getDemandDetails($fakeRequest)->getData();
+
+        if ($demandResponse->status) {
+            $d = $demandResponse->data;
+
+            $demandFallback = (object)[
+                'last_demand_id' => $d->demand_id,
+                'last_demand_letter_date' => $d->demand_date,
+                'last_demand_amount' => $d->amount,
+                'last_amount_received' => $d->paid,
+                'last_amount_received_date' => 'N/A' // API doesn't return it
+            ];
+        }
+
+        return view('mis.view_property_details', compact([
+            'viewDetails',
+            'item',
+            'separatedData',
+            'demandFallback'
+        ]));
+
+    }
+
+    //Swati Mishra for Downloading Pdf of Detailed Report 16-01-2024
+    
+    public function downloadPdf($property, MisService $misService)
+    {
+        $viewDetails = $misService->viewDetails($property);
+        $item = new Item();
+    
+        $separatedData = self::getSeparatedPropertyTransferDetails($viewDetails->propertyTransferredLesseeDetails);
+    
+        // Demand fallback via API only
+        $demandFallback = null;
+        $fakeRequest = new Request(['property_id' => $viewDetails->old_propert_id]);
+        $demandResponse = app(ReportController::class)->getDemandDetails($fakeRequest)->getData();
+    
+        if ($demandResponse->status) {
+            $d = $demandResponse->data;
+    
+            $demandFallback = (object)[
+                'last_demand_id' => $d->demand_id,
+                'last_demand_letter_date' => $d->demand_date,
+                'last_demand_amount' => $d->amount,
+                'last_amount_received' => $d->paid,
+                'last_amount_received_date' => 'N/A'
+            ];
+        }
+    
+        $pdfContent = view('mis.download_pdf_property_details', compact(
+            'viewDetails',
+            'item',
+            'separatedData',
+            'demandFallback' // ✅ passed to blade
+        ))->render();
+    
+        $timestamp = date('Ymd_His');
+    
+        $pdf = Pdf::loadHTML($pdfContent)
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'DejaVu Sans');
+    
+        return $pdf->download("property_details_{$property}_{$timestamp}.pdf");
+    }
 
 
     //For deleting the property details - SOURAV CHAUHAN (11 july 2024)
@@ -1203,26 +1173,34 @@ class MisController extends Controller
                 $propertyDetails = PropertyMaster::find($id);
                 if ($propertyDetails) {
                     $propertyMasterHistory = PropertyMasterHistory::where('property_master_id', $id)->delete();
+
                     $propertyLeaseDetail = PropertyLeaseDetail::where('property_master_id', $id)->delete();
                     $propertyLeaseDetailHistory = PropertyLeaseDetailHistory::where('property_master_id', $id)->delete();
+
                     $splitedPropertyDetail = SplitedPropertyDetail::where('property_master_id', $id)->get();
                     foreach ($splitedPropertyDetail as $splitedProperty) {
                         SplitedPropertyDetailHistory::where('splited_property_detail_id', $splitedProperty->id)->delete();
                         $splitedProperty->delete();
+
                     }
-                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('property_master_id', '=', $id)->withTrashed()->forceDelete();
+
+
+                    $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('property_master_id', '=', $id)->withTrashed()->forceDelete(); //uncomment when soft delete implemented
+                    // $propertyTransferredLesseeDetail = PropertyTransferredLesseeDetail::where('property_master_id', '=', $id)->delete();
                     $propertyTransferLesseeDetailHistory = PropertyTransferLesseeDetailHistory::where('property_master_id', $id)->delete();
+
                     $currentLesseeDetail = CurrentLesseeDetail::where('property_master_id', $id)->delete();
+
                     $propertyInspectionDemandDetail = PropertyInspectionDemandDetail::where('property_master_id', $id)->delete();
                     $propInspDemandDetailHistory = PropInspDemandDetailHistory::where('property_master_id', $id)->delete();
+
                     $propertyMiscDetail = PropertyMiscDetail::where('property_master_id', $id)->delete();
                     $propertyMiscDetailHistory = PropertyMiscDetailHistory::where('property_master_id', $id)->delete();
+
                     $propertyContactDetail = PropertyContactDetail::where('property_master_id', $id)->delete();
                     $propertyContactDetailsHistory = PropertyContactDetailsHistory::where('property_master_id', $id)->delete();
+
                     $propertyDetails->delete();
-                    // Helper function to Manage User Activity / Action Logs for MIS
-                    $property_id_link = '<a href="' . url("/property-details/{$id}/view") . '" target="_blank">' . $id . '</a>';
-                    UserActionLogHelper::UserActionLog('delete', url("/property-details/$id/view"), 'propertyProfarma', "Property " . $property_id_link . " has been deleted by user " . Auth::user()->name . ".");
                     $transactionSuccess = true;
                 } else {
                     return redirect()->back()->with('failure', 'Property not found.');
@@ -1240,49 +1218,64 @@ class MisController extends Controller
             return $e->getMessage();
         }
     }
-    public function destroyChildLandTransferByBatchId($propertyMasterId, $splitedPropertyId, Request $request, MisMultiplePropertyService $misMultiplePropertyService)
-    {
-        $childItemIds = $request->input('childItemIds');
-        //dd($childItemIds);
-        $allSuccess = true;
-        if (!empty($propertyMasterId) && !empty($splitedPropertyId)) {
-            foreach ($childItemIds as $childItemId) {
-                $result = $misMultiplePropertyService->deleteChildLandTransferByBatchId($childItemId, $propertyMasterId, $splitedPropertyId, $request);
-                if (!$result) {
-                    $allSuccess = false;
-                }
-            }
-            if ($allSuccess) {
-                return response()->json(['status' => true, 'message' => 'All selected land transfer records deleted successfully.']);
-            } else {
-                return response()->json(['status' => false, 'message' => 'Some deletions failed.']);
-            }
+    //    public function destroyChildLandTransferByBatchId($batchTransferId, $propertyMasterId, $splitedPropertyId, Request $request, MisMultiplePropertyService $misMultiplePropertyService)
 
-            //			$result = $misMultiplePropertyService->deleteChildLandTransferByBatchId($batchTransferId, $propertyMasterId, $splitedPropertyId, $request);
-            //            if ($result) {
-            //                $response = ['status' => true, 'message' => 'Land Transfer lease details ' . $batchTransferId . ' successfully in-activated.'];
-            //            } else {
-            //                $response = ['status' => false, 'message' => 'Land Transfer details ID is wrong.', 'data' => NULL];
-            //            }
-            //            return json_encode($response);
-        }
-    }
+    // {
+	// 	if (!empty($batchTransferId) && !empty($propertyMasterId) && !empty($splitedPropertyId)) {
 
+	// 		$result = $misMultiplePropertyService->deleteChildLandTransferByBatchId($batchTransferId, $propertyMasterId, $splitedPropertyId, $request);
+    //         if ($result) {
+    //             $response = ['status' => true, 'message' => 'Land Transfer lease details ' . $batchTransferId . ' successfully in-activated.'];
+    //         } else {
+    //             $response = ['status' => false, 'message' => 'Land Transfer details ID is wrong.', 'data' => NULL];
+    //         }
+    //         return json_encode($response);
+    //     }
+    // }
+	public function destroyChildLandTransferByBatchId($propertyMasterId, $splitedPropertyId, Request $request, MisMultiplePropertyService $misMultiplePropertyService)
+	{
+		$childItemIds = $request->input('childItemIds');
+		//dd($childItemIds);
+		$allSuccess = true;
+		if (!empty($propertyMasterId) && !empty($splitedPropertyId)) {
+			foreach ($childItemIds as $childItemId) {
+				$result = $misMultiplePropertyService->deleteChildLandTransferByBatchId($childItemId, $propertyMasterId, $splitedPropertyId, $request);
+				if (!$result) {
+					$allSuccess = false;
+				}
+			}
+			if ($allSuccess) {
+				return response()->json(['status' => true, 'message' => 'All selected land transfer records deleted successfully.']);
+			} else {
+				return response()->json(['status' => false, 'message' => 'Some deletions failed.']);
+			}
 
-    public function destroyChildLandTransferByIndividualId($landTransferId, $propertyMasterId, Request $request, MisMultiplePropertyService $misMultiplePropertyService)
-    {
-        if (!empty($landTransferId) && !empty($propertyMasterId)) {
+			//			$result = $misMultiplePropertyService->deleteChildLandTransferByBatchId($batchTransferId, $propertyMasterId, $splitedPropertyId, $request);
+			//            if ($result) {
+			//                $response = ['status' => true, 'message' => 'Land Transfer lease details ' . $batchTransferId . ' successfully in-activated.'];
+			//            } else {
+			//                $response = ['status' => false, 'message' => 'Land Transfer details ID is wrong.', 'data' => NULL];
+			//            }
+			//            return json_encode($response);
+		}
+	}
 
-            $result = $misMultiplePropertyService->delete($landTransferId, $request);
-            if ($result) {
-                $response = ['status' => true, 'message' => 'Land Transfer lease details  successfully in-activated.', 'data' => 'exist'];
-            } else {
-                $response = ['status' => true, 'message' => 'Land Transfer lease details successfully in-activated.', 'data' => 'notexist'];
-            }
-            // $response = ['status' => true, 'message' => 'Land Transfer lease details ' . $batchTransferId . ' successfully in-activated.'];
-        } else {
-            $response = ['status' => false, 'message' => 'Land Transfer details ID is wrong.', 'data' => 'notexist'];
-        }
-        return json_encode($response);
-    }
+public function destroyChildLandTransferByIndividualId($landTransferId, $propertyMasterId, Request $request, MisMultiplePropertyService $misMultiplePropertyService)
+	{
+		if (!empty($landTransferId) && !empty($propertyMasterId)) {
+
+			$result = $misMultiplePropertyService->delete($landTransferId, $request);
+			if ($result) {
+					$response = ['status' => true, 'message' => 'Land Transfer lease details  successfully in-activated.', 'data' => 'exist'];
+				} else {
+					$response = ['status' => true, 'message' => 'Land Transfer lease details successfully in-activated.', 'data' => 'notexist'];
+				}
+				// $response = ['status' => true, 'message' => 'Land Transfer lease details ' . $batchTransferId . ' successfully in-activated.'];
+			} 
+			else {
+				$response = ['status' => false, 'message' => 'Land Transfer details ID is wrong.', 'data' => 'notexist'];
+			}
+			return json_encode($response);
+		}
+
 }

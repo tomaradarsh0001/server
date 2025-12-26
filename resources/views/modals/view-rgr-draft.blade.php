@@ -41,9 +41,10 @@
          }
 
          function saveAsPdf() {
+            let url = "{{ route('saveAsPdf', ['id' => '__ID__']) }}".replace('__ID__', rgrId);
              $.ajax({
                  type: "get",
-                 url: "{{url('rgr/save-as-pdf')}}" + '/' + rgrId,
+                 url: url,
                  success: function(response) {
                      setTimeout(function() {
                          $('#draftModal').modal('hide') //fixed

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
-    var googlestreet = L.tileLayer('http://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}', {
+    var googlestreet = L.tileLayer('https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}', {
         zIndex: 50,
         opacity: 1,
         maxZoom: 20,
@@ -2106,16 +2106,16 @@ var baseMaps = {
 var overlayMaps = {};
 
 // Add overlays with icons using local image sources
-overlayMaps['<img src="assets/MIS_V5.1/Logo/Property.png" alt="Vacant Land" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Properties of L&DO'] = property;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/3d.png" alt="Vacant Land" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> 3D Building'] = osmb;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/Red.png" alt="Vacant Land" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Vacant Land'] = property_v;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/Lease.png" alt="Lease Section I" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Lease Section I'] = leases;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/ps1.png" alt="Property Section I" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Property Section I'] = ps_I;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/ps2.png" alt="Property Section II" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Property Section II'] = pss_II;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/ps_3.png" alt="Property Section III" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Property Section III'] = pss_III;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/LBZ.png" alt="LBZ" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> LBZ Properties'] = lbz;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/LBZ_GBS.png" alt="LBZ Clause 2B" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> LBZ Clause 2B']= lbz_gb;
-overlayMaps['<img src="assets/MIS_V5.1/Logo/Delhis.png" alt="Delhi" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Delhi Boundary']= del
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Property.png" alt="Vacant Land" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Properties of L&DO'] = property;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/3d.png" alt="Vacant Land" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> 3D Building'] = osmb;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Red.png" alt="Vacant Land" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Vacant Land'] = property_v;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Lease.png" alt="Lease Section I" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Lease Section I'] = leases;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/ps1.png" alt="Property Section I" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Property Section I'] = ps_I;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/ps2.png" alt="Property Section II" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Property Section II'] = pss_II;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/ps_3.png" alt="Property Section III" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Property Section III'] = pss_III;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/LBZ.png" alt="LBZ" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> LBZ Properties'] = lbz;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/LBZ_GBS.png" alt="LBZ Clause 2B" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> LBZ Clause 2B']= lbz_gb;
+overlayMaps['<img src="https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Delhis.png" alt="Delhi" style="width:16px; height:16px; vertical-align:middle; margin-right:5px;"> Delhi Boundary']= del
 
 // Create the control layers with custom labels
 var controlLayers = L.control.layers(baseMaps, overlayMaps, {
@@ -2178,58 +2178,58 @@ document.head.appendChild(style);
             {
                 label: "Selection",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/Green.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Green.png"
             },
             {
                 label: "Lease Hold",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/Yellow.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Yellow.png"
             },
             {
                 label: "Free Hold",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/Blue.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Blue.png"
             },
             {
                 label: "LBZ Properties",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/LBZ.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/LBZ.png"
             },
 
             {
                 label: "Vacant Land",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/Red.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Red.png"
             },
             {
                 label: "Lease Section I",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/Lease.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Lease.png"
             },
             {
                 label: "Property Section I",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/ps1.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/ps1.png"
             },
             {
                 label: "Property Section II",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/ps2.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/ps2.png"
             },
             {
                 label: "Property Section III",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/ps_3.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/ps_3.png"
             },
             {
                 label: "LBZ Clause 2B",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/LBZ_GBS.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/LBZ_GBS.png"
             },
             {
                 label: "Delhi Boundary",
                 type: "image",
-                url: "assets/MIS_V5.1/Logo/Delhis.png"
+                url: "https://ldo.mohua.gov.in/assets/MIS_V5.1/Logo/Delhis.png"
             },
 
 
@@ -2634,17 +2634,23 @@ document.head.appendChild(style);
     });
     
 
+     function getBaseURLMap() {
+    const { protocol, hostname, port } = window.location;
+    return `${protocol}//${hostname}${port ? ":" + port : ""}`;
+    }
+
+
     var iconLayersControl = new L.Control.IconLayers(
         [
             {
                 title: 'Map',
                 layer: googlestreet,
-                icon: 'assets/MIS_V5.1/Logo/street.png'
+                icon: getBaseURLMap() + '/assets/MIS_V5.1/Logo/street.png'
             },
             {
                 title: 'Satellite',
                 layer: google,
-                icon: 'assets/MIS_V5.1/Logo/sattelite.png'
+                icon: getBaseURLMap() + '/assets/MIS_V5.1/Logo/sattelite.png'
             }
         ], {
         position: 'bottomright',

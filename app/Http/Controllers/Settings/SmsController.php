@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Configuration;
-use App\Models\Item;
 use Auth;
 use Illuminate\Support\Facades\Log;
 use App\Services\SettingsService;
-use App\Helpers\GeneralFunctions;
+use App\Models\Item;
 
 class SmsController extends Controller
 {
@@ -20,17 +19,11 @@ class SmsController extends Controller
         $this->settingsService = $settingsService;
     }
 
-    /*public function index()
-    {
-        $sms = Configuration::where('type', 'sms')->paginate(10);
-        $items = [];
-        foreach ($sms as $data) {
-            $item = Item::where('item_code', $data->action)->first();
-            $items[$data->id] = $item ? $item->getItemNameByItemCode($data->action) : 'Default';
-        }
-        return view('settings.sms.index', compact(['sms', 'items']));
-    }*/
-
+    /* public function index(){
+        $sms = Configuration::where('type','sms')->paginate(10);
+        return view('settings.sms.index',compact(['sms']));
+    } */
+   
     public function index()
     {
         return view('settings.sms.indexDatatable');
@@ -125,16 +118,11 @@ class SmsController extends Controller
         return response()->json($json_data);
     }
 
-
-
-    public function create()
-    {
-        $actions = GeneralFunctions::getItemsByGroupId(17002);
-        return view('settings.sms.create', compact(['actions']));
+    public function create(){
+        return view('settings.sms.create');
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         try {
             $configuration = Configuration::create([
                 'type' => 'sms',
@@ -147,7 +135,7 @@ class SmsController extends Controller
                 'status' => 0,
                 'created_by' => Auth::user()->id,
             ]);
-            if ($configuration) {
+            if($configuration){
                 return redirect()->back()->with('success', 'Sms Settings Saved successfully.');
             } else {
                 return redirect()->back()->with('failure', 'Sms Settings Not Saved.');
@@ -156,20 +144,20 @@ class SmsController extends Controller
             Log::info($e->getMessage());
             return redirect()->back()->with('failure', $e->getMessage());
         }
+
     }
 
-    public function updateStatus($id)
-    {
+    public function updateStatus($id){
         $configuration = Configuration::find($id);
         $type = $configuration->type;
         $action = $configuration->action;
         $status = $configuration->status;
-        if ($status == 0) {
+        if($status == 0){
             $configurations = Configuration::where('type', $type)
-                ->where('action', $action)
-                ->where('id', '!=', $id)
-                ->get();
-
+                                ->where('action', $action)
+                                ->where('id', '!=', $id)
+                                ->get();
+    
             // Update the status for the filtered records
             foreach ($configurations as $config) {
                 $config->status = 0;
@@ -186,28 +174,27 @@ class SmsController extends Controller
 
 
 
-    public function edit($id)
-    {
+    public function edit($id){
         $configuration = Configuration::find($id);
-        if ($configuration) {
-            return view('settings.sms.edit', compact(['configuration']));
+        if($configuration){
+            return view('settings.sms.edit',compact(['configuration']));
+
         } else {
             return redirect()->back()->with('failure', "Details not available.");
         }
     }
 
-    public function update($id, Request $request)
-    {
+    public function update($id, Request $request){
         $configuration = Configuration::find($id);
-        if ($configuration) {
-            if ($configuration->status == 0) {
+        if($configuration){
+            if($configuration->status == 0){
                 $configuration->action = $request->smsAction;
                 $configuration->vendor = $request->smsVendor;
                 $configuration->sms_number = $request->smsNumber;
                 $configuration->key = $request->secretId;
                 $configuration->auth_token = $request->secretToken;
                 $configuration->api = $request->api;
-                if ($configuration->save()) {
+                if($configuration->save()){
                     return redirect()->back()->with('success', 'Sms Settings updated successfully');
                 } else {
                     return redirect()->back()->with('failure', "Sms Settings can't be updated, Please try after some time.");
@@ -221,14 +208,13 @@ class SmsController extends Controller
     }
 
 
-    public function smsTest($id)
-    {
-
+    public function smsTest($id){
+       
         try {
             $mobile = Auth::user()->mobile_no;
-            if ($mobile) {
-                $smsSent = $this->settingsService->testSmsSettings($id, $mobile);
-                if ($smsSent) {
+            if($mobile){
+                $smsSent = $this->settingsService->testSmsSettings($id,$mobile);
+                 if($smsSent){
                     return response()->json(['success' => true, 'message' => 'success']);
                 } else {
                     return response()->json(['success' => false, 'message' => 'failed']);
@@ -236,9 +222,10 @@ class SmsController extends Controller
             } else {
                 return response()->json(['success' => false, 'message' => 'failed']);
             }
-        } catch (\Exception $e) {
-            Log::info($e->getMessage());
-            return response()->json(['success' => false, 'message' => 'failed']);
+            } catch (\Exception $e) {
+                Log::info($e->getMessage());
+                return response()->json(['success' => false, 'message' => 'failed']);
         }
+
     }
 }

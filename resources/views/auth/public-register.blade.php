@@ -13,7 +13,7 @@
         .age-box {
             display: flex;
             align-items: center;
-            width: 45%;
+            width: 61%;
             background: #e9ecef;
             border: 1px solid #b0b0b0;
             border-left: 0px;
@@ -22,21 +22,36 @@
 
         .age-box input {
             border: 0px !important;
+            width: 50px;
         }
-
-        .additionalLabel {
+        .additionalLabel{
             color: grey;
-            font-size: 13px;
+           font-size: 13px;
         }
-
-        .noteList {
+        .noteList{
             text-align: left;
             font-size: 13px;
         }
-
-        .noteHead {
+        .noteHead{
             text-align: left;
             font-size: 14px !important;
+        }
+         .loader {
+            border:8px solid #f3f3f3 !important;
+            border-top: 8px solid #116d6e !important;
+            width:30px!important;
+            height:30px !important;
+            animation: spin 1s linear infinite;
+            position: absolute !important;
+            top:50%;
+            margin-top: -15px;
+            right:10px;
+        }
+        .loader::before{
+            display:none;
+        }
+        #dateOfBirth{
+            width:41%;
         }
     </style>
     <div class="login-8 register-wrapper">
@@ -63,8 +78,7 @@
                             <h3>Registration</h3>
                         </div>
 
-                        <form action="{{ route('publicRegisterCreate') }}" method="POST" enctype="multipart/form-data"
-                            class="dynamicForm" autocomplete="off">
+                        <form action="{{ route('publicRegisterCreate') }}" method="POST" enctype="multipart/form-data" class="dynamicForm" autocomplete="off">
 
                             @csrf
                             <!-- <h5 id="title1">Services in Owned/Leased/Alloted Property</h5> -->
@@ -101,8 +115,8 @@
                             </div>
                             <div class="radio-buttons" style="display: none;">
                                 <!-- <div class="d-block text-start">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <a href="javascript:void(0);" class="btn btn-dark backButton0"><i class="lni lni-arrow-left"></i></a>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </div> -->
+                                                                                    <a href="javascript:void(0);" class="btn btn-dark backButton0"><i class="lni lni-arrow-left"></i></a>
+                                                                                </div> -->
                                 <h5 class="mb-0 mt-2">Registration As</h5>
                                 <div class="row">
                                     <div class="col-lg-6 col-12">
@@ -189,7 +203,7 @@
                                                         <input type="date" id="dateOfBirth" name="dateOfBirth"
                                                             max="{{ date('Y-m-d') }}" class="form-control" />
                                                         <div class="age-box">
-                                                            <h4>Age: </h4>
+                                                            <h4>Age (in years): </h4>
                                                             <input type="text" id="age" name="age"
                                                                 class="form-control" placeholder="0" readonly />
                                                         </div>
@@ -210,8 +224,7 @@
                                                                     @if ($country->phonecode == 91)
                                                                         <option value="{{ $country->phonecode }}"
                                                                             @if ($country->phonecode == 91) @selected(true) @endif>
-                                                                            {{ $country->iso2 }}
-                                                                            (+{{ $country->phonecode }})
+                                                                            {{ $country->iso2 }} (+{{ $country->phonecode }})
                                                                         </option>
                                                                     @endif
                                                                 @endforeach
@@ -272,7 +285,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-
+                                            
                                         </div>
                                     </div>
                                     <div class="col-lg-2">
@@ -280,28 +293,25 @@
                                             <img id="img-preview" src="{{ asset('assets/images/image-placeholder.jpg') }}"
                                                 class="img_prev" />
                                             <label for="file-input" class="upload-img-label">Upload Image</label>
-                                            <input accept="image/*" type="file" id="file-input"
+                                            <input accept="image" type="file" id="file-input"
                                                 name="profile_photo" />
                                         </div>
                                         <div id="file-inputError" class="text-danger"></div>
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="mix-field">
-                                            <label for="is_nri_oci" class="quesLabel">Is applicant a resident of
-                                                India?</label>
+                                            <label for="is_nri_oci" class="quesLabel">Is Applicant a Resident of India?</label>
                                             <div class="radio-options pl-5 ml-5">
                                                 <!-- <label for="isIndian">
-                                                                    <input type="checkbox" name="isIndian" value="1"
-                                                                        class="form-check" id="isIndian" checked> Yes
-                                                                </label> -->
+                                                    <input type="checkbox" name="isIndian" value="1"
+                                                        class="form-check" id="isIndian" checked> Yes
+                                                </label> -->
                                                 <label for="isIndianYes">
-                                                    <input type="radio" name="isIndian" id="isIndianYes"
-                                                        value="1"> Yes
+                                                    <input type="radio" name="isIndian" id="isIndianYes" value="1" checked> Yes
                                                 </label>
                                                 &nbsp;&nbsp;
                                                 <label for="isIndianNo">
-                                                    <input type="radio" name="isIndian" id="isIndianNo" value="0"
-                                                        checked> No
+                                                    <input type="radio" name="isIndian" id="isIndianNo" value="0" > No
                                                 </label>
                                             </div>
                                         </div>
@@ -334,31 +344,52 @@
                                                     class="text-danger">*</span></label>
                                             <select name="documentType" id="documentType" class="form-select" required>
                                                 <option value="">Select Document Type</option>
-                                                <option value="pion">Person of Indian Origin Number (PION)</option>
-                                                <option value="ocin">Overseas Citizen of India Number (OCIN)</option>
-                                                <option value="passport">Passport Number (PASSPORT)</option>
+                                                <option value="pion">Person of Indian Origin</option>
+                                                <option value="ocin">Overseas Citizen of India</option>
+                                                <option value="passport">Passport</option>
                                             </select>
                                             <div id="documentTypeError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-12" id="isOciCardDiv" style="display: none;">
                                         <div class="form-group form-box">
-                                            <label for="documentTypeNumber" class="quesLabel">Selected Document Type
-                                                Number
+                                            <label for="documentTypeNumber" class="quesLabel">Selected Document Number
                                                 <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" id="documentTypeNumber"
                                                 class="form-control text-transform-uppercase"
-                                                placeholder="Enter Selected Document Type Number" maxlength="8">
+                                                placeholder="Enter Selected Document Number" maxlength="8">
                                             <input type="hidden" name="documentTypeNumber" id="encryptedInput">
                                             <div id="documentTypeNumberError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
+                                    <!-- <div class="col-lg-6 col-12">
+                                        <div class="form-group form-box">
+                                            <label for="IndPanNumber" class="quesLabel">PAN Number<span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" id="IndPanNumber"
+                                                class="form-control text-transform-uppercase pan_number_format"
+                                                placeholder="PAN Number" maxlength="10">
+                                            <input type="hidden" name="pannumberInv"  id="encryptedInput">
+                                            <div id="IndPanNumberError" class="text-danger text-left"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-12">
+                                        <div class="form-group form-box">
+                                            <label for="IndAadhar" class="quesLabel">Aadhaar Number<span
+                                                    class="text-danger">*</span></label>
+                                            <input type="text" id="IndAadhar"
+                                                class="form-control text-transform-uppercase numericOnly"
+                                                placeholder="Aadhaar Number" maxlength="12">
+                                            {{--  Input added by Nitin to save encrypted aadhaar number --}}
+                                            <input type="hidden" name="adharnumberInv" id="encryptedInput">
+                                            <div id="IndAadharError" class="text-danger text-left"></div>
+                                        </div>
+                                    </div> -->
                                     <div class="col-lg-12">
                                         <div class="form-group form-box">
                                             <label for="commAddress" class="quesLabel">Communication Address<span
-                                                    class="text-danger">*</span><span class="additionalLabel"> (Allowed
-                                                    Characters [(-), (,), (#), ( ), (/), (.)] are allowed)</span></label>
+                                                    class="text-danger">*</span><span class="additionalLabel"> (Only these special characters are allowed [(-), (,), (#), ( ), (/), (.)])</span></label>
                                             <textarea name="commAddressInv" id="commAddress" class="form-control" placeholder="Communication Address"></textarea>
                                             <div id="IndCommAddressError" class="text-danger text-left"></div>
                                         </div>
@@ -387,7 +418,7 @@
                                             </div>
                                             <div class="col-lg-4 col-12">
                                                 <div class="form-group">
-                                                    <label for="block" class="quesLabel">Block No. / Sector<span
+                                                    <label for="block" class="quesLabel">Block No.<span
                                                             class="text-danger">*</span></label>
                                                     <select name="blockInv" id="block" class="form-select">
                                                         <option value="">Select</option>
@@ -419,9 +450,9 @@
                                                 <div class="form-group">
                                                     <label for="landUse" class="quesLabel">Land Use<span
                                                             class="text-danger">*</span></label>
-                                                    <select name="landUseInv" id="landUse" class="form-select">
-                                                        <option value="">Select</option>
-                                                    </select>
+                                                            <select name="landUseInv" id="landUse" class="form-select">
+                                                                <option value="">Select</option>
+                                                            </select>
                                                     <div id="landUseError" class="text-danger text-left"></div>
                                                 </div>
                                             </div>
@@ -435,27 +466,27 @@
                                                     </select>
                                                     <div id="landUseSubtypeError" class="text-danger text-left"></div>
                                                 </div>
-                                            </div>
+                                            </div>                                            
                                         </div>
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="mix-field" style="margin-bottom: 10px;">
-                                            <label for="propertyId_property" class="quesLabel">Is Your Property /
-                                                Apartment in a multistorey building?</label>
+                                            <label for="propertyId_property" class="quesLabel">Is Property in a Multistorey Building?</label>
                                             <div class="radio-options ml-5">
                                                 <label for="isPropertyFlat">
                                                     <input type="checkbox" name="isPropertyFlat" value="1"
                                                         class="form-check" id="isPropertyFlat"> Yes
                                                 </label>
                                             </div>
-                                        </div>
+                                        </div>                                       
+
                                         <div class="row">
                                             <input type="hidden" id="isIndividualFlatDatabaseRecordFound"
                                                 name="isIndividualFlatDatabaseRecordFound">
                                             <div class="col-lg-4 col-12 isPropertyDetailsNotFoundUnChecked"
                                                 style="display: none;">
                                                 <div class="form-group">
-                                                    <label for="flat" class="quesLabel">Flat</label>
+                                                    <label for="flat" class="quesLabel">Flat/Floor</label>
                                                     <select name="flat" id="flat" class="form-select">
                                                         <option value="">Select</option>
                                                     </select>
@@ -467,8 +498,7 @@
                                                 <div class="form-group">
                                                     <label for="" class="quesLabel hidden-label"></label>
                                                     <div class="mix-field" style="padding: 0.655rem .75rem;">
-                                                        <label for="isFlatNotInList" class="quesLabel">Is Flat not
-                                                            Listed?</label>
+                                                        <label for="isFlatNotInList" class="quesLabel">Is Flat/Floor Not Listed?</label>
                                                         <div class="radio-options ml-5">
                                                             <label for="isFlatNotInList"><input
                                                                     class="form-check required-for-approve"
@@ -481,10 +511,8 @@
                                             <div class="col-lg-4 col-12 isPropertyDetailsNotFoundUnChecked"
                                                 style="display: none;">
                                                 <div class="form-group form-box">
-                                                    <label for="flat_no" class="quesLabel">Flat Number
-                                                        <span class="text-danger">*</span></label>
-                                                    <input type="text"
-                                                        class="form-control alphaNumHypSlashParenthspace" name="flat_no"
+                                                    <label for="flat_no" class="quesLabel">Flat/Floor Number<span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control alphaNumHypSlashParenthspace" name="flat_no"
                                                         id="flat_no" placeholder="Flat Number" maxlength="15" readonly>
                                                     <div id="flat_noError" class="text-danger text-left"></div>
                                                 </div>
@@ -492,10 +520,8 @@
                                             <div class="col-lg-4 col-12 isPropertyDetailsRecordNotFoundUnChecked"
                                                 style="display: none;">
                                                 <div class="form-group form-box">
-                                                    <label for="flat_no_rec_not_found" class="quesLabel">Flat Number
-                                                        <span class="text-danger">*</span></label>
-                                                    <input type="text"
-                                                        class="form-control alphaNumHypSlashParenthspace"
+                                                    <label for="flat_no_rec_not_found" class="quesLabel">Flat/Floor Number<span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control alphaNumHypSlashParenthspace"
                                                         name="flat_no_rec_not_found" id="flat_no_rec_not_found"
                                                         placeholder="Flat Number" maxlength="15">
                                                     <div id="flat_no_rec_not_foundError" class="text-danger text-left">
@@ -503,12 +529,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-12">
-
                                         <div class="mix-field">
-                                            <label for="propertyId_property" class="quesLabel">Is Property Detail not
-                                                Found in the Above List?</label>
+                                            <label for="propertyId_property" class="quesLabel">Is Property Detail Not Found in the Above List?</label>
                                             <div class="radio-options ml-5">
                                                 <label for="Yes"><input type="checkbox" name="propertyId"
                                                         value="1" class="form-check" id="Yes"> Yes</label>
@@ -539,16 +561,15 @@
                                                     <div class="form-group form-box">
                                                         <label for="localityFill" class="quesLabel">Locality<span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="text" name="localityInvFill" id="localityFill"
-                                                            class="form-control" placeholder="Locality" maxlength="30">
+                                                        <input type="text" name="localityInvFill" id="localityFill" class="form-control" placeholder="Locality" maxlength="30">
                                                         <div id="localityFillError" class="text-danger text-left">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-4 col-12">
                                                     <div class="form-group form-box">
-                                                        <label for="blocknoInvFill" class="quesLabel">Block No. /
-                                                            Sector<span class="text-danger">*</span></label>
+                                                        <label for="blocknoInvFill" class="quesLabel">Block No.<span
+                                                                class="text-danger">*</span></label>
                                                         <input type="text" name="blocknoInvFill" id="blocknoInvFill"
                                                             class="form-control alphaNum-hiphenForwardSlash"
                                                             placeholder="Block No." maxlength="6">
@@ -607,15 +628,11 @@
                                                 <div class="col-lg-4 col-12 isPropertyDetailsNotFoundChecked"
                                                     style="display: none;">
                                                     <div class="form-group form-box">
-                                                        <label for="flat_no" class="quesLabel">Flat Number<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text"
-                                                            class="form-control alphaNumHypSlashParenthspace"
-                                                            name="propertyId_flat_no"
-                                                            id="flat_no_after_Checked_Address_notfound"
+                                                        <label for="flat_no" class="quesLabel">Flat Number<span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control alphaNumHypSlashParenthspace"
+                                                            name="propertyId_flat_no" id="flat_no_after_Checked_Address_notfound"
                                                             placeholder="Enter Flat Number" maxlength="15">
-                                                        <div id="flat_no_after_Checked_Address_notfoundError"
-                                                            class="text-danger text-left"></div>
+                                                        <div id="flat_no_after_Checked_Address_notfoundError" class="text-danger text-left"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -625,143 +642,124 @@
                                 <div id="fileUploadSection" style="display: none;">
                                     <div class="row less-padding-input">
                                         <div class="col-lg-12">
-                                            <!-- <h5 class="text-start mb-0 mt-2">Ownership Documents</h5> -->
-                                            <h5 class="text-start mb-0 mt-2">Documents Required</h5>
+                                            <h5 class="text-start mb-0 mt-2">Ownership Documents</h5>
                                         </div>
                                         <div class="col-lg-12">
                                             <div class="row">
                                                 <div class="col-md-12 col-lg-12 col-12">
                                                     <div class="form-group form-box">
-                                                        <label for="propDoc" class="quesLabel">Lease Deed/Conveyance
-                                                            Deed <span>(Title document in the name of the applicant stating
-                                                                ownership of the property.)</span><span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="propDoc" class="quesLabel">Lease Deed/Conveyance Deed <span>(Any title document in the name of the applicant establishing ownership of the property.)</span><span class="text-danger">*</span></label>
                                                         <input type="file" name="leaseDeedDocInv" class="form-control"
                                                             accept="application/pdf" id="IndLeaseDeed">
                                                         <div id="IndLeaseDeedError" class="text-danger text-left"></div>
                                                     </div>
                                                 </div>
                                                 <!-- <div class="col-md-12 col-lg-12 col-12">
-                                                        <div class="form-group form-box">
-                                                            <label for="IndOwnerLess" class="quesLabel">Scanned Copy of ID Proof (Aadhaar and PAN)<span
-                                                                    class="text-danger">*</span></label>
-                                                            <input type="file" name="ownLeaseDocInv" class="form-control"
-                                                                accept="application/pdf" id="IndOwnerLess">
-                                                            <div id="IndOwnerLessError" class="text-danger text-left"></div>
-                                                        </div>
-                                                    </div> -->
+                                                    <div class="form-group form-box">
+                                                        <label for="IndOwnerLess" class="quesLabel">Scanned Copy of ID Proof<span>(Aadhaar and PAN)</span><span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="file" name="ownLeaseDocInv" class="form-control"
+                                                            accept="application/pdf" id="IndOwnerLess">
+                                                        <div id="IndOwnerLessError" class="text-danger text-left"></div>
+                                                    </div>
+                                                </div> -->
                                                 <!-- commented by anil for not in use this section on 10-10-2025 -->
-                                                <!-- <div class="col-lg-12 mb-2">
-                                                                    <h5 class="text-start mb-0 mt-2">Choose to Upload <span>(At least one
-                                                                            document is required)</span></h5>
-                                                                    <div id="IndChooseOneError" class="text-danger text-left"></div>
-                                                                </div>
-                                                                <div class="col-md-12 col-lg-12 col-12">
-                                                                    <div class="row align-items-center">
-                                                                        <div class="col-lg-4">
-                                                                            <div class="form-group form-box">
-                                                                                <label for="propDoc"
-                                                                                    class="quesLabel d-flex align-items-start">
-                                                                                    <input type="checkbox" class="form-check"
-                                                                                        id="saleDeedAtorney">
-                                                                                    <label class="quesLabel" for="saleDeedAtorney">Sale
-                                                                                        Deed/Agreement to Sale/Power of Atorney</label>
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-lg-8">
-                                                                            <div class="form-group form-box">
-                                                                                <input type="file" name="saleDeedDocInv"
-                                                                                    class="form-control" accept="application/pdf"
-                                                                                    id="IndSaleDeed" style="display:none;">
-                                                                                <div id="IndSaleDeedError" class="text-danger text-left">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-12 col-lg-12 col-12">
-                                                                    <div class="row align-items-center">
-                                                                        <div class="col-lg-4">
-                                                                            <div class="form-group form-box">
-                                                                                <label for="propDoc"
-                                                                                    class="quesLabel d-flex align-items-start">
-                                                                                    <input type="checkbox" class="form-check"
-                                                                                        id="bbAgreement">
-                                                                                    <label class="quesLabel" for="bbAgreement">Builder &
-                                                                                        Buyer Agreement</label>
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-lg-8">
-                                                                            <div class="form-group form-box">
-                                                                                <input type="file" name="BuilAgreeDocInv"
-                                                                                    class="form-control" accept="application/pdf"
-                                                                                    id="IndBuildAgree" style="display:none;">
-                                                                                <div id="IndBuildAgreeError"
-                                                                                    class="text-danger text-left"></div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                <!-- <div class="col-lg-12">
+                                                    <h5 class="text-start mb-0 mt-2">Choose to Upload <span>(At least one document is required)</span></h5>
+                                                    <div id="IndChooseOneError" class="text-danger text-left"></div>
+                                                </div>
+                                                <div class="col-md-12 col-lg-12 col-12">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-lg-4">
+                                                            <div class="form-group form-box">
+                                                                <label for="propDoc" class="quesLabel d-flex align-items-start">
+                                                                    <input type="checkbox" class="form-check" id="saleDeedAtorney">
+                                                                    <label class="quesLabel" for="saleDeedAtorney">Sale Deed/Agreement to Sale/Power of Atorney</label>
+                                                                </label>                                                                
+                                                            </div>                                                            
+                                                        </div>
+                                                        <div class="col-lg-8">
+                                                            <div class="form-group form-box">
+                                                                <input type="file" name="saleDeedDocInv" class="form-control"
+                                                                    accept="application/pdf" id="IndSaleDeed" style="display:none;">
+                                                                <div id="IndSaleDeedError" class="text-danger text-left"></div>
+                                                            </div>
+                                                        </div>                                                    
+                                                    </div>
+                                                </div>                                               
+                                                <div class="col-md-12 col-lg-12 col-12">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-lg-4">
+                                                            <div class="form-group form-box">
+                                                                <label for="propDoc" class="quesLabel d-flex align-items-start">
+                                                                    <input type="checkbox" class="form-check" id="bbAgreement">
+                                                                    <label class="quesLabel" for="bbAgreement">Builder & Buyer Agreement</label>
+                                                                </label>                                                                
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-8">
+                                                            <div class="form-group form-box">
+                                                                <input type="file" name="BuilAgreeDocInv" class="form-control"
+                                                                    accept="application/pdf" id="IndBuildAgree" style="display:none;">
+                                                                <div id="IndBuildAgreeError" class="text-danger text-left"></div>
+                                                            </div>
+                                                        </div>                     
+                                                    </div>
+                                                </div>
 
-                                                                <div class="col-md-12 col-lg-12 col-12">
-                                                                    <div class="row align-items-center">
-                                                                        <div class="col-lg-4">
-                                                                            <div class="form-group form-box">
-                                                                                <label for="propDoc"
-                                                                                    class="quesLabel d-flex align-items-start">
-                                                                                    <input type="checkbox" class="form-check"
-                                                                                        id="subsMutationLetter">
-                                                                                    <label class="quesLabel"
-                                                                                        for="subsMutationLetter">Substitution/Mutation
-                                                                                        Letter</label>
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-lg-8">
-                                                                            <div class="form-group form-box">
-                                                                                <input type="file" name="subMutLtrDocInv"
-                                                                                    class="form-control" accept="application/pdf"
-                                                                                    id="IndSubMut" style="display:none;">
-                                                                                <div id="IndSubMutError" class="text-danger text-left">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-12 col-lg-12 col-12">
-                                                                    <div class="row align-items-center">
-                                                                        <div class="col-lg-4">
-                                                                            <div class="form-group form-box">
-                                                                                <label for="otherDocInv"
-                                                                                    class="quesLabel d-flex align-items-start">
-                                                                                    <input type="checkbox" class="form-check"
-                                                                                        id="diffDoc">
-                                                                                    <label class="quesLabel" for="diffDoc">Other
-                                                                                        Documents</label>
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-lg-8">
-                                                                            <div class="form-group form-box">
-                                                                                <input type="file" name="otherDocInv"
-                                                                                    class="form-control" accept="application/pdf"
-                                                                                    id="IndOther" style="display:none;">
-                                                                                <div id="IndOtherError" class="text-danger text-left">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div> -->
+                                                <div class="col-md-12 col-lg-12 col-12">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-lg-4">
+                                                            <div class="form-group form-box">
+                                                                <label for="propDoc" class="quesLabel d-flex align-items-start">
+                                                                    <input type="checkbox" class="form-check" id="subsMutationLetter">
+                                                                    <label class="quesLabel" for="subsMutationLetter">Substitution/Mutation Letter</label>
+                                                                </label>
+                                                            </div>                                                        
+                                                        </div>
+                                                        <div class="col-lg-8">
+                                                            <div class="form-group form-box">
+                                                                <input type="file" name="subMutLtrDocInv" class="form-control"
+                                                                    accept="application/pdf" id="IndSubMut" style="display:none;">
+                                                                <div id="IndSubMutError" class="text-danger text-left"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 col-lg-12 col-12">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-lg-4">
+                                                            <div class="form-group form-box">
+                                                                <label for="otherDocInv" class="quesLabel d-flex align-items-start">
+                                                                    <input type="checkbox" class="form-check" id="diffDoc">
+                                                                    <label class="quesLabel" for="diffDoc">Other Documents</label>                                                            
+                                                                </label>                                                                
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-8">
+                                                            <div class="form-group form-box">
+                                                                <input type="file" name="otherDocInv" class="form-control"
+                                                                    accept="application/pdf" id="IndOther" style="display:none;">
+                                                                <div id="IndOtherError" class="text-danger text-left"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div> -->
                                                 <!-- end commented by anil for not in use this section on 10-10-2025 -->
                                             </div>
-                                        </div>
-
+                                        </div>                                        
                                     </div>
 
                                     <div class="row less-padding-input">
-
+                                        <!-- <div class="col-lg-12 col-12">
+                                            <div class="form-group form-box">
+                                                <label for="IndOwnerLess" class="quesLabel">Scanned Copy of ID Proof/Document Showing Relationship with Owner/Lessee<span
+                                                        class="text-danger">*</span></label>
+                                                <input type="file" name="ownLeaseDocInv" class="form-control"
+                                                    accept="application/pdf" id="IndOwnerLess">
+                                                <div id="IndOwnerLessError" class="text-danger text-left"></div>
+                                            </div>
+                                        </div> -->
                                         <div class="col-lg-12">
                                             <div id="generalError" class="text-danger text-left"></div>
                                         </div>
@@ -770,14 +768,13 @@
                                 <div class="row --bs-gutter-x-0">
                                     <div class="col-lg-12">
                                         <div class="form-group">
-                                            <label for="remarkInv" class="quesLabel">Any Additional Information <span
-                                                    class="additionalLabel"> (Allowed Characters [(-), (,), (#), ( ), (/)]
-                                                    are allowed)</span></label>
+                                            <label for="remarkInv" class="quesLabel">Any Additional Information <span class="additionalLabel"> (Only these special characters are allowed [(-), (,), (#), ( ), (/), (.)])</span></label>
                                             <textarea name="remarkInv" id="remarkInv" class="form-control" placeholder="Write..." spellcheck="false"></textarea>
                                             <div id="errorInv" class="text-danger text-left"></div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row --bs-gutter-x-0">
                                     <div class="col-sm-6">
                                         <div class="checkbox form-group d-flex align-items-start gap-3">
@@ -788,7 +785,7 @@
                                                 <div id="invRegisterCaptchaError" class="text-danger text-left"></div>
                                             </div>
                                             <div class="d-flex align-items-center gap-1">
-                                                <img src="{{ captcha_src() }}" alt="captcha" id="captchaImage"
+                                                <img src="{{ route('captcha', ['config' => 'default']) }}" alt="captcha" id="captchaImage"
                                                     class="captcha-image">
                                                 <span class="btn btn-primary btn-sm refresh-captcha" id="refreshCaptcha"
                                                     style="padding: 10px 13px;">
@@ -799,41 +796,33 @@
                                     </div>
                                 </div>
 
-
-
                                 <div class="row less-padding-input" id="agreementSection">
                                     <div class="col-lg-12">
                                         <div class="form-group">
                                             <div class="checkbox-consent">
                                                 <input type="checkbox" name="consentInv" id="IndConsent"
                                                     class="form-check" value="on">
-                                                <label for="IndConsent">I confirm that the information provided is true to
-                                                    the best of my knowledge. I understand that providing false or
-                                                    incomplete information may result in appropriate action.</label>
+                                                <label for="IndConsent">I confirm that the information provided is true to the best of my knowledge. I understand that providing false or incomplete information may result in appropriate action.</label>
                                             </div>
                                             <div id="IndConsentError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
-                                    <!-- added by Swati Mishra to add note for email and mobile in use till application not approved. on 02052025.-->
                                     <div class="col-lg-12">
                                         <div class="alert alert-warning col-lg-12 mb-2">
                                             <!-- <label class="note text-danger"><strong>Note:</strong> Allowed file size is upto 5MB</label> -->
-                                            <p class="noteHead"><strong>Note:</strong></p>
+                                          <p class="noteHead"><strong>Note:</strong></p>
                                             <ul class="noteList">
                                                 <li>1. The email and mobile number provided at the time of registration
                                                     cannot be changed later.</li>
-                                                <li>2. Uploaded document size should be up to 20 MB.</li>
-                                                <li>3. Uploaded photo must be in passport size.</li>
-                                                <li>4. Uploaded photo should be up to 100KB.</li>
-                                                <li>5. Multiple documents related to a specific category can be merged
-                                                    before uploading.</li>
-                                                <li>6. One document is required from among the following: Sale
+                                                    <li>2. The size of the uploaded document should be up to 20 MB.</li>
+                                                                                                    <li>3. The uploaded photo must be passport size.</li><li>4. The size of the uploaded photo should be up to 100 KB.</li>
+                                                    <li>5. Multiple documents related to a specific category can be merged before uploading.</li>
+                                                    {{-- <li>6. One document is required from among the following: Sale
                                                     Deed/Agreement to Sale/Power of Attorney, Builder & Buyer Agreement,
-                                                    Substitution/Mutation Letter, or Other Documents.</li>
-                                            </ul>
+                                                    Substitution/Mutation Letter, or Other Documents.</li> --}}
+                                                    </ul>
                                         </div>
                                     </div>
-
                                 </div>
                                 <button type="button" class="btn btn-primary btn-lg btn-theme" id="IndsubmitButton"
                                     style="display: none;">Register</button>
@@ -858,22 +847,19 @@
 
                                     <div class="col-lg-6 col-12">
                                         <div class="form-group form-box">
-                                            <label for="OrgPAN" class="quesLabel">Organisation PAN Number<span
+                                            <label for="OrgPAN" class="quesLabel">Organization PAN Number<span
                                                     class="text-danger">*</span></label>
-                                            <input type="password"
+                                            <input type="text"
                                                 class="form-control text-transform-uppercase pan_number_format"
-                                                placeholder="Organisation PAN Number" maxlength="10" id="OrgPAN">
+                                                placeholder="Organization PAN Number" maxlength="10" id="OrgPAN">
                                             <input type="hidden" name="pannumberOrg" id="encryptedInput">
                                             <div id="OrgPANError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
                                     <div class="col-lg-12 col-12">
                                         <div class="form-group form-box">
-                                            <label for="orgAddressOrg" class="quesLabel">Organisation Address<span
-                                                    class="text-danger">*</span><span class="additionalLabel"> (Allowed
-                                                    Characters [(-), (,), (#), ( ), (/), (.)]
-                                                    are allowed)</span></label>
-                                            <textarea name="orgAddressOrg" id="orgAddressOrg" class="form-control" placeholder="Organisation Address"></textarea>
+                                            <label for="orgAddressOrg" class="quesLabel">Organization Address<span class="text-danger">*</span> <span class="additionalLabel"> (Only these special characters are allowed [(-), (,), (#), ( ), (/), (.)])</span></label>
+                                            <textarea name="orgAddressOrg" id="orgAddressOrg" class="form-control" placeholder="Organization Address"></textarea>
                                             <div id="orgAddressOrgError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
@@ -957,24 +943,21 @@
 
                                     </div>
                                 </div>
-                                {{-- NRI for Organisation --}}
+                                {{-- NRI for Organization --}}
                                 <div class="col-lg-12">
                                     <div class="mix-field">
-                                        <label for="is_nri_oci" class="quesLabel">Is applicant a resident of
-                                            India?</label>
+                                        <label for="is_nri_oci" class="quesLabel">Is Applicant a Resident of India?</label>
                                         <div class="radio-options pl-5 ml-5">
                                             <!-- <label for="isIndianOrg">
-                                                                <input type="checkbox" name="isIndianOrg" value="1"
-                                                                    class="form-check" id="isIndianOrg" checked> Yes
-                                                            </label> -->
+                                                <input type="checkbox" name="isIndianOrg" value="1"
+                                                    class="form-check" id="isIndianOrg" checked> Yes
+                                            </label> -->
                                             <label for="isIndianOrgYes">
-                                                <input type="radio" name="isIndianOrg" id="isIndianOrgYes"
-                                                    value="1" checked> Yes
+                                                <input type="radio" name="isIndianOrg" id="isIndianOrgYes" value="1" checked> Yes
                                             </label>
                                             &nbsp;&nbsp;
                                             <label for="isIndianOrgNo">
-                                                <input type="radio" name="isIndianOrg" id="isIndianOrgNo"
-                                                    value="0"> No
+                                                <input type="radio" name="isIndianOrg" id="isIndianOrgNo" value="0"> No
                                             </label>
                                         </div>
                                     </div>
@@ -997,28 +980,26 @@
                                             <select name="documentTypeOrg" id="documentTypeOrg" class="form-select"
                                                 required>
                                                 <option value="">Select Document Type</option>
-                                                <option value="pion">Person of Indian Origin Number (PION)</option>
-                                                <option value="ocin">Overseas Citizen of India Number (OCIN)</option>
-                                                <option value="passport">Passport Number (PASSPORT)</option>
+                                                <option value="pion">Person of Indian Origin</option>
+                                                <option value="ocin">Overseas Citizen of India</option>
+                                                <option value="passport">Passport</option>
                                             </select>
                                             <div id="documentTypeOrgError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-12" id="isOciCardDivOrg" style="display: none;">
                                         <div class="form-group form-box">
-                                            <label for="documentTypeNumberOrg" class="quesLabel">Selected Document Type
-                                                Number
+                                            <label for="documentTypeNumberOrg" class="quesLabel">Selected Document Number
                                                 <span class="text-danger">*</span>
                                             </label>
                                             <input type="text" id="documentTypeNumberOrg"
                                                 class="form-control text-transform-uppercase"
-                                                placeholder="Enter Selected Document Type Number" maxlength="8">
+                                                placeholder="Enter Selected Document Number" maxlength="8">
                                             <input type="hidden" name="documentTypeNumberOrg" id="encryptedInput">
                                             <div id="documentTypeNumberOrgError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="row" id="OrgAddressDetails">
                                     <div class="col-lg-8"></div>
                                     <div class="col-lg-12 pt-3">
@@ -1043,7 +1024,7 @@
                                             </div>
                                             <div class="col-lg-4 col-md-6 col-12">
                                                 <div class="form-group">
-                                                    <label for="block_org" class="quesLabel">Block No. / Sector<span
+                                                    <label for="block_org" class="quesLabel">Block No.<span
                                                             class="text-danger">*</span></label>
                                                     <select name="blockOrg" id="block_org"
                                                         class="form-select alphaNum-hiphenForwardSlash">
@@ -1100,17 +1081,15 @@
                                                         class="form-select">
                                                         <option value="">Select</option>
                                                     </select>
-                                                    <div id="landUseSubtype_orgError" class="text-danger text-left">
-                                                    </div>
+                                                    <div id="landUseSubtype_orgError" class="text-danger text-left"></div>
                                                 </div>
-                                            </div>
+                                            </div>                                            
                                         </div>
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="form-group form-box">
                                             <div class="mix-field" style="margin-bottom: 10px;">
-                                                <label for="propertyId_property" class="quesLabel">Is Your Property /
-                                                    Apartment in a multistorey building?</label>
+                                                <label for="propertyId_property" class="quesLabel">Is Property in a Multistorey Building?</label>
                                                 <div class="radio-options ml-5">
                                                     <label for="isPropertyFlatOrg">
                                                         <input type="checkbox" name="isPropertyFlatOrg" value="1"
@@ -1118,6 +1097,7 @@
                                                     </label>
                                                 </div>
                                             </div>
+
                                             <div class="row">
                                                 <input type="hidden" id="isOrganisationFlatDatabaseRecordFound"
                                                     name="isOrganisationFlatDatabaseRecordFound">
@@ -1134,11 +1114,9 @@
                                                 <div class="col-lg-4 col-12 isPropertyDetailsNotFoundUnCheckedOrg"
                                                     style="display: none;">
                                                     <div class="form-group">
-                                                        <label for="" class="quesLabel hidden-label"></label>
+                                                    <label for="" class="quesLabel hidden-label"></label>
                                                         <div class="mix-field" style="padding: 0.655rem .75rem;">
-                                                            <label for="isFlatNotInListOrg" class="quesLabel">Is Flat
-                                                                not
-                                                                Listed?</label>
+                                                            <label for="isFlatNotInListOrg" class="quesLabel">Is Flat/Floor Not Listed?</label>
                                                             <div class="radio-options ml-5">
                                                                 <label for="isFlatNotInListOrg">
                                                                     <input class="form-check required-for-approve"
@@ -1151,46 +1129,38 @@
                                                 <div class="col-lg-4 col-12 isPropertyDetailsNotFoundUnCheckedOrg"
                                                     style="display: none;">
                                                     <div class="form-group form-box">
-                                                        <label for="flat_no_org" class="quesLabel">Flat Number<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text"
-                                                            class="form-control alphaNumHypSlashParenthspace"
-                                                            name="flat_no_org" id="flat_no_org"
-                                                            placeholder="Flat Number" maxlength="15" readonly>
+                                                        <label for="flat_no_org" class="quesLabel">Flat/Floor Number</label>
+                                                        <input type="text" class="form-control alphaNumHypSlashParenthspace" name="flat_no_org"
+                                                            id="flat_no_org" placeholder="Flat Number" maxlength="15" readonly>
                                                         <div id="flat_no_orgError" class="text-danger text-left"></div>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-4 col-12 isPropertyDetailsRecordNotFoundUnCheckedOrg"
                                                     style="display: none;">
                                                     <div class="form-group form-box">
-                                                        <label for="flat_no_org_rec_not_found" class="quesLabel">Flat
-                                                            Number
-                                                            <span class="text-danger">*</span></label>
-                                                        <input type="text"
-                                                            class="form-control alphaNumHypSlashParenthspace"
-                                                            name="flat_no_org_rec_not_found"
-                                                            id="flat_no_org_rec_not_found" placeholder="Flat Number"
-                                                            maxlength="15">
+                                                        <label for="flat_no_org_rec_not_found" class="quesLabel">Flat/Floor
+                                                            Number<span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control alphaNumHypSlashParenthspace"
+                                                            name="flat_no_org_rec_not_found" id="flat_no_org_rec_not_found"
+                                                            placeholder="Flat Number" maxlength="15">
                                                         <div id="flat_no_org_rec_not_foundError"
                                                             class="text-danger text-left"></div>
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="mix-field">
-                                                <label for="propertyId_property" class="quesLabel">Is Property Details
-                                                    not
-                                                    Found in the Above List?</label>
+                                                <label for="propertyId_property" class="quesLabel">Is Property Detail not Found in the Above List?</label>
                                                 <div class="radio-options ml-5">
                                                     <label for="YesOrg"><input type="checkbox" name="propertyIdOrg"
-                                                            value="1" class="form-check" id="YesOrg">
-                                                        Yes</label>
+                                                            value="1" class="form-check" id="YesOrg"> Yes</label>
                                                 </div>
                                             </div>
 
                                             <div class="ifyes internal_container my-3" id="ifyesOrg"
                                                 style="display: none;">
                                                 <div class="row less-padding-input">
-                                                    {{-- Given below code commented for manual registration entries for Individual after discussio with Mam & Sourabh - Lalit Tiwari (15/Jan/2025 ) --}}
+                                                     {{-- Given below code commented for manual registration entries for Individual after discussio with Mam & Sourabh - Lalit Tiwari (15/Jan/2025 ) --}}
                                                     {{-- <div class="col-lg-4 col-md-6 col-12">
                                                         <div class="form-group form-box">
                                                             <label for="localityOrgFill" class="quesLabel">Locality<span
@@ -1212,18 +1182,15 @@
                                                         <div class="form-group form-box">
                                                             <label for="localityOrgFill" class="quesLabel">Locality<span
                                                                     class="text-danger">*</span></label>
-                                                            <input type="text" name="localityOrgFill"
-                                                                id="localityOrgFill" class="form-control"
-                                                                placeholder="Locality" maxlength="30">
-                                                            <div id="localityOrgFillError"
-                                                                class="text-danger text-left">
+                                                            <input type="text" name="localityOrgFill" id="localityOrgFill" class="form-control" placeholder="Locality" maxlength="30">
+                                                            <div id="localityOrgFillError" class="text-danger text-left">
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-4 col-md-6 col-12">
                                                         <div class="form-group form-box">
-                                                            <label for="blocknoOrgFill" class="quesLabel">Block No. /
-                                                                Sector<span class="text-danger">*</span></label>
+                                                            <label for="blocknoOrgFill" class="quesLabel">Block No.<span
+                                                                    class="text-danger">*</span></label>
                                                             <input type="text" name="blocknoOrgFill"
                                                                 id="blocknoOrgFill"
                                                                 class="form-control alphaNum-hiphenForwardSlash"
@@ -1236,8 +1203,8 @@
                                                         <div class="form-group form-box">
                                                             <label for="plotnoOrgFill" class="quesLabel">Property/Plot
                                                                 No.<span class="text-danger">*</span></label>
-                                                            <input type="text" name="plotnoOrgFill"
-                                                                id="plotnoOrgFill" class="form-control plotNoAlpaMix"
+                                                            <input type="text" name="plotnoOrgFill" id="plotnoOrgFill"
+                                                                class="form-control plotNoAlpaMix"
                                                                 placeholder="Property/Plot No." maxlength="30">
                                                             <div id="plotnoOrgFillError" class="text-danger text-left">
                                                             </div>
@@ -1273,8 +1240,7 @@
                                                     </div>
                                                     <div class="col-lg-4 col-12">
                                                         <div class="form-group">
-                                                            <label for="landUseSubtypeOrgFill" class="quesLabel">Land
-                                                                Use
+                                                            <label for="landUseSubtypeOrgFill" class="quesLabel">Land Use
                                                                 Sub Type<span class="text-danger">*</span></label>
                                                             <select name="landUseSubtypeOrgFill"
                                                                 id="landUseSubtypeOrgFill" class="form-select">
@@ -1288,15 +1254,11 @@
                                                     <div class="col-lg-4 col-12 isPropertyDetailsNotFoundCheckedOrg"
                                                         style="display: none;">
                                                         <div class="form-group form-box">
-                                                            <label for="flat_no_org" class="quesLabel">Flat Number
-                                                                <span class="text-danger">*</span></label>
-                                                            <input type="text"
-                                                                class="form-control alphaNumHypSlashParenthspace"
-                                                                name="propertyIdOrg_flat_no_org"
-                                                                id="flat_no_org_after_checked_Address_notfound"
+                                                            <label for="flat_no_org" class="quesLabel">Flat/Floor Number<span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control alphaNumHypSlashParenthspace"
+                                                                name="propertyIdOrg_flat_no_org" id="flat_no_org_after_checked_Address_notfound"
                                                                 placeholder="Flat Number" maxlength="15">
-                                                            <div id="flat_no_org_after_checked_Address_notfoundError"
-                                                                class="text-danger text-left">
+                                                            <div id="flat_no_org_after_checked_Address_notfoundError" class="text-danger text-left">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1304,29 +1266,29 @@
                                                 </div>
                                             </div>
                                         </div>
+
+
                                     </div>
                                 </div>
                                 <div id="OrgfileUploadSection" style="display: none;">
                                     <div class="row less-padding-input">
                                         <div class="col-lg-6 col-12">
                                             <div class="form-group form-box">
-                                                <label for="OrgSignAuthDoc" class="quesLabel">Document showing
-                                                    signatory's authority<span class="text-danger">*</span></label>
+                                                <label for="OrgSignAuthDoc" class="quesLabel">Document showing signatory's
+                                                    authority<span class="text-danger">*</span></label>
                                                 <input type="file" name="propDoc" class="form-control"
                                                     accept="application/pdf" id="OrgSignAuthDoc">
                                                 <div id="OrgSignAuthDocError" class="text-danger text-left"></div>
                                             </div>
                                         </div>
                                         <!-- <div class="col-lg-6 col-12">
-                                                <div class="form-group form-box">
-                                                    <label id="scannedIDOrgLabel" for="scannedIDOrg"
-                                                        class="quesLabel">Scanned Copy of ID Proof (Aadhaar and PAN)<span
-                                                            class="text-danger">*</span></label>
-                                                    <input type="file" name="scannedIDOrg" class="form-control"
-                                                        accept="application/pdf" id="scannedIDOrg">
-                                                    <div id="scannedIDOrgError" class="text-danger text-left"></div>
-                                                </div>
-                                            </div> -->
+                                            <div class="form-group form-box">
+                                                <label id="scannedIDOrgLabel" for="scannedIDOrg" class="quesLabel">Scanned Copy of ID Proof (Aadhaar and PAN)<span class="text-danger">*</span></label>
+                                                <input type="file" name="scannedIDOrg" class="form-control"
+                                                    accept="application/pdf" id="scannedIDOrg">
+                                                <div id="scannedIDOrgError" class="text-danger text-left"></div>
+                                            </div>
+                                        </div> -->
                                     </div>
                                     <div class="row less-padding-input pt-2">
                                         <div class="col-lg-12">
@@ -1337,7 +1299,7 @@
                                                 <div class="col-lg-6 col-12">
                                                     <div class="form-group form-box">
                                                         <label for="leaseDeedDoc" class="quesLabel">Lease
-                                                            Deed/Conveyance Deed<span class="text-danger">*</span></label>
+                                                            Deed/Conveyance Deed<span>(Any title document in the name of the applicant establishing ownership of the property.)</span><span class="text-danger">*</span></label>
                                                         <input type="file" name="leaseDeedDoc" class="form-control"
                                                             accept="application/pdf" id="OrgLeaseDeedDoc">
                                                         <div id="OrgLeaseDeedDocError" class="text-danger text-left">
@@ -1347,116 +1309,98 @@
                                             </div>
                                         </div>
                                         <!-- <div class="col-lg-12 mb-2">
-                                                            <h5 class="form_section_title mb-0 mt-2">Choose to Upload<span>(At least one
-                                                                    document is required)</span></h5>
-                                                            <div id="OrgChooseOneError" class="text-danger text-left"></div>
-                                                        </div>
-                                                        <div class="col-md-12 col-lg-12 col-12">
-                                                            <div class="row align-items-center">
-                                                                <div class="col-lg-4">
-                                                                    <div class="form-group form-box">
-                                                                        <div class="quesLabel d-flex align-items-start">
-                                                                            <input type="checkbox" class="form-check"
-                                                                                id="saleDeedAtorneyOrg">
-                                                                            <label class="quesLabel" for="saleDeedAtorneyOrg">Sale
-                                                                                Deed/Agreement to Sale/Power of Atorney</label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-8">
-                                                                    <div class="form-group form-box">
-                                                                        <input type="file" name="saleDeedOrg" class="form-control"
-                                                                            accept="application/pdf" id="OrgSaleDeedDoc"
-                                                                            style="display:none">
-                                                                        <div id="OrgSaleDeedDocError" class="text-danger text-left">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                            <h5 class="form_section_title mb-0 mt-2">Choose to Upload <span>(At least one document is required)</span></h5>
+                                            <div id="OrgChooseOneError" class="text-danger text-left"></div>
+                                        </div>
+                                        <div class="col-md-12 col-lg-12 col-12">
+                                            <div class="row align-items-center">
+                                                <div class="col-lg-4">
+                                                    <div class="form-group form-box">
+                                                        <div class="quesLabel d-flex align-items-start">
+                                                            <input type="checkbox" class="form-check" id="saleDeedAtorneyOrg">
+                                                            <label class="quesLabel" for="saleDeedAtorneyOrg">Sale Deed/Agreement to Sale/Power of Atorney</label>                                                    
+                                                        </div>                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <div class="form-group form-box">
+                                                        <input type="file" name="saleDeedOrg" class="form-control"
+                                                            accept="application/pdf" id="OrgSaleDeedDoc" style="display:none">
+                                                        <div id="OrgSaleDeedDocError" class="text-danger text-left"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-12 col-lg-12 col-12">
+                                            <div class="row align-items-center">
+                                                <div class="col-lg-4">
+                                                    <div class="form-group form-box">
+                                                        <div class="quesLabel d-flex align-items-center">
+                                                            <input type="checkbox" class="form-check" id="bbAgreementOrg">
+                                                            <label class="quesLabel" for="bbAgreementOrg">Builder &amp; Buyer Agreement</label>                                                    
+                                                        </div>                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <div class="form-group form-box">
+                                                        <input type="file" name="builBuyerAggrmentDoc" class="form-control"
+                                                            accept="application/pdf" id="OrgBuildAgreeDoc" style="display:none">
+                                                        <div id="OrgBuildAgreeDocError" class="text-danger text-left"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                                        <div class="col-md-12 col-lg-12 col-12">
-                                                            <div class="row align-items-center">
-                                                                <div class="col-lg-4">
-                                                                    <div class="form-group form-box">
-                                                                        <div class="quesLabel d-flex align-items-center">
-                                                                            <input type="checkbox" class="form-check"
-                                                                                id="bbAgreementOrg">
-                                                                            <label class="quesLabel" for="bbAgreementOrg">Builder &amp;
-                                                                                Buyer Agreement</label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-8">
-                                                                    <div class="form-group form-box">
-                                                                        <input type="file" name="builBuyerAggrmentDoc"
-                                                                            class="form-control" accept="application/pdf"
-                                                                            id="OrgBuildAgreeDoc" style="display:none">
-                                                                        <div id="OrgBuildAgreeDocError" class="text-danger text-left">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                        <div class="col-md-12 col-lg-12 col-12">
+                                            <div class="row align-items-center">
+                                                <div class="col-lg-4">
+                                                    <div class="form-group form-box">
+                                                        <div class="quesLabel d-flex align-items-start">
+                                                            <input type="checkbox" class="form-check" id="subsMutationLetterOrg">                                                    
+                                                            <label class="quesLabel" for="subsMutationLetterOrg">Substitution/Mutation Letter</label>
                                                         </div>
-
-                                                        <div class="col-md-12 col-lg-12 col-12">
-                                                            <div class="row align-items-center">
-                                                                <div class="col-lg-4">
-                                                                    <div class="form-group form-box">
-                                                                        <div class="quesLabel d-flex align-items-start">
-                                                                            <input type="checkbox" class="form-check"
-                                                                                id="subsMutationLetterOrg">
-                                                                            <label class="quesLabel"
-                                                                                for="subsMutationLetterOrg">Substitution/Mutation
-                                                                                Letter</label>
-                                                                        </div>
-
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-8">
-                                                                    <div class="form-group form-box">
-                                                                        <input type="file" name="subMutLetterDoc"
-                                                                            class="form-control" accept="application/pdf"
-                                                                            id="OrgSubMutDoc" style="display:none">
-                                                                        <div id="OrgSubMutDocError" class="text-danger text-left"></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-12 col-lg-12 col-12">
-                                                            <div class="row align-items-center">
-                                                                <div class="col-lg-4">
-                                                                    <div class="form-group form-box">
-                                                                        <div class="quesLabel d-flex align-items-center">
-                                                                            <input type="checkbox" class="form-check" id="diffDocOrg">
-                                                                            <label class="quesLabel" for="diffDocOrg">Other
-                                                                                Documents</label>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-lg-8">
-                                                                    <div class="form-group form-box">
-                                                                        <input type="file" name="otherDoc" class="form-control"
-                                                                            accept="application/pdf" id="OrgOther"
-                                                                            style="display:none">
-                                                                        <div id="OrgOtherError" class="text-danger text-left"></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
+                                                        
+                                                    </div>
+                                                </div>
+                                                 <div class="col-lg-8">
+                                                    <div class="form-group form-box">
+                                                        <input type="file" name="subMutLetterDoc" class="form-control"
+                                                            accept="application/pdf" id="OrgSubMutDoc" style="display:none">
+                                                        <div id="OrgSubMutDocError" class="text-danger text-left"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 col-lg-12 col-12">
+                                            <div class="row align-items-center">
+                                                <div class="col-lg-4">
+                                                    <div class="form-group form-box">
+                                                        <div class="quesLabel d-flex align-items-center">
+                                                            <input type="checkbox" class="form-check" id="diffDocOrg">
+                                                            <label class="quesLabel" for="diffDocOrg">Other Documents</label>
+                                                        </div>                                                        
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <div class="form-group form-box">
+                                                        <input type="file" name="otherDoc" class="form-control"
+                                                            accept="application/pdf" id="OrgOther" style="display:none">
+                                                        <div id="OrgOtherError" class="text-danger text-left"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> -->
                                         <div class="col-lg-12">
                                             <div id="generalError2" class="text-danger text-left"></div>
                                         </div>
                                         <div class="col-lg-12">
-                                            <label for="remarkOrg" class="quesLabel">Any Additional Information<span
-                                                    class="additionalLabel"> (Allowed Characters [(-), (,), (#), ( ), (/)]
-                                                    are allowed)</span></label>
+                                            <label for="remarkOrg" class="quesLabel">Any Additional Information<span class="additionalLabel"> (Only these special characters are allowed [(-), (,), (#), ( ), (/), (.)])</span></label>
                                             <textarea name="remarkOrg" id="remarkOrg" class="form-control" placeholder="Write..." spellcheck="false"></textarea>
                                             <div id="errorOrg" class="text-danger text-left"></div>
                                         </div>
                                     </div>
                                 </div>
-
 
                                 <div class="row --bs-gutter-x-0">
                                     <div class="col-sm-6">
@@ -1464,14 +1408,14 @@
                                             <div style="width:300px">
                                                 <input type="text" autocomplete="off" name="orgRegisterCaptcha"
                                                     id="orgRegisterCaptcha" class="form-control"
-                                                    placeholder="Enter captcha from below image">
+                                                        placeholder="Enter captcha from below image">
                                                 <div id="orgRegisterCaptchaError" class="text-danger text-left"></div>
                                             </div>
                                             <div class="d-flex align-items-center gap-1">
-                                                <img src="{{ captcha_src() }}" alt="captcha" id="orgCaptchaImage"
+                                                <img src="{{ route('captcha', ['config' => 'default']) }}" alt="captcha" id="orgCaptchaImage"
                                                     class="captcha-image">
-                                                <span class="btn btn-primary btn-sm refresh-captcha"
-                                                    id="orgRefreshCaptcha" style="padding: 10px 13px;">
+                                                <span class="btn btn-primary btn-sm refresh-captcha" id="orgRefreshCaptcha"
+                                                    style="padding: 10px 13px;">
                                                     <i class="fas fa-sync-alt"></i>
                                                 </span>
                                             </div>
@@ -1479,33 +1423,28 @@
                                     </div>
                                 </div>
 
-
                                 <div class="row less-padding-input" id="OrgAgreementSection">
                                     <div class="col-lg-12">
                                         <div class="form-group">
                                             <div class="checkbox-consent">
                                                 <input type="checkbox" name="consentOrg" id="OrgConsent"
                                                     class="form-check" value="on">
-                                                <label for="OrgConsent">I confirm that the information provided is true to
-                                                    the best of my knowledge. I understand that providing false or
-                                                    incomplete information may result in appropriate action.</label>
+                                                <label for="OrgConsent">I/We confirm that the information provided is true to the best of my/our knowledge. I/We understand that providing false or incomplete information may result in appropriate action.</label>
                                             </div>
                                             <div id="OrgConsentError" class="text-danger text-left"></div>
                                         </div>
                                     </div>
-                                    <!-- added by Swati Mishra to add note for email and mobile in use till application not approved. on 02052025.-->
+                                      <!-- added by Swati Mishra to add note for email and mobile in use till application not approved. on 02052025.-->
                                     <div class="col-lg-12">
                                         <div class="alert alert-warning col-lg-12 mb-2">
                                             <p class="noteHead"><strong>Note:</strong></p>
                                             <ul class="noteList">
-                                                <li>1. The email and mobile number provided at the time of registration
-                                                    cannot be changed later.</li>
-                                                <li>2. Uploaded document size is up to 20 MB.</li>
-                                                <li>3. Multiple documents related to a specific category can be merged
-                                                    before uploading.</li>
-                                                <li>4. One document is required from among the following: Sale
-                                                    Deed/Agreement to Sale/Power of Attorney, Builder & Buyer Agreement,
-                                                    Substitution/Mutation Letter, or Other Documents.</li>
+                                                <li>1. The email and mobile number provided at the time of registration cannot be changed later.</li>
+                                                <li>2. The size of the uploaded document should be up to 20 MB.</li>
+                                                <!-- <li>3. Uploaded photo must be in passport size.</li>
+                                                <li>4. Uploaded photo should be up to 100 KB.</li> -->
+                                                <li>3. Multiple documents related to a specific category can be merged before uploading.</li>
+                                                <!-- <li>4. One document is required from among the following: Sale Deed/Agreement to Sale/Power of Attorney, Builder & Buyer Agreement, Substitution/Mutation Letter, or Other Documents.</li> -->
                                             </ul>
                                         </div>
                                     </div>
@@ -1520,22 +1459,17 @@
                             </div>
                         </form>
 
-                        <!-- <div class="alert alert-warning mt-4" role="alert">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <strong>Note:</strong>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
-
-
 
                         <div class="clearfix"></div>
-                        <p class="mt-2">Already Registered? <a href="{{ url('login') }}">Login here</a></p>
+                        <p class="mt-2">Already Registered? <a href="{{ route('login') }}">Login here</a></p>
                         <!-- <div class="alert alert-success border-0 bg-success alert-dismissible mt-4">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="text-white">You are Registered successfully, and your registration no. is:- ALP0004345</div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="alert alert-danger border-0 bg-danger alert-dismissible">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <div class="text-white">Registration not successfull!</div>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </div> -->
+                                                                            <div class="text-white">You are Registered successfully, and your registration no. is:- ALP0004345</div>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="alert alert-danger border-0 bg-danger alert-dismissible">
+                                                                            <div class="text-white">Registration not successfull!</div>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                                        </div> -->
                     </div>
                 </div>
 
@@ -1549,29 +1483,26 @@
 @endsection
 
 @section('footerScript')
-    <script>
-        var validateCaptcha = "{{ route('validateCaptcha') }}";
-    </script>
     <script src="{{ asset('assets/frontend/assets/js/otp-input.js') }}"></script>
-    <script src="{{ asset('assets/frontend/assets/js/crypto-js.min.js') }}"></script>
-    <script src="{{ asset('assets/frontend/assets/js/commonFunctions.js') }}"></script>
-    <script>
-        $('#IndAadhar, #orgAadharAuth, #OrgPAN, #IndPanNumber, #documentTypeNumber, #documentTypeNumberOrg').blur(
-            function() {
-                let InputValue = $(this).val();
-                let encryptedInput = $(this).parent().find('#encryptedInput');
-                if (InputValue !== "") {
-                    var encryptedValue = encryptString(InputValue);
-                    // const encrypted = CryptoJS.AES.encrypt(password, 'somekey').toString();
-                    encryptedInput.val(encryptedValue);
-                } else {
-                    encryptedInput.val('');
-                }
-            });
-    </script>
 
+    <script src="{{asset('assets/frontend/assets/js/crypto-js.min.js')}}"></script>
+    <script src="{{asset('assets/frontend/assets/js/commonFunctions.js')}}"></script>
     <script>
-        $('#refreshCaptcha').on('click', function() {
+        $('#IndAadhar, #orgAadharAuth, #OrgPAN, #IndPanNumber, #documentTypeNumber, #documentTypeNumberOrg').blur(function() {
+            let InputValue = $(this).val();
+            let encryptedInput = $(this).parent().find('#encryptedInput');
+            if (InputValue !== "") {
+                var encryptedValue = encryptString(InputValue);
+                // const encrypted = CryptoJS.AES.encrypt(password, 'somekey').toString();
+                encryptedInput.val(encryptedValue);
+            } else {
+                encryptedInput.val('');
+            }
+        });
+    </script>
+ <script>
+        var validateCaptcha = "{{ route('validateCaptcha') }}";
+  $('#refreshCaptcha').on('click', function() {
             $.ajax({
                 url: "{{ route('refresh.captcha') }}",
                 type: "GET",
@@ -1588,8 +1519,9 @@
                     $('#orgCaptchaImage').attr('src', data.captcha);
                 }
             });
-        });
-
+        });  
+</script>
+    <script>
         const otpExpiryTime = `{{ config('constants.OTP_EXPIRY_TIME') * 60 }}`;
 
         function isValidMobile(mobile) {
@@ -2192,18 +2124,16 @@
                 }
 
                 const successMessageElem = $(`#${type}ResendOptSuccess`);
-                fetch('/resend-otp', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify(additionalData)
-                    })
+                fetch("{{ route('reSendOtp') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(additionalData)
+                })
                     .then(response => response.json())
                     .then(data => {
-                        console.log(otpExpiryTime);
-
                         successMessageElem.html(data.message);
                         startTimer(type, otpExpiryTime);
                         setTimeout(() => {
@@ -2224,7 +2154,7 @@
                 resendBtn.style.pointerEvents = 'none';
 
                 const interval = setInterval(() => {
-                    timerDisplay.textContent = parseInt(timer % 120, 10);
+                    timerDisplay.textContent = parseInt(timer % 600, 10); // Changed 60 sec to 120 --Amita [27-02-2025]
                     if (--timer < 0) {
                         clearInterval(interval);
                         resendBtn.style.pointerEvents = 'auto';
@@ -2274,52 +2204,49 @@
                             // Populate Property Types
                             if (result.propertyTypes?.length) {
                                 $("#landUse").append(
-                                    result.propertyTypes.map(type =>
-                                        `<option value="${type.id}">${type.item_name}</option>`
-                                    ).join('')
+                                    result.propertyTypes.map(type => `<option value="${type.id}">${type.item_name}</option>`).join('')
                                 );
                             }
+                            // comment given below function now we are fetching property subtypes from seperate routes for locality for organisation by lalit tiwari - 13/02/2025
                             // Populate Property Sub Types
-                            // if (result.propertySubtypes?.length) {
-                            //     $("#landUseSubtype").append(
-                            //         result.propertySubtypes.map(subtype => `<option value="${subtype.id}">${subtype.item_name}</option>`).join('')
-                            //     );
-                            // }
+                            /*if (result.propertySubtypes?.length) {
+                                $("#landUseSubtype").append(
+                                    result.propertySubtypes.map(subtype => `<option value="${subtype.id}">${subtype.item_name}</option>`).join('')
+                                );
+                            }*/
                         }
                     });
                     //#End :- Populate Property Type & Property Sub Type on locality dropdown change - Lalit Tiwari (17/Jan/2025)
                 }
             });
         });
-
+        // Adding given below function to get property subtypes for organisation by lalit tiwari - 13/02/2025
         $('#landUse').on('change', function() {
             var locality = $('#locality').val();
             var landType = this.value;
             //#Start :- Populate Property Type & Property Sub Type on locality dropdown change - Lalit Tiwari (17/Jan/2025)
             $("#landUseSubtype").html('<option value="">Select</option>');
-            $.ajax({
-                url: "{{ route('landSubTypes') }}",
-                type: "POST",
-                data: {
-                    locality: locality,
-                    landType: landType,
-                    _token: '{{ csrf_token() }}'
-                },
-                dataType: 'json',
-                success: function(result) {
-                    if (result.propertySubtypes?.length) {
-                        $("#landUseSubtype").append(
-                            result.propertySubtypes.map(subtype =>
-                                `<option value="${subtype.id}">${subtype.item_name}</option>`).join(
-                                '')
-                        );
+                    $.ajax({
+                        url: "{{ route('landSubTypes') }}",
+                        type: "POST",
+                        data: {
+                            locality: locality,
+                            landType: landType,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+                        success: function(result) {
+                        if (result.propertySubtypes?.length) {
+                            $("#landUseSubtype").append(
+                                result.propertySubtypes.map(subtype => `<option value="${subtype.id}">${subtype.item_name}</option>`).join('')
+                            );
+                        }
                     }
-                }
             });
             //#End :- Populate Property Type & Property Sub Type on locality dropdown change - Lalit Tiwari (17/Jan/2025)
         });
 
-
+        
 
         //get all plots of selected block
         $('#block').on('change', function() {
@@ -2535,47 +2462,44 @@
                             // Populate Property Types
                             if (result.propertyTypes?.length) {
                                 $("#landUse_org").append(
-                                    result.propertyTypes.map(type =>
-                                        `<option value="${type.id}">${type.item_name}</option>`
-                                    ).join('')
+                                    result.propertyTypes.map(type => `<option value="${type.id}">${type.item_name}</option>`).join('')
                                 );
                             }
+                            // comment given below function now we are fetching property subtypes from seperate routes for locality for organisation by lalit tiwari - 13/02/2025
                             // Populate Property Sub Types
-                            // if (result.propertySubtypes?.length) {
-                            //     $("#landUseSubtype_org").append(
-                            //         result.propertySubtypes.map(subtype => `<option value="${subtype.id}">${subtype.item_name}</option>`).join('')
-                            //     );
-                            // }
+                            /*if (result.propertySubtypes?.length) {
+                                $("#landUseSubtype_org").append(
+                                    result.propertySubtypes.map(subtype => `<option value="${subtype.id}">${subtype.item_name}</option>`).join('')
+                                );
+                            }*/
                         }
                     });
                     //#End :- Populate Property Type & Property Sub Type on locality dropdown change - Lalit Tiwari (17/Jan/2025)
                 }
             });
         });
-
+        // Adding given below function to get property subtypes for organisation by lalit tiwari - 13/02/2025
         $('#landUse_org').on('change', function() {
             var locality = $('#locality_org').val();
             var landType = this.value;
             //#Start :- Populate Property Type & Property Sub Type on locality dropdown change - Lalit Tiwari (17/Jan/2025)
             $("#landUseSubtype_org").html('<option value="">Select</option>');
-            $.ajax({
-                url: "{{ route('landSubTypes') }}",
-                type: "POST",
-                data: {
-                    locality: locality,
-                    landType: landType,
-                    _token: '{{ csrf_token() }}'
-                },
-                dataType: 'json',
-                success: function(result) {
-                    if (result.propertySubtypes?.length) {
-                        $("#landUseSubtype_org").append(
-                            result.propertySubtypes.map(subtype =>
-                                `<option value="${subtype.id}">${subtype.item_name}</option>`).join(
-                                '')
-                        );
+                    $.ajax({
+                        url: "{{ route('landSubTypes') }}",
+                        type: "POST",
+                        data: {
+                            locality: locality,
+                            landType: landType,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+                        success: function(result) {
+                        if (result.propertySubtypes?.length) {
+                            $("#landUseSubtype_org").append(
+                                result.propertySubtypes.map(subtype => `<option value="${subtype.id}">${subtype.item_name}</option>`).join('')
+                            );
+                        }
                     }
-                }
             });
             //#End :- Populate Property Type & Property Sub Type on locality dropdown change - Lalit Tiwari (17/Jan/2025)
         });
@@ -2898,207 +2822,189 @@
         const maxDate = eighteenYearsAgo.toISOString().split('T')[0];
         document.getElementById('dateOfBirth').setAttribute('max', maxDate);
 
-        // comented by anil and add new funciton validateImageUpload on 03-06-2025
+
         // Upload Image Profile
-        // const input = document.getElementById("file-input");
-        // const image = document.getElementById("img-preview");
+        const input = document.getElementById("file-input");
+        const image = document.getElementById("img-preview");
 
-        // input.addEventListener("change", (e) => {
-        //     const file = input.files[0];
-        //     const errorDiv = document.getElementById('file-inputError');
-        //     const maxSizeInBytes = 100 * 1024; // Convert KB to bytes
+        input.addEventListener("change", (e) => {
+            const file = input.files[0];
+            const errorDiv = document.getElementById('file-inputError');
+            const maxSizeInBytes = 100 * 1024; // Convert KB to bytes
 
-        //     // Check if a file was selected
-        //     if (file) {
-        //         if (file.size > maxSizeInBytes) {
-        //             errorDiv.textContent = `Maximum allowed size is upto 100 KB.`;
-        //             errorDiv.style.display = 'block'; // Show error message
-        //             fileInput.value = ''; // Clear the file input
-        //         } else {
-        //             errorDiv.style.display = 'none'; // Hide error message
-        //             if (e.target.files.length) {
-        //                 const src = URL.createObjectURL(e.target.files[0]);
-        //                 image.src = src;
-        //             }
-        //         }
-        //     }
-        // });
-
-
-        document.getElementById("localityFill").addEventListener("input", function(e) {
-            const inputField = e.target;
-            const errorMessageDiv = document.getElementById("localityFillError");
-
-            // Regular expression to allow only alphanumeric characters, spaces, and brackets
-            const validPattern = /^[a-zA-Z0-9\s\[\]()-]*$/;
-
-            // Check if the current input value matches the pattern
-            if (!validPattern.test(inputField.value)) {
-                // Show an error message
-                errorMessageDiv.textContent = "Only alphanumeric characters, spaces, and brackets are allowed.";
-
-                // Remove the invalid characters
-                inputField.value = inputField.value.replace(/[^a-zA-Z0-9\s\[\]()]/g, "");
-            } else {
-                // Clear the error message if the input is valid
-                errorMessageDiv.textContent = "";
-            }
-        });
-
-        document.getElementById("localityOrgFill").addEventListener("input", function(e) {
-            const inputField = e.target;
-            const errorMessageDiv = document.getElementById("localityOrgFillError");
-
-            // Regular expression to allow only alphanumeric characters, spaces, and brackets
-            const validPattern = /^[a-zA-Z0-9\s\[\]()-]*$/;
-
-            // Check if the current input value matches the pattern
-            if (!validPattern.test(inputField.value)) {
-                // Show an error message
-                errorMessageDiv.textContent = "Only alphanumeric characters, spaces, and brackets are allowed.";
-
-                // Remove the invalid characters
-                inputField.value = inputField.value.replace(/[^a-zA-Z0-9\s\[\]()]/g, "");
-            } else {
-                // Clear the error message if the input is valid
-                errorMessageDiv.textContent = "";
-            }
-        });
-
-
-
-        // For validating file size
-        // function validateFileSize(inputId, errorDivId, maxSizeInMB) {
-        //     const fileInput = document.getElementById(inputId);
-        //     const errorDiv = document.getElementById(errorDivId);
-        //     const file = fileInput.files[0]; // Get the selected file
-        //     const maxSizeInBytes = maxSizeInMB * 1024 * 1024; // Convert MB to bytes
-
-        //     // Check if a file was selected
-        //     if (file) {
-        //         if (file.size > maxSizeInBytes) {
-        //             errorDiv.textContent = `Maximum allowed size is upto ${maxSizeInMB} MB.`;
-        //             errorDiv.style.display = 'block'; // Show error message
-        //             fileInput.value = ''; // Clear the file input
-        //         } else {
-        //             errorDiv.style.display = 'none'; // Hide error message
-        //         }
-        //     }
-        // }
-
-        const fileTooLargeMap = {}; // Global flag object
-
-        // function validateFileSize(inputId, errorDivId, maxSizeInMB) {
-        function validateFileSize(inputId, errorDivId) {
-            const fileInput = document.getElementById(inputId);
-            const errorDiv = document.getElementById(errorDivId);
-            const file = fileInput.files[0];
-            const maxSizeInBytes = 21 * 1024 * 1024;
-
+            // Check if a file was selected
             if (file) {
                 if (file.size > maxSizeInBytes) {
-                    // errorDiv.textContent = `Maximum allowed size is upto ${maxSizeInMB} MB.`;
+                    errorDiv.textContent = `Maximum allowed size is upto 100 KB.`;
+                    errorDiv.style.display = 'block'; // Show error message
+                 //   fileInput.value = ''; // Clear the file input
+                } else {
+                    errorDiv.style.display = 'none'; // Hide error message
+                    if (e.target.files.length) {
+                        const src = URL.createObjectURL(e.target.files[0]);
+                        image.src = src;
+                    }
+                }
+            }
+        });
+
+
+        document.getElementById("localityFill").addEventListener("input", function (e) {
+            const inputField = e.target;
+            const errorMessageDiv = document.getElementById("localityFillError");
+            
+            // Regular expression to allow only alphanumeric characters, spaces, and brackets
+            const validPattern = /^[a-zA-Z0-9\s\[\]()-]*$/;
+
+            // Check if the current input value matches the pattern
+            if (!validPattern.test(inputField.value)) {
+                // Show an error message
+                errorMessageDiv.textContent = "Only alphanumeric characters, spaces, and brackets are allowed.";
+                
+                // Remove the invalid characters
+                inputField.value = inputField.value.replace(/[^a-zA-Z0-9\s\[\]()]/g, "");
+            } else {
+                // Clear the error message if the input is valid
+                errorMessageDiv.textContent = "";
+            }
+        });
+
+        document.getElementById("localityOrgFill").addEventListener("input", function (e) {
+            const inputField = e.target;
+            const errorMessageDiv = document.getElementById("localityOrgFillError");
+            
+            // Regular expression to allow only alphanumeric characters, spaces, and brackets
+            const validPattern = /^[a-zA-Z0-9\s\[\]()-]*$/;
+
+            // Check if the current input value matches the pattern
+            if (!validPattern.test(inputField.value)) {
+                // Show an error message
+                errorMessageDiv.textContent = "Only alphanumeric characters, spaces, and brackets are allowed.";
+                
+                // Remove the invalid characters
+                inputField.value = inputField.value.replace(/[^a-zA-Z0-9\s\[\]()]/g, "");
+            } else {
+                // Clear the error message if the input is valid
+                errorMessageDiv.textContent = "";
+            }
+        });
+
+
+        // added by anil on 10-11-2025
+        const fileTooLargeMap = {}; // Global flag object
+
+        // For validating file size
+        function validateFileSize(inputId, errorDivId ) {
+            const fileInput = document.getElementById(inputId);
+            const errorDiv = document.getElementById(errorDivId);
+            const file = fileInput.files[0]; // Get the selected file
+            const maxSizeInBytes = 21 * 1024 * 1024; // Convert MB to bytes
+
+            // Check if a file was selected
+            if (file) {
+                if (file.size > maxSizeInBytes) {
                     errorDiv.textContent = `Maximum allowed size is upto 20 MB.`;
-                    errorDiv.style.display = 'block';
-
+                    errorDiv.style.display = 'block'; // Show error message
+                    
+                    // added by anil on 10-11-2025
                     fileTooLargeMap[inputId] = true; // ✅ mark as too large
-                    fileInput.value = ''; // ✅ still clear the input
+                    
+                    fileInput.value = ''; // Clear the file input
 
+                    // added by anil on 10-11-2025
                     return false;
                 } else {
-                    errorDiv.style.display = 'none';
+                    errorDiv.style.display = 'none'; // Hide error message
+
+                    // added by anil on 10-11-2025
                     fileTooLargeMap[inputId] = false; // ✅ clear flag if valid
                     return true;
                 }
             }
-
-            return true;
         }
 
         // Attach the function to the input's change event
-        document.getElementById('IndLeaseDeed').addEventListener('change', function() {
-            // validateFileSize('IndLeaseDeed', 'IndLeaseDeedError', 25);
+        document.getElementById('IndLeaseDeed').addEventListener('change', function () {
             validateFileSize('IndLeaseDeed', 'IndLeaseDeedError');
         });
-        // document.getElementById('IndSaleDeed').addEventListener('change', function() {
+        // document.getElementById('IndSaleDeed').addEventListener('change', function () {
         //     validateFileSize('IndSaleDeed', 'IndSaleDeedError');
         // });
-        // document.getElementById('IndBuildAgree').addEventListener('change', function() {
-        //     validateFileSize('IndBuildAgree', 'IndBuildAgreeError');
+        // document.getElementById('IndBuildAgree').addEventListener('change', function () {
+        //     validateFileSize('IndBuildAgree', 'IndBuildAgreeError' );
         // });
-        // document.getElementById('IndSubMut').addEventListener('change', function() {
+        // document.getElementById('IndSubMut').addEventListener('change', function () {
         //     validateFileSize('IndSubMut', 'IndSubMutError');
         // });
-        // document.getElementById('IndOther').addEventListener('change', function() {
+        // document.getElementById('IndOther').addEventListener('change', function () {
         //     validateFileSize('IndOther', 'IndOtherError');
         // });
-        // document.getElementById('IndOwnerLess').addEventListener('change', function() {
-        //     validateFileSize('IndOwnerLess', 'IndOwnerLessError', 25);
+        // document.getElementById('IndOwnerLess').addEventListener('change', function () {
         //     validateFileSize('IndOwnerLess', 'IndOwnerLessError');
         // });
-        document.getElementById('OrgSignAuthDoc').addEventListener('change', function() {
+        document.getElementById('OrgSignAuthDoc').addEventListener('change', function () {
             validateFileSize('OrgSignAuthDoc', 'OrgSignAuthDocError');
         });
-        // document.getElementById('scannedIDOrg').addEventListener('change', function() {
+        // document.getElementById('scannedIDOrg').addEventListener('change', function () {
         //     validateFileSize('scannedIDOrg', 'scannedIDOrgError');
         // });
-        document.getElementById('OrgLeaseDeedDoc').addEventListener('change', function() {
+        document.getElementById('OrgLeaseDeedDoc').addEventListener('change', function () {
             validateFileSize('OrgLeaseDeedDoc', 'OrgLeaseDeedDocError');
         });
-        // document.getElementById('OrgSubMutDoc').addEventListener('change', function() {
+        // document.getElementById('OrgSubMutDoc').addEventListener('change', function () {
         //     validateFileSize('OrgSubMutDoc', 'OrgSubMutDocError');
         // });
-        // document.getElementById('OrgOther').addEventListener('change', function() {
+        // document.getElementById('OrgOther').addEventListener('change', function () {
         //     validateFileSize('OrgOther', 'OrgOtherError');
         // });
-        // document.getElementById('OrgSaleDeedDoc').addEventListener('change', function() {
+        // document.getElementById('OrgSaleDeedDoc').addEventListener('change', function () {
         //     validateFileSize('OrgSaleDeedDoc', 'OrgSaleDeedDocError');
         // });
-        // document.getElementById('OrgBuildAgreeDoc').addEventListener('change', function() {
+        // document.getElementById('OrgBuildAgreeDoc').addEventListener('change', function () {
         //     validateFileSize('OrgBuildAgreeDoc', 'OrgBuildAgreeDocError');
         // });
 
 
         //For clearing the modal
-        $('#otpMobile').on('hidden.bs.modal', function() {
+        $('#otpMobile').on('hidden.bs.modal', function () {
             console.log('Modal has been closed!');
         });
 
 
-        document.getElementById('indfullname').addEventListener('input', function() {
+        document.getElementById('indfullname').addEventListener('input', function () {
             if (this.value.length === 1 && this.value === ' ') {
                 this.value = '';
-            }
+            } 
             this.value = this.value.replace(/\s{2,}/g, ' ');
         });
-        document.getElementById('IndSecondName').addEventListener('input', function() {
+        document.getElementById('IndSecondName').addEventListener('input', function () {
             if (this.value.length === 1 && this.value === ' ') {
                 this.value = '';
-            }
+            } 
             this.value = this.value.replace(/\s{2,}/g, ' ');
         });
-        document.getElementById('emailInv').addEventListener('input', function() {
+        document.getElementById('emailInv').addEventListener('input', function () {
             if (this.value.length === 1 && this.value === ' ') {
                 this.value = '';
-            }
+            } 
             this.value = this.value.replace(/\s{2,}/g, ' ');
         });
-        document.getElementById('OrgName').addEventListener('input', function() {
+        document.getElementById('OrgName').addEventListener('input', function () {
             if (this.value.length === 1 && this.value === ' ') {
                 this.value = '';
-            }
+            } 
             this.value = this.value.replace(/\s{2,}/g, ' ');
         });
-        document.getElementById('OrgNameAuthSign').addEventListener('input', function() {
+        document.getElementById('OrgNameAuthSign').addEventListener('input', function () {
             if (this.value.length === 1 && this.value === ' ') {
                 this.value = '';
-            }
+            } 
             this.value = this.value.replace(/\s{2,}/g, ' ');
         });
-        document.getElementById('emailauthsignatory').addEventListener('input', function() {
+        document.getElementById('emailauthsignatory').addEventListener('input', function () {
             if (this.value.length === 1 && this.value === ' ') {
                 this.value = '';
-            }
+            } 
             this.value = this.value.replace(/\s{2,}/g, ' ');
         });
 
@@ -3136,7 +3042,7 @@
             // }
 
             // On change of radio buttons
-            $("input[name='isIndian']").change(function() {
+            $("input[name='isIndian']").change(function () {
                 if ($(this).val() === "1") {
                     // Yes selected - Indian
                     $('#isPanDiv').show();
@@ -3191,7 +3097,7 @@
             // });
 
             // -------------------- Organization Owner --------------------
-            $("input[name='isIndianOrg']").change(function() {
+            $("input[name='isIndianOrg']").change(function () {
                 const label = document.getElementById('orgLabel');
                 const documentTypeDropDown = document.getElementById('documentTypeOrg');
 
@@ -3210,17 +3116,14 @@
                     $('#isPassportDivOrg').show();
 
                     // Update label dynamically on document type change
-                    documentTypeDropDown.addEventListener('change', function() {
-                        const selectedText = documentTypeDropDown.options[documentTypeDropDown
-                            .selectedIndex].text;
-                        label.innerHTML = 'Scanned Copy of ' + selectedText +
-                            ' <span class="text-danger">*</span>';
+                    documentTypeDropDown.addEventListener('change', function () {
+                        const selectedText = documentTypeDropDown.options[documentTypeDropDown.selectedIndex].text;
+                        label.innerHTML = 'Scanned Copy of ' + selectedText + ' <span class="text-danger">*</span>';
                     });
                 }
             });
 
-
-            // // Initialize on page load
+            // Initialize on page load
             // if ($('#isIndianOrg').is(':checked')) {
             //     $('#isAadharDivOrg').show();
             //     $('#isOciCardDivOrg').hide();
@@ -3241,7 +3144,6 @@
             //             ' <span class="text-danger">*</span>';
             //     });
             // }
-            // Initialize on load
             (function initOrgSection() {
                 const label = document.getElementById('orgLabel');
                 const documentTypeDropDown = document.getElementById('documentTypeOrg');
@@ -3263,11 +3165,9 @@
                     $('#isPassportDivOrg').show();
 
                     if (documentTypeDropDown && label) {
-                        documentTypeDropDown.addEventListener('change', function() {
-                            const selectedText = documentTypeDropDown.options[documentTypeDropDown
-                                .selectedIndex].text;
-                            label.innerHTML = 'Scanned Copy of ' + selectedText +
-                                ' <span class="text-danger">*</span>';
+                        documentTypeDropDown.addEventListener('change', function () {
+                            const selectedText = documentTypeDropDown.options[documentTypeDropDown.selectedIndex].text;
+                            label.innerHTML = 'Scanned Copy of ' + selectedText + ' <span class="text-danger">*</span>';
                         });
                     }
                 }

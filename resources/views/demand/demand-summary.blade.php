@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('title', 'Demand Summary')
-
 @section('content')
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
@@ -27,14 +25,14 @@
                 <div class="card-body">
 <div class="row mb-3">
     <div class="col-xl-7 mb-2 col-lg-12">
-        <label class="form-label">Filter Type:</label>
+        <label class="form-label">Filter:</label>
         <div class="form-check form-check-inline">
             <input class="form-check-input filter-type" type="radio" name="filterType" id="yearWise" value="yearWise" checked>
             <label class="form-check-label" for="yearWise">Date wise</label>
         </div>
         <div class="form-check form-check-inline">
             <input class="form-check-input filter-type" type="radio" name="filterType" id="dyLDoWise" value="dyLDoWise">
-            <label class="form-check-label" for="dyLDoWise">Dy L&Do wise</label>
+            <label class="form-check-label" for="dyLDoWise">Dy L&DO wise</label>
         </div>
         <div class="form-check form-check-inline">
             <input class="form-check-input filter-type" type="radio" name="filterType" id="sectionWise" value="sectionWise">
@@ -42,16 +40,16 @@
         </div>
     </div>
 
-    <div class="col-xl-5 mb-2 col-lg-12">
+    <div class="col-xl-5 mb-2 col-lg-12"  style="visibility: hidden;">
         <label class="form-label">Demand Type:</label>
         <div class="form-check form-check-inline">
             <input class="form-check-input demand-type" type="radio" name="demandType" id="latestDemand" value="0" checked>
             <label class="form-check-label" for="latestDemand">Latest Demand</label>
         </div>
-        <div class="form-check form-check-inline">
+       <!-- <div class="form-check form-check-inline">
             <input class="form-check-input demand-type" type="radio" name="demandType" id="allDemand" value="1">
             <label class="form-check-label" for="allDemand">All Demand</label>
-        </div>
+        </div>-->
     </div>
 </div>
 
@@ -67,9 +65,9 @@
         </select>
     </div>-->
     <div class="col-md-4 filter-option d-none" id="dyLDoWiseSection">
-        <label for="dyLDo_id" class="form-label">Select Dy L&Do</label>
+        <label for="dyLDo_id" class="form-label">Select Dy L&DO</label>
         <select class="form-select" name="dyLDo_id" id="dyLDo_id">       
-            <option value="">---- Select Dy L&Do ----</option>
+            <option value="">---- Select Dy L&DO ----</option>
             <!-- <option value="0">------ All Dy L&Do -------</option>-->
              @forelse($deputlndousers as $deputlndouser)
             <option value="{{$deputlndouser->id}}">Mr. {{$deputlndouser->name}}</option>
@@ -90,17 +88,17 @@
     </div>
       <div class="col-md-6">
         <div class="row">
-            <div class="col-md-6 mb-2">
+            <div class="col-md-6">
                 <label for="startDate" class="form-label">Start Date:</label>
                 <input type="text" class="form-control datepicker" id="startDate" autocomplete="off">
             </div>
-            <div class="col-md-6 mb-2">
+            <div class="col-md-6">
                 <label for="endDate" class="form-label">End Date:</label>
                 <input type="text" class="form-control datepicker" id="endDate" autocomplete="off">
             </div>
         </div>
     </div>
-    <div class="col-md-2 d-flex align-items-end mb-2">
+    <div class="col-md-2 d-flex align-items-end">
         <button type="button" class="btn btn-primary" id="btn-apply-filter">Apply</button>
     </div>
 </div>
@@ -115,11 +113,42 @@
 
     </div>
 </div>
+<div class="modal fade" id="breakupModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+    <h5 class="modal-title">Demand Headwise Breakup</h5>
+    <button type="button" class="close ms-auto btn btn-danger" data-bs-dismiss="modal">×</button>
+</div>
+      <div class="modal-body" id="breakupBody">
+        Loading...
+      </div>
 
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('footerScript')
 <script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+  $(document).on('click', '.viewBreakup', function(){
+    let demand_id = $(this).data('id');
+    $('#breakupModal').modal('show');
+    $('#breakupBody').html("Loading...");
+    $.ajax({
+        url: "{{ route('get.breakup') }}",
+        type: "GET",
+        data: { demand_id: demand_id },
+        success: function(response){
+            $('#breakupBody').html(response);
+        }
+    });
+});
+
+})
 $(document).ready(function() {
     // Handle radio button change
 	    $('input[name="filterType"]').change(function() {
@@ -208,7 +237,7 @@ $(document).ready(function() {
 		});  
 	 $(document).on("click",".app-query-link",function(e) {
 	 	e.preventDefault();
-    	//alert('hi'); 
+    	//alert('hi');    	
         let selectedService = $(this).data('service');  
         let selectedType = $(this).data('type');  
         let selectedFrom = $(this).data('from');

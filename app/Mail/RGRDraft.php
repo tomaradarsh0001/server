@@ -42,7 +42,6 @@ class RGRDraft extends Mailable
             view: 'rgr.draft',
             with: [
                 'rgr' => $this->data,
-                'demandId' => $this->data->demandId
             ],
         );
     }
@@ -55,8 +54,6 @@ class RGRDraft extends Mailable
     public function attachments(): array
     {
         // return [$this->data->draft_file_path];
-        // $draft_file_path = str_replace('storage', 'puclic', $this->data->draft_file_path);
-        // dd($draft_file_path, Attachment::fromStorage($this->data->draft_file_path));
         return [Attachment::fromStorage($this->data->draft_file_path)];
     }
 }

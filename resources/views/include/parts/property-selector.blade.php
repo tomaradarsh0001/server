@@ -1,3 +1,8 @@
+<!-- <style>
+    .mt-center{
+        margin-top: 2.5rem;
+    }
+</style> -->
 <div class="col-12">
     <div class="row flex-wrap g-3">
         @if(!empty($isApplicant))
@@ -29,7 +34,7 @@
             <div id="colonyIdError" class="text-danger"></div>
         </div>
 
-        <div class="col-12 col-lg-2"> <!-- changed the colomn with col-lg-3 to col-lg-2 anil on 12-09-2025 -->
+        <div class="col-12 col-lg-2">
             <label for="LandType" class="form-label">Block</label>
             <select class="form-control selectpicker" id="block" name="block" aria-label="Default select example">
                 <option value="">Select</option>
@@ -53,11 +58,12 @@
             <div id="plotError" class="text-danger"></div>
         </div>
         @endif
-        <div class="col-12 col-lg-1 text-center mt-auto">
+        <div class="col-12 col-lg-1 text-center">
+            <!-- <h5 class="mt-center">OR</h5> -->
             <h5>OR</h5>
 
         </div>
-        <div class="col col-lg-3"> <!-- changed the colomn with col-lg-2 to col-lg-3 anil on 12-09-2025 -->
+        <div class="col col-lg-3">
             <label for="oldPropertyId" class="form-label">Search By Property Id</label>
             <input type="text" name="oldPropertyId" id="oldPropertyId" class="form-control" placeholder="Enter property id">
         </div>
@@ -88,8 +94,9 @@
         var targetSelect = $('#block')
         targetSelect.html('<option>Select</option>');
         targetSelect.selectpicker('refresh');
-        var reponseUrl = leaseHoldOnly ? "{{url('/rgr/blocks-in-colony')}}" + '/' + selectedColonyId + '/' + 1 : "{{url('/rgr/blocks-in-colony')}}" + '/' + selectedColonyId + '/' + 0;
-        if (selectedColonyId != "") {
+        var reponseUrl = "{{ route('blocksInColony', ['colonyId' => '__ID__', 'leaseHoldOnly' => '__LEASE__']) }}";
+            reponseUrl = reponseUrl.replace('__ID__', selectedColonyId).replace('__LEASE__', leaseHoldOnly ? 1 : 0);        
+            if (selectedColonyId != "") {
             $.ajax({ // call for subtypes for selected property types
                 url: reponseUrl,
                 type: "get",
@@ -115,8 +122,11 @@
         var targetSelect = $('#plot')
         targetSelect.html('<option value="">Select</option>')
         if (selectedColonyId != "") {
-            var reponseUrl = leaseHoldOnly ? "{{url('/rgr/properties-in-block')}}" + '/' + selectedColonyId + '/' + selectedBlock + '/' + 1 : "{{url('/rgr/properties-in-block')}}" + '/' + selectedColonyId + '/' + selectedBlock;
-            $.ajax({
+        var reponseUrl = "{{ route('propertiesInBlock', ['colonyId' => '__COLONY__', 'blockId' => '__BLOCK__', 'leaseHoldOnly' => '__LEASE__']) }}";
+            reponseUrl = reponseUrl
+                .replace('__COLONY__', selectedColonyId)
+                .replace('__BLOCK__', selectedBlock)
+                .replace('__LEASE__', leaseHoldOnly ? 1 : 0);            $.ajax({
                 url: reponseUrl,
                 type: "get",
                 success: function(res) {

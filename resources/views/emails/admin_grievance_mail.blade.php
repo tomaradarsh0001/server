@@ -36,9 +36,7 @@
 <body>
     <div class="container">
         <div class="header">
-        <img src="{{ asset('assets/images/logo-icon.png') }}" style="width: 10%; height: auto;" alt="Land and Development Office">
-
-        <!-- <img src="{{ $message->embed(public_path('assets/images/logo-icon.png')) }}"  alt="Land and Development Office"> -->
+        <img src="{{ $message->embed(public_path('assets/images/logo-icon.png')) }}" style="width: 10%; height: auto;" alt="Land and Development Office">
             <h1>New Public Grievance Recieved</h1>
         </div>
         <div class="content">

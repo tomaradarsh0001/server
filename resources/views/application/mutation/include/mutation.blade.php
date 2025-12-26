@@ -44,40 +44,20 @@
                         placeholder="Full Name*" readonly>
                 </div>
             </div>
-            <input type="hidden" id="isApplicantIndian" name="isApplicantIndian"
-                value="{{ $userDetails->applicantUserDetails->isIndian }}">
-            @if (!empty($userDetails->applicantUserDetails->isIndian) && $userDetails->applicantUserDetails->isIndian == 1)
-                <div class="col-lg-4">
-                    <div class="form-group">
-                        <label for="mutAadharApp" class="form-label">Aadhaar Number</label>
-                        <input type="text" name="mutAadharApp" class="form-control numericOnly" id="mutAadharApp"
-                            maxlength="12" placeholder="Aadhaar Number" readonly>
-                    </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="mutAadharApp" class="form-label">Aadhaar Number</label>
+                    <input type="text" name="mutAadharApp" class="form-control numericOnly" id="mutAadharApp"
+                        maxlength="12" placeholder="Aadhaar Number" readonly>
                 </div>
-                <div class="col-lg-4">
-                    <div class="form-group">
-                        <label for="mutPanApp" class="form-label">PAN Number</label>
-                        <input type="text" name="mutPanApp"
-                            class="form-control pan_number_format text-transform-uppercase" id="mutPanApp"
-                            maxlength="10" placeholder="PAN Number" readonly>
-                    </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="mutPanApp" class="form-label">PAN Number</label>
+                    <input type="text" name="mutPanApp" class="form-control pan_number_format text-transform-uppercase" id="mutPanApp"
+                        maxlength="10" placeholder="PAN Number" readonly>
                 </div>
-            @else
-                <div class="col-lg-4">
-                    <div class="form-group">
-                        <label for="mutdocType" class="form-label">Document Type</label>
-                        <input type="text" name="mutdocType" class="form-control numericOnly" id="mutdocType"
-                            maxlength="12" placeholder="Document Type" readonly>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="form-group">
-                        <label for="mutdocTypeNumber" class="form-label">Document Type Number</label>
-                        <input type="text" name="mutdocTypeNumber" class="form-control text-transform-uppercase"
-                            id="mutdocTypeNumber" maxlength="10" placeholder="PAN Number" readonly>
-                    </div>
-                </div>
-            @endif
+            </div>
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="mutMobilenumberApp" class="form-label">Mobile Number</label>
@@ -215,7 +195,7 @@
         <div class="row g-2">
             <div class="col-lg-12">
                 <div class="part-title mb-2">
-                    <h5>Mutation/Substitution Sought by Applicant on Basis of</h5>
+                    <h5>Mutation Sought by Applicant on Basis of</h5>
                 </div>
             </div>
             <!-- <div class="col-lg-4">
@@ -242,7 +222,8 @@
             @endphp
 
             <div>
-                <h6 class="mr-5 mb-3">Select Documents (Select At Least One) <sup class="text-danger">*</sup></h6>
+                <h6 class="mr-5">Select Documents<sup class="text-danger">*</sup></h6>
+                <p class="mb-4">Select all relevant documents, to be uploaded. At least one document is required.</p>
                 <div class="d-flex align-items-center gap-3 flex-wrap ">
                     @foreach ($documentTypes as $document)
                         <div class="form-check form-check-success">

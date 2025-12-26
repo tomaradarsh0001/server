@@ -14,7 +14,7 @@
 
 <!-- Leaflet CSS-->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="{{asset('assets/MIS_V3/leaflet-labeler.css')}}" />
+{{-- <link rel="stylesheet" href="{{asset('assets/MIS_V3/leaflet-labeler.css')}}" /> --}}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-tooltip@1.0.4/dist/tooltip.min.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 <link rel="stylesheet" href="https://ptma.github.io/Leaflet.Legend/src/leaflet.legend.css" />
@@ -34,7 +34,7 @@
 <!-- LEAFLET -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="{{asset('assets/MIS_V3/leaflet-labeler.js')}}"></script>
+{{-- <script src="{{asset('assets/MIS_V3/leaflet-labeler.js')}}"></script> --}}
 <script src="https://unpkg.com/geojson-vt@3.2.0/geojson-vt.js"></script>
 <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js"></script>
 <script src="https://unpkg.com/@mapbox/leaflet-vector-grid@latest/dist/Leaflet.VectorGrid.min.js"></script>
@@ -51,9 +51,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
 
 <!-- Geojson Data -->
-<script src="{{asset('assets/MIS_V3/Geojson_s/Property_16045.js')}}"></script>
-<script src="{{asset('assets/MIS_V3/Geojson_s/Vacant_Land_P3.js')}}"></script>
-<script src="{{asset('assets/MIS_V3/Logo.js')}}"></script>
+<script src="{{asset('assets/MIS_V5.1/Geojson_s/Property_25999.js')}}"></script>
+{{-- <script src="{{asset('assets/MIS_V3/Geojson_s/Vacant_Land_P3.js')}}"></script>
+<script src="{{asset('assets/MIS_V3/Logo.js')}}"></script>  --}}
 
 </head>
 <style>
@@ -381,10 +381,10 @@
         margin-right: 8px;
     } */
 
-    /* a {
+    a {
         color: inherit !important;
         text-decoration: none;
-    } */
+    }
 
     .h3,
     h3 {

@@ -1,24 +1,21 @@
 @extends('layouts.app')
 
-@section('title', 'Add Template')
+@section('title', 'Templates')
 
 @section('content')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-lite.min.css" rel="stylesheet">
 
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Settings</div>
+        <div class="breadcrumb-title pe-3">Templates</div>
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
-                    <li class="breadcrumb-item">Application Configuration</li>
-                    <li class="breadcrumb-item">Templates</li>
-                    <li class="breadcrumb-item active" aria-current="page">Add Template</li>
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Template</li>
                 </ol>
             </nav>
         </div>
     </div>
-    <hr>
     <div class="card p-3">
         <div class="card-body">
             <form action="{{ route('templates.store') }}" method="POST">
@@ -42,7 +39,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="template" class="form-label">Template</label>
-                    <textarea class="form-control" id="template" name="template" rows="10" required></textarea>
+                    <textarea class="form-control" id="template" name="template" rows="3" required></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Save Template</button>

@@ -11,40 +11,43 @@ use Illuminate\Support\Facades\Storage;
 
 class PaymentService
 {
-    public function makePayemnt($payment)
+     public function makePayemnt($payment)
     {
         // dd($payment);
         $xml = '<BharatKoshPayment DepartmentCode="030" Version="1.0"><Submit>';
         $xml .= '<OrderBatch TotalAmount="' . $payment['amount'] . '" Transactions="1" merchantBatchCode="' . $payment['merchant_batch_code'] . '">';
-        $xml .= '<Order InstallationId="11136" OrderCode="' . $payment['merchant_batch_code'] . '">';
+        $xml .= '<Order InstallationId="11141" OrderCode="' . $payment['merchant_batch_code'] . '">';
         $xml .= '<CartDetails><Description/><Amount CurrencyCode="INR" exponent="0" value="' . $payment['amount'] . '"/>';
         $xml .= '<OrderContent>' . $payment['order_content'] . '</OrderContent><PaymentTypeId>0</PaymentTypeId><PAOCode>043884</PAOCode><DDOCode>243896</DDOCode></CartDetails>';
-        $xml .= '<PaymentMethodMask><Include Code="' . $payment['code'] . '"/></PaymentMethodMask><Shopper><ShopperEmailAddress>' . $payment['email'] . '</ShopperEmailAddress></Shopper>';
+        $xml .= '<PaymentMethodMask><Include Code="'.$payment['code'].'"/></PaymentMethodMask><Shopper><ShopperEmailAddress>' . $payment['email'] . '</ShopperEmailAddress></Shopper>';
         $xml .= '<ShippingAddress><Address><FirstName>' . $payment['first_name'] . '</FirstName><LastName>' . $payment['last_name'] . '</LastName><Address1>' . $payment['address_1'] . '</Address1>' . $payment['address_2'] . '<Address2/><PostalCode>' . $payment['postal_code'] . '</PostalCode><City>' . $payment['city'] . '</City><StateRegion>' . $payment['region'] . '</StateRegion><State>' . $payment['state'] . '</State><CountryCode>' . $payment['country'] . '</CountryCode><MobileNumber>' . $payment['mobile'] . '</MobileNumber></Address></ShippingAddress>';
         $xml .= '<BillingAddress><Address><FirstName>' . $payment['first_name'] . '</FirstName><LastName>' . $payment['last_name'] . '</LastName><Address1>' . $payment['address_1'] . '</Address1>' . $payment['address_2'] . '<Address2/><PostalCode>' . $payment['postal_code'] . '</PostalCode><City>' . $payment['city'] . '</City><StateRegion>' . $payment['region'] . '</StateRegion><State>' . $payment['state'] . '</State><CountryCode>' . $payment['country'] . '</CountryCode><MobileNumber>' . $payment['mobile'] . '</MobileNumber></Address></BillingAddress>';
         $xml .= '<StatementNarrative/><Remarks/></Order></OrderBatch></Submit></BharatKoshPayment>';
         $dom = new \DOMDocument();
         $dom->preserveWhiteSpace = true;
         $dom->loadXML($xml);
-        $simpleFilePath = Storage::disk('public')->path('NTRP/xmls/simple' . date("Ymdhis") . '.xml');
-        $signedFilePath = Storage::disk('public')->path('NTRP/xmls/signed' . date("Ymdhis") . '.xml');
+        $simpleFilePath = Storage::disk('public')->path('NTRP/xmls/simple/simple' . date("Ymdhis") . '.xml');
+        $signedFilePath = Storage::disk('public')->path('NTRP/xmls/signed/signed' . date("Ymdhis") . '.xml');
         // Save the file
         $dom->save($simpleFilePath);
 
-        // signing xml
-        // $cert_store = file_get_contents(Storage::disk('public')->path('NTRP/LAND AND DEVELOPMENT OFFICE.pfx'));
-        $cert_store = file_get_contents(Storage::disk('public')->path('NTRP/TestCertForLOBA_Exp_2026.pfx'));
-        $status = openssl_pkcs12_read($cert_store, $cert_info, '123456');
-        $private_key = $cert_info['pkey'];
-        $X509certificate = $cert_info['cert'];
-        //Read the private key
-        $pkeyid = openssl_pkey_get_private($private_key);
-        $details = openssl_pkey_get_details($pkeyid);
+ 
+        $X509certificate = file_get_contents(Storage::disk('public')->path('NTRP/certificate.pem'));
+        $privatePemFile = file_get_contents(Storage::disk('public')->path('NTRP/private-key-encrypted.pem'));
+
+        // Provide the passphrase as the second argument
+        $pkeyid = openssl_pkey_get_private($privatePemFile, '12345678');
+
+        if (!$pkeyid) {
+            die("Failed to load private key.");
+        }
+        // $pkeyid = openssl_pkey_get_private($private_key);
+        // $details = openssl_pkey_get_details($pkeyid);
         $X509 = openssl_x509_parse($X509certificate);
         $publicCertificatePureString = str_replace('-----BEGIN CERTIFICATE-----', '', $X509certificate);
         $publicCertificatePureString = str_replace('-----END CERTIFICATE-----', '', $publicCertificatePureString);
         $publicCertificatePureString = preg_replace("/\r|\n/", "", $publicCertificatePureString);
-        dd($private_key, $X509certificate);
+
         $X509Issuer = $X509['issuer']['CN'];
         $X509IssuerName = 'CN=' . $X509Issuer;
         $X509issuerserial = $X509['serialNumber'];
@@ -52,7 +55,7 @@ class PaymentService
         $XMLRequestDOMDoc = new \DOMDocument();
         $XMLRequestDOMDoc->preserveWhiteSpace = true;
         $XMLRequestDOMDoc->load($simpleFilePath);
-
+       
         $canonical = $XMLRequestDOMDoc->C14N();
         $DigestValue = base64_encode(hash('sha1', $canonical, true));
 
@@ -110,7 +113,6 @@ class PaymentService
         file_put_contents($signedFilePath, $XMLRequestDOMDoc->saveXML());
         $data = file_get_contents(($signedFilePath));
         $base64 = base64_encode($data);
-
         /** update payemnt data - add base64 in row */
         $payment = Payment::where('unique_payment_id', $payment['order_code'])->first();
         if (!empty($payment)) {
@@ -120,7 +122,8 @@ class PaymentService
         }
         // dd($base64);
         $url = config('constants.paymentURL');
-        echo '<form id="postForm" action="' . $url . '" method="POST"><input type="hidden" name="bharrkkosh"value= "' . $base64 . '">
+//$url = "https://www.google.com";       
+ echo '<form id="postForm" action="' . $url . '" method="POST"><input type="hidden" name="bharrkkosh"value= "' . $base64 . '">
             <h2>Redirecting to payment gateway</h2>
         </form>';
         // Automatically submit the form using JavaScript
@@ -131,41 +134,11 @@ class PaymentService
       </script>';
 
 
-        /* ---------------------------------------------------------------------------------- callback after failed or success */
-        /*$response = $request->BharatkoshResponse;
-        $response_decode = base64_decode($response);
-        $xmlDoc = new \DOMDocument();
-        $xmlDoc->preserveWhiteSpace = true;
-        $xmlDoc->loadXML($response_decode);
-        $xpath = new \DOMXPath($xmlDoc);
-        $xpath->registerNamespace('secdsig', 'http://www.w3.org/2000/09/xmldsig#');
-        $query = ".//secdsig:Signature";
-        $nodeset = $xpath->query($query, $xmlDoc);
-
-        $query = "./secdsig:SignedInfo";
-        $signatureNode = $nodeset->item(0);
-        $nodeset = $xpath->query($query, $signatureNode);
-        $signedInfoNode = $nodeset->item(0);
-        // <element ref="ds:CanonicalizationMethod"/> using this line find c14N
-        $signedInfoNodeCanonicalized = $signedInfoNode->C14N();
-        $pub_key = openssl_pkey_get_public(file_get_contents(Storage::disk('local')->path('loba.pem')));
-        $publicKey = openssl_pkey_get_details($pub_key);
-        $query = 'string(./secdsig:SignatureValue)';
-        $signature = base64_decode($xpath->evaluate($query, $signatureNode));
-        $ok = openssl_verify($signedInfoNodeCanonicalized, $signature, $publicKey['key']);
-        if ($ok == 1) {
-            $xml = simplexml_load_string($response_decode);
-        } else {
-            return "Verify not worked";
-        } */
-
-        /* ---------------------------------------------- Status Check ------------------------------ */
-
         $orderId = '';
         $purpose = '';
 
         // $url = "https://bharatkosh.gov.in/getstatus";
-        $url = "http://164.100.129.32/bharatkosh/getstatus";
+       /* $url = "http://164.100.129.32/bharatkosh/getstatus";
         $data = array("OrderId" => $orderId, "PurposeId" => $purpose);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -184,10 +157,13 @@ class PaymentService
                 return $response_api;
             }
         }
+*/
     }
+
 
     public function processSuccessfulPayment($paymentRecord)
     {
+        // dd($paymentRecord);
         $payemntType = getServiceCodeById($paymentRecord->type);
         if ($payemntType == "PAY_DEMAND") {
             if (is_null($paymentRecord->demand_id)) {

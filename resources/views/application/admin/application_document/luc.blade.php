@@ -1,5 +1,5 @@
 {{--<div class="part-title mt-2">
-    <h5>Property Document Details</h5>
+    <h5>Details of Documents</h5>
 </div>
 <div class="part-details">
     <div class="container-fluid pb-3">
@@ -202,7 +202,7 @@
                                 <td>
                                     <span class="doc-name">
                                     {{ $doc['title'] }} 
-                                    @if($doc['file_path'] && !isset($downloading))
+                                    @if($doc['file_path'] )
                                         <a href="{{ asset('storage/' . $doc['file_path'] ?? '') }}"
                                             target="_blank" class="text-danger view_docs" title="View Uploaded Files">
                                             <i class="bx bxs-file-pdf"></i>

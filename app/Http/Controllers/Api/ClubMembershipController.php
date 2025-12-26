@@ -15,6 +15,7 @@ use App\Services\CommonService; //Added by SwatiMishra on 29052025 for updating 
 use App\Services\SettingsService;
 use App\Services\CommunicationService;
 use App\Mail\CommonMail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ClubMembershipController extends Controller
@@ -178,10 +179,81 @@ class ClubMembershipController extends Controller
 
             $action = 'CLUB_MEM_NEW';
 
-            $this->settingsService->applyMailSettings($action);
-            Mail::to($membership->email)->send(new CommonMail($notificationData, $action));
-            $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
-            $this->communicationService->sendWhatsAppMessage($notificationData, $membership->mobile, $action);
+            // $this->settingsService->applyMailSettings($action);
+            // Mail::to($membership->email)->send(new CommonMail($notificationData, $action));
+            // --- EMAIL ---
+                try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($membership->email, $mailSettings);
+
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $membership->email,
+                        'data'   => $notificationData,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $membership->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+            // $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
+            try {
+                        $isSmsSuccess = $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
+
+                        if ($isSmsSuccess) {
+                            \Log::info("SMS sent successfully.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            ]);
+                        } else {
+                            Log::warning("SMS sending failed.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("SMS sending threw exception.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
+            // $this->communicationService->sendWhatsAppMessage($notificationData, $membership->mobile, $action);
+            // --- WHATSAPP ---
+                try {
+                    $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                        $notificationData,
+                        $membership->mobile,
+                        $action
+                    );
+
+                    if ($isWhatsAppSuccess) {
+                        Log::info("WhatsApp sent successfully.", [
+                            'mobile'      => $membership->mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                        ]);
+                    } else {
+                        Log::warning("WhatsApp sending failed.", [
+                            'mobile'      => $membership->mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("WhatsApp sending threw exception.", [
+                        'mobile'      => $membership->mobile,
+                        // 'countryCode' => $appointment->country_code,
+                        'action'      => $action,
+                        'error'       => $e->getMessage(),
+                    ]);
+                }
 
             return response()->json(['message' => 'Membership created successfully', 'id' => $membership->id], 201);
         } catch (\Exception $e) {
@@ -333,10 +405,81 @@ class ClubMembershipController extends Controller
 
                 $action = 'CLUB_MEM_UPDATE';
 
-                $this->settingsService->applyMailSettings($action);
-                Mail::to($membership->email)->send(new CommonMail($notificationData, $action));
-                $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
-                $this->communicationService->sendWhatsAppMessage($notificationData, $membership->mobile, $action);
+                // $this->settingsService->applyMailSettings($action);
+                // Mail::to($membership->email)->send(new CommonMail($notificationData, $action));
+                // --- EMAIL ---
+                try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($membership->email, $mailSettings);
+
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $membership->email,
+                        'data'   => $notificationData,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $membership->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+                // $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
+                try {
+                        $isSmsSuccess = $this->communicationService->sendSmsMessage($notificationData, $membership->mobile, $action);
+
+                        if ($isSmsSuccess) {
+                            \Log::info("SMS sent successfully.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            ]);
+                        } else {
+                            Log::warning("SMS sending failed.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("SMS sending threw exception.", [
+                            'mobile'      => $membership->mobile,
+                            'action'      => $action,
+                            'notificationData'      => $notificationData,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
+                // $this->communicationService->sendWhatsAppMessage($notificationData, $membership->mobile, $action);
+                // --- WHATSAPP ---
+                try {
+                    $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                        $notificationData,
+                        $membership->mobile,
+                        $action
+                    );
+
+                    if ($isWhatsAppSuccess) {
+                        Log::info("WhatsApp sent successfully.", [
+                            'mobile'      => $membership->mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                        ]);
+                    } else {
+                        Log::warning("WhatsApp sending failed.", [
+                            'mobile'      => $membership->mobile,
+                            // 'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("WhatsApp sending threw exception.", [
+                        'mobile'      => $membership->mobile,
+                        // 'countryCode' => $appointment->country_code,
+                        'action'      => $action,
+                        'error'       => $e->getMessage(),
+                    ]);
+                }
 
                 return response()->json(['message' => 'Document uploaded successfully', 'file_path' => $path], 200);
             } catch (\Exception $e) {

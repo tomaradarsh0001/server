@@ -39,9 +39,10 @@
             }
         }
 
+
         .duplicate-row, .duplicate-row > td {
             /* background-color: #df7d7d94 !important; */
-            background-color:#ecb4b4!important;
+            background-color: #ecb4b4 !important;
             /* Light red background */
         }
 
@@ -50,9 +51,25 @@
             background-color: #ffa8a836 !important;
         }
     </style>
-    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+    {{-- <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
         <div class="breadcrumb-title pe-3">Club Membership</div>
         @include('include.partials.breadcrumbs')
+    </div> --}}
+
+    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Club Membership</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                    </li>
+                    <li class="breadcrumb-item" aria-current="page">Public Services</li>
+                    <li class="breadcrumb-item" aria-current="page">Club Membership</li>
+                    <li class="breadcrumb-item active" aria-current="page">Finalized Applications</li>
+                </ol>
+            </nav>
+        </div>
+        <!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
     </div>
     <!--breadcrumb-->
     <hr>

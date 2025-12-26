@@ -24,6 +24,10 @@
 
         /* Ensure responsiveness on smaller screens */
         @media (max-width: 768px) {
+            div.dt-buttons {
+                width:100%;
+            }
+
             div.dt-buttons.btn-group {
                 flex-direction: column;
                 align-items: flex-start;
@@ -82,7 +86,7 @@
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">Update Request List</li>
                 </ol>

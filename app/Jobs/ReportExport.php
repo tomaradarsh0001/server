@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Rap2hpoutre\FastExcel\FastExcel;
@@ -53,6 +52,7 @@ class ReportExport implements ShouldQueue
             ];
         }
 
+        // } while ($page < 3); //while ($page < 3); while (count($results) == $chunkSize);
         if (!empty($rows)) {
             (new FastExcel($rows))->export(Storage::path($fileName));
             if (!is_null($this->email)) {

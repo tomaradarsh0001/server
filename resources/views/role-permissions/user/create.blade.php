@@ -14,8 +14,8 @@
     }
 
     .custom-dropdown {
-        height: 400px !important; /* Adjust height as needed */
-        overflow-y: auto; /* Enables scroll if content overflows */
+        height: 400px !important;
+        overflow-y: auto;
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -26,7 +26,7 @@
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                     </li>
                     <li class="breadcrumb-item">Application Configuration</li>
                     <li class="breadcrumb-item">User</li>
@@ -40,7 +40,7 @@
         <div class="col pt-3">
             <div class="card">
                 <div class="card-body">
-                    <form id="userForm" action="{{ url('users') }}" method="POST" onsubmit="submitForm(event)">
+                    <form id="userForm" action="{{ route('users.store') }}" method="POST" onsubmit="submitForm(event)">
                         @csrf
                         <div class="row">
                             <div class="col-12 col-lg-4 pb-4">

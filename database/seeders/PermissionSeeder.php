@@ -42,6 +42,7 @@ class PermissionSeeder extends Seeder
             'list.application', // Create New Permission for Received & Disposed Inner Sub Menu of Main Application Menu for Office User Role like Section & Deputy - Lalit Tiwari (27/02/2025)
             'miscellaneous', //Create New Permission miscellaneous for Miscellaneous - Lalit Tiwari (5/03/2025)
             'miscellaneous.property.transfer' // //Create New Permission for Property Transfer Submenu - Lalit Tiwari (5/03/2025)
+        
         ];
         foreach ($permissions as $permission) {
             if (!(Permission::where('name', $permission)->exists())) {

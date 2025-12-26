@@ -23,19 +23,25 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {{-- breadcrumb  --}}
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Logistics</div>
-        @include('include.partials.breadcrumbs')
+        <div class="breadcrumb-title pe-3">Logistic</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Add Items</li>
+                </ol>
+            </nav>
+        </div>
     </div>
-
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-end py-3">
-                <a href="{{ url('logistic/items') }}">
+                <a href="{{ route('logistic.index') }}">
                     <button type="button" class="btn btn-danger px-2 mx-2">← Back</button>
                 </a>
-                <!-- <a href="{{ url('logistic/category') }}">
+                <!-- <a href="{{ route('category.index') }}">
                                     <button type="button" class="btn btn-primary px-2">+ Add Category</button>
                                 </a> -->
             </div>
@@ -60,7 +66,7 @@
                 <div class="form-row m-3">
                     <div class="form-group col-md-6">
                         <label class="form-label" for="category_id">Category:</label>
-                        <a href="{{ url('logistic/category/') }}" class="add-btn">&plus;&nbsp;Add
+                        <a href="{{ route('category.index') }}" class="add-btn">&plus;&nbsp;Add
                             Category</a>
                         <select id="category_id" name="category_id" class="form-select mb-3" aria-label="Select">
                             <option value="" selected>Select</option>

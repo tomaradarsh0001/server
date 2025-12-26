@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'SMS')
+@section('title', 'SMS Settings')
 
 @section('content')
 <style>
@@ -55,9 +55,9 @@
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
-                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">SMS</li>
+                <li class="breadcrumb-item active" aria-current="page">Sms</li>
             </ol>
             </li>
             </ol>
@@ -101,7 +101,7 @@
                             <div class="testSmsError text-danger text-capitalize"></div>
                             <div class="testSmsSuccess text-success text-capitalize"></div>
                         </td>
-                        <td>{{ $items[$data->id] ?? 'Default' }}</td>
+                        <td>{{$data->action}}</td>
                         <td>{{$data->vendor}}</td>
                         <td>{{ truncate_url($data->api, 30) }}</td>
                         <td>

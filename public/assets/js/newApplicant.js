@@ -200,7 +200,7 @@ $("#convDocPropertyPhoto_repeater").createRepeater({
 // End
 function getBaseURL() {
   const { protocol, hostname, port } = window.location;
-  return `${protocol}//${hostname}${port ? ":" + port : ""}`;
+  return `${protocol}//${hostname}${port ? ":" + port : ""}/edharti`;
 }
 
 $(document).ready(function () {
@@ -231,20 +231,32 @@ $(document).ready(function () {
       getUserDetails()
         .then(function (response) {
           if (response.status) {
+            console.log(response.data);
+
             $("#nocNameApp").val(response.data.user.name);
-            $("#nocGenderApp").val(response.data.details.gender);
-            $("#nocDateOfBirthApp").val(response.data.details.dob);
+            if (response.data.details.gender) {
+              $("#nocGenderApp").val(response.data.details.gender);
+            } else {
+              $("#nocGenderApp").closest('.col-lg-4').hide();
+            }
+            if (response.data.details.dob) {
+              $("#nocDateOfBirthApp").val(response.data.details.dob);
+            } else {
+              $("#nocDateOfBirthApp").closest('.col-lg-4').hide();
+            }
+            if (response.data.details.so_do_spouse) {
+              $("#nocprefixApp").html(response.data.details.so_do_spouse);
+            } else {
+              $("#nocprefixApp").closest('.col-lg-4').hide();
+            }
+
             $("#nocAgeApp").val(response.data.details.age);
-            $("#nocprefixApp").html(response.data.details.so_do_spouse);
             $("#nocFathernameApp").val(response.data.details.second_name);
             $("#isApplicantIndian").val(response.data.details.isIndian);
             if (response.data.details.isIndian == 1) {
-              $("#nocAadharApp").val(
-                decryptString(response.data.details.aadhar_card)
-              );
-              $("#nocPanApp").val(
-                decryptString(response.data.details.pan_card)
-              );
+              $("#nocAadharApp").val(decryptString(response.data.details.aadhar_card));
+              const pancard = response.data.details.pan_card ? response.data.details.pan_card : response.data.details.organization_pan_card
+              $("#nocPanApp").val(decryptString(pancard));
             } else {
               let varDocType;
               if (response.data.details.documentType === "pion") {
@@ -259,6 +271,7 @@ $(document).ready(function () {
                 decryptString(response.data.details.documentTypeNumber)
               );
             }
+
             $("#nocMobilenumberApp").val(response.data.user.mobile_no);
           }
         })
@@ -286,35 +299,36 @@ $(document).ready(function () {
         .then(function (response) {
           if (response.status) {
             $("#mutNameApp").val(response.data.user.name);
-            $("#mutGenderApp").val(response.data.details.gender);
-            $("#mutDateOfBirth").val(response.data.details.dob);
+            // $("#mutGenderApp").val(response.data.details.gender);
+            // $("#mutDateOfBirth").val(response.data.details.dob);
             $("#mutAge").val(response.data.details.age);
-            $("#mutprefixApp").html(response.data.details.so_do_spouse);
+            // $("#mutprefixApp").html(response.data.details.so_do_spouse);
             $("#mutFathernameApp").val(response.data.details.second_name);
-            $("#isApplicantIndian").val(response.data.details.isIndian);
-            if (response.data.details.isIndian == 1) {
-              $("#mutAadharApp").val(
-                decryptString(response.data.details.aadhar_card)
-              );
-              $("#mutPanApp").val(
-                decryptString(response.data.details.pan_card)
-              );
-            } else {
-              let varDocType;
-              if (response.data.details.documentType === "pion") {
-                varDocType = "Person of Indian Origin Number";
-              } else if (response.data.details.documentType === "ocin") {
-                varDocType = "Overseas Citizen of India Number";
-              } else {
-                varDocType = "Passport Number";
-              }
-              $("#mutdocType").val(varDocType);
-              $("#mutdocTypeNumber").val(
-                decryptString(response.data.details.documentTypeNumber)
-              );
-            }
-
+            $("#mutAadharApp").val(decryptString(response.data.details.aadhar_card));
+            // $("#mutPanApp").val(decryptString(response.data.details.pan_card));
             $("#mutMobilenumberApp").val(response.data.user.mobile_no);
+
+
+
+            if (response.data.details.gender) {
+              $("#mutGenderApp").val(response.data.details.gender);
+            } else {
+              $("#mutGenderApp").closest('.col-lg-4').hide();
+            }
+            if (response.data.details.dob) {
+              $("#mutDateOfBirth").val(response.data.details.dob);
+            } else {
+              $("#mutDateOfBirth").closest('.col-lg-4').hide();
+            }
+            if (response.data.details.so_do_spouse) {
+              $("#mutprefixApp").html(response.data.details.so_do_spouse);
+            } else {
+              $("#mutprefixApp").closest('.col-lg-4').hide();
+            }
+            const pancard = response.data.details.pan_card ? response.data.details.pan_card : response.data.details.organization_pan_card
+            $("#mutPanApp").val(decryptString(pancard));
+
+
           }
         })
         .catch(function (error) {
@@ -349,17 +363,36 @@ $(document).ready(function () {
         .then(function (response) {
           if (response.status) {
             $("#convname").val(response.data.user.name);
-            $("#convgender").val(response.data.details.gender);
-            $("#conDateOfBirth").val(response.data.details.dob);
+            // $("#convgender").val(response.data.details.gender);
+            // $("#conDateOfBirth").val(response.data.details.dob);
             $("#conAge").val(response.data.details.age);
-            $("#convprefixApp").html(response.data.details.so_do_spouse);
+            // $("#convprefixApp").html(response.data.details.so_do_spouse);
             $("#convfathername").val(response.data.details.second_name);
+            // $("#convaadhar").val(decryptString(response.data.details.aadhar_card));
+            // $("#convpan").val(response.data.details.pan_card);
+            if (response.data.details.gender) {
+              $("#convgender").val(response.data.details.gender);
+            } else {
+              $("#convgender").closest('.col-lg-4').hide();
+            }
+            if (response.data.details.dob) {
+              $("#conDateOfBirth").val(response.data.details.dob);
+            } else {
+              $("#conDateOfBirth").closest('.col-lg-4').hide();
+            }
+            if (response.data.details.so_do_spouse) {
+              $("#convprefixApp").html(response.data.details.so_do_spouse);
+            } else {
+              $("#convprefixApp").closest('.col-lg-4').hide();
+            }
+
             $("#isApplicantIndian").val(response.data.details.isIndian);
             if (response.data.details.isIndian == 1) {
               $("#convaadhar").val(
                 decryptString(response.data.details.aadhar_card)
               );
-              $("#convpan").val(decryptString(response.data.details.pan_card));
+              const pancard = response.data.details.pan_card ? response.data.details.pan_card : response.data.details.organization_pan_card
+              $("#convpan").val(decryptString(pancard));
             } else {
               let varDocType;
               if (response.data.details.documentType === "pion") {
@@ -374,6 +407,7 @@ $(document).ready(function () {
                 decryptString(response.data.details.documentTypeNumber)
               );
             }
+
             $("#convmobilenumber").val(response.data.user.mobile_no);
           }
         })
@@ -501,8 +535,11 @@ $("input:checkbox").on("click", function () {
   }
 });
 
-$(document).on("change", 'input[type="file"]', function () {
-  if ($(this).data("name") === "photo") {
+$(document).on('change', 'input[type="file"]', function () {
+
+  // $('input[type="file"]').on('change', function () {
+
+  if ($(this).data('name') === "photo") {
     return;
   }
 
@@ -515,23 +552,23 @@ $(document).on("change", 'input[type="file"]', function () {
   if (!file.name.toLowerCase().endsWith(".pdf")) {
     showPopup("Invalid file type. Only PDF files are allowed.");
 
+    // Clear inline error if exists
     let errorDivId = $(input).data("error");
     if (errorDivId) $(errorDivId).hide();
 
-    input.value = "";
+    input.value = ""; // reset file
     return;
   }
 
   // Check file size > 5MB
   if (file.size > 5 * 1024 * 1024) {
-    showPopup(
-      "The selected PDF is larger than 5 MB. Please upload a smaller file."
-    );
+    showPopup("The selected PDF is larger than 5 MB. Please upload a smaller file.");
 
+    // Clear inline error if exists
     let errorDivId = $(input).data("error");
     if (errorDivId) $(errorDivId).hide();
 
-    input.value = "";
+    input.value = ""; // reset file
     return;
   }
 
@@ -718,7 +755,8 @@ document.addEventListener("DOMContentLoaded", function () {
       buildingNameError.style.display = "block";
       return false;
     } else if (!regex.test(buildingNameValue)) {
-      buildingNameError.textContent = "Only letters and number are allowed.";
+      buildingNameError.textContent =
+        "Only letters and number are allowed.";
       buildingNameError.style.display = "block";
       return false;
     } else {
@@ -756,7 +794,8 @@ document.addEventListener("DOMContentLoaded", function () {
       presentOccupantNameError.style.display = "block";
       return false;
     } else if (!regex.test(presentOccupantNameValue)) {
-      presentOccupantNameError.textContent = "Only letters are allowed.";
+      presentOccupantNameError.textContent =
+        "Only letters are allowed.";
       presentOccupantNameError.style.display = "block";
       return false;
     } else {
@@ -934,7 +973,6 @@ document.addEventListener("DOMContentLoaded", function () {
     var isApplicationTypeValid = validateApplicationType();
     var isStatusOfApplicantValid = validateStatusOfApplicant();
     // LUC
-    var isDisplayEstimatedCharges = displayEstimatedCharges();
     // var isMixedLUCValid = validateMixedLUCSection();
     var isStatusOfChangePropertyValid = validateStatusOfChangeProperty();
     var isStatusOfChangeSubPropertyValid = validateStatusOfChangeSubProperty();
@@ -944,7 +982,6 @@ document.addEventListener("DOMContentLoaded", function () {
       isPropertyStatusValid &&
       isApplicationTypeValid &&
       isStatusOfApplicantValid &&
-      isDisplayEstimatedCharges &&
       // isMixedLUCValid &&
       isStatusOfChangePropertyValid &&
       isStatusOfChangeSubPropertyValid
@@ -1059,6 +1096,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
   }
+
   // added by anil for new fucntion luc property photo optional on 09-06-2025
   function validateLUCPhotoOptional() {
     if (lucPhotoOptional.files.length > 0) {
@@ -1139,7 +1177,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var isPropertyTaxAssessmentReceiptValid =
       validatePropertyTaxAssessmentReceipt();
     var isLUCPhoto1Valid = validateLUCPhoto1();
-    var isLucPhotoOptional = validateLUCPhotoOptional();
+    var isLucPhotoOptional = validateLUCPhotoOptional()
     var isLUCMPDPermitValid = validateLUCMPDPermit();
     var isAgreeConsentLUCValid = validateAgreeConsentLUC();
     var isAppOtherDoc = validateAppOtherDoc("LUC-2");
@@ -1166,10 +1204,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var isColoredPhotographOfPropertyValidDoa =
       validateColoredPhotographOfPropertyDoa();
     var isIndemnityBondValidDoa = validateIndemnityBondDoa();
-    var isPOAOwnerDoa = validatePOAOwnerDoa();
     var isOtherDocumentValid = validateDoaOtherDoc();
     // var isOtherDocumentValid = validateOtherDocument(); // Comment to make other document optional field - Lalit Tiwari on 06/May/2025
-    // var isAppOtherDoc = validateAppOtherDoc("DOA-2");
     let isPoAValid = validatePOADoc("DOA-2");
     var isValidateAgreeConsentDoa = validateAgreeConsentDoa();
     return (
@@ -1179,10 +1215,8 @@ document.addEventListener("DOMContentLoaded", function () {
       isPaymentReceiptValidDoa &&
       isColoredPhotographOfPropertyValidDoa &&
       isIndemnityBondValidDoa &&
-      isPOAOwnerDoa &&
       isOtherDocumentValid &&
       // isOtherDocumentValid && // Comment to make other document optional field - Lalit Tiwari on 06/May/2025
-      // isAppOtherDoc &&
       isPoAValid &&
       isValidateAgreeConsentDoa
     );
@@ -1253,6 +1287,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
   } */
+
   function validatePaymentReceiptDoa() {
     if (PaymentReceipt.files.length > 0) {
       var file = PaymentReceipt.files[0];
@@ -1297,7 +1332,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
       }
       ColoredPhotographOfPropertyError.textContent =
-        "Colored photograph of property is required.";
+        "Color photograph of property is required.";
       return false;
     }
   }
@@ -1324,28 +1359,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function validatePOAOwnerDoa() {
-    if (power_of_attorney_given_by_owner.files.length > 0) {
-      var file = power_of_attorney_given_by_owner.files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        power_of_attorney_given_by_ownerError.textContent = "File size must be less than 5 MB.";
-        return false;
-      } else if (!file.name.endsWith(".pdf")) {
-        power_of_attorney_given_by_ownerError.textContent = "Only PDF files are allowed.";
-        return false;
-      } else {
-        power_of_attorney_given_by_ownerError.textContent = "";
-        return true;
-      }
-    } else {
-      if (power_of_attorney_given_by_owner.getAttribute("data-should-validate") == 1) {
-        return true;
-      }
-      power_of_attorney_given_by_ownerError.textContent = "Power of attorney is required.";
-      return false;
-    }
-  }
-
   function validateAgreeConsentDoa() {
     if (!agreeDOAConsent.checked) {
       agreeDOAConsentError.textContent = "Please accept terms & conditions.";
@@ -1357,6 +1370,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // added by anil for dos 2 step other doc valitdaion on 13-06-2025
   function validateDoaOtherDoc() {
     const otherDocInput = document.querySelector(".otherDocuemntByApplicant");
     const otherDocError = document.getElementById("OtherDocumentError");
@@ -1451,7 +1465,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function validateExecutedOn() {
     var mutExecutedOnAsConLeaseValue = mutExecutedOnAsConLease.value.trim();
     if (mutExecutedOnAsConLeaseValue === "") {
-      mutExecutedOnAsConLeaseError.textContent = "Executed on is required.";
+      mutExecutedOnAsConLeaseError.textContent =
+        "Executed on is required.";
       mutExecutedOnAsConLeaseError.style.display = "block";
       return false;
     } else {
@@ -1616,8 +1631,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if 'Page number From' is a positive integer
     if (parseInt(pagenoValueFrom) <= 0) {
-      pagenoFromError.textContent =
-        "Page number from must be a positive number.";
+      pagenoFromError.textContent = "Page number from must be a positive number.";
       pagenoFromError.style.display = "block";
       return false;
     }
@@ -1659,8 +1673,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Ensure regdate is not earlier than mutExecutedOnAsConLease
     if (regdateObj < mutExecutedOnAsConLeaseObj) {
-      regdateError.textContent =
-        "Registration cannot occur prior to the execution date.";
+      regdateError.textContent = "Registration cannot occur prior to the execution date.";
       regdateError.style.display = "block";
       regdate.value = ""; // Clear the invalid date
       return false;
@@ -1676,7 +1689,8 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     if (soughtByApplicantValue.length === 0) {
       soughtByApplicantError.style.display = "block";
-      soughtByApplicantError.textContent = "Select at least one document.";
+      soughtByApplicantError.textContent =
+        "Select at least one document.";
       return false;
     } else {
       soughtByApplicantError.style.display = "none";
@@ -1799,7 +1813,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "courtorderattestedbyConversion"
   );
   var convYesMortgaged = document.getElementById("YesMortgagedConversion");
-  var convMortgageeNOC = document.getElementById("convMortgageeBankNOC");
+  // var convMortgageeNOC = document.getElementById("convMortgageeBankNOC");
   var convDateOfNOC = document.getElementById("NOCAttestationDateConversion");
   var convMortgageeIssuingAuthority = document.getElementById(
     "NOCIssuedByConversion"
@@ -1822,7 +1836,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "YesCourtOrderConversionError"
   );
   var convCaseNoError = document.getElementById("convCaseNoError");
-  var convCaseDetailError = document.getElementById("convCaseDetailError");
+  // var convCaseDetailError = document.getElementById("convCaseDetailError");
   var convCourtOrderFileError = document.getElementById(
     "convCourtOrderFileError"
   );
@@ -1835,9 +1849,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var convYesMortgagedError = document.getElementById(
     "YesMortgagedConversionError"
   );
-  var convMortgageeNOCError = document.getElementById(
-    "convMortgageeBankNOCError"
-  );
+  // var convMortgageeNOCError = document.getElementById(
+  //   "convMortgageeBankNOCError"
+  // );
   var convDateOfNOCError = document.getElementById(
     "NOCAttestationDateConversionError"
   );
@@ -1848,8 +1862,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function validateConvExecutedfavour() {
     var convExecutedFavourValue = convExecutedFavour.value.trim();
     if (convExecutedFavourValue === "") {
-      convExecutedFavourError.textContent =
-        "Executed in favour of is required.";
+      convExecutedFavourError.textContent = "Executed in favour of is required.";
       convExecutedFavourError.style.display = "block";
       return false;
     } else {
@@ -1962,8 +1975,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the value is numeric
     if (!/^\d+$/.test(convPagenoFromValue)) {
-      convPagenoFromError.textContent =
-        "Page number from must be a numeric value.";
+      convPagenoFromError.textContent = "Page number from must be a numeric value.";
       convPagenoFromError.style.display = "block";
       return false;
     }
@@ -2011,8 +2023,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the value is positive
     if (parseFloat(convPagenoToValue) <= 0) {
-      convPagenoToError.textContent =
-        "Page number to must be a positive number.";
+      convPagenoToError.textContent = "Page number to must be a positive number.";
       convPagenoToError.style.display = "block";
       return false;
     }
@@ -2083,13 +2094,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // 2. Case Detail
-      if (convCaseDetail.value.trim() === "") {
-        convCaseDetailError.textContent = "Case detail is required.";
-        convCaseDetailError.style.display = "block";
-        isconvYesCourtOrderValid = false;
-      } else {
-        convCaseDetailError.style.display = "none";
-      }
+      // if (convCaseDetail.value.trim() === "") {
+      //   convCaseDetailError.textContent = "Case detail is required.";
+      //   convCaseDetailError.style.display = "block";
+      //   isconvYesCourtOrderValid = false;
+      // } else {
+      //   convCaseDetailError.style.display = "none";
+      // }
 
       // 3. Court Order File (skip validation if data-should-validate == 1)
       if (convCourtOrderFile.getAttribute("data-should-validate") != "1") {
@@ -2130,8 +2141,7 @@ document.addEventListener("DOMContentLoaded", function () {
         convCourtOrderDateError.style.display = "block";
         isconvYesCourtOrderValid = false;
       } else if (convCourtOrderDate.value.trim() > today) {
-        convCourtOrderDateError.textContent =
-          "Date of document cannot be in the future.";
+        convCourtOrderDateError.textContent = "Date of document cannot be in the future.";
         convCourtOrderDateError.style.display = "block";
         convCourtOrderDate.value = "";
         isconvYesCourtOrderValid = false;
@@ -2169,36 +2179,36 @@ document.addEventListener("DOMContentLoaded", function () {
       let isconvYesMortgagedValid = true;
 
       // 1. Mortgagee NOC File (skip if data-should-validate == 1)
-      if (convMortgageeNOC.getAttribute("data-should-validate") != "1") {
-        if (
-          convMortgageeNOC.files.length === 0 ||
-          convMortgageeNOC.value.trim() === ""
-        ) {
-          convMortgageeNOCError.textContent = "Mortgagee NOC PDF is required.";
-          convMortgageeNOCError.style.display = "block";
-          isconvYesMortgagedValid = false;
-        } else {
-          const file = convMortgageeNOC.files[0];
+      // if (convMortgageeNOC.getAttribute("data-should-validate") != "1") {
+      //   if (
+      //     convMortgageeNOC.files.length === 0 ||
+      //     convMortgageeNOC.value.trim() === ""
+      //   ) {
+      //     convMortgageeNOCError.textContent = "Mortgagee NOC PDF is required.";
+      //     convMortgageeNOCError.style.display = "block";
+      //     isconvYesMortgagedValid = false;
+      //   } else {
+      //     const file = convMortgageeNOC.files[0];
 
-          // Check if the file is a PDF
-          if (file.type !== "application/pdf") {
-            convMortgageeNOCError.textContent = "Only PDF files are allowed.";
-            convMortgageeNOCError.style.display = "block";
-            isconvYesMortgagedValid = false;
-          }
-          // Check if the file size is within the allowed limit
-          else if (file.size > CourtMaxFileSize) {
-            convMortgageeNOCError.textContent =
-              "PDF size must be less than 5MB.";
-            convMortgageeNOCError.style.display = "block";
-            isconvYesMortgagedValid = false;
-          } else {
-            convMortgageeNOCError.style.display = "none";
-          }
-        }
-      } else {
-        convMortgageeNOCError.style.display = "none";
-      }
+      //     // Check if the file is a PDF
+      //     if (file.type !== "application/pdf") {
+      //       convMortgageeNOCError.textContent = "Only PDF files are allowed.";
+      //       convMortgageeNOCError.style.display = "block";
+      //       isconvYesMortgagedValid = false;
+      //     }
+      //     // Check if the file size is within the allowed limit
+      //     else if (file.size > CourtMaxFileSize) {
+      //       convMortgageeNOCError.textContent =
+      //         "PDF size must be less than 5MB.";
+      //       convMortgageeNOCError.style.display = "block";
+      //       isconvYesMortgagedValid = false;
+      //     } else {
+      //       convMortgageeNOCError.style.display = "none";
+      //     }
+      //   }
+      // } else {
+      //   convMortgageeNOCError.style.display = "none";
+      // }
 
       // 2. Date of NOC
       if (convDateOfNOC.value.trim() === "") {
@@ -2318,21 +2328,21 @@ document.addEventListener("DOMContentLoaded", function () {
       let currentIndex = $(this).data("index");
       var convIndemnityBondFile = $(element).find(
         "#convdocindemnitybond_conversion_" +
-          currentIndex +
-          "_convdocindemnitybond"
+        currentIndex +
+        "_convdocindemnitybond"
       )[0]?.files[0]; // File input
       var convAttestationDate = $(element)
         .find(
           "#convdocindemnitybond_conversion_" +
-            currentIndex +
-            "_convdocindemnitybonddateofattestation"
+          currentIndex +
+          "_convdocindemnitybonddateofattestation"
         )
         .val();
       var convAttestedBy = $(element)
         .find(
           "#convdocindemnitybond_conversion_" +
-            currentIndex +
-            "_convdocindemnitybondattestedby"
+          currentIndex +
+          "_convdocindemnitybondattestedby"
         )
         .val();
 
@@ -2343,8 +2353,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocindemnitybond_conversion_" +
-              currentIndex +
-              "_convdocindemnitybond"
+            currentIndex +
+            "_convdocindemnitybond"
           )
           .attr("data-should-validate") !== "1"
       ) {
@@ -2355,8 +2365,8 @@ document.addEventListener("DOMContentLoaded", function () {
           $(element)
             .find(
               "#convdocindemnitybond_conversion_" +
-                currentIndex +
-                "_convdocindemnitybond"
+              currentIndex +
+              "_convdocindemnitybond"
             )
             .siblings(".text-danger")
             .text("Indemnity bond file is required.");
@@ -2366,8 +2376,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocindemnitybond_conversion_" +
-                  currentIndex +
-                  "_convdocindemnitybond"
+                currentIndex +
+                "_convdocindemnitybond"
               )
               .siblings(".text-danger")
               .text("Only PDF files are allowed.");
@@ -2378,8 +2388,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocindemnitybond_conversion_" +
-                  currentIndex +
-                  "_convdocindemnitybond"
+                currentIndex +
+                "_convdocindemnitybond"
               )
               .siblings(".text-danger")
               .text("File size must be less than 5MB.");
@@ -2388,8 +2398,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocindemnitybond_conversion_" +
-                  currentIndex +
-                  "_convdocindemnitybond"
+                currentIndex +
+                "_convdocindemnitybond"
               )
               .siblings(".text-danger")
               .text(""); // Clear the error message
@@ -2403,8 +2413,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocindemnitybond_conversion_" +
-              currentIndex +
-              "_convdocindemnitybonddateofattestation"
+            currentIndex +
+            "_convdocindemnitybonddateofattestation"
           )
           .siblings(".text-danger")
           .text("Date of attestation is required.");
@@ -2413,8 +2423,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocindemnitybond_conversion_" +
-              currentIndex +
-              "_convdocindemnitybonddateofattestation"
+            currentIndex +
+            "_convdocindemnitybonddateofattestation"
           )
           .siblings(".text-danger")
           .text("Future date is not allowed.");
@@ -2423,8 +2433,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocindemnitybond_conversion_" +
-              currentIndex +
-              "_convdocindemnitybonddateofattestation"
+            currentIndex +
+            "_convdocindemnitybonddateofattestation"
           )
           .siblings(".text-danger")
           .text(""); // Clear the error message
@@ -2436,8 +2446,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocindemnitybond_conversion_" +
-              currentIndex +
-              "_convdocindemnitybondattestedby"
+            currentIndex +
+            "_convdocindemnitybondattestedby"
           )
           .siblings(".text-danger")
           .text("Attested by is required.");
@@ -2447,8 +2457,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocindemnitybond_conversion_" +
-              currentIndex +
-              "_convdocindemnitybondattestedby"
+            currentIndex +
+            "_convdocindemnitybondattestedby"
           )
           .siblings(".text-danger")
           .text("Attested by must contain letters only.");
@@ -2457,8 +2467,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocindemnitybond_conversion_" +
-              currentIndex +
-              "_convdocindemnitybondattestedby"
+            currentIndex +
+            "_convdocindemnitybondattestedby"
           )
           .siblings(".text-danger")
           .text("");
@@ -2479,8 +2489,8 @@ document.addEventListener("DOMContentLoaded", function () {
       var conveIndeAttestationDate = $(element)
         .find(
           "#convdocundertaking_conversion_" +
-            currentIndex +
-            "_convdocdateofundertaking"
+          currentIndex +
+          "_convdocdateofundertaking"
         )
         .val();
 
@@ -2491,8 +2501,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocundertaking_conversion_" +
-              currentIndex +
-              "_convdocundertaking"
+            currentIndex +
+            "_convdocundertaking"
           )
           .attr("data-should-validate") !== "1"
       ) {
@@ -2503,8 +2513,8 @@ document.addEventListener("DOMContentLoaded", function () {
           $(element)
             .find(
               "#convdocundertaking_conversion_" +
-                currentIndex +
-                "_convdocundertaking"
+              currentIndex +
+              "_convdocundertaking"
             )
             .siblings(".text-danger")
             .text("Undertaking file required."); // changed error text as per your note
@@ -2514,8 +2524,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocundertaking_conversion_" +
-                  currentIndex +
-                  "_convdocundertaking"
+                currentIndex +
+                "_convdocundertaking"
               )
               .siblings(".text-danger")
               .text("Only PDF files are allowed.");
@@ -2526,8 +2536,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocundertaking_conversion_" +
-                  currentIndex +
-                  "_convdocundertaking"
+                currentIndex +
+                "_convdocundertaking"
               )
               .siblings(".text-danger")
               .text("File size must be less than 5MB.");
@@ -2536,8 +2546,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocundertaking_conversion_" +
-                  currentIndex +
-                  "_convdocundertaking"
+                currentIndex +
+                "_convdocundertaking"
               )
               .siblings(".text-danger")
               .text("");
@@ -2551,8 +2561,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocundertaking_conversion_" +
-              currentIndex +
-              "_convdocdateofundertaking"
+            currentIndex +
+            "_convdocdateofundertaking"
           )
           .siblings(".text-danger")
           .text("Date of attestation is required.");
@@ -2561,8 +2571,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocundertaking_conversion_" +
-              currentIndex +
-              "_convdocdateofundertaking"
+            currentIndex +
+            "_convdocdateofundertaking"
           )
           .siblings(".text-danger")
           .text("Future date is not allowed.");
@@ -2571,8 +2581,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocundertaking_conversion_" +
-              currentIndex +
-              "_convdocdateofundertaking"
+            currentIndex +
+            "_convdocdateofundertaking"
           )
           .siblings(".text-danger")
           .text("");
@@ -2589,8 +2599,8 @@ document.addEventListener("DOMContentLoaded", function () {
       let currentIndex = $(this).data("index");
       var convPropertyBonaFide = $(element).find(
         "#convdocpropertyphoto_conversion_" +
-          currentIndex +
-          "_convdocpropertyphoto"
+        currentIndex +
+        "_convdocpropertyphoto"
       )[0]?.files[0]; // File input
 
       var isConvPropertyBonaFideValid = true;
@@ -2600,8 +2610,8 @@ document.addEventListener("DOMContentLoaded", function () {
         $(element)
           .find(
             "#convdocpropertyphoto_conversion_" +
-              currentIndex +
-              "_convdocpropertyphoto"
+            currentIndex +
+            "_convdocpropertyphoto"
           )
           .attr("data-should-validate") !== "1"
       ) {
@@ -2613,8 +2623,8 @@ document.addEventListener("DOMContentLoaded", function () {
           $(element)
             .find(
               "#convdocpropertyphoto_conversion_" +
-                currentIndex +
-                "_convdocpropertyphoto"
+              currentIndex +
+              "_convdocpropertyphoto"
             )
             .siblings(".text-danger")
             .text("Property photographs file required.");
@@ -2624,8 +2634,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocpropertyphoto_conversion_" +
-                  currentIndex +
-                  "_convdocpropertyphoto"
+                currentIndex +
+                "_convdocpropertyphoto"
               )
               .siblings(".text-danger")
               .text("Only PDF files are allowed.");
@@ -2636,8 +2646,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocpropertyphoto_conversion_" +
-                  currentIndex +
-                  "_convdocpropertyphoto"
+                currentIndex +
+                "_convdocpropertyphoto"
               )
               .siblings(".text-danger")
               .text("File size must be less than 5MB.");
@@ -2646,8 +2656,8 @@ document.addEventListener("DOMContentLoaded", function () {
             $(element)
               .find(
                 "#convdocpropertyphoto_conversion_" +
-                  currentIndex +
-                  "_convdocpropertyphoto"
+                currentIndex +
+                "_convdocpropertyphoto"
               )
               .siblings(".text-danger")
               .text("");
@@ -2708,8 +2718,8 @@ document.addEventListener("DOMContentLoaded", function () {
       $("#convDocIndemnityBond_repeater").on(
         "input change",
         "#convdocindemnitybond_conversion_" +
-          currentIndex +
-          "_convdocindemnitybonddateofattestation",
+        currentIndex +
+        "_convdocindemnitybonddateofattestation",
         function () {
           if ($(this).val() > today) {
             // $(this).val(""); // Clear future date
@@ -2726,8 +2736,8 @@ document.addEventListener("DOMContentLoaded", function () {
       $("#indemnityBond_repeater").on(
         "input change",
         "#convdocundertaking_conversion_" +
-          currentIndex +
-          "_convdocdateofundertaking",
+        currentIndex +
+        "_convdocdateofundertaking",
         function () {
           if ($(this).val() > today) {
             // $(this).val(""); // Clear future date
@@ -2743,10 +2753,10 @@ document.addEventListener("DOMContentLoaded", function () {
       // Apply max date on document load for existing fields
       $(
         "#convdocindemnitybond_conversion_" +
-          currentIndex +
-          "_convdocindemnitybonddateofattestation, #convdocundertaking_conversion_" +
-          currentIndex +
-          "_convdocdateofundertaking"
+        currentIndex +
+        "_convdocindemnitybonddateofattestation, #convdocundertaking_conversion_" +
+        currentIndex +
+        "_convdocdateofundertaking"
       ).attr("max", today);
     });
   });
@@ -2775,7 +2785,6 @@ document.addEventListener("DOMContentLoaded", function () {
   var convPossessionProofType = document.getElementById(
     "convDocPossessionProofType"
   );
-
   var convPossessionProofFile = document.getElementById(
     "convDocProofOfPossession"
   );
@@ -2789,23 +2798,21 @@ document.addEventListener("DOMContentLoaded", function () {
   var convDocLeaseDeedFile = document.getElementById("convDocLeaseDeed");
   var convDocLeaseDeedDoEDate = document.getElementById("convDocLeaseDeedDoE");
 
-  var convDocGpaSpa = document.getElementById("convDocGpaSpa");
-
   var convMandDocAdhaar = document.getElementById("convDocApplicantAadhaar");
   var convMandDocPan = document.getElementById("convDocApplicantPan");
 
-  // ** end commented by anil for not in use on 06-10-2025 **
-  // var convMandDocAffidavits = document.getElementById("convDocAffidavit");
-  var convMandDocADateAttestation = document.getElementById(
-    "convDocAffidavitsDateOfAttestation"
-  );
   // commented by anil for not in use on 06-10-2025
+  // var convMandDocAffidavits = document.getElementById("convDocAffidavit");
+  // var convMandDocADateAttestation = document.getElementById(
+  //   "convDocAffidavitsDateOfAttestation"
+  // );
   // var convMandDocAttestedby = document.getElementById(
   //   "convDocAffidavitAttestedBy"
   // );
+  // end commented by anil for not in use on 06-10-2025
 
   // Conversion Form 2 Error
-
+  // commented by anil for not in use on 06-10-2025
   // var convAttestedLetterFileError = document.getElementById(
   //   "convDOcLastSubstitutionLetterError"
   // );
@@ -2847,7 +2854,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "convDocLeaseDeedDoEError"
   );
 
-  var convDocGpaSpaError = document.getElementById("convDocGpaSpaError");
   var convMandDocAdhaarError = document.getElementById(
     "convDocApplicantAadhaarError"
   );
@@ -3034,8 +3040,7 @@ document.addEventListener("DOMContentLoaded", function () {
           "File size must be less than 5 MB.";
         return false;
       } else if (!file.name.endsWith(".pdf")) {
-        convPossessionProofFileError.textContent =
-          "Only PDF files are allowed.";
+        convPossessionProofFileError.textContent = "Only PDF files are allowed.";
         return false;
       } else {
         convPossessionProofFileError.textContent = "";
@@ -3188,50 +3193,6 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
   }
-  // convDocLeaseDeedFile.addEventListener("change", validateConvDocLeaseDeedFile);
-
-  //   function validateConvDocLeaseDeedFile() {
-  //       if (convDocLeaseDeedFile.files.length > 0) {
-  //           var file = convDocLeaseDeedFile.files[0];
-
-  //           // File > 5MB
-  //           if (file.size > 5 * 1024 * 1024) {
-  //               convDocLeaseDeedFileError.textContent =
-  //                   "File size must be less than 5 MB.";
-  //               convDocLeaseDeedFileError.style.display = "block";
-
-  //               showPopup("The selected PDF is larger than 5 MB. Please upload a smaller file.");
-
-  //               convDocLeaseDeedFile.value = ""; // reset file
-  //               return false;
-  //           }
-
-  //           // Not PDF
-  //           if (!file.name.toLowerCase().endsWith(".pdf")) {
-  //               convDocLeaseDeedFileError.textContent = "Only PDF files are allowed.";
-  //               convDocLeaseDeedFileError.style.display = "block";
-
-  //               showPopup("Invalid file type. Only PDF files are allowed.");
-  //               convDocLeaseDeedFile.value = "";
-  //               return false;
-  //           }
-
-  //           // Valid
-  //           convDocLeaseDeedFileError.textContent = "";
-  //           convDocLeaseDeedFileError.style.display = "none";
-  //           return true;
-  //       }
-
-  //       // Empty case
-  //       if (convDocLeaseDeedFile.getAttribute("data-should-validate") == "1") {
-  //           return true;
-  //       }
-
-  //       convDocLeaseDeedFileError.textContent = "Registered lease deed is required.";
-  //       convDocLeaseDeedFileError.style.display = "block";
-
-  //       return false;
-  //   }
 
   function validateConvDocLeaseDeedDoEDate() {
     var convDocLeaseDeedDoEDateValue = convDocLeaseDeedDoEDate.value.trim();
@@ -3257,28 +3218,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return true;
   }
 
-  // function validateConvMandDocGpaSpa() {
-  //   if (convDocGpaSpa.files.length > 0) {
-  //     var file = convDocGpaSpa.files[0];
-  //     if (file.size > 5 * 1024 * 1024) {
-  //       convDocGpaSpaError.textContent = "File size must be less than 5 MB.";
-  //       return false;
-  //     } else if (!file.name.endsWith(".pdf")) {
-  //       convDocGpaSpaError.textContent = "Only PDF files are allowed.";
-  //       return false;
-  //     } else {
-  //       convDocGpaSpaError.textContent = "";
-  //       return true;
-  //     }
-  //   } else {
-  //     if (convDocGpaSpa.getAttribute("data-should-validate") == 1) {
-  //       return true;
-  //     }
-  //     convDocGpaSpaError.textContent = "Power of Attorney PDF is required.";
-  //     return false;
-  //   }
-  // }
-
   function validateConvMandDocGpaSpa() {
     if (convDocGpaSpa.files.length > 0) {
       var file = convDocGpaSpa.files[0];
@@ -3302,8 +3241,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (convMandDocAdhaar.files.length > 0) {
       var file = convMandDocAdhaar.files[0];
       if (file.size > 5 * 1024 * 1024) {
-        convMandDocAdhaarError.textContent =
-          "File size must be less than 5 MB.";
+        convMandDocAdhaarError.textContent = "File size must be less than 5 MB.";
         return false;
       } else if (!file.name.endsWith(".pdf")) {
         convMandDocAdhaarError.textContent = "Only PDF files are allowed.";
@@ -3486,18 +3424,28 @@ document.addEventListener("DOMContentLoaded", function () {
     // var isConvConstructionProofFile = validateConvConstructionProofFile();
     // var isConvContructionProofDate = validateConvContructionProofDate();
     // var isConvContructionProofIssuing = validateConvContructionProofIssuing();
-    // ** end commented by anil for not in use on 06-10-2025 **
     var isConvPossessionProofType = validateConvPossessionProofType();
     var isConvPossessionProofFile = validateConvPossessionProofFile();
     var isConvPossessionProofDate = validateConvPossessionProofDate();
     var isConvPossessionProofIssuing = validateConvPossessionProofIssuing();
     var isConvDocLeaseDeedFile = validateConvDocLeaseDeedFile();
     var isConvDocLeaseDeedDoEDate = validateConvDocLeaseDeedDoEDate();
-    var isConvMandDocGpaSpa = validateConvMandDocGpaSpa();
+    // var isConvMandDocGpaSpa = validateConvMandDocGpaSpa();
+
+
+
+
+
     let isApplicantIndian = document.getElementById("isApplicantIndian").value;
     if (isApplicantIndian == 1) {
       var isConvMandDocAdhaar = validateConvMandDocAdhaar();
       var isConvMandDocPan = validateConvMandDocPan();
+      // ** commented by anil for not in use on 06-10-2025 **
+      // var isConvMandDocAffidavits = validateConvMandDocAffidavits();
+      // var isConvMandDocADateAttestation = validateConvMandDocADateAttestation();
+      // var isConvMandDocAttestedby = validateConvMandDocAttestedby();
+      // ** end commented by anil for not in use on 06-10-2025 **
+
       return (
         isMandatoryConvDocumentsFormValid &&
         // ** commented by anil for not in use on 06-10-2025 **
@@ -3514,10 +3462,10 @@ document.addEventListener("DOMContentLoaded", function () {
         isConvPossessionProofIssuing &&
         isConvDocLeaseDeedFile &&
         isConvDocLeaseDeedDoEDate &&
-        isConvMandDocGpaSpa &&
+        // isConvMandDocGpaSpa &&
         isConvMandDocAdhaar &&
         isConvMandDocPan
-        // **  commented by anil for not in use on 06-10-2025 **
+        // ** commented by anil for not in use on 06-10-2025 **
         // isConvMandDocAffidavits &&
         // isConvMandDocADateAttestation &&
         // isConvMandDocAttestedby
@@ -3543,7 +3491,7 @@ document.addEventListener("DOMContentLoaded", function () {
         isConvPossessionProofIssuing &&
         isConvDocLeaseDeedFile &&
         isConvDocLeaseDeedDoEDate &&
-        isConvMandDocGpaSpa &&
+        // isConvMandDocGpaSpa &&
         isConvDocumentType &&
         isConvNriUploadDocument &&
         isConvDocumentTypeNumber
@@ -3554,11 +3502,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // ** end commented by anil for not in use on 06-10-2025 **
       );
     }
-    // ** commented by anil for not in use on 06-10-2025 **
-    // var isConvMandDocAffidavits = validateConvMandDocAffidavits();
-    // var isConvMandDocADateAttestation = validateConvMandDocADateAttestation();
-    // var isConvMandDocAttestedby = validateConvMandDocAttestedby();
-    // ** end commented by anil for not in use on 06-10-2025 **
   }
 
   // conversion step 3 form validation
@@ -3624,91 +3567,91 @@ document.addEventListener("DOMContentLoaded", function () {
     "agreeConsentConversionError"
   );
 
-  function validateConvLesseeAliveAffidevitGroup() {
-    const fileInput = convLesseeAliveAffidevitFile;
-    const dateInput = convLesseeAliveAffidevitDate;
-    const attestedInput = convLesseeAliveAttestedby;
+  // function validateConvLesseeAliveAffidevitGroup() {
+  //   const fileInput = convLesseeAliveAffidevitFile;
+  //   const dateInput = convLesseeAliveAffidevitDate;
+  //   const attestedInput = convLesseeAliveAttestedby;
 
-    const fileSelected = fileInput.files.length > 0;
-    const shouldValidateFile =
-      fileInput.getAttribute("data-should-validate") == "1";
+  //   const fileSelected = fileInput.files.length > 0;
+  //   const shouldValidateFile =
+  //     fileInput.getAttribute("data-should-validate") == "1";
 
-    // Determine if we should trigger full validation
-    const shouldTriggerFullValidation =
-      fileSelected ||
-      shouldValidateFile ||
-      dateInput.value.trim() !== "" ||
-      attestedInput.value.trim() !== "";
+  //   // Determine if we should trigger full validation
+  //   const shouldTriggerFullValidation =
+  //     fileSelected ||
+  //     shouldValidateFile ||
+  //     dateInput.value.trim() !== "" ||
+  //     attestedInput.value.trim() !== "";
 
-    let isAliveLesseeValid = true;
+  //   let isAliveLesseeValid = true;
 
-    // --- FILE VALIDATION ---
-    if (fileSelected) {
-      const file = fileInput.files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        convLesseeAliveAffidevitFileError.textContent =
-          "File size must be less than 5 MB.";
-        isAliveLesseeValid = false;
-      } else if (!file.name.endsWith(".pdf")) {
-        convLesseeAliveAffidevitFileError.textContent =
-          "Only PDF files are allowed.";
-        isAliveLesseeValid = false;
-      } else {
-        convLesseeAliveAffidevitFileError.textContent = "";
-      }
-    } else if (!shouldValidateFile && shouldTriggerFullValidation) {
-      convLesseeAliveAffidevitFileError.textContent =
-        "Affidavit PDF is required.";
-      isAliveLesseeValid = false;
-    } else {
-      convLesseeAliveAffidevitFileError.textContent = "";
-    }
+  //   // --- FILE VALIDATION ---
+  //   if (fileSelected) {
+  //     const file = fileInput.files[0];
+  //     if (file.size > 5 * 1024 * 1024) {
+  //       convLesseeAliveAffidevitFileError.textContent =
+  //         "File size must be less than 5 MB.";
+  //       isAliveLesseeValid = false;
+  //     } else if (!file.name.endsWith(".pdf")) {
+  //       convLesseeAliveAffidevitFileError.textContent =
+  //         "Only PDF files are allowed.";
+  //       isAliveLesseeValid = false;
+  //     } else {
+  //       convLesseeAliveAffidevitFileError.textContent = "";
+  //     }
+  //   } else if (!shouldValidateFile && shouldTriggerFullValidation) {
+  //     convLesseeAliveAffidevitFileError.textContent =
+  //       "Affidavit PDF is required.";
+  //     isAliveLesseeValid = false;
+  //   } else {
+  //     convLesseeAliveAffidevitFileError.textContent = "";
+  //   }
 
-    // --- DATE VALIDATION ---
-    const dateVal = dateInput.value.trim();
-    const today = new Date().toISOString().split("T")[0];
-    if (shouldTriggerFullValidation) {
-      if (dateVal === "") {
-        convLesseeAliveAffidevitDateError.textContent =
-          "Date of document is required.";
-        convLesseeAliveAffidevitDateError.style.display = "block";
-        isAliveLesseeValid = false;
-      } else if (dateVal > today) {
-        convLesseeAliveAffidevitDateError.textContent =
-          "Date of document cannot be in the future.";
-        convLesseeAliveAffidevitDateError.style.display = "block";
-        dateInput.value = "";
-        isAliveLesseeValid = false;
-      } else {
-        convLesseeAliveAffidevitDateError.style.display = "none";
-      }
-    } else {
-      convLesseeAliveAffidevitDateError.textContent = "";
-      convLesseeAliveAffidevitDateError.style.display = "none";
-    }
+  //   // --- DATE VALIDATION ---
+  //   const dateVal = dateInput.value.trim();
+  //   const today = new Date().toISOString().split("T")[0];
+  //   if (shouldTriggerFullValidation) {
+  //     if (dateVal === "") {
+  //       convLesseeAliveAffidevitDateError.textContent =
+  //         "Date of document is required.";
+  //       convLesseeAliveAffidevitDateError.style.display = "block";
+  //       isAliveLesseeValid = false;
+  //     } else if (dateVal > today) {
+  //       convLesseeAliveAffidevitDateError.textContent =
+  //         "Date of document cannot be in the future.";
+  //       convLesseeAliveAffidevitDateError.style.display = "block";
+  //       dateInput.value = "";
+  //       isAliveLesseeValid = false;
+  //     } else {
+  //       convLesseeAliveAffidevitDateError.style.display = "none";
+  //     }
+  //   } else {
+  //     convLesseeAliveAffidevitDateError.textContent = "";
+  //     convLesseeAliveAffidevitDateError.style.display = "none";
+  //   }
 
-    // --- ATTESTED BY VALIDATION ---
-    const attestedVal = attestedInput.value.trim();
-    if (shouldTriggerFullValidation) {
-      if (attestedVal === "") {
-        convLesseeAliveAttestedbyError.textContent = "Attested by is required.";
-        convLesseeAliveAttestedbyError.style.display = "block";
-        isAliveLesseeValid = false;
-      } else if (!/^[A-Za-z\s.]+$/.test(attestedVal)) {
-        convLesseeAliveAttestedbyError.textContent =
-          "Attested by must contain letters only.";
-        convLesseeAliveAttestedbyError.style.display = "block";
-        isAliveLesseeValid = false;
-      } else {
-        convLesseeAliveAttestedbyError.style.display = "none";
-      }
-    } else {
-      convLesseeAliveAttestedbyError.textContent = "";
-      convLesseeAliveAttestedbyError.style.display = "none";
-    }
+  //   // --- ATTESTED BY VALIDATION ---
+  //   const attestedVal = attestedInput.value.trim();
+  //   if (shouldTriggerFullValidation) {
+  //     if (attestedVal === "") {
+  //       convLesseeAliveAttestedbyError.textContent = "Attested by is required.";
+  //       convLesseeAliveAttestedbyError.style.display = "block";
+  //       isAliveLesseeValid = false;
+  //     } else if (!/^[A-Za-z\s.]+$/.test(attestedVal)) {
+  //       convLesseeAliveAttestedbyError.textContent =
+  //         "Attested by must contain letters only.";
+  //       convLesseeAliveAttestedbyError.style.display = "block";
+  //       isAliveLesseeValid = false;
+  //     } else {
+  //       convLesseeAliveAttestedbyError.style.display = "none";
+  //     }
+  //   } else {
+  //     convLesseeAliveAttestedbyError.textContent = "";
+  //     convLesseeAliveAttestedbyError.style.display = "none";
+  //   }
 
-    return isAliveLesseeValid;
-  }
+  //   return isAliveLesseeValid;
+  // }
 
   function validateConvYesLeaseDeedLostFields() {
     const alphaRegex = /^[A-Za-z\s.]+$/;
@@ -3874,9 +3817,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // var isConvLesseeAliveAffidevitFile = validateConvLesseeAliveAffidevitFile();
     // var isConvLesseeAliveAffidevitDate = validateConvLesseeAliveAffidevitDate();
     // var isConvLesseeAliveAttestedby = validateConvLesseeAliveAttestedby();
-    var isConvLesseeAliveAffidevitGroup =
-      validateConvLesseeAliveAffidevitGroup();
-    var isConvYesLeaseDeedLostFields = validateConvYesLeaseDeedLostFields();
+    // var isConvLesseeAliveAffidevitGroup =validateConvLesseeAliveAffidevitGroup();
+    // var isConvYesLeaseDeedLostFields = validateConvYesLeaseDeedLostFields();
     var isConvAgreeConsent = validateConvAgreeConsent();
     var isAppOtherDoc = validateAppOtherDoc("CONVERSION-3");
     let isPoAValid = validatePOADoc("CONVERSION-3");
@@ -3885,8 +3827,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // isConvLesseeAliveAffidevitFile &&
       // isConvLesseeAliveAffidevitDate &&
       // isConvLesseeAliveAttestedby &&
-      isConvLesseeAliveAffidevitGroup &&
-      isConvYesLeaseDeedLostFields &&
+      // isConvLesseeAliveAffidevitGroup &&
+      // isConvYesLeaseDeedLostFields &&
       isConvAgreeConsent &&
       isAppOtherDoc &&
       isPoAValid
@@ -3899,8 +3841,12 @@ document.addEventListener("DOMContentLoaded", function () {
   var affidavitsAttestedby = document.getElementById("attestedby");
 
   var indemnityBond = document.getElementById("indemnityBond");
-  var indemnityBonddateattestation = document.getElementById("indemnityBondDateOfAttestation");
-  var indemnityBondattestedby = document.getElementById("indemnityBondAttestedBy");
+  var indemnityBonddateattestation = document.getElementById(
+    "indemnityBondDateOfAttestation"
+  );
+  var indemnityBondattestedby = document.getElementById(
+    "indemnityBondAttestedBy"
+  );
 
   var leaseconyedeed = document.getElementById("leaseconyedeed");
   var dateofexecution = document.getElementById("leaseConvDeedDateOfExecution");
@@ -3928,15 +3874,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Form 2 Errors
   var affidavitsError = document.getElementById("affidavitsError");
-  var dateattestationError = document.getElementById("affidavitsDateOfAttestationError");
+  var dateattestationError = document.getElementById(
+    "affidavitsDateOfAttestationError"
+  );
   var attestedbyError = document.getElementById("affidavitAttestedByError");
 
   var indemnityBondError = document.getElementById("indemnityBondError");
-  var indemnityBonddateattestationError = document.getElementById("indemnityBondDateOfAttestationError");
-  var indemnityBondattestedbyError = document.getElementById("indemnityBondAttestedByError");
+  var indemnityBonddateattestationError = document.getElementById(
+    "indemnityBondDateOfAttestationError"
+  );
+  var indemnityBondattestedbyError = document.getElementById(
+    "indemnityBondAttestedByError"
+  );
 
   var leaseconyedeedError = document.getElementById("leaseconyedeedError");
-  var dateofexecutionError = document.getElementById("leaseConvDeedDateOfExecutionError");
+  var dateofexecutionError = document.getElementById(
+    "leaseConvDeedDateOfExecutionError"
+  );
   var lesseenameError = document.getElementById("leaseConvDeedLesseenameError");
 
   var pannumberError = document.getElementById("panNumberError");
@@ -4265,8 +4219,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (publicNoticeHindi.files.length > 0) {
       var file = publicNoticeHindi.files[0];
       if (file.size > 5 * 1024 * 1024) {
-        publicNoticeHindiError.textContent =
-          "File size must be less than 5 MB.";
+        publicNoticeHindiError.textContent = "File size must be less than 5 MB.";
         return false;
       } else if (!file.name.endsWith(".pdf")) {
         publicNoticeHindiError.textContent = "Only PDF files are allowed.";
@@ -4318,7 +4271,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Future date validation
     if (publicnoticedateValue > today) {
-      publicNoticeDateHindiError.textContent = "Date cannot be in the future.";
+      publicNoticeDateHindiError.textContent =
+        "Date cannot be in the future.";
       publicNoticeDateHindiError.style.display = "block";
       publicNoticeDateHindi.value = ""; // Clear invalid input
       return false;
@@ -4346,6 +4300,29 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
       }
       propertyPhotoError.textContent = "Property photo is required.";
+      return false;
+    }
+  }
+
+  function validatePaymentReceipt() {
+    var paymentReciept = document.getElementById("paymentReciept");
+    if (paymentReciept.files.length > 0) {
+      var file = paymentReciept.files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        paymentRecieptError.textContent = "File size must be less than 5 MB.";
+        return false;
+      } else if (!file.name.endsWith(".pdf")) {
+        paymentRecieptError.textContent = "Only PDF files are allowed.";
+        return false;
+      } else {
+        paymentRecieptError.textContent = "";
+        return true;
+      }
+    } else {
+      if (paymentReciept.getAttribute("data-should-validate") == 1) {
+        return true;
+      }
+      paymentRecieptError.textContent = "Payment receipt is required.";
       return false;
     }
   }
@@ -4388,7 +4365,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var isMandatoryMutDocumentsForm = validateMandatoryMutDocumentsForm();
 
-    var isLeaseConyenceValid = validateLeaseConyence();
+    // var isLeaseConyenceValid = validateLeaseConyence();
     // var isDateofExecutionValid = validateDateofExecution();
     // var isLesseeNameValid = validateLesseeName();
 
@@ -4400,14 +4377,15 @@ document.addEventListener("DOMContentLoaded", function () {
     // var isAadharCertificationValid = validateAadharCertification();
     // var isAadharDateValid = validateAadharDate();
 
-    var isPublicNoticeEnglishValid = validatePublicNoticeEnglish();
-    var isNewsPaperNameEnglishValid = validateNewsPaperNameEnglish();
-    var isPublicNoteDateEnglishValid = validatePublicNoteDateEnglish();
+    // var isPublicNoticeEnglishValid = validatePublicNoticeEnglish();
+    // var isNewsPaperNameEnglishValid = validateNewsPaperNameEnglish();
+    // var isPublicNoteDateEnglishValid = validatePublicNoteDateEnglish();
 
-    var isPublicNoticeHindiValid = validatePublicNoticeHindi();
-    var isNewsPaperNameHindiValid = validateNewsPaperNameHindi();
-    var isPublicNoteDateHindiValid = validatePublicNoteDateHindi();
+    // var isPublicNoticeHindiValid = validatePublicNoticeHindi();
+    // var isNewsPaperNameHindiValid = validateNewsPaperNameHindi();
+    // var isPublicNoteDateHindiValid = validatePublicNoteDateHindi();
 
+    var isPaymentReceiptValid = validatePaymentReceipt();
     var isPropertyPhotoValid = validatePropertyPhoto();
 
     return (
@@ -4420,7 +4398,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // isIndemnityAttestedByValid &&
 
       isMandatoryMutDocumentsForm &&
-      isLeaseConyenceValid &&
+      // isLeaseConyenceValid &&
       // isDateofExecutionValid &&
       // isLesseeNameValid &&
       isPANValid &&
@@ -4431,12 +4409,13 @@ document.addEventListener("DOMContentLoaded", function () {
       // isAadharCertificationValid &&
       // isAadharDateValid &&
 
-      isPublicNoticeEnglishValid &&
-      isNewsPaperNameEnglishValid &&
-      isPublicNoteDateEnglishValid &&
-      isPublicNoticeHindiValid &&
-      isNewsPaperNameHindiValid &&
-      isPublicNoteDateHindiValid &&
+      // isPublicNoticeEnglishValid &&
+      // isNewsPaperNameEnglishValid &&
+      // isPublicNoteDateEnglishValid &&
+      // isPublicNoticeHindiValid &&
+      // isNewsPaperNameHindiValid &&
+      // isPublicNoteDateHindiValid &&
+      isPaymentReceiptValid &&
       isPropertyPhotoValid
     );
   }
@@ -4674,9 +4653,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Sanction Building Plan Mutaition form step 3 add by anil on 18-02-2025 for validation
 
   // Propate/LOA/Court Decree/Order Mutaition form step 3 add by anil on 15-05-2025 for validation
-  var mutePropateFileError = document.getElementById(
-    "propateLoaCourtDecreeOrderError"
-  );
+  var mutePropateFileError = document.getElementById("propateLoaCourtDecreeOrderError");
   // Propate/LOA/Court Decree/Order Mutaition form step 3 add by anil on 15-05-2025 for validation
 
   // Any Other Document Mutaition form step 3 add by anil on 18-02-2025 for validation
@@ -4909,7 +4886,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (muteSaleDeed.getAttribute("data-should-validate") == 1) {
         return true;
       }
-      muteSaleDeedError.textContent = "Sale deed PDF file is required.";
+      muteSaleDeedError.textContent = "Sale Deed / Sale Certificate (Auction) PDF file is required.";
       return false;
     }
   }
@@ -4927,24 +4904,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if input is empty
     if (muteSaleDeedRegnoValue === "") {
-      muteSaleDeedRegnoError.textContent =
-        "Deed registration number is required.";
+      muteSaleDeedRegnoError.textContent = "Deed registration number is required.";
       muteSaleDeedRegnoError.style.display = "block";
       return false;
     }
 
     // Check if input exceeds 30 digits
     if (muteSaleDeedRegnoValue.length > 30) {
-      muteSaleDeedRegnoError.textContent =
-        "Registration number cannot exceed 30 digits.";
+      muteSaleDeedRegnoError.textContent = "Registration number cannot exceed 30 digits.";
       muteSaleDeedRegnoError.style.display = "block";
       return false;
     }
 
     // Check if input is numeric only
     if (!/^\d+$/.test(muteSaleDeedRegnoValue)) {
-      muteSaleDeedRegnoError.textContent =
-        "Registration number must be a numeric value.";
+      muteSaleDeedRegnoError.textContent = "Registration number must be a numeric value.";
       muteSaleDeedRegnoError.style.display = "block";
       return false;
     }
@@ -4971,6 +4945,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return false;
     }
 
+
     // Check if the value is numeric
     if (!/^\d+$/.test(muteSaleDeedVolumeValue)) {
       muteSaleDeedVolumeError.textContent =
@@ -4988,8 +4963,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the number exceeds 10 digits
     if (muteSaleDeedVolumeValue.length > 10) {
-      muteSaleDeedVolumeError.textContent =
-        "Volume number cannot exceed 10 digits.";
+      muteSaleDeedVolumeError.textContent = "Volume number cannot exceed 10 digits.";
       muteSaleDeedVolumeError.style.display = "block";
       return false;
     }
@@ -5017,8 +4991,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the Book number is numeric
     if (!/^\d+$/.test(muteSaleDeedBookNoValue)) {
-      muteSaleDeedBookNoError.textContent =
-        "Book number must be a numeric value.";
+      muteSaleDeedBookNoError.textContent = "Book number must be a numeric value.";
       muteSaleDeedBookNoError.style.display = "block";
       return false;
     }
@@ -5033,8 +5006,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the Book number exceeds 10 digits
     if (muteSaleDeedBookNoValue.length > 10) {
-      muteSaleDeedBookNoError.textContent =
-        "Book number cannot exceed 10 digits.";
+      muteSaleDeedBookNoError.textContent = "Book number cannot exceed 10 digits.";
       muteSaleDeedBookNoError.style.display = "block";
       return false;
     }
@@ -5126,16 +5098,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the value is numeric
     if (!/^\d+$/.test(muteSaleDeedToValue)) {
-      muteSaleDeedToError.textContent =
-        "Page number to must be a numeric value.";
+      muteSaleDeedToError.textContent = "Page number to must be a numeric value.";
       muteSaleDeedToError.style.display = "block";
       return false;
     }
 
     // Check if the value is positive
     if (parseFloat(muteSaleDeedToValue) <= 0) {
-      muteSaleDeedToError.textContent =
-        "Page number to must be a positive number.";
+      muteSaleDeedToError.textContent = "Page number to must be a positive number.";
       muteSaleDeedToError.style.display = "block";
       return false;
     }
@@ -5249,7 +5219,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
       }
       muteWillRegdFileError.textContent =
-        "Will/Codicil deed PDF file is required.";
+        "Registered/ Unregistered Will/ Codicil PDF file is required.";
       return false;
     }
   }
@@ -5296,24 +5266,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the field is empty
     if (muteWillRegnoValue === "") {
-      muteWillRegnoError.textContent =
-        "Will/Codicil registration number is required.";
+      muteWillRegnoError.textContent = "Registered/ Unregistered Will/ Codicil registration number is required.";
       muteWillRegnoError.style.display = "block";
       return false;
     }
 
     // Check if the value exceeds 30 digits
     if (muteWillRegnoValue.length > 30) {
-      muteWillRegnoError.textContent =
-        "Registration number cannot exceed 30 digits.";
+      muteWillRegnoError.textContent = "Registration number cannot exceed 30 digits.";
       muteWillRegnoError.style.display = "block";
       return false;
     }
 
     // Check if the value contains only digits (no spaces, no letters)
     if (!/^\d+$/.test(muteWillRegnoValue)) {
-      muteWillRegnoError.textContent =
-        "Registration number must be a numeric value.";
+      muteWillRegnoError.textContent = "Registration number must be a numeric value.";
       muteWillRegnoError.style.display = "block";
       return false;
     }
@@ -5343,8 +5310,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the value is numeric
     if (!/^\d+$/.test(muteWillVolumeValue)) {
-      muteWillVolumeError.textContent =
-        "Volume number must be a numeric value.";
+      muteWillVolumeError.textContent = "Volume number must be a numeric value.";
       muteWillVolumeError.style.display = "block";
       return false;
     }
@@ -5358,8 +5324,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the number exceeds 10 digits
     if (muteWillVolumeValue.length > 10) {
-      muteWillVolumeError.textContent =
-        "Volume number cannot exceed 10 digits.";
+      muteWillVolumeError.textContent = "Volume number cannot exceed 10 digits.";
       muteWillVolumeError.style.display = "block";
       return false;
     }
@@ -5394,8 +5359,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the Book number is a positive number (optional, if you want to restrict to positive values)
     if (parseFloat(muteWillBookNoValue) <= 0) {
-      muteWillBookNoError.textContent =
-        "Book number must be a positive number.";
+      muteWillBookNoError.textContent = "Book number must be a positive number.";
       muteWillBookNoError.style.display = "block";
       return false;
     }
@@ -5436,16 +5400,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the value is numeric
     if (!/^\d+$/.test(muteWillFromValue)) {
-      muteWillFromError.textContent =
-        "Page number from must be a numeric value.";
+      muteWillFromError.textContent = "Page number from must be a numeric value.";
       muteWillFromError.style.display = "block";
       return false;
     }
 
     // Check if the value is positive
     if (parseFloat(muteWillFromValue) <= 0) {
-      muteWillFromError.textContent =
-        "Page number from must be a positive number.";
+      muteWillFromError.textContent = "Page number from must be a positive number.";
       muteWillFromError.style.display = "block";
       return false;
     }
@@ -5459,8 +5421,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if 'Page number From' is greater than 'Page number To'
     if (parseInt(muteWillFromValue) > parseInt(muteWillValueTo)) {
-      muteWillFromError.textContent =
-        "Page number from cannot be greater than page number to.";
+      muteWillFromError.textContent = "Page number from cannot be greater than page number to.";
       muteWillFromError.style.display = "block";
       return false;
     } else {
@@ -5622,7 +5583,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
       }
       muteUnregdWillFileError.textContent =
-        "Unregd. will/codicil deed PDF file is required.";
+        "Registered/ Unregistered Will/ Codicil PDF file is required.";
       return false;
     }
   }
@@ -5642,8 +5603,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var muteUnregdWillTestatorNameValue =
       muteUnregdWillTestatorName.value.trim();
     if (muteUnregdWillTestatorNameValue === "") {
-      muteUnregdWillTestatorNameError.textContent =
-        "Testator name is required.";
+      muteUnregdWillTestatorNameError.textContent = "Testator name is required.";
       muteUnregdWillTestatorNameError.style.display = "Block";
       return false;
     }
@@ -5723,7 +5683,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
       }
       muteRelinquishDeedFileError.textContent =
-        "Relinquishment deed PDF file is required.";
+        "Gift/ Relinquishment Deed PDF file is required.";
       return false;
     }
   }
@@ -5808,6 +5768,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return true;
   }
 
+
   function validateMuteRelinquishDeedVolume() {
     if (!muteRelinquishDeedVolume || !muteRelinquishDeedVolumeError) {
       return true;
@@ -5847,8 +5808,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the number exceeds 10 digits
     if (muteRelinquishDeedVolumeValue.length > 10) {
-      muteRelinquishDeedVolumeError.textContent =
-        "Volume number cannot exceed 10 digits.";
+      muteRelinquishDeedVolumeError.textContent = "Volume number cannot exceed 10 digits.";
       muteRelinquishDeedVolumeError.style.display = "block";
       return false;
     }
@@ -5896,8 +5856,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the Book number exceeds 10 digits
     if (muteRelinquishDeedBooknoValue.length > 10) {
-      muteRelinquishDeedBooknoError.textContent =
-        "Book number cannot exceed 10 digits.";
+      muteRelinquishDeedBooknoError.textContent = "Book number cannot exceed 10 digits.";
       muteRelinquishDeedBooknoError.style.display = "block";
       return false;
     }
@@ -5950,8 +5909,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the Page number Max 4 digits
     if (muteRelinquishDeedFromValue.length > 4) {
-      muteRelinquishDeedFromError.textContent =
-        "Page number cannot exceed 4 digits.";
+      muteRelinquishDeedFromError.textContent = "Page number cannot exceed 4 digits.";
       muteRelinquishDeedFromError.style.display = "block";
       return false;
     }
@@ -6011,8 +5969,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the Page number Max 4 digits
     if (muteRelinquishDeedToValue.length > 4) {
-      muteRelinquishDeedToError.textContent =
-        "Page number cannot exceed 4 digits.";
+      muteRelinquishDeedToError.textContent = "Page number cannot exceed 4 digits.";
       muteRelinquishDeedToError.style.display = "block";
       return false;
     }
@@ -6209,8 +6166,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the number exceeds 10 digits
     if (muteGiftDeedVolumeValue.length > 10) {
-      muteGiftDeedVolumeError.textContent =
-        "Volume number cannot exceed 10 digits.";
+      muteGiftDeedVolumeError.textContent = "Volume number cannot exceed 10 digits.";
       muteGiftDeedVolumeError.style.display = "block";
       return false;
     }
@@ -6239,8 +6195,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the Book number is numeric
     if (!/^\d+$/.test(muteGiftDeedBooknoValue)) {
-      muteGiftDeedBooknoError.textContent =
-        "Book number must be a numeric value.";
+      muteGiftDeedBooknoError.textContent = "Book number must be a numeric value.";
       muteGiftDeedBooknoError.style.display = "block";
       return false;
     }
@@ -6255,8 +6210,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the Book number exceeds 10 digits
     if (muteGiftDeedBooknoValue.length > 10) {
-      muteGiftDeedBooknoError.textContent =
-        "Book number cannot exceed 10 digits.";
+      muteGiftDeedBooknoError.textContent = "Book number cannot exceed 10 digits.";
       muteGiftDeedBooknoError.style.display = "block";
       return false;
     }
@@ -6347,16 +6301,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if the value is numeric
     if (!/^\d+$/.test(muteGiftDeedToValue)) {
-      muteGiftDeedToError.textContent =
-        "Page number to must be a numeric value.";
+      muteGiftDeedToError.textContent = "Page number to must be a numeric value.";
       muteGiftDeedToError.style.display = "block";
       return false;
     }
 
     // Check if the value is positive
     if (parseFloat(muteGiftDeedToValue) <= 0) {
-      muteGiftDeedToError.textContent =
-        "Page number to must be a positive number.";
+      muteGiftDeedToError.textContent = "Page number to must be a positive number.";
       muteGiftDeedToError.style.display = "block";
       return false;
     }
@@ -6393,8 +6345,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
 
     if (muteGiftDeedRegdateValue === "") {
-      muteGiftDeedRegdateError.textContent =
-        "Date of registration is required.";
+      muteGiftDeedRegdateError.textContent = "Date of registration is required.";
       muteGiftDeedRegdateError.style.display = "block";
       return false;
     }
@@ -6491,8 +6442,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var muteSmcCertificateNoValue = muteSmcCertificateNo.value.trim();
     var allowedPattern = /^[A-Za-z0-9:\/\-\s]+$/; // Regex allows alphabets, numbers, spaces, and : - /
     if (muteSmcCertificateNoValue === "") {
-      muteSmcCertificateNoError.textContent =
-        "SMC certificate number is required.";
+      muteSmcCertificateNoError.textContent = "SMC certificate number is required.";
       muteSmcCertificateNoError.style.display = "block";
       return false;
     } else if (!allowedPattern.test(muteSmcCertificateNoValue)) {
@@ -6610,8 +6560,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (mutePropateFile.getAttribute("data-should-validate") == 1) {
         return true;
       }
-      mutePropateFileError.textContent =
-        "Propate/LOA/Court Decree/Order PDF file is required.";
+      mutePropateFileError.textContent = "Probate/ Letter of Administration/ Court Order/ Decree PDF file is required.";
       return false;
     }
   }
@@ -6876,7 +6825,7 @@ document.addEventListener("DOMContentLoaded", function () {
       } else if (applicationType === "LUC" && validateForm1LUC()) {
         // var spinner = document.getElementById('spinnerOverlay');
         spinner.style.display = "flex";
-        if (propertyStatus == "Lease Hold" && applicationType == "LUC") {
+        if (/*propertyStatus == "Lease Hold" && */ applicationType == "LUC") {
           landUseChange(function (success, message) {
             if (success) {
               spinner.style.display = "none";
@@ -7195,6 +7144,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //   }
     // );
 
+
     $("input[name^='coapplicant'], select[name^='coapplicant']").each(
       function () {
         var nameAttr = $(this).attr("name");
@@ -7205,10 +7155,10 @@ document.addEventListener("DOMContentLoaded", function () {
           var field = matches[2];
           if (!coapplicants[index]) coapplicants[index] = {};
           coapplicants[index][field] = value;
+
           if (field == "aadharnumber") {
             value = encryptString(value);
           }
-
           // Append the text field to FormData
           formData.append(`coapplicants[${index}][${field}]`, value);
           if ($(this).attr("type") == "file") {
@@ -7258,6 +7208,9 @@ document.addEventListener("DOMContentLoaded", function () {
       //   mutCourtorder: mutCourtorder,
       // },
       success: function (result) {
+
+
+
         if (result.status == "success") {
           $("#submitbtn1").html(
             'Next <i class="bx bx-right-arrow-alt ms-2"></i>'
@@ -7274,6 +7227,12 @@ document.addEventListener("DOMContentLoaded", function () {
           $("#submitbtn1").prop("disabled", false);
           if (callback) callback(false, result); // Call the callback with failure
         }
+
+
+
+
+
+
 
         // return false;
         // if (result.status) {
@@ -7336,7 +7295,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //   }
   // );
 
-  // not apply 'blur change' on date inputs for final validation (after manual entry) by anil 26-03-2025
+  // ✅ not apply 'blur change' on date inputs for final validation (after manual entry) by anil 26-03-2025
   $(document).on(
     "blur change",
     "#repeater .coapplicant-block input:not([type='date']), #repeater .coapplicant-block select, #repeater .repeater-add-btn",
@@ -7345,7 +7304,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   );
 
-  // Only apply 'blur' to date inputs for final validation (after manual entry) by anil 26-03-2025
+  // ✅ Only apply 'blur' to date inputs for final validation (after manual entry) by anil 26-03-2025
   $(document).on(
     "blur",
     "#repeater .coapplicant-block input[type='date']",
@@ -7388,65 +7347,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $("#repeater .coapplicant-block").each(function (index, element) {
       let currentIndex = $(this).data("index");
-      var coName = $(element)
-        .find("#coapplicant_" + currentIndex + "_name")
-        .val();
-      var coGender = $(element)
-        .find("#coapplicant_" + currentIndex + "_gender")
-        .val();
+      var coName = $(element).find("#coapplicant_" + currentIndex + "_name").val();
+      var coGender = $(element).find("#coapplicant_" + currentIndex + "_gender").val();
       // var coDob = $(element).find('#coapplicant_' + currentIndex + '_dateofbirth').val();
-      var coDobInput = $(element).find(
-        "#coapplicant_" + currentIndex + "_dateofbirth"
-      );
+      var coDobInput = $(element).find("#coapplicant_" + currentIndex + "_dateofbirth");
       var ageField = $(element).find("#coapplicant_" + currentIndex + "_age");
-      var coRelation = $(element)
-        .find("#coapplicant_" + currentIndex + "_secondnameinv")
-        .val();
-      var coAdhaarNumber = $(element)
-        .find("#coapplicant_" + currentIndex + "_aadharnumber")
-        .val();
-      var coPanNumber = $(element)
-        .find("#coapplicant_" + currentIndex + "_pannumber")
-        .val();
-      var coMobileNumber = $(element)
-        .find("#coapplicant_" + currentIndex + "_mobilenumber")
-        .val();
-      var coPhotoFile = $(element).find(
-        "#coapplicant_" + currentIndex + "_photo"
-      )[0].files[0]; // Get the actual file
+      var coRelation = $(element).find("#coapplicant_" + currentIndex + "_secondnameinv").val();
+      var coAdhaarNumber = $(element).find("#coapplicant_" + currentIndex + "_aadharnumber").val();
+      var coPanNumber = $(element).find("#coapplicant_" + currentIndex + "_pannumber").val();
+      var coMobileNumber = $(element).find("#coapplicant_" + currentIndex + "_mobilenumber").val();
+      var coPhotoFile = $(element).find("#coapplicant_" + currentIndex + "_photo")[0].files[0]; // Get the actual file
 
       // var previewImgSrc = $(element).find(".preview").attr("src");
       // var isPreviewImageValid = previewImgSrc && previewImgSrc.trim() !== "" && !previewImgSrc.includes("placeholder") && !previewImgSrc.includes("default");
 
-      var coAdhaarFileInput = $(element).find(
-        "#coapplicant_" + currentIndex + "_aadhaarfile"
-      );
-      var coAdhaarFile =
-        coAdhaarFileInput.length > 0 && coAdhaarFileInput[0].files.length > 0
-          ? coAdhaarFileInput[0].files[0]
-          : null;
+      var coAdhaarFileInput = $(element).find("#coapplicant_" + currentIndex + "_aadhaarfile");
+      var coAdhaarFile = coAdhaarFileInput.length > 0 && coAdhaarFileInput[0].files.length > 0 ? coAdhaarFileInput[0].files[0] : null;
 
-      var coPanFileInput = $(element).find(
-        "#coapplicant_" + currentIndex + "_panfile"
-      );
-      var coPanFile =
-        coPanFileInput.length > 0 && coPanFileInput[0].files.length > 0
-          ? coPanFileInput[0].files[0]
-          : null;
+      var coPanFileInput = $(element).find("#coapplicant_" + currentIndex + "_panfile");
+      var coPanFile = coPanFileInput.length > 0 && coPanFileInput[0].files.length > 0 ? coPanFileInput[0].files[0] : null;
 
-      var coPhotoFileInput = $(element).find(
-        "#coapplicant_" + currentIndex + "_photo"
-      );
-      var coPhotoFile =
-        coPhotoFileInput.length > 0 && coPhotoFileInput[0].files.length > 0
-          ? coPhotoFileInput[0].files[0]
-          : null;
+      var coPhotoFileInput = $(element).find("#coapplicant_" + currentIndex + "_photo");
+      var coPhotoFile = coPhotoFileInput.length > 0 && coPhotoFileInput[0].files.length > 0 ? coPhotoFileInput[0].files[0] : null;
 
       const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
-      var aadhaarShouldValidate = coAdhaarFileInput.attr(
-        "data-should-validate"
-      );
+      var aadhaarShouldValidate = coAdhaarFileInput.attr("data-should-validate");
       var panShouldValidate = coPanFileInput.attr("data-should-validate");
       var photoShouldValidate = coPhotoFileInput.attr("data-should-validate");
 
@@ -7468,22 +7394,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (dob > todayDate) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Date of birth cannot be in the future.",
-            "#coapplicant_" + currentIndex + "_dateofbirth"
-          );
+          showErrorMessage(element, "Date of birth cannot be in the future.", "#coapplicant_" + currentIndex + "_dateofbirth");
           coDobInput.val(""); // Clear invalid date
           ageField.val("");
         } else {
           var age = coCalculateAge(dob);
           if (age > 100) {
             isCoapplicantMutValid = false;
-            showErrorMessage(
-              element,
-              "Age cannot be more than 100 years.",
-              "#coapplicant_" + currentIndex + "_dateofbirth"
-            );
+            showErrorMessage(element, "Age cannot be more than 100 years.", "#coapplicant_" + currentIndex + "_dateofbirth");
             coDobInput.val("");
             ageField.val("");
           } else {
@@ -7509,50 +7427,26 @@ document.addEventListener("DOMContentLoaded", function () {
         // Make all fields mandatory if at least one field is filled
         if (!coName) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Name is required.",
-            "#coapplicant_" + currentIndex + "_name"
-          );
+          showErrorMessage(element, "Name is required.", "#coapplicant_" + currentIndex + "_name");
         }
         if (!coGender) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Gender is required.",
-            "#coapplicant_" + currentIndex + "_gender"
-          );
+          showErrorMessage(element, "Gender is required.", "#coapplicant_" + currentIndex + "_gender");
         }
         if (!coDob) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Date of birth is required.",
-            "#coapplicant_" + currentIndex + "_dateofbirth"
-          );
+          showErrorMessage(element, "Date of birth is required.", "#coapplicant_" + currentIndex + "_dateofbirth");
         }
         if (!coRelation) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Relation is required.",
-            "#coapplicant_" + currentIndex + "_secondnameinv"
-          );
+          showErrorMessage(element, "Relation is required.", "#coapplicant_" + currentIndex + "_secondnameinv");
         }
         if (!coAdhaarNumber) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Aadhaar number is required.",
-            "#coapplicant_" + currentIndex + "_aadharnumber"
-          );
+          showErrorMessage(element, "Aadhaar number is required.", "#coapplicant_" + currentIndex + "_aadharnumber");
         } else if (!/^\d{12}$/.test(coAdhaarNumber)) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Aadhaar number must be 12 digits.",
-            "#coapplicant_" + currentIndex + "_aadharnumber"
-          );
+          showErrorMessage(element, "Aadhaar number must be 12 digits.", "#coapplicant_" + currentIndex + "_aadharnumber");
         }
         // if ($(element).find("#coapplicant_" + currentIndex + "_aadhaarfile").attr("data-should-validate") == "1") {
         //   // If the file input should not be validated, skip further validation for this field
@@ -7561,42 +7455,22 @@ document.addEventListener("DOMContentLoaded", function () {
         if (aadhaarShouldValidate !== "1") {
           if (!coAdhaarFile) {
             isCoapplicantMutValid = false;
-            showErrorMessage(
-              element,
-              "Aadhaar PDF is required.",
-              "#coapplicant_" + currentIndex + "_aadhaarfile"
-            );
+            showErrorMessage(element, "Aadhaar PDF is required.", "#coapplicant_" + currentIndex + "_aadhaarfile");
           } else if (coAdhaarFile.size > 5 * 1024 * 1024) {
             isCoapplicantMutValid = false;
-            showErrorMessage(
-              element,
-              "Aadhaar file size must be less than 5MB.",
-              "#coapplicant_" + currentIndex + "_aadhaarfile"
-            );
+            showErrorMessage(element, "Aadhaar file size must be less than 5MB.", "#coapplicant_" + currentIndex + "_aadhaarfile");
           } else if (!coAdhaarFile.name.endsWith(".pdf")) {
             // Check if the file is not a PDF
             isCoapplicantMutValid = false;
-            showErrorMessage(
-              element,
-              "Only PDF files are allowed.",
-              "#coapplicant_" + currentIndex + "_aadhaarfile"
-            );
+            showErrorMessage(element, "Only PDF files are allowed.", "#coapplicant_" + currentIndex + "_aadhaarfile");
           }
         }
         if (!coPanNumber) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "PAN number is required.",
-            "#coapplicant_" + currentIndex + "_pannumber"
-          );
+          showErrorMessage(element, "PAN number is required.", "#coapplicant_" + currentIndex + "_pannumber");
         } else if (!panRegex.test(coPanNumber.toUpperCase())) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Invalid PAN number format.",
-            "#coapplicant_" + currentIndex + "_pannumber"
-          );
+          showErrorMessage(element, "Invalid PAN number format.", "#coapplicant_" + currentIndex + "_pannumber");
         }
         // if ($(element).find("#coapplicant_" + currentIndex + "_panfile").attr("data-should-validate") == "1") {
         //   // If the file input should not be validated, skip further validation for this field
@@ -7605,42 +7479,22 @@ document.addEventListener("DOMContentLoaded", function () {
         if (panShouldValidate !== "1") {
           if (!coPanFile) {
             isCoapplicantMutValid = false;
-            showErrorMessage(
-              element,
-              "PAN PDF is required.",
-              "#coapplicant_" + currentIndex + "_panfile"
-            );
+            showErrorMessage(element, "PAN PDF is required.", "#coapplicant_" + currentIndex + "_panfile");
           } else if (coPanFile.size > 5 * 1024 * 1024) {
             isCoapplicantMutValid = false;
-            showErrorMessage(
-              element,
-              "PAN file size must be less than 5MB.",
-              "#coapplicant_" + currentIndex + "_panfile"
-            );
+            showErrorMessage(element, "PAN file size must be less than 5MB.", "#coapplicant_" + currentIndex + "_panfile");
           } else if (!coPanFile.name.endsWith(".pdf")) {
             // Check if the file is not a PDF
             isCoapplicantMutValid = false;
-            showErrorMessage(
-              element,
-              "Only PDF files are allowed.",
-              "#coapplicant_" + currentIndex + "_panfile"
-            );
+            showErrorMessage(element, "Only PDF files are allowed.", "#coapplicant_" + currentIndex + "_panfile");
           }
         }
         if (!coMobileNumber) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Mobile number is required.",
-            "#coapplicant_" + currentIndex + "_mobilenumber"
-          );
+          showErrorMessage(element, "Mobile number is required.", "#coapplicant_" + currentIndex + "_mobilenumber");
         } else if (!/^\d{10}$/.test(coMobileNumber)) {
           isCoapplicantMutValid = false;
-          showErrorMessage(
-            element,
-            "Mobile number must be 10 digits.",
-            "#coapplicant_" + currentIndex + "_mobilenumber"
-          );
+          showErrorMessage(element, "Mobile number must be 10 digits.", "#coapplicant_" + currentIndex + "_mobilenumber");
         }
 
         // Photo validation
@@ -7683,34 +7537,19 @@ document.addEventListener("DOMContentLoaded", function () {
         if (photoShouldValidate !== "1") {
           if (!coPhotoFile) {
             isCoapplicantMutValid = false;
-            showErrorMessage(
-              element,
-              "Co-applicant passport size photo is required.",
-              "#coapplicant_" + currentIndex + "_photo"
-            );
+            showErrorMessage(element, "Co-applicant passport size photo is required.", "#coapplicant_" + currentIndex + "_photo");
           } else {
             var coPhotoFileName = coPhotoFile.name;
-            var coPhotoFileExtension = coPhotoFileName
-              .split(".")
-              .pop()
-              .toLowerCase();
+            var coPhotoFileExtension = coPhotoFileName.split(".").pop().toLowerCase();
             var coPhotoValidExtensions = ["jpg", "jpeg", "png"];
 
             if (!coPhotoValidExtensions.includes(coPhotoFileExtension)) {
               isCoapplicantMutValid = false;
-              showErrorMessage(
-                element,
-                "Only .jpg, .jpeg, and .png formats are allowed.",
-                "#coapplicant_" + currentIndex + "_photo"
-              );
+              showErrorMessage(element, "Only .jpg, .jpeg, and .png formats are allowed.", "#coapplicant_" + currentIndex + "_photo");
               coPhotoFileInput.val(""); // Reset file input
             } else if (coPhotoFile.size > 102400) {
               isCoapplicantMutValid = false;
-              showErrorMessage(
-                element,
-                "Passport photo size must be less than 100KB.",
-                "#coapplicant_" + currentIndex + "_photo"
-              );
+              showErrorMessage(element, "Passport photo size must be less than 100KB.", "#coapplicant_" + currentIndex + "_photo");
             }
           }
         }
@@ -7763,38 +7602,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Check if the field should be validated
       if (
-        $(element)
-          .find("#affidavits_" + currentIndex + "_affidavits")
-          .attr("data-should-validate") !== "1"
-      ) {
+        $(element).find("#affidavits_" + currentIndex + "_affidavits").attr("data-should-validate") !== "1") {
         // If the file input should not be validated, skip further validation for this field
         // return true; // Skip validation and continue to the next item // commented by anil for not in use and keeping the file validation here
         // Validate file input
         if (!muteAffidavitsFile) {
           isMutAttesteValid = false;
-          $(element)
-            .find("#affidavits_" + currentIndex + "_affidavits")
-            .siblings(".text-danger")
-            .text("Affidavit file is required.");
+          $(element).find("#affidavits_" + currentIndex + "_affidavits").siblings(".text-danger").text("Affidavit file is required.");
         } else {
           // Validate file size (5MB limit)
           if (muteAffidavitsFile.size > 5 * 1024 * 1024) {
             isMutAttesteValid = false;
-            $(element)
-              .find("#affidavits_" + currentIndex + "_affidavits")
-              .siblings(".text-danger")
-              .text("File size must be less than 5MB.");
+            $(element).find("#affidavits_" + currentIndex + "_affidavits").siblings(".text-danger").text("File size must be less than 5MB.");
           } else if (!muteAffidavitsFile.name.toLowerCase().endsWith(".pdf")) {
             isMutAttesteValid = false;
-            $(element)
-              .find("#affidavits_" + currentIndex + "_affidavits")
-              .siblings(".text-danger")
-              .text("Only PDF files are allowed.");
+            $(element).find("#affidavits_" + currentIndex + "_affidavits").siblings(".text-danger").text("Only PDF files are allowed.");
           } else {
-            $(element)
-              .find("#affidavits_" + currentIndex + "_affidavits")
-              .siblings(".text-danger")
-              .text("");
+            $(element).find("#affidavits_" + currentIndex + "_affidavits").siblings(".text-danger").text("");
           }
         }
       }
@@ -7802,17 +7626,11 @@ document.addEventListener("DOMContentLoaded", function () {
       // Validate "attested by" field
       if (!mutAttestedBy) {
         isMutAttesteValid = false;
-        $(element)
-          .find("#affidavits_" + currentIndex + "_affidavitattestedby")
-          .siblings(".text-danger")
-          .text("Attested by is required.");
+        $(element).find("#affidavits_" + currentIndex + "_affidavitattestedby").siblings(".text-danger").text("Attested by is required.");
       } else if (!/^[A-Za-z\s.]+$/.test(mutAttestedBy)) {
         // Check if it contains only alphabets and spaces
         isMutAttesteValid = false;
-        $(element)
-          .find("#affidavits_" + currentIndex + "_affidavitattestedby")
-          .siblings(".text-danger")
-          .text("Attested by must contain letters only.");
+        $(element).find("#affidavits_" + currentIndex + "_affidavitattestedby").siblings(".text-danger").text("Attested by must contain letters only.");
       } else {
         $(element)
           .find("#affidavits_" + currentIndex + "_affidavitattestedby")
@@ -7823,21 +7641,12 @@ document.addEventListener("DOMContentLoaded", function () {
       // Validate attestation date (No future dates)
       if (!muteAttestationDate) {
         isMutAttesteValid = false;
-        $(element)
-          .find("#affidavits_" + currentIndex + "_affidavitsdateofattestation")
-          .siblings(".text-danger")
-          .text("Date of attestation is required.");
+        $(element).find("#affidavits_" + currentIndex + "_affidavitsdateofattestation").siblings(".text-danger").text("Date of attestation is required.");
       } else if (muteAttestationDate > today) {
         isMutAttesteValid = false;
-        $(element)
-          .find("#affidavits_" + currentIndex + "_affidavitsdateofattestation")
-          .siblings(".text-danger")
-          .text("Future date is not allowed.");
+        $(element).find("#affidavits_" + currentIndex + "_affidavitsdateofattestation").siblings(".text-danger").text("Future date is not allowed.");
       } else {
-        $(element)
-          .find("#affidavits_" + currentIndex + "_affidavitsdateofattestation")
-          .siblings(".text-danger")
-          .text(""); // Clear invalid input
+        $(element).find("#affidavits_" + currentIndex + "_affidavitsdateofattestation").siblings(".text-danger").text(""); // Clear invalid input
       }
 
       if (!isMutAttesteValid) {
@@ -7848,35 +7657,21 @@ document.addEventListener("DOMContentLoaded", function () {
     // Loop through all .items inside #indemnityBond_repeater
     $("#indemnityBond_repeater .items").each(function (index, element) {
       let currentIndex = $(this).data("index");
-      var mutIndeBond = $(element).find(
-        "#indemnitybond_" + currentIndex + "_indemnitybond"
-      )[0]?.files[0]; // File input
-      var mutIndeAttestationDate = $(element)
-        .find(
-          "#indemnitybond_" + currentIndex + "_indemnitybonddateofattestation"
-        )
-        .val();
-      var muteIndeAttestedBy = $(element)
-        .find("#indemnitybond_" + currentIndex + "_indemnitybondattestedby")
-        .val();
+      var mutIndeBond = $(element).find("#indemnitybond_" + currentIndex + "_indemnitybond")[0]?.files[0]; // File input
+      var mutIndeAttestationDate = $(element).find("#indemnitybond_" + currentIndex + "_indemnitybonddateofattestation").val();
+      var muteIndeAttestedBy = $(element).find("#indemnitybond_" + currentIndex + "_indemnitybondattestedby").val();
 
       var isMutIndeValid = true;
 
       // Check if the field should be validated
       if (
-        $(element)
-          .find("#indemnitybond_" + currentIndex + "_indemnitybond")
-          .attr("data-should-validate") !== "1"
-      ) {
+        $(element).find("#indemnitybond_" + currentIndex + "_indemnitybond").attr("data-should-validate") !== "1") {
         // If the file input should not be validated, skip further validation for this field
         // return true; // Skip validation and continue to the next item // commented by anil for not in use and keeping the file validation here
         // Validate "Indemnity Bond" input field
         if (!mutIndeBond) {
           isMutIndeValid = false;
-          $(element)
-            .find("#indemnitybond_" + currentIndex + "_indemnitybond")
-            .siblings(".text-danger")
-            .text("Indemnity bond file required.");
+          $(element).find("#indemnitybond_" + currentIndex + "_indemnitybond").siblings(".text-danger").text("Indemnity bond file required.");
         } else {
           // Validate file size (5MB limit)
           if (mutIndeBond.size > 5 * 1024 * 1024) {
@@ -8023,10 +7818,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Apply max date on document load for existing fields
     $(
       "#affidavits_" +
-        currentIndex +
-        "_affidavitsdateofattestation, #indemnitybond_" +
-        currentIndex +
-        "_indemnitybonddateofattestation"
+      currentIndex +
+      "_affidavitsdateofattestation, #indemnitybond_" +
+      currentIndex +
+      "_indemnitybonddateofattestation"
     ).attr("max", today);
   });
 
@@ -8086,8 +7881,7 @@ document.addEventListener("DOMContentLoaded", function () {
                       // Find the hidden input field inside the element with data-name="indexValue"
                       var closestInput = $(element).find(`input[type="file"]`);
                       var hiddenInput = closestInput
-                        .parent()
-                        .find(`input[type="hidden"]`);
+                        .parent().find(`input[type="hidden"]`);
                       if (!hiddenInput.val()) {
                         hiddenInput.val(value);
                       }
@@ -8168,12 +7962,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // var panDateIssue = $("input[name='panDateIssue']").val();
     // var aadharCertificateNo = $("input[name='aadharCertificateNo']").val();
     // var aadharDateIssue = $("input[name='aadharDateIssue']").val();
-    var newspaperNameEnglish = $("input[name='newspaperNameEnglish']").val();
-    var publicNoticeDateEnglish = $(
-      "input[name='publicNoticeDateEnglish']"
-    ).val();
-    var newspaperNameHindi = $("input[name='newspaperNameHindi']").val();
-    var publicNoticeDateHindi = $("input[name='publicNoticeDateHindi']").val();
+    // var newspaperNameEnglish = $("input[name='newspaperNameEnglish']").val();
+    // var publicNoticeDateEnglish = $(
+    //   "input[name='publicNoticeDateEnglish']"
+    // ).val();
+    // var newspaperNameHindi = $("input[name='newspaperNameHindi']").val();
+    // var publicNoticeDateHindi = $("input[name='publicNoticeDateHindi']").val();
 
     var formData = new FormData();
     formData.append("_token", $('meta[name="csrf-token"]').attr("content")); // CSRF token
@@ -8189,26 +7983,26 @@ document.addEventListener("DOMContentLoaded", function () {
     // formData.append("leaseConvDeedLesseename", leaseConvDeedLesseename);
     // formData.append('panCertificateNo', panCertificateNo);
     // formData.append('aadharCertificateNo', aadharCertificateNo);
-    formData.append("newspaperNameEnglish", newspaperNameEnglish);
-    formData.append("publicNoticeDateEnglish", publicNoticeDateEnglish);
-    formData.append("newspaperNameHindi", newspaperNameHindi);
-    formData.append("publicNoticeDateHindi", publicNoticeDateHindi);
+    // formData.append("newspaperNameEnglish", newspaperNameEnglish);
+    // formData.append("publicNoticeDateEnglish", publicNoticeDateEnglish);
+    // formData.append("newspaperNameHindi", newspaperNameHindi);
+    // formData.append("publicNoticeDateHindi", publicNoticeDateHindi);
 
-    $("input[name^='affidavits']").each(function (item, value) {
-      // console.log(item,value);
+    // $("input[name^='affidavits']").each(function (item, value) {
+    //   // console.log(item,value);
 
-      var nameAttr = $(this).attr("name");
-      var value;
-      if ($(this).attr("type") === "file") {
-        if ($(this)[0].files.length > 0) {
-          value = $(this)[0].files[0]; // Get the file object
-          formData.append(nameAttr, value); // Append the file to FormData
-        }
-      } else {
-        value = $(this).val(); // Get the string value for other inputs
-        formData.append(nameAttr, value); // Append to FormData
-      }
-    });
+    //   var nameAttr = $(this).attr("name");
+    //   var value;
+    //   if ($(this).attr("type") === "file") {
+    //     if ($(this)[0].files.length > 0) {
+    //       value = $(this)[0].files[0]; // Get the file object
+    //       formData.append(nameAttr, value); // Append the file to FormData
+    //     }
+    //   } else {
+    //     value = $(this).val(); // Get the string value for other inputs
+    //     formData.append(nameAttr, value); // Append to FormData
+    //   }
+    // });
 
     $("input[name^='indemnityBond']").each(function () {
       var nameAttr = $(this).attr("name");
@@ -8449,7 +8243,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // if () {
 
+
       if (applicationType == "SUB_MUT" && validateForm3MUT()) {
+
         spinner.style.display = "flex";
         btn.textContent = "Submitting...";
         btn.disabled = true;
@@ -8459,10 +8255,10 @@ document.addEventListener("DOMContentLoaded", function () {
               'Proceed to Pay <i class="bx bx-right-arrow-alt ms-2"></i>';
             btn.disabled = false;
             spinner.style.display = "none";
-            showSuccess(
-              result.message,
-              getBaseURL() + "/applications/history/details"
-            );
+            // showSuccess(
+            //   result.message,
+            //   getBaseURL() + "/applications/history/details"
+            // );
           } else {
             console.log("condition getting false.");
             btn.innerHTML =
@@ -8482,7 +8278,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // var propertyStatus = $("input[name='applicationStatus']").val();
         // var applicationType = $("select[name='applicationType']").val();
 
-        if (/* propertyStatus == "Lease Hold" &&  */ applicationType == "LUC") {
+        if (/*propertyStatus == "Lease Hold" &&*/ applicationType == "LUC") {
           // var spinner = document.getElementById('spinnerOverlay');
           spinner.style.display = "flex";
           landUseChangeStep2(function (success, result) {
@@ -8550,6 +8346,7 @@ document.addEventListener("DOMContentLoaded", function () {
             showError(result);
           }
         });
+
       }
 
       if (applicationType == "NOC" && validateForm2Noc()) {
@@ -8624,7 +8421,6 @@ document.addEventListener("DOMContentLoaded", function () {
   if (convDateOfNOC) {
     convDateOfNOC.setAttribute("max", today);
   }
-  // ** end commented by anil for not in use on 06-10-2025 **
   // if (convAttestedLetterDate) {
   //   convAttestedLetterDate.setAttribute("max", today);
   // }
@@ -8637,9 +8433,9 @@ document.addEventListener("DOMContentLoaded", function () {
   if (convDocLeaseDeedDoEDate) {
     convDocLeaseDeedDoEDate.setAttribute("max", today);
   }
-  if (convMandDocADateAttestation) {
-    convMandDocADateAttestation.setAttribute("max", today);
-  }
+  // if (convMandDocADateAttestation) {
+  //   convMandDocADateAttestation.setAttribute("max", today);
+  // }
   if (convLesseeAliveAffidevitDate) {
     convLesseeAliveAffidevitDate.setAttribute("max", today);
   }
@@ -8800,33 +8596,84 @@ function mutationStepThird(callback) {
       otherDocumentRemark: otherDocumentRemark,
       agreeConsent: agreeConsent,
     },
-    success: function (result) {
-      if (result.status) {
-        $("#btnfinalsubmit").html(
-          'Proceed to Pay <i class="bx bx-right-arrow-alt ms-2"></i>'
-        );
-        $("#btnfinalsubmit").prop("disabled", false);
-        if (callback) callback(true, result); // Call the callback with success
+    // success: function (result) {
+    //   if (result.status) {
+    //     $("#btnfinalsubmit").html(
+    //       'Proceed to Pay <i class="bx bx-right-arrow-alt ms-2"></i>'
+    //     );
+    //     $("#btnfinalsubmit").prop("disabled", false);
+    //     if (callback) callback(true, result); // Call the callback with success
+    //   } else {
+    //     // Handle failure scenario
+    //     $("#btnfinalsubmit").html(
+    //       'Proceed to Pay <i class="bx bx-right-arrow-alt ms-2"></i>'
+    //     );
+    //     $("#btnfinalsubmit").prop("disabled", false);
+    //     if (callback) callback(false, result); // Call the callback with failure
+    //   }
+    // },
+    // error: function (err) {
+    //   $("#submitbtn1").html(
+    //     'Proceed to Pay <i class="bx bx-right-arrow-alt ms-2"></i>'
+    //   );
+    //   $("#submitbtn1").prop("disabled", false);
+    //   if (err.responseJSON && err.responseJSON.message) {
+    //     if (callback) callback(false, err.responseJSON.message);
+    //   } else {
+    //     if (callback) callback(false, "Unknown error!!");
+    //   }
+    // },
+
+
+
+
+
+
+
+
+
+
+
+
+
+    success: (response) => {
+      if (response.url) {
+        window.location.href = response.url;
       } else {
-        // Handle failure scenario
-        $("#btnfinalsubmit").html(
-          'Proceed to Pay <i class="bx bx-right-arrow-alt ms-2"></i>'
-        );
-        $("#btnfinalsubmit").prop("disabled", false);
-        if (callback) callback(false, result); // Call the callback with failure
+        if (response.status == "error") {
+          if (callback) callback(false, response.message);
+        }
+        if (callback) callback(true, response.message);
       }
     },
-    error: function (err) {
-      $("#submitbtn1").html(
-        'Proceed to Pay <i class="bx bx-right-arrow-alt ms-2"></i>'
-      );
-      $("#submitbtn1").prop("disabled", false);
-      if (err.responseJSON && err.responseJSON.message) {
-        if (callback) callback(false, err.responseJSON.message);
+    error: (response) => {
+      if (response.status == 422) {
+        // validation error
+        let er = response.responseJSON;
+        if (callback) callback(false, er.id + "-" + er.message); // Call the callback with failure
       } else {
-        if (callback) callback(false, "Unknown error!!");
+        if (callback) callback(response.responseText);
       }
     },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   });
 }
 
@@ -8885,12 +8732,11 @@ function getLandUseChangeData(propertyId, updateId, callback) {
                 },
               ],
             });
-            var appendOption = `<option value="${row.property_type_to}" ${
-              isEditing == 1 &&
+            var appendOption = `<option value="${row.property_type_to}" ${isEditing == 1 &&
               application.property_type_change_to == row.property_type_to
-                ? "selected"
-                : ""
-            }>${row.toTypeName}</option>`;
+              ? "selected"
+              : ""
+              }>${row.toTypeName}</option>`;
             $("#lucpropertytypeto").append(appendOption);
           } else {
             let propertyType = propertyTypeMap.get(row.property_type_to);
@@ -8904,11 +8750,8 @@ function getLandUseChangeData(propertyId, updateId, callback) {
         propertyTypes = Array.from(propertyTypeMap.values());
 
         if (isEditing) {
-          $("#lucpropertytypeto").val();
           $("#lucpropertytypeto").change();
-          $("#lucpropertysubtypeto").val();
-          $("#luc_TBUA").val(application.total_built_up_area);
-          $("#luc_BUAC").val(application.commercial_area);
+          $("#lucpropertysubtypeto").change();
         }
         if (callback) {
           callback(true, "");
@@ -8936,11 +8779,10 @@ $("#lucpropertytypeto").change(function () {
       let subtypes = selectedPropertyType.subtypes;
       $.each(subtypes, (i, val) => {
         $("#lucpropertysubtypeto").append(
-          `<option value="${val.id}" data-rate="${val.rate}" ${
-            isEditing == true &&
+          `<option value="${val.id}" data-rate="${val.rate}" ${isEditing == true &&
             application.property_subtype_change_to == val.id
-              ? "selected"
-              : ""
+            ? "selected"
+            : ""
           }>${val.name}</option>`
         );
       });
@@ -9147,8 +8989,8 @@ function displayEstimatedCharges() {
 
   // folowing function is copied from demand input form and modified by Nitin Raghuvanshi on 17 March 2025
   $(".builtUpAreaInputs .error").empty();
-  // aded by anil on 09-06-2025 for adding display none class when user get error again
-  //$(".estimate").addClass("d-none");
+  // aded by anil on 09-06-2025 for adding display none class when user get error again 
+  $(".estimate").addClass("d-none");
   // aded by anil on 09-06-2025 for adding display none class when user get error again
 
   let landValue = 0;
@@ -9159,39 +9001,21 @@ function displayEstimatedCharges() {
     landArea = parseFloat(landSizeSpan.text().replace("Sq. Mtr.", "")) || 0;
   }
 
-  let chargesApplicabe = false;
-  let valid = true;
-  // let mixedUse = $("#mixed_LUC").is(":checked");
+  let chargesApplicabe = true;
+  let mixedUse = $("#mixed_LUC").is(":checked");
 
-  // if (mixedUse) {
-  let tbuac = parseFloat($("#luc_TBUA").val()) || 0;
-  let buac = parseFloat($("#luc_BUAC").val()) || 0;
-  if (!tbuac > 0) {
-    $("#luc_TBUA_error").html("Total built-up area is required.");
-    valid = false;
-  }
-  if (tbuac > landArea) {
-    $("#luc_TBUA_error").html(
-      `Total built-up area cannot be more than land size ${landArea} Sq.m.`
-    );
-    valid = false;
-  }
-  if (!buac > 0) {
-    $("#luc_BUAC_error").html("Land use change area is required.");
-    valid = false;
-  }
+  if (mixedUse) {
+    let tbuac = parseFloat($("#luc_TBUA").val()) || 0;
+    let buac = parseFloat($("#luc_BUAC").val()) || 0;
 
-  return valid;
+    if (tbuac > landArea) {
+      $("#luc_TBUA_error").html(
+        `Total built-up area cannot be more than land size ${landArea} Sq.m.`
+      );
+      return false;
+    }
 
-  // if (tbuac > landArea) {
-  //   $("#luc_TBUA_error").html(
-  //     `Total built-up area cannot be more than land size ${landArea} Sq.m.`
-  //   );
-  //   return false;
-  // }
-  //folowing code is commented after latest update
-  /* if (tbuac > 0) {
-      //folowig  code is 
+    if (tbuac > 0) {
       if (buac > 0) {
         if (buac > tbuac) {
           $("#luc_BUAC_error").html(
@@ -9206,14 +9030,14 @@ function displayEstimatedCharges() {
       } else {
         $("#luc_BUAC_error").html("Area to be used as commercial is required.");
         return false;
-      } 
+      }
     } else {
       $("#luc_TBUA_error").html("Total built-up area is required.");
       return false;
-    } */
-  // }
+    }
+  }
 
-  /* if (chargesApplicabe) {
+  if (chargesApplicabe) {
     let baseUrl = getBaseURL();
     let propertyId = $("#propertyid").val();
 
@@ -9242,7 +9066,7 @@ function displayEstimatedCharges() {
     );
 
     $(".estimate").removeClass("d-none");
-  } */
+  }
 }
 
 // added this funciton for LUC get estimated charges calculation on click next button by anil on 09-06-2025/ updated on 16-06-2025
@@ -9263,8 +9087,7 @@ function validateMixedLUCSection() {
     return true; // No validation needed
   }
 
-  const landArea =
-    parseFloat($("#land-size-span").text().replace("Sq. Mtr.", "")) || 0;
+  const landArea = parseFloat($("#land-size-span").text().replace("Sq. Mtr.", "")) || 0;
   const tbuac = parseFloat($("#luc_TBUA").val()) || 0;
   const buac = parseFloat($("#luc_BUAC").val()) || 0;
   const estimatedChargesText = $("#estimatedCharges").text().trim();
@@ -9285,9 +9108,7 @@ function validateMixedLUCSection() {
     $("#luc_BUAC_error").html("Area to be used as commercial is required.");
     isValid = false;
   } else if (buac > tbuac) {
-    $("#luc_BUAC_error").html(
-      "Commercial area cannot be more than total built-up area."
-    );
+    $("#luc_BUAC_error").html("Commercial area cannot be more than total built-up area.");
     isValid = false;
   }
 
@@ -9307,14 +9128,17 @@ $(document).ready(function () {
       }
     }
   });
+
 });
 // end this funciton for LUC get estimated charges calculation on click next button by anil on 09-06-2025 / updated on 16-06-2025
+
+
 
 function getUserDetails() {
   return $.ajax({
     url: fetchUserDetailsUrl,
     type: "GET",
-    dataType: "JSON",
+    dataType: "JSON"
   });
 }
 
@@ -9330,7 +9154,6 @@ function conversionStep1(propertyid, propertyStatus, callback) {
     "input[name='convExecutedOnAsOnLease']"
   ).val();
   var convaadhar = $("input[name='convaadhar']").val();
-  convaadhar = encryptString(convaadhar);
   var convpan = $("input[name='convpan']").val();
   var convmobilenumber = $("input[name='convmobilenumber']").val();
   var convNameAsOnLease = $("input[name='convNameAsOnLease']").val();
@@ -9398,9 +9221,9 @@ function conversionStep1(propertyid, propertyStatus, callback) {
 
   formData.append("propertymortgagedConversion", propertymortgagedConversion);
   if (propertymortgagedConversion == "1") {
-    var mortgageNoCFileInput = $('input[name="convMortgageeBankNOC"]');
-    var mortgageNoCFile = mortgageNoCFileInput[0].files[0];
-    formData.append("mortgageNoCFile", mortgageNoCFile);
+    // var mortgageNoCFileInput = $('input[name="convMortgageeBankNOC"]');
+    // var mortgageNoCFile = mortgageNoCFileInput[0].files[0];
+    // formData.append("mortgageNoCFile", mortgageNoCFile);
     var NOCAttestationDateConversion = $(
       'input[name="NOCAttestationDateConversion"]'
     ).val();
@@ -9578,7 +9401,7 @@ function coapplicantConRepeaterForm() {
     );
     var conCoAdhaarFile =
       conCoAdhaarFileInput.length > 0 &&
-      conCoAdhaarFileInput[0].files.length > 0
+        conCoAdhaarFileInput[0].files.length > 0
         ? conCoAdhaarFileInput[0].files[0]
         : null;
     var conCoPanFileInput = $(element).find(
@@ -9629,22 +9452,14 @@ function coapplicantConRepeaterForm() {
 
       if (dob > todayDate) {
         isCoapplicantConValid = false;
-        showErrorMessage(
-          element,
-          "Date of birth cannot be in the future.",
-          "#convcoapplicant_" + currentIndex + "_dateofbirth"
-        );
-        conCoDobInput.val(""); // Clear invalid
+        showErrorMessage(element, "Date of birth cannot be in the future.", "#convcoapplicant_" + currentIndex + "_dateofbirth");
+        conCoDobInput.val(""); // Clear invalid 
         ageConField.val("");
       } else {
         var age = conCalculateAge(dob);
         if (age > 100) {
           isCoapplicantConValid = false;
-          showErrorMessage(
-            element,
-            "Age cannot be more than 100 years.",
-            "#convcoapplicant_" + currentIndex + "_dateofbirth"
-          );
+          showErrorMessage(element, "Age cannot be more than 100 years.", "#convcoapplicant_" + currentIndex + "_dateofbirth");
           conCoDobInput.val("");
           ageConField.val("");
         } else {
@@ -10106,7 +9921,6 @@ function noc(propertyid, propertyStatus, callback) {
   var nocFathernameApp = $("input[name='nocFathernameApp']").val();
 
   var nocAadharApp = $("input[name='nocAadharApp']").val();
-  nocAadharApp = encryptString(nocAadharApp);
   var nocPanApp = $("input[name='nocPanApp']").val();
   var nocMobilenumberApp = $("input[name='nocMobilenumberApp']").val();
 
@@ -10290,7 +10104,7 @@ function coapplicantNocRepeaterForm() {
     );
     var nocCoAdhaarFile =
       nocCoAdhaarFileInput.length > 0 &&
-      nocCoAdhaarFileInput[0].files.length > 0
+        nocCoAdhaarFileInput[0].files.length > 0
         ? nocCoAdhaarFileInput[0].files[0]
         : null;
     var nocCoPanFileInput = $(element).find(
@@ -10328,7 +10142,7 @@ function coapplicantNocRepeaterForm() {
     // Remove previous error messages
     $(this).find(".error-message").text("");
 
-    // Future date and max age check
+    // Future Date Validation for DOB
     if (nocCoDob) {
       var dob = new Date(nocCoDob);
       var todayDate = new Date();
@@ -10336,22 +10150,14 @@ function coapplicantNocRepeaterForm() {
 
       if (dob > todayDate) {
         isCoapplicantNocValid = false;
-        showErrorMessage(
-          element,
-          "Date of birth cannot be in the future.",
-          "#noccoapplicant_" + currentIndex + "_dateofbirth"
-        );
+        showErrorMessage(element, "Date of birth cannot be in the future.", "#noccoapplicant_" + currentIndex + "_dateofbirth");
         nocCoDobInput.val("");
         agenocField.val("");
       } else {
         var age = nocCalculateAge(dob);
         if (age > 100) {
           isCoapplicantNocValid = false;
-          showErrorMessage(
-            element,
-            "Age cannot be more than 100 years.",
-            "#noccoapplicant_" + currentIndex + "_dateofbirth"
-          );
+          showErrorMessage(element, "Age cannot be more than 100 years.", "#noccoapplicant_" + currentIndex + "_dateofbirth");
           nocCoDobInput.val("");
           agenocField.val("");
         } else {
@@ -10733,23 +10539,20 @@ function validateNocPagenoFrom() {
 
   // Check if the value is numeric
   if (!/^\d+$/.test(nocPagenoFromValue)) {
-    nocPagenoFromError.textContent =
-      "Page number from must be a numeric value.";
+    nocPagenoFromError.textContent = "Page number from must be a numeric value.";
     nocPagenoFromError.style.display = "block";
     return false;
   }
 
   // Check if the value is positive
   if (parseFloat(nocPagenoFromValue) <= 0) {
-    nocPagenoFromError.textContent =
-      "Page number from must be a positive number.";
+    nocPagenoFromError.textContent = "Page number from must be a positive number.";
     nocPagenoFromError.style.display = "block";
     return false;
   }
   // Check if 'Page number From' is greater than 'Page number To'
   if (parseInt(nocPagenoFromValue) > parseInt(nocPagenoValueTo)) {
-    nocPagenoFromError.textContent =
-      "Page number from cannot be greater than page number to.";
+    nocPagenoFromError.textContent = "Page number from cannot be greater than page number to.";
     nocPagenoFromError.style.display = "block";
     return false;
   } else {
@@ -10924,20 +10727,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (selectedDate > maxDate) {
       // Format maxDate as MM/DD/YYYY
       const formattedMaxDate =
-        ("0" + (maxDate.getMonth() + 1)).slice(-2) +
-        "/" +
-        ("0" + maxDate.getDate()).slice(-2) +
-        "/" +
+        ("0" + (maxDate.getMonth() + 1)).slice(-2) + "/" +
+        ("0" + maxDate.getDate()).slice(-2) + "/" +
         maxDate.getFullYear();
 
       nocConvAppDateError.textContent =
         "Selected date cannot be after the executed on date (" +
-        formattedMaxDate +
-        ").";
+        formattedMaxDate + ").";
       nocConvAppDateError.style.display = "block";
       this.value = "";
     }
   });
+
 
   // Optional: Update max date when executed on is changed by the user
   executedOnInput.addEventListener("change", setMaxDate);
@@ -11014,7 +10815,6 @@ function validateEditNOC1() {
 // added new input validation by anil on 13-10-2025
 var conveyanceLeasedeed = document.getElementById("leasedeed");
 var conveyanceLeasedeedError = document.getElementById("leasedeedError");
-
 var conveyancedeed = document.getElementById("conveyancedeed");
 var conveyancedeedError = document.getElementById("conveyancedeedError");
 
@@ -11031,25 +10831,14 @@ var conveyanceOwnershipDocError = document.getElementById(
 var conveyanceSubmutDone = document.getElementById("submutdone");
 var conveyanceSubmutDoneError = document.getElementById("submutdoneError");
 
-var conveyancepropPhotodocFile = document.getElementById(
-  "conveyancepropPhotodoc"
-);
-var conveyancepropPhotodocFileError = document.getElementById(
-  "conveyancepropPhotodocError"
-);
+var conveyancepropPhotodocFile = document.getElementById("conveyancepropPhotodoc");
+var conveyancepropPhotodocFileError = document.getElementById("conveyancepropPhotodocError");
 
-var conveyanceElectricitybill = document.getElementById(
-  "latestelectricitybill"
-);
-var conveyanceElectricitybillError = document.getElementById(
-  "latestelectricitybillError"
-);
+var conveyanceElectricitybill = document.getElementById("latestelectricitybill");
+var conveyanceElectricitybillError = document.getElementById("latestelectricitybillError");
 
-var conveyanceUndertakingregLand =
-  document.getElementById("undertakingregland");
-var conveyanceUndertakingregLandError = document.getElementById(
-  "undertakingreglandError"
-);
+var conveyanceUndertakingregLand = document.getElementById("undertakingregland");
+var conveyanceUndertakingregLandError = document.getElementById("undertakingreglandError");
 // end new input validation by anil on 13-10-2025
 
 var conveyanceAadharDoc = document.getElementById("conveyanceaadhardoc");
@@ -11060,10 +10849,10 @@ var conveyanceAadharDocError = document.getElementById(
 var conveyancePanDoc = document.getElementById("conveyancepandoc");
 var conveyancePanDocError = document.getElementById("conveyancepandocError");
 
-var conveyanceConAppDoc = document.getElementById("conveyanceconappdoc");
-var conveyanceConAppDocError = document.getElementById(
-  "conveyanceconappdocError"
-);
+// var conveyanceConAppDoc = document.getElementById("conveyanceconappdoc");
+// var conveyanceConAppDocError = document.getElementById(
+//   "conveyanceconappdocError"
+// );
 
 var agreeConsentNoc = document.getElementById("agreeConsentNoc");
 var agreeConsentNocError = document.getElementById("agreeConsentNocError");
@@ -11086,13 +10875,13 @@ function validateForm2Noc() {
   // added new input validation by anil on 13-10-2025
   var isValidateConveyanceSaledeedDoc = validateConveyanceSaledeedDoc();
   var isConveyanceOwnershipDoc = validateConveyanceOwnershipDoc();
+  // var isConveyanceAadharDoc = validateConveyanceAadharDoc();
+  // var isConveyancePanDoc = validateConveyancePanDoc();
   // added new input validation by anil on 13-10-2025
   var isValidateConveyanceSubmutDone = validateConveyanceSubmutDone();
-  var isValidateConveyancePropPhotodocFile =
-    validateConveyancePropPhotodocFile();
+  var isValidateConveyancePropPhotodocFile = validateConveyancePropPhotodocFile();
   var isValidateConveyanceElectricityBill = validateConveyanceElectricityBill();
-  var isValidateConveyanceUndertakingregLand =
-    validateConveyanceUndertakingregLand();
+  var isValidateConveyanceUndertakingregLand = validateConveyanceUndertakingregLand();
   // end new input validation by anil on 13-10-2025
   var isValidateAgreeConsentNoc = validateAgreeConsentNoc();
   // var isValidateConAppDoc = validateConveyanceConAppDoc();
@@ -11105,7 +10894,6 @@ function validateForm2Noc() {
     return (
       isValidateConveyanceLeaseDeedFile &&
       isValidateConveyanceDeedFile &&
-      isValidateConveyanceSaledeedDoc &&
       isConveyanceOwnershipDoc &&
       isValidateConveyanceSubmutDone &&
       isValidateConveyancePropPhotodocFile &&
@@ -11125,7 +10913,6 @@ function validateForm2Noc() {
     return (
       isValidateConveyanceLeaseDeedFile &&
       isValidateConveyanceDeedFile &&
-      isValidateConveyanceSaledeedDoc &&
       isConveyanceOwnershipDoc &&
       isValidateConveyanceSubmutDone &&
       isValidateConveyancePropPhotodocFile &&
@@ -11140,6 +10927,7 @@ function validateForm2Noc() {
       isNocDocumentTypeNumber
     );
   }
+
 }
 
 // function validateForm2NocPOA() {
@@ -11151,13 +10939,13 @@ function validateForm2Noc() {
 // }
 
 // NOC Form Step 2
+
 // added new input validation by anil on 13-10-2025
 function validateConveyanceLeaseDeedFile() {
   if (conveyanceLeasedeed.files.length > 0) {
     var file = conveyanceLeasedeed.files[0];
     if (file.size > 5 * 1024 * 1024) {
-      conveyanceLeasedeedError.textContent =
-        "File size must be less than 5 MB.";
+      conveyanceLeasedeedError.textContent = "File size must be less than 5 MB.";
       return false;
     } else if (!file.name.endsWith(".pdf")) {
       conveyanceLeasedeedError.textContent = "Only PDF files are allowed.";
@@ -11220,7 +11008,6 @@ function validateConveyanceSaledeedDoc() {
   }
 }
 // end new input validation by anil on 13-10-2025
-
 function validateConveyanceOwnershipDoc() {
   if (conveyanceOwnershipDoc.files.length > 0) {
     var file = conveyanceOwnershipDoc.files[0];
@@ -11278,8 +11065,7 @@ function validateConveyancePropPhotodocFile() {
         "File size must be less than 5 MB.";
       return false;
     } else if (!file.name.endsWith(".pdf")) {
-      conveyancepropPhotodocFileError.textContent =
-        "Only PDF files are allowed.";
+      conveyancepropPhotodocFileError.textContent = "Only PDF files are allowed.";
       return false;
     } else {
       conveyancepropPhotodocFileError.textContent = "";
@@ -11303,8 +11089,7 @@ function validateConveyanceElectricityBill() {
         "File size must be less than 5 MB.";
       return false;
     } else if (!file.name.endsWith(".pdf")) {
-      conveyanceElectricitybillError.textContent =
-        "Only PDF files are allowed.";
+      conveyanceElectricitybillError.textContent = "Only PDF files are allowed.";
       return false;
     } else {
       conveyanceElectricitybillError.textContent = "";
@@ -11328,17 +11113,14 @@ function validateConveyanceUndertakingregLand() {
         "File size must be less than 5 MB.";
       return false;
     } else if (!file.name.endsWith(".pdf")) {
-      conveyanceUndertakingregLandError.textContent =
-        "Only PDF files are allowed.";
+      conveyanceUndertakingregLandError.textContent = "Only PDF files are allowed.";
       return false;
     } else {
       conveyanceUndertakingregLandError.textContent = "";
       return true;
     }
   } else {
-    if (
-      conveyanceUndertakingregLand.getAttribute("data-should-validate") == 1
-    ) {
+    if (conveyanceUndertakingregLand.getAttribute("data-should-validate") == 1) {
       return true;
     }
     conveyanceUndertakingregLandError.textContent =
@@ -11352,8 +11134,7 @@ function validateConveyanceAadharDoc() {
   if (conveyanceAadharDoc.files.length > 0) {
     var file = conveyanceAadharDoc.files[0];
     if (file.size > 5 * 1024 * 1024) {
-      conveyanceAadharDocError.textContent =
-        "File size must be less than 5 MB.";
+      conveyanceAadharDocError.textContent = "File size must be less than 5 MB.";
       return false;
     } else if (!file.name.endsWith(".pdf")) {
       conveyanceAadharDocError.textContent = "Only PDF files are allowed.";
@@ -11392,37 +11173,36 @@ function validateConveyancePanDoc() {
     return false;
   }
 }
-// commented by anil on 13-10-2025
-// function validateConveyanceConAppDoc() {
-//   if (conveyanceConAppDoc.files.length > 0) {
-//     var file = conveyanceConAppDoc.files[0];
-//     // Check if file size is greater than 5 MB
-//     if (file.size > 5 * 1024 * 1024) {
-//       conveyanceConAppDocError.textContent =
-//         "File size must be less than 5 MB.";
-//       return false;
-//     }
-//     // Check if file type is PDF
-//     else if (!file.name.endsWith(".pdf")) {
-//       conveyanceConAppDocError.textContent = "Only PDF files are allowed.";
-//       return false;
-//     }
-//     // File is valid
-//     else {
-//       conveyanceConAppDocError.textContent = "";
-//       return true;
-//     }
-//   } else {
-//     // Skip validation if no file is selected and "data-should-validate" is not 1
-//     if (conveyanceConAppDoc.getAttribute("data-should-validate") == 1) {
-//       conveyanceConAppDocError.textContent = "";
-//       return true; // Skip the validation and return true as no file is required
-//     }
-//     // No file selected, and validation is not required
-//     conveyanceConAppDocError.textContent = "";
-//     return true;
-//   }
-// }
+
+function validateConveyanceConAppDoc() {
+  if (conveyanceConAppDoc.files.length > 0) {
+    var file = conveyanceConAppDoc.files[0];
+    // Check if file size is greater than 5 MB
+    if (file.size > 5 * 1024 * 1024) {
+      conveyanceConAppDocError.textContent = "File size must be less than 5 MB.";
+      return false;
+    }
+    // Check if file type is PDF
+    else if (!file.name.endsWith(".pdf")) {
+      conveyanceConAppDocError.textContent = "Only PDF files are allowed.";
+      return false;
+    }
+    // File is valid
+    else {
+      conveyanceConAppDocError.textContent = "";
+      return true;
+    }
+  } else {
+    // Skip validation if no file is selected and "data-should-validate" is not 1
+    if (conveyanceConAppDoc.getAttribute("data-should-validate") == 1) {
+      conveyanceConAppDocError.textContent = "";
+      return true; // Skip the validation and return true as no file is required
+    }
+    // No file selected, and validation is not required
+    conveyanceConAppDocError.textContent = "";
+    return true;
+  }
+}
 
 function validateAgreeConsentNoc() {
   if (!agreeConsentNoc.checked) {
@@ -11809,7 +11589,7 @@ function validateEditAdditionalDocuments() {
 //     // Get application type and status from the form
 //     var applicationType = $("select[name='applicationType']").val();
 
-//     // added Doa an Luc in valid types name
+//     // Check if application type is valid and if additional documents are valid
 //     const validTypesName = ["CONVERSION", "SUB_MUT", "NOC", "DOA", "LUC"];
 
 //     // If validation passes, set text and disable the button

@@ -452,7 +452,7 @@
             </div>
             <div class="col-lg-4">
                 <div class="form-group">
-                    <label for="regno" class="form-label">Registration No.<span class="text-danger">*</span></label>
+                    <label for="regno" class="form-label">Regn. No.<span class="text-danger">*</span></label>
                     <input type="text" name="convRegnoAsOnLease" class="form-control numericOnly" id="regno" placeholder="Registration No." value="{{ isset($application) ? $application->reg_no : '' }}">
                     <div id="regnoError" class="text-danger text-left"></div>
                 </div>
@@ -496,7 +496,7 @@
             </div>
             <div class="col-lg-4">
                 <div class="form-group">
-                    <label for="regdate" class="form-label">Registration Date<span class="text-danger">*</span></label>
+                    <label for="regdate" class="form-label">Regn. Date.<span class="text-danger">*</span></label>
                     <input type="date" name="convRegdateAsOnLease" class="form-control" id="regdate" value="{{ isset($application) ? $application->reg_date : '' }}">
                     <div id="regdateError" class="text-danger text-left"></div>
                 </div>

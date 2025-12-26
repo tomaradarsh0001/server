@@ -126,115 +126,84 @@
 
     /* Loader css  */
 
-    /** preloader css added by Nitin on 27 frb 2025 */
-
-    .preloader{
-        background: #fff;
-        width: 100vw;
-        height: 100vh;
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-    .preloader .loader{
-        margin-top : 20%
-    }
-
-
-
-
 
     /* for Edharti loader - SOURAV CHAUHAN (11 April 2025) */
     #spinnerOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 1000;
-            /* Ensure it covers other content */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        z-index: 1000;
+        /* Ensure it covers other content */
+    }
+
+    /* .spinner {
+        border: 8px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 8px solid #ffffff;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
         }
 
-        /* .spinner {
-            border: 8px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 8px solid #ffffff;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+        100% {
+            transform: rotate(360deg);
         }
+    } */
+    .loader {
+        width: 48px;
+        height: 48px;
+        border:6px solid #FFF;
+        border-radius: 50%;
+        position: relative;
+        transform:rotate(45deg);
+        box-sizing: border-box;
+    }
+    .loader::before {
+        content: "";
+        position: absolute;
+        box-sizing: border-box;
+        inset:-7px;
+        border-radius: 50%;
+        border:8px solid #116d6e;
+        animation: prixClipFix 2s infinite linear;
+    }
 
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        } */
-        .loader {
-            width: 48px;
-            height: 48px;
-            border:6px solid #FFF;
-            border-radius: 50%;
-            position: relative;
-            transform:rotate(45deg);
-            box-sizing: border-box;
-        }
-        .loader::before {
-            content: "";
-            position: absolute;
-            box-sizing: border-box;
-            inset:-7px;
-            border-radius: 50%;
-            border:8px solid #116d6e;
-            animation: prixClipFix 2s infinite linear;
-        }
-
-        @keyframes prixClipFix {
-            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
-            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
-            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
-            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
-            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
-        }
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
-
+    @keyframes prixClipFix {
+        0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+        25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+        50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+        75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+        100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+    }
+    /* commented and adeed by anil for replace the new loader on 08-08-2025  */
 </style>
-@if(strpos( url()->current(), '/reports/filter-report'))
-<!-- <div class="preloader">
-    <div class="loader">
-        <div class="lds-roller">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
-    </div>
-</div> -->
 
-<!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+@if(strpos( url()->current(), '/reports') || strpos( url()->current(), '/reports/detailed-report') || strpos( url()->current(), '/dashboard/main'))
+<!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
 <!-- <div id="spinnerOverlay">
         <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
         <br>
-        <h1 style="color: white;font-size: 20px;">Loading all properties, please wait ...</h1>
+        <h1 style="color: white;font-size: 20px;">Loading all properties, Please wait...</h1>
 </div> -->
 <div id="spinnerOverlay" style="display:none;">
     <span class="loader"></span>
     <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
 </div>
-<!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+<!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
 @endif
+
 <div class="row loader_container d-none">
     <div class="col-xl-12">
         <div class="card">

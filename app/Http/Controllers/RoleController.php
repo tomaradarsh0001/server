@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\UserActionLogHelper;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use DB;
-use Illuminate\Support\Facades\Auth;
 
 class RoleController extends Controller
 {
@@ -15,8 +15,8 @@ class RoleController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view role', ['only' => ['index']]);
-        $this->middleware('permission:create role', ['only' => ['create', 'store', 'addPermissionToRole', 'givePermissionToRole']]);
-        $this->middleware('permission:update role', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:create role', ['only' => ['create','store','addPermissionToRole','givePermissionToRole']]);
+        $this->middleware('permission:update role', ['only' => ['edit','update']]);
         $this->middleware('permission:delete role', ['only' => ['destroy']]);
     }
     /**
@@ -69,15 +69,15 @@ class RoleController extends Controller
             $nestedData['name'] = $role->name;
             $actionHTML = '';
             if (Auth::user()->can('update role')) {
-                $actionHTML .= '<a href="' . url('roles/' . $role->id . '/edit') . '">
+                $actionHTML .= '<a href="' . url('edharti/roles/' . $role->id . '/edit') . '">
                     <button type="button" class="btn btn-primary px-5">Edit</button>
                 </a>';
             }
             if (Auth::user()->can('delete role')) {
-                $actionHTML .= '<a href="' . url('roles/' . $role->id . '/delete') . '"> <button type="button" class="btn btn-danger px-5">Delete</button></a>';
+                $actionHTML .= '<a href="' . url('edharti/roles/' . $role->id . '/delete') . '"> <button type="button" class="btn btn-danger px-5">Delete</button></a>';
             }
             if (Auth::user()->can('create role')) {
-                $actionHTML .= '<a href="' . url('roles/' . $role->id . '/give-permissions') . '"> <button type="button" class="btn btn-warning px-5">Add / Edit Role Permission</button></a>';
+                $actionHTML .= '<a href="' . url('edharti/roles/' . $role->id . '/give-permissions') . '"> <button type="button" class="btn btn-warning px-5">Add / Edit Role Permission</button></a>';
             }
             $nestedData['action'] = $actionHTML;
             $data[] = $nestedData;
@@ -93,13 +93,14 @@ class RoleController extends Controller
 
         return response()->json($json_data);
     }
-
+    
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         return view('role-permissions.roles.create');
+        
     }
 
     /**
@@ -114,17 +115,18 @@ class RoleController extends Controller
                 'string',
                 'unique:roles,name'
             ]
-        ]);
+            ]);
 
-        $role = Role::create([
-            'name' => $request->name
-        ]);
+            $role = Role::create([
+                'name' => $request->name
+            ]);
 
-        // Manage user role create action activity lalit on 22/07/24
-        $role_link = '<a href="' . url("/roles") . '" target="_blank">' . $role->name . '</a>';
-        UserActionLogHelper::UserActionLog('create', url("/roles"), 'roles', "New role " . $role_link . " has been created by " . Auth::user()->name . ".");
+            // Manage user role create action activity lalit on 22/07/24
+            $role_link = '<a href="' . url("/roles") . '" target="_blank">' . $role->name . '</a>';
+            UserActionLogHelper::UserActionLog('create', url("/roles"), 'roles', "New role " . $role_link . " has been created by " . Auth::user()->name.".");
 
-        return redirect('roles')->with('success', 'Role Created Successfully');
+            return redirect()->route('roles.index')->with('success','Role Created Successfully');
+
     }
 
     public function edit(Role $role)
@@ -138,7 +140,7 @@ class RoleController extends Controller
             'name' => [
                 'required',
                 'string',
-                'unique:roles,name,' . $role->id
+                'unique:roles,name,'.$role->id
             ]
         ]);
 
@@ -148,45 +150,46 @@ class RoleController extends Controller
 
         // Manage user role update action activity lalit on 22/07/24
         $role_link = '<a href="' . url("/roles") . '" target="_blank">' . $role->name . '</a>';
-        UserActionLogHelper::UserActionLog('update', url("/roles"), 'roles', "Role " . $role_link . " has been updated by " . Auth::user()->name . ".");
+        UserActionLogHelper::UserActionLog('update', url("/roles"), 'roles', "Role " . $role_link . " has been updated by " . Auth::user()->name.".");
 
-        return redirect('roles')->with('success', 'Role Updated Successfully');
+        return redirect()->route('roles.index')->with('success','Role Updated Successfully');
     }
-
+    
     public function destroy($roleId)
     {
         $role = Role::find($roleId);
         $role->delete();
         // Manage user role delete action activity lalit on 22/07/24
         $role_link = '<a href="' . url("/roles") . '" target="_blank">' . $role->name . '</a>';
-        UserActionLogHelper::UserActionLog('delete', url("/roles"), 'roles', "Role " . $role_link . " has been delete by " . Auth::user()->name . ".");
-        return redirect('roles')->with('success', 'Role Deleted Successfully');
+        UserActionLogHelper::UserActionLog('delete', url("/roles"), 'roles', "Role " . $role_link . " has been delete by " . Auth::user()->name.".");
+        return redirect()->route('roles.index')->with('success','Role Deleted Successfully');
     }
 
 
-    public function addPermissionToRole($roleId)
-    {
+    public function addPermissionToRole($roleId){
         $role = Role::findOrFail($roleId);
         $rolePermission = DB::table('role_has_permissions')
-            ->where('role_has_permissions.role_id', $role->id)
-            ->pluck('role_has_permissions.permission_id')
-            ->all();
+                                ->where('role_has_permissions.role_id',$role->id)
+                                ->pluck('role_has_permissions.permission_id')
+                                ->all();
         $permissions = Permission::get();
-        return view('role-permissions.roles.add-permissions', [
+        return view('role-permissions.roles.add-permissions',[
             'role' => $role,
             'permissions' => $permissions,
             'rolePermission' => $rolePermission
         ]);
+
     }
 
-    public function givePermissionToRole(Request $request, $roleId)
-    {
+    public function givePermissionToRole(Request $request, $roleId){
         $request->validate([
             'permission' => 'required'
         ]);
 
         $role = Role::findOrFail($roleId);
         $role->syncPermissions($request->permission);
-        return redirect()->back()->with('success', 'Permissions added to role');
+        return redirect()->back()->with('success','Permissions added to role');
+
+
     }
 }

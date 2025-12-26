@@ -17,7 +17,7 @@ class ColonyController extends Controller
     public function localityBlocks(Request $request)
     {
         $blocks = PropertyMaster::select('block_no')
-            // ->whereNotNull('block_no')
+    //        ->whereNotNull('block_no')
             ->where('new_colony_name', $request->locality)
             ->orderByRaw("CAST(block_no AS UNSIGNED), block_no")
             ->orderBy('block_no', 'asc') // Add ascending order for block_no
@@ -137,6 +137,39 @@ class ColonyController extends Controller
         return array_unique($flats);
     }
 
+    //Comment given below function by Lalit Tiwari - 13/02/2025
+    /*public function landTypes(Request $request)
+    {
+        $colonyId = $request->locality;
+
+        // Get active property types associated with the colony
+        $propertyTypeIds = PropertySectionMapping::where('colony_id', $colonyId)
+            ->where('is_active', 1)
+            ->pluck('property_type')
+            ->unique();
+
+        // Fetch corresponding property type names
+        $propertyTypes = Item::whereIn('id', $propertyTypeIds)
+            ->get(['id', 'item_name']);
+
+        // Get active property subtypes based on fetched property types
+        $propertySubtypeIds = DB::table('property_type_sub_type_mapping')
+            ->whereIn('type', $propertyTypeIds)
+            ->where('is_active', 1)
+            ->pluck('sub_type')
+            ->unique();
+
+        // Fetch corresponding property subtype names
+        $propertySubtypes = Item::whereIn('id', $propertySubtypeIds)
+            ->get(['id', 'item_name']);
+
+        // Return response as JSON
+        return response()->json([
+            'propertyTypes' => $propertyTypes,
+            'propertySubtypes' => $propertySubtypes,
+        ]);
+    }*/
+
     public function landTypes(Request $request)
     {
         $colonyId = $request->locality;
@@ -170,4 +203,5 @@ class ColonyController extends Controller
         // Return response as JSON
         return response()->json(['propertySubtypes' => $propertySubTypes]);
     }
+
 }

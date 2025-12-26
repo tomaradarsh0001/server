@@ -54,7 +54,7 @@
                 <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Registration Applications List</li>
+                    <li class="breadcrumb-item active" aria-current="page">Registrations</li>
                 </ol>
             </nav>
         </div>

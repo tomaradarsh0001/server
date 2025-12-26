@@ -17,8 +17,7 @@
                                 <span id="proofReadScheduleDate">{{ $applicationAppointmentLink['schedule_date'] }}</span>
                                 </p>
                             @endif
-                            <!--////New Code added in 16-09-2025--> 
-							@if (isset($applicationAppointmentLink['schedule_timeslot']))
+                            @if (isset($applicationAppointmentLink['schedule_timeslot']))
 							<p class="appointment-schedule-date mt-2"><span>Schedule Time:</span>
 								<span id="proofReadScheduleDate">{{ $applicationAppointmentLink['schedule_timeslot'] }}</span>
 							</p>

@@ -60,7 +60,6 @@ class SectionSeeder extends Seeder
             ['section_code' => 'PS3', 'name' => 'Property Section-III', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['section_code' => 'PS4', 'name' => 'Property Section-IV', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
             ['section_code' => 'IFC', 'name' => 'Information Facilitation Centre', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['section_code' => 'ITC', 'name' => 'IT Cell', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ];
         DB::table('sections')->insert($sections);
         // Enable foreign key checks

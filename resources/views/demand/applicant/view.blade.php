@@ -147,7 +147,6 @@
                             $headChunks = array_chunk($headInputs, 2);
                             $headKeys = $detail->subhead_keys ?? [];
                             @endphp
-
                             {{-- Main summary row --}}
                             <tr style="background-color: #006c6d; color:#fff">
                                 <th colspan="2">{{ $detail->subhead_name }}</th>
@@ -160,14 +159,14 @@
                                 {{-- Only in the first chunk row --}}
                                 <th rowspan="{{ count($headChunks) }}">{{ $outerLoop->iteration }}</th>
                                 @endif
-
+                               
                                 @foreach($chunk as $input)
                                 @php
                                 $value = $headKeys[$input['key']] ?? '';
                                 $type = $input['type'] ?? 'text';
 
                                 if ($type == 'number') {
-                                $value = customNumFormat(round($value, 2));
+                                $value = customNumFormat(round(($value !="" ? $value:0), 2));
                                 } elseif ($type == 'date') {
                                 $value = !is_null($value) ? date('d-m-Y', strtotime($value)) : '-';
                                 } elseif (in_array($type, ['checkbox', 'radio'])) {
@@ -179,7 +178,7 @@
                                 }
                                 @endphp
                                 <th>{{ $input['label'] }}</th>
-                                <td>{{ $value }}</td>
+                                <td>{{ $value }}</td> 
                                 @endforeach
 
                                 {{-- If only one item in the chunk, span the rest --}}

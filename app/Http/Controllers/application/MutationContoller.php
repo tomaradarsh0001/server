@@ -8,6 +8,7 @@ use App\Models\TempSubstitutionMutation;
 use App\Models\TempCoapplicant;
 use App\Models\PropertyMaster;
 use App\Models\TempDocument;
+use App\Services\PropertyMasterService;
 use App\Models\TempDocumentKey;
 use App\Models\Payment;
 use App\Models\OldColony;
@@ -17,12 +18,11 @@ use DB;
 use App\Helpers\GeneralFunctions;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use App\Services\PropertyMasterService;
 
 class MutationContoller extends Controller
 {
     // for storing mutation step first data - Sourav Chauhan (17/sep/2024)
-    public function mutationStepFirstOld(Request $request)
+ /* public function mutationStepFirst(Request $request)
     {
         // dd($request->all());
         //document values validation - SOURAV CHAUHAN (7/oct/2024)
@@ -30,12 +30,12 @@ class MutationContoller extends Controller
             'statusofapplicant.required' => 'Please select the applicant status',
             'mutNameAsConLease.required' => 'Executed in favour of is required',
             'mutExecutedOnAsConLease.required' => 'Executed on is required',
-            'mutRegnoAsConLease.required' => 'Registration No. is required',
+            'mutRegnoAsConLease.required' => 'Regn. No. is required',
             'mutBooknoAsConLease.required' => 'Book No. is required',
             'mutVolumenoAsConLease.required' => 'Volume No. is required',
             'mutPagenoFrom.required' => 'Page No. From is required',
             'mutPagenoTo.required' => 'Page No. To is required',
-            'mutRegdateAsConLease.required' => 'Registration Date is required',
+            'mutRegdateAsConLease.required' => 'Regn. Date. is required',
             'soughtByApplicantDocuments.required' => 'Sought by applicant document is required',
         ];
 
@@ -57,8 +57,6 @@ class MutationContoller extends Controller
             Log::info("| " . Auth::user()->email . " | Mutation step first all values not entered: " . json_encode($validator->errors()));
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         }
-
-        // dd($request->coapplicant);
         // try {
             return DB::transaction(function () use ($request) {
                 $tempSubstitutionMutation = null;
@@ -70,7 +68,6 @@ class MutationContoller extends Controller
                 }
                 if ($updateId != '0') {
                     // dd($request->all());
-                    // dd($updateId);
                     $tempSubstitutionMutation = TempSubstitutionMutation::find($updateId);
                     if (isset($tempSubstitutionMutation)) {
                         $soughtByApplicantDocuments = explode(",",$request->soughtByApplicantDocuments);
@@ -97,22 +94,19 @@ class MutationContoller extends Controller
                         $tempSubstitutionMutation->updated_by = Auth::user()->id;
                         if ($tempSubstitutionMutation->save()) {
                             $modelId = $tempSubstitutionMutation->id;
-                            // dd($request->coapplicant, $modelId,$tempSubstitutionMutation->old_property_id);
+                            // $stepOneSubmit = $this->updateTempCoApplicants($request->coapplicant, $modelId,$tempSubstitutionMutation->old_property_id);
+                            // if ($stepOneSubmit) {
                             $stepOneSubmit = $this->updateTempCoApplicants($request->coapplicant, $modelId,$tempSubstitutionMutation->old_property_id);
-                            // dd($stepOneSubmit);
                             $data = ['tempSubstitutionMutation' => $tempSubstitutionMutation,'ids' => $stepOneSubmit['ids']];
                             if ($stepOneSubmit['allSaved']) {
                                 $response = ['status' => true, 'message' => 'Property Details Updated Successfully', 'data' => $data];
                             } else {
-                                // dd('inside else 1');
                                 $response = ['status' => false, 'message' => 'Something went wrong!', 'data' => 0];
                             }
                         } else {
-                            // dd('inside else 2');
                             $response = ['status' => false, 'message' => 'Something went wrong!', 'data' => 0];
                         }
                     } else {
-                        // dd('inside else 3');
                         $response = ['status' => false, 'message' => 'Something went wrong!', 'data' => 0];
                     }
                 } else {
@@ -141,10 +135,10 @@ class MutationContoller extends Controller
                     ]);
                     if ($tempSubstitutionMutation) {
                         $modelId = $tempSubstitutionMutation->id;
+                        // $stepOneSubmit = $this->storeTempCoApplicants($request->coapplicant, $modelId,$request->propertyid);
+                        // if ($stepOneSubmit) {
                         $stepOneSubmit = $this->storeTempCoApplicants($request->coapplicant, $modelId,$request->propertyid);
-                        // dd($stepOneSubmit);
                         $data = ['tempSubstitutionMutation' => $tempSubstitutionMutation,'ids' => $stepOneSubmit['ids']];
-                        // dd($stepOneSubmit['allSaved']);
                         if ($stepOneSubmit['allSaved']) {
                             $response = ['status' => true, 'message' => 'Property Details Saved Successfully', 'data' => $data];
                         } else {
@@ -162,22 +156,24 @@ class MutationContoller extends Controller
         // }
     }
 
+*/
+
 
     public function mutationStepFirst(Request $request, PropertyMasterService $propertyMasterService)
     {
         // dd($request->all());
         //document values validation - SOURAV CHAUHAN (7/oct/2024)
         $messages = [
-            'statusofapplicant.required' => 'Please select the applicant status',
-            'mutNameAsConLease.required' => 'Executed in favour of is required',
-            'mutExecutedOnAsConLease.required' => 'Executed on is required',
-            'mutRegnoAsConLease.required' => 'Registration No. is required',
-            'mutBooknoAsConLease.required' => 'Book No. is required',
-            'mutVolumenoAsConLease.required' => 'Volume No. is required',
-            'mutPagenoFrom.required' => 'Page No. From is required',
-            'mutPagenoTo.required' => 'Page No. To is required',
-            'mutRegdateAsConLease.required' => 'Registration Date is required',
-            'soughtByApplicantDocuments.required' => 'Sought by applicant document is required',
+            'statusofapplicant.required' => 'Please select the applicant status.',
+            'mutNameAsConLease.required' => 'Executed in favour of is required.',
+            'mutExecutedOnAsConLease.required' => 'Executed on is required.',
+            'mutRegnoAsConLease.required' => 'Registration no. is required.',
+            'mutBooknoAsConLease.required' => 'Book no. is required.',
+            'mutVolumenoAsConLease.required' => 'Volume no. is required.',
+            'mutPagenoFrom.required' => 'Page no. From is required.',
+            'mutPagenoTo.required' => 'Page no. To is required.',
+            'mutRegdateAsConLease.required' => 'Registration date is required.',
+            'soughtByApplicantDocuments.required' => 'Sought by applicant document is required.',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -261,7 +257,6 @@ class MutationContoller extends Controller
         // }
     }
 
-
     //for storing temp co Applicants - Sourav Chauhan (17/sep/2024)
     protected function storeTempCoApplicants($coapplicants, $modelId,$propertyId)
     {
@@ -327,13 +322,11 @@ class MutationContoller extends Controller
                         'pan_file_path' => $panFile,
                         'created_by' => Auth::user()->id,
                     ]);
-                    
                     if (!$tempCoapplicant) {
                         $allSaved = false;
                     } else {
                         $id = $tempCoapplicant->id;
-                        $index = $tempCoapplicant->index_no;
-                        $ids[] = ['id' =>$id,'index' => $index];
+                        $ids[] = $id;
                     }
                 }
             }
@@ -348,7 +341,7 @@ class MutationContoller extends Controller
     //for storing temp co Applicants - Sourav Chauhan (17/sep/2024)
     protected function updateTempCoApplicants($coapplicants, $modelId,$propertyId)
     {
-        // dd($coapplicants,$modelId,$propertyId);
+        // dd($coapplicants);
         // try {
             $allSaved = true;
             $ids = [];
@@ -356,6 +349,7 @@ class MutationContoller extends Controller
             // $delCooapplicant = TempCoapplicant::where('model_id', $modelId)
             //     ->where('model_name', 'TempSubstitutionMutation')
             //     ->delete();
+            // dd($coapplicants);
             foreach ($coapplicants as $key => $coapplicant) {
                 if (!empty($coapplicant['name'])) {
 
@@ -371,10 +365,9 @@ class MutationContoller extends Controller
 
                     $type = 'mutation';
                     $updateId = $modelId;
-                    // dd($coapplicant);
-                    if (isset($coapplicant['id']) || (isset($coapplicant['undefined']) && $coapplicant['undefined'] !== "null" && $coapplicant['undefined'] !== null)) {
-                        // dd("inside if");
-                        // dd($coapplicant);
+                    // if (isset($coapplicant['id']) || !is_null($coapplicant['undefined'])) {
+                        if (isset($coapplicant['id']) || (isset($coapplicant['undefined']) && !is_null($coapplicant['undefined']))) {
+
                         if(isset($coapplicant['id'])){
                             $coapplicantId = $coapplicant['id'];
                         } else {
@@ -433,9 +426,7 @@ class MutationContoller extends Controller
                             $tempCoapplicant->save();
     
                         }
-                    } else {
-                        // dd("inside else");
-                        //for create coapplicant
+                    } else {//for create coapplicant
                         //coapplicant image
                         if($coapplicant['photo']){
                             $photo = $coapplicant['photo'];
@@ -490,8 +481,7 @@ class MutationContoller extends Controller
                         $allSaved = false;
                     } else {
                         $id = $tempCoapplicant->id;
-                        $index = $tempCoapplicant->index_no;
-                        $ids[] = ['id' =>$id,'index' => $index];
+                        $ids[] = $id;
                     }
                 }
             }
@@ -523,16 +513,16 @@ class MutationContoller extends Controller
 
         //document values validation - SOURAV CHAUHAN (7/oct/2024)
         $validator = Validator::make($request->all(), [
-            'affidavits' => 'required|array',
-            'affidavits.*.affidavitsDateOfAttestation' => 'required|date',
-            'affidavits.*.affidavitAttestedBy' => 'required|string|max:255',
+            // 'affidavits' => 'required|array',
+            // 'affidavits.*.affidavitsDateOfAttestation' => 'required|date',
+            // 'affidavits.*.affidavitAttestedBy' => 'required|string|max:255',
             'indemnityBond' => 'required|array',
             'indemnityBond.*.indemnityBondDateOfAttestation' => 'required|date',
             'indemnityBond.*.indemnityBondAttestedBy' => 'required|string|max:255',
-            'newspaperNameEnglish' => 'required',
-            'publicNoticeDateEnglish' => 'required',
-            'newspaperNameHindi' => 'required',
-            'publicNoticeDateHindi' => 'required',
+            // 'newspaperNameEnglish' => 'required',
+            // 'publicNoticeDateEnglish' => 'required',
+            // 'newspaperNameHindi' => 'required',
+            // 'publicNoticeDateHindi' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -542,7 +532,7 @@ class MutationContoller extends Controller
         }
 
         // dd('validaion true');
-        try {
+        // try {
             return DB::transaction(function () use ($request,$documentsRequired,$serviceType) {
                 $appMutId = $request->updateId;
                 if (isset($appMutId)) { //if hidden ID available
@@ -563,10 +553,10 @@ class MutationContoller extends Controller
                 }
                 return json_encode($response);
             });
-        } catch (\Exception $e) {
-            Log::info($e->getMessage());
-            return response()->json(['status' => false, 'message' => 'An error occurred while storing appliation documents'], 500);
-        }
+        // } catch (\Exception $e) {
+        //     Log::info($e->getMessage());
+        //     return response()->json(['status' => false, 'message' => 'An error occurred while storing appliation documents'], 500);
+        // }
     }
 
 
@@ -610,7 +600,7 @@ class MutationContoller extends Controller
             }
         }
 
-        try {
+        // try {
             return DB::transaction(function () use ($request) {
                 $appMutId = $request->updateId;
                 if (isset($appMutId)) { //if hidden ID available
@@ -628,14 +618,22 @@ class MutationContoller extends Controller
                             $application->undertaking = $request->agreeConsent;
                             if ($application->save()) {
                                 $tempModelName = config('applicationDocumentType.MUTATION.TempModelName');
-                                $paymentComplete = GeneralFunctions::paymentComplete($appMutId, $tempModelName);
+                                $encodedModelName = base64_encode($tempModelName);
+                                $encodedModelId = base64_encode($appMutId);
+                                // redirect to payemnt page after data saved
+                                $redirectUrl = route('applicationPayment', [$encodedModelName, $encodedModelId]);
+                                // return redirect()->route('applicationPayment', [$encodedModelName, $encodedModelId]);
+                                return response()->json(['status' => 'success', 'url' => $redirectUrl]);
+                                // $paymentComplete = GeneralFunctions::paymentComplete($appMutId, $tempModelName);
                                 // dd($paymentComplete);
-                                if ($paymentComplete) {
-                                    $transactionSuccess = true;
-                                    //to convert temp application to final application - SOURAV CHAUHAN (1/Oct/2024)
-                                    GeneralFunctions::convertTempAppToFinal($appMutId, $tempModelName,$paymentComplete);
-                                    $response = ['status' => true, 'message' => 'Mutation application submitted Successfully'];
-                                }
+                                // if ($paymentComplete) {
+                                //     $transactionSuccess = true;
+                                //     //to convert temp application to final application - SOURAV CHAUHAN (1/Oct/2024)
+                                //     GeneralFunctions::convertTempAppToFinal($appMutId, $tempModelName,$paymentComplete);
+                                //     $response = ['status' => true, 'message' => 'Mutation application submitted Successfully'];
+                                // }
+                            }  else {
+                                return response()->json(['status' => 'error', 'message' => ('messages.general.error.tryAgain')]);
                             }
                     } else {
                         Log::info("| " . Auth::user()->email . " | Application not available in database");
@@ -647,10 +645,10 @@ class MutationContoller extends Controller
                 }
                 return json_encode($response);
             });
-        } catch (\Exception $e) {
-            Log::info($e->getMessage());
-            return response()->json(['status' => false, 'message' => 'An error occurred while storing application documents'], 500);
-        }
+        // } catch (\Exception $e) {
+        //     Log::info($e->getMessage());
+        //     return response()->json(['status' => false, 'message' => 'An error occurred while storing application documents'], 500);
+        // }
     }
 
     //payment completion - SOURAV CHAUHAN (1/oct/2024)
@@ -675,7 +673,7 @@ class MutationContoller extends Controller
                     $docData = [];
                     if (is_array($documents)) {
                         $createDocument = $updateDocument = false;
-                        // dd($documents);
+                        // dd($documents,$documentType['id']);
                         foreach ($documents as $key => $document) {
                             // dd($document);
                             if (!array_key_exists($documentType['id'] . '_oldId', $documents)) {
@@ -755,16 +753,18 @@ class MutationContoller extends Controller
                                     $fileName =  $name . '_' . $date . '.' . $file->extension();
                                     $pathToUpload = $applicantNo . '/' . $colonyCode . '/' . $type . '/' . $updateId;
 
-                                    $deletedFile = $upoadedDocument->file_path;
-                                    if ($deletedFile) {
-                                        if (Storage::disk('public')->exists($deletedFile)) {
-                                            Storage::disk('public')->delete($deletedFile);
-                                        }
-                                        $file = $file->storeAs($pathToUpload, $fileName, 'public');
-                                        if($file){
-                                            $upoadedDocument->file_path = $file;
-                                            $upoadedDocument->updated_by = Auth::user()->id;
-                                            $upoadedDocument->save();
+                                    if(isset($upoadedDocument->file_path)){
+                                        $deletedFile = $upoadedDocument->file_path;
+                                        if ($deletedFile) {
+                                            if (Storage::disk('public')->exists($deletedFile)) {
+                                                Storage::disk('public')->delete($deletedFile);
+                                            }
+                                            $file = $file->storeAs($pathToUpload, $fileName, 'public');
+                                            if($file){
+                                                $upoadedDocument->file_path = $file;
+                                                $upoadedDocument->updated_by = Auth::user()->id;
+                                                $upoadedDocument->save();
+                                            }
                                         }
                                     }
                                 }

@@ -44,68 +44,51 @@
             /* Ensure it covers other content */
         }
 
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
         /* .spinner {
-                                                                                                                                                                                                                                                                                                    border: 8px solid rgba(255, 255, 255, 0.3);
-                                                                                                                                                                                                                                                                                                    border-radius: 50%;
-                                                                                                                                                                                                                                                                                                    border-top: 8px solid #ffffff;
-                                                                                                                                                                                                                                                                                                    width: 50px;
-                                                                                                                                                                                                                                                                                                    height: 50px;
-                                                                                                                                                                                                                                                                                                    animation: spin 1s linear infinite;
-                                                                                                                                                                                                                                                                                                }
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 8px solid #ffffff;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
 
-                                                                                                                                                                                                                                                                                                @keyframes spin {
-                                                                                                                                                                                                                                                                                                    0% {
-                                                                                                                                                                                                                                                                                                        transform: rotate(0deg);
-                                                                                                                                                                                                                                                                                                    }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
 
-                                                                                                                                                                                                                                                                                                    100% {
-                                                                                                                                                                                                                                                                                                        transform: rotate(360deg);
-                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                } */
+            100% {
+                transform: rotate(360deg);
+            }
+        } */
         .loader {
             width: 48px;
             height: 48px;
-            border: 6px solid #FFF;
+            border:6px solid #FFF;
             border-radius: 50%;
             position: relative;
-            transform: rotate(45deg);
+            transform:rotate(45deg);
             box-sizing: border-box;
         }
-
         .loader::before {
             content: "";
             position: absolute;
             box-sizing: border-box;
-            inset: -7px;
+            inset:-7px;
             border-radius: 50%;
-            border: 8px solid #116d6e;
+            border:8px solid #116d6e;
             animation: prixClipFix 2s infinite linear;
         }
 
         @keyframes prixClipFix {
-            0% {
-                clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
-            }
-
-            25% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
-            }
-
-            50% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
-            }
-
-            75% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
-            }
-
-            100% {
-                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
-            }
+            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
         }
-
-        /* commented and adeed by anil for replace the new loader on 24-07-2025  */
+        /* commented and adeed by anil for replace the new loader on 08-08-2025  */
     </style>
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
@@ -135,7 +118,7 @@
                             <div class="col-lg-12 col-12">
                                 <!-- added responsive div by anil on 19-11-2025 -->
                                 <div class="table-responsive"> 
-                                    <table class="table table-bordered property-table-info tm-responsive">
+                                    <table class="table table-bordered property-table-info">
                                         <tbody>
                                             <tr>
                                                 <th>Current Status:</th>
@@ -210,7 +193,7 @@
                                             <tr>
                                                 <th>Mobile:</th>
                                                 <td>({{ '+ ' . $data['details']->country_code ?? 'Not Available' }})
-                                                    {{ $data['details']->mobile }}
+                                                    {{ $data['details']->mobile /*? substr($data['details']->mobile, 0, 3) . str_repeat('*', 4) . substr($data['details']->mobile, -3) : ''*/ }}
                                                 </td>
                                                 <th>Email:</th>
                                                 <td>
@@ -218,10 +201,10 @@
                                                         if ($data['details']->email) {
                                                             $useremail = $data['details']->email;
                                                             $position = strpos($useremail, '@');
-                                                            $email = $useremail;
+                                                            $email = $useremail
                                                             /* substr($useremail, 0, 2) .
                                                                 str_repeat('*', $position - 2) .
-                                                                substr($useremail, $position) */
+                                                                substr($useremail, $position)*/;
                                                         } else {
                                                             $email = '';
                                                         }
@@ -230,6 +213,7 @@
                                                 </td>
 
                                             </tr>
+
                                             @if ($data['details']->isIndian && $data['details']->isIndian == 1)
                                                 <tr>
                                                     <th>{{ $data['details']->prefix ?? '' }} :</th>
@@ -271,17 +255,38 @@
                                                     <th>Document Type Number:</th>
                                                     @php
                                                         $documentTypeNumber = $data['details']->documentTypeNumber ?? '';
-                                                        $documentTypeNumber = preg_match(
-                                                            '/^[a-zA-Z0-9]+$/',
-                                                            $documentTypeNumber,
-                                                        )
-                                                            ? decryptString($documentTypeNumber)
-                                                            : $documentTypeNumber;
                                                     @endphp
-                                                    <td> {{ $documentTypeNumber }}
+                                                    <td> {{ decryptString($documentTypeNumber) }}
                                                     </td>
                                                 </tr>
                                             @endif
+
+                                        <!--  <tr>
+                                                <th>{{ $data['details']->prefix ?? '' }} :</th>
+                                                <td>{{ $data['details']->second_name ?? '' }}</td>
+                                                <th>PAN:</th>
+                                                @php
+                                                    $pan = $data['details']->pan_number ?? '';
+                                                    $pan = preg_match('/[a-zA-Z]/', $pan) ? decryptString($pan) : $pan;
+                                                @endphp
+                                                <td> <?= $pan ?>
+                                                    {{-- <td>{{ $data['details']->pan_number ? str_repeat('*', 5) . substr($data['details']->pan_number, -5) : '' }} --}}
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <th>Aadhar:</th>
+                                                @php
+                                                    $adhar = $data['details']->aadhar_number ?? '';
+                                                    $adhar = preg_match('/[a-zA-Z]/', $adhar)
+                                                        ? decryptString($adhar)
+                                                        : $adhar;
+                                                @endphp
+                                                <td> <?= $adhar ?>
+                                                </td>
+                                                <th>Address:</th>
+                                                <td>{{ $data['details']->comm_address ?? '' }}</td>
+                                            </tr> -->
                                             <tr>
                                                 <th>Date Of Birth:</th>
                                                 <td id="applicantDateofBirth"> </td>
@@ -368,7 +373,8 @@
                                             <td>{{ $data['details']->name ?? '' }}</td>
                                             <th>Mobile:</th>
                                             <td>({{ '+ ' . $data['details']->country_code ?? 'Not Available' }})
-                                                {{ $data['details']->mobile }}
+                                                {{ $data['details']->mobile /*? substr($data['details']->mobile, 0, 3) . str_repeat('*', 4) . substr($data['details']->mobile, -3) : ''*/}}
+
                                             </td>
 
                                         </tr>
@@ -380,12 +386,11 @@
                                                 @php
                                                     if ($data['details']->email) {
                                                         $useremail = $data['details']->email;
-                                                        /*  $position = strpos($useremail, '@');
-                                                        $email =
-                                                            substr($useremail, 0, 2) .
+                                                        $position = strpos($useremail, '@');
+                                                        $email = $useremail
+                                                           /* substr($useremail, 0, 2) .
                                                             str_repeat('*', $position - 2) .
-                                                            substr($useremail, $position); */
-                                                        $email = $useremail;
+                                                            substr($useremail, $position)*/;
                                                     } else {
                                                         $email = '';
                                                     }
@@ -393,16 +398,20 @@
                                                 {{ $email }}
                                             </td>
                                             @if ($data['details']->isIndian && $data['details']->isIndian == 1)
-                                                <th>Aadhaar:</th>
-                                                @php
-                                                    $adhar = $data['details']->aadhar_number ?? '';
-                                                    $adhar = preg_match('/[a-zA-Z]/', $adhar)
-                                                        ? decryptString($adhar)
-                                                        : $adhar;
-                                                @endphp
-                                                <td> {{ $adhar }}</td>
+                                            <th>Aadhaar:</th>
+                                            @php
+                                                $adhar = $data['details']->aadhar_number ?? '';
+                                                $adhar = preg_match('/[a-zA-Z]/', $adhar)
+                                                    ? decryptString($adhar)
+                                                    : $adhar;
+                                            @endphp
+                                            <td> <?= $adhar ?>
+                                                {{-- <td> {{ $data['details']->aadhar_number
+                                                ? substr($data['details']->aadhar_number, 0, 4) . str_repeat('*', 4) . substr($data['details']->aadhar_number, -4)
+                                                : '' }}
+                                            </td> --}}
                                             @else
-                                                <th>Document Type:</th>
+                                            <th>Document Type:</th>
                                                 <td>
                                                     @if ($data['details']->documentType && $data['details']->documentType === 'pion')
                                                         Person of Indian Origin Number
@@ -412,18 +421,15 @@
                                                         Passport Number
                                                     @endif
                                                 </td>
-                                            @endif
+                                                 @endif
                                         </tr>
                                         @if ($data['details']->isIndian && $data['details']->isIndian == 1)
                                         @else
                                             <th>Document Type Number:</th>
                                             @php
                                                 $documentTypeNumber = $data['details']->documentTypeNumber ?? '';
-                                                $documentTypeNumber = preg_match('/[a-zA-Z]/', $documentTypeNumber)
-                                                    ? decryptString($documentTypeNumber)
-                                                    : $documentTypeNumber;
                                             @endphp
-                                            <td colspan="3"> {{ $documentTypeNumber }}
+                                            <td colspan="3"> {{ decryptString($documentTypeNumber) }}
                                             </td>
                                         @endif
                                     </tbody>
@@ -450,8 +456,9 @@
                                             $pan = $data['details']->organization_pan_card ?? '';
                                             $pan = preg_match('/[a-zA-Z]/', $pan) ? decryptString($pan) : $pan;
                                         @endphp
-
-                                        {{ $pan }}</li>
+                                        {{$pan}}
+                                       {{-- str_repeat('&bull;', strlen($pan)) --}}
+                                    </li>
                                     <li><strong>Organization Address: </strong>
                                         {{ $data['details']->organization_address ?? '' }}</li>
                                 </ul>
@@ -714,7 +721,7 @@
                                 @if (!empty($data['details']->owner_lessee_doc))
                                     <tr>
                                         <td>{{ $count++ }}</td>
-                                        <td>Scanned Copy of ID Proof (Aadhaar / Pan)</td>
+                                        <td>Scanned Copy of ID Proof (Aadhaar / PAN)</td>
                                         <td style="text-align:center;"><a
                                                 href="{{ asset('storage/' . $data['details']->owner_lessee_doc ?? '') }}"
                                                 target="_blank" class="text-danger view_docs" data-toggle="tooltip"
@@ -768,7 +775,7 @@
                                         </td>
                                     </tr>
                                 @endif
-                                @if (!empty($data['details']->chain_of_ownership_doc))
+                            @if (!empty($data['details']->chain_of_ownership_doc))
                                     <tr>
                                         <td>{{ $count++ }}</td>
                                         <td>Scanned Aadhar Card</td>
@@ -794,7 +801,7 @@
             </div>
             @if ($roles === 'section-officer' && $isApproved)
                 <div class="part-title mt-2">
-                    <h5>OFFICE ACTIVITY</h5>
+                    <h5>ACTION TAKEN</h5>
                 </div>
                 <div class="part-details">
                     <form id="approvalForm" method="POST" action="{{ route('approve.user.registration') }}">
@@ -815,24 +822,27 @@
                                             <div class="d-flex justify-space-between items-end">
                                                 <label for="PropertyID" class="form-label">Suggested Property ID</label>
                                             </div>
-                                            @if (!empty($data['splitedPropertyDetails']))
-                                                <select class="form-control" id="splited_property_id"
-                                                    name="splited_property_id">
-                                                    <option value="">---Select Property Id ----</option>
-                                                    @foreach ($data['splitedPropertyDetails'] as $splitedObj)
-                                                        <option value="{{ $splitedObj->id }}">{{ $splitedObj->id }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                          {{--  <input type="text" name="suggestedPropertyId" class="form-control"
+                                                id="SuggestedPropertyID" placeholder="Suggested Property ID"
+                                                value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly> --}}
+                                           @if (!empty($data['splitedPropertyDetails']))
+    <select class="form-control" id="splited_property_id"
+        name="splited_property_id">
+        <option value="">---Select Property Id ----</option>
+        @foreach ($data['splitedPropertyDetails'] as $splitedObj)
+            <option value="{{ $splitedObj->id }}">{{ $splitedObj->id }}
+            </option>
+        @endforeach
+    </select>
 
-                                                <input type="hidden" name="suggestedPropertyId" class="form-control"
-                                                    id="SuggestedPropertyID" placeholder="Suggested Property ID"
-                                                    value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
-                                            @else
-                                                <input type="text" name="suggestedPropertyId" class="form-control"
-                                                    id="SuggestedPropertyID" placeholder="Suggested Property ID"
-                                                    value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
-                                            @endif
+    <input type="hidden" name="suggestedPropertyId" class="form-control"
+        id="SuggestedPropertyID" placeholder="Suggested Property ID"
+        value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
+@else
+    <input type="text" name="suggestedPropertyId" class="form-control"
+        id="SuggestedPropertyID" placeholder="Suggested Property ID"
+        value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
+@endif
 
                                         </div>
                                         <div class="btn-group">
@@ -952,7 +962,7 @@
 
 
                                 </div>
-                                {{-- @if (Auth::user()->hasRole('section-officer'))
+                                 {{-- @if (Auth::user()->hasRole('section-officer'))
                                     @if ($data['details']->status !== getStatusName('RS_REJ'))
                                         @if ($data['details']->status !== getStatusName('RS_APP'))
                                             <div class="row pt-3">
@@ -962,8 +972,8 @@
                                                             <label class="form-check-label" for="isUnderReview">
                                                                 Send To Deputy L&DO For Review
                                                             </label>
-                                                            <input class="form-check-inputs" type="checkbox"
-                                                                value="review" id="isUnderReview"
+                                                            <input class="form-check-inputs" type="checkbox" value="review"
+                                                                id="isUnderReview"
                                                                 @if ($data['details']->status == getStatusName('RS_UREW')) checked disabled @endif>
                                                             <div class="text-danger required-error-message">This field is
                                                                 required.</div>
@@ -1044,73 +1054,143 @@
                             <div class="row">
                                 <div class="d-flex justify-content-end gap-4 col-lg-12">
                                     <button type="button" class="btn btn-primary" id="approveBtn">Approve</button>
-                                    {{-- @if (Auth::user()->hasRole('section-officer') && Auth::user()->can('reject.register.user')) --}}
-                                    <button type="button" id="rejectButton" class="btn btn-danger">Reject</button>
-                                    {{-- @endif --}}
+                                    @if (Auth::user()->hasRole('section-officer') && Auth::user()->can('reject.register.user'))
+                                        <button type="button" id="rejectButton" class="btn btn-danger">Reject</button>
+                                    @endif
                                 </div>
                             </div>
                         @endif
                     </form>
                 </div>
             @endif
+            @if ($roles === 'section-officer' &&
+                !empty($data['details']->action_taken_by) &&
+                !empty($data['details']->forward_through) &&
+                $data['details']->action_taken_by == 'deputy-lndo' &&
+                $data['details']->forward_through == 'cron' &&
+                !$isApproved)
+                    <div class="part-title mt-2">
+                        <h5>OFFICE ACTIVITY</h5>
+                    </div>
+                    <div class="part-details">
+                        <form id="approvalForm" method="POST" action="{{ route('approve.user.registration') }}">
+                            @csrf
+                            <div class="container-fluid pb-3">
+                                <div class="row">
+                                    <input type="hidden" name="emailId" id="emailId"
+                                        value="{{ $data['details']->email ?? '' }}">
+                                    <input type="hidden" name="registrationId" id="registrationId"
+                                        value="{{ $data['details']->id ?? '' }}">
+                                    <input type="hidden" name="oldPropertyId" id="oldPropertyId"
+                                        value="{{ $data['oldPropertyId'] ?? '' }}">
+                                    <input type="hidden" name="flatId" id="flatId"
+                                        value="{{ $data['flatDetails']->id ?? '' }}">
+                                    <div class="mis-view-group-btn">
+                                        @if ($data['suggestedPropertyId'])
+                                            <div class="w-25 mob-w-100">
+                                                <div class="d-flex justify-space-between items-end">
+                                                    <label for="PropertyID" class="form-label">Suggested Property ID</label>
+                                                </div>
+                                                @if (!empty($data['splitedPropertyDetails']))
+                                                    <select class="form-control" id="splited_property_id"
+                                                        name="splited_property_id">
+                                                        <option value="">---Select Property Id ----</option>
+                                                        @foreach ($data['splitedPropertyDetails'] as $splitedObj)
+                                                            <option value="{{ $splitedObj->id }}">{{ $splitedObj->id }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
 
-            @if (
-                $roles === 'section-officer' &&
-                    !empty($data['details']->action_taken_by) &&
-                    !empty($data['details']->forward_through) &&
-                    $data['details']->action_taken_by == 'deputy-lndo' &&
-                    $data['details']->forward_through == 'cron' &&
-                    !$isApproved)
-                <div class="part-title mt-2">
-                    <h5>OFFICE ACTIVITY</h5>
-                </div>
-                <div class="part-details">
-                    <form id="approvalForm" method="POST" action="{{ route('approve.user.registration') }}">
-                        @csrf
-                        <div class="container-fluid pb-3">
-                            <div class="row">
-                                <input type="hidden" name="emailId" id="emailId"
-                                    value="{{ $data['details']->email ?? '' }}">
-                                <input type="hidden" name="registrationId" id="registrationId"
-                                    value="{{ $data['details']->id ?? '' }}">
-                                <input type="hidden" name="oldPropertyId" id="oldPropertyId"
-                                    value="{{ $data['oldPropertyId'] ?? '' }}">
-                                <input type="hidden" name="flatId" id="flatId"
-                                    value="{{ $data['flatDetails']->id ?? '' }}">
-                                <div class="mis-view-group-btn">
-                                    @if ($data['suggestedPropertyId'])
-                                        <div class="w-25 mob-w-100">
-                                            <div class="d-flex justify-space-between items-end">
-                                                <label for="PropertyID" class="form-label">Suggested Property ID</label>
+                                                    <input type="hidden" name="suggestedPropertyId" class="form-control"
+                                                        id="SuggestedPropertyID" placeholder="Suggested Property ID"
+                                                        value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
+                                                @else
+                                                    <input type="text" name="suggestedPropertyId" class="form-control"
+                                                        id="SuggestedPropertyID" placeholder="Suggested Property ID"
+                                                        value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
+                                                @endif
+
                                             </div>
-                                            @if (!empty($data['splitedPropertyDetails']))
-                                                <select class="form-control" id="splited_property_id"
-                                                    name="splited_property_id">
-                                                    <option value="">---Select Property Id ----</option>
-                                                    @foreach ($data['splitedPropertyDetails'] as $splitedObj)
-                                                        <option value="{{ $splitedObj->id }}">{{ $splitedObj->id }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                            <div class="btn-group">
+                                                <a href="javascript:void(0);" id="PropertyIDSearchBtn"
+                                                    class="btn btn-grey pdf-btn" data-bs-toggle="modal"
+                                                    data-bs-target="#viewScannedFiles">View Scanned Files <i
+                                                        class="fas fa-file-pdf"></i>
+                                                </a>
+                                            </div>
+                                            @if ($data['details']->is_property_flat)
+                                                <div class="w-15">
+                                                    <div class="d-flex justify-space-between items-end">
+                                                        <label for="flatNumber" class="form-label">Flat Id</label>
+                                                    </div>
+                                                    <input type="text" name="uniqueFlatId" class="form-control"
+                                                        id="uniqueFlatId" placeholder="Flat Id"
+                                                        value="{{ $data['flatDetails']->unique_flat_id ?? '' }}" readonly
+                                                        style="width: 169px;">
 
-                                                <input type="hidden" name="suggestedPropertyId" class="form-control"
-                                                    id="SuggestedPropertyID" placeholder="Suggested Property ID"
-                                                    value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
-                                            @else
+                                                </div>
+                                                <div class="w-15">
+                                                    <div class="d-flex justify-space-between items-end">
+                                                        <label for="flatNumber" class="form-label">Flat Number</label>
+                                                    </div>
+                                                    <input type="text" name="flatNo" class="form-control" id="flatNo"
+                                                        placeholder="Flat No" value="{{ $data['details']->flat_no ?? '' }}"
+                                                        readonly style="width: 169px;">
+
+                                                </div>
+                                            @endif
+                                            @php
+                                                $modalId = $data['details']->id ?? '';
+                                                $applicant_no = $data['details']->applicant_number ?? '';
+                                                $masterId = $data['propertyMasterId'] ?? '';
+                                                $uniquePropertyId = $data['uniquePropertyId'] ?? '';
+                                                $oldPropertyId = $data['oldPropertyId'] ?? '';
+                                                $sectionCode = $data['sectionCode'] ?? '';
+                                                // Add Flat Id - Lalit on 06/Nov/2024
+                                                $flatId = $data['flatDetails']->id ?? '';
+                                                $additionalData = [
+                                                    // 'RS_REG',
+                                                    'RS_NEW_REG',
+                                                    $modalId,
+                                                    $applicant_no,
+                                                    $masterId,
+                                                    $uniquePropertyId,
+                                                    $oldPropertyId,
+                                                    $sectionCode,
+                                                    $flatId,
+                                                ]; //service type,modalId, applicant no
+                                                $additionalDataJson = json_encode($additionalData);
+                                            @endphp
+                                            <div class="btn-group">
+                                                <a
+                                                    href="{{ route('viewDetails', ['property' => $data['propertyMasterId']]) }}?params={{ urlencode($additionalDataJson) }}">
+                                                    <button type="button" id="PropertyIDSearchBtn"
+                                                        class="btn btn-primary ml-2">Go to Property
+                                                        Details</button>
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="w-25 mob-w-100">
+                                                <div class="d-flex justify-space-between items-end">
+                                                    <label for="PropertyID" class="form-label">Suggested Property ID</label>
+                                                </div>
                                                 <input type="text" name="suggestedPropertyId" class="form-control"
                                                     id="SuggestedPropertyID" placeholder="Suggested Property ID"
-                                                    value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
-                                            @endif
+                                                    value="" readonly>
 
-                                        </div>
-                                        <div class="btn-group">
-                                            <a href="javascript:void(0);" id="PropertyIDSearchBtn"
-                                                class="btn btn-grey pdf-btn" data-bs-toggle="modal"
-                                                data-bs-target="#viewScannedFiles">View Scanned Files <i
-                                                    class="fas fa-file-pdf"></i>
-                                            </a>
-                                        </div>
-                                        @if ($data['details']->is_property_flat)
+                                            </div>
+                                            <div class="btn-group">
+                                                <a href="javascript:void(0);" id="PropertyIDSearchBtn"
+                                                    class="btn btn-grey pdf-btn">View Scanned Files <i
+                                                        class="fas fa-file-pdf"></i>
+                                                </a>
+                                            </div>
+                                            <div class="btn-group">
+                                                <a href="#">
+                                                    <button type="button" id="PropertyIDSearchBtn"
+                                                        class="btn btn-primary ml-2" disabled>Go to Property Details</button>
+                                                </a>
+                                            </div>
                                             <div class="w-15">
                                                 <div class="d-flex justify-space-between items-end">
                                                     <label for="flatNumber" class="form-label">Flat Id</label>
@@ -1131,197 +1211,124 @@
 
                                             </div>
                                         @endif
-                                        @php
-                                            $modalId = $data['details']->id ?? '';
-                                            $applicant_no = $data['details']->applicant_number ?? '';
-                                            $masterId = $data['propertyMasterId'] ?? '';
-                                            $uniquePropertyId = $data['uniquePropertyId'] ?? '';
-                                            $oldPropertyId = $data['oldPropertyId'] ?? '';
-                                            $sectionCode = $data['sectionCode'] ?? '';
-                                            // Add Flat Id - Lalit on 06/Nov/2024
-                                            $flatId = $data['flatDetails']->id ?? '';
-                                            $additionalData = [
-                                                // 'RS_REG',
-                                                'RS_NEW_REG',
-                                                $modalId,
-                                                $applicant_no,
-                                                $masterId,
-                                                $uniquePropertyId,
-                                                $oldPropertyId,
-                                                $sectionCode,
-                                                $flatId,
-                                            ]; //service type,modalId, applicant no
-                                            $additionalDataJson = json_encode($additionalData);
-                                        @endphp
                                         <div class="btn-group">
-                                            <a
-                                                href="{{ route('viewDetails', ['property' => $data['propertyMasterId']]) }}?params={{ urlencode($additionalDataJson) }}">
-                                                <button type="button" id="PropertyIDSearchBtn"
-                                                    class="btn btn-primary ml-2">Go to Property
-                                                    Details</button>
-                                            </a>
-                                        </div>
-                                    @else
-                                        <div class="w-25 mob-w-100">
-                                            <div class="d-flex justify-space-between items-end">
-                                                <label for="PropertyID" class="form-label">Suggested Property ID</label>
-                                            </div>
-                                            <input type="text" name="suggestedPropertyId" class="form-control"
-                                                id="SuggestedPropertyID" placeholder="Suggested Property ID"
-                                                value="" readonly>
-
-                                        </div>
-                                        <div class="btn-group">
-                                            <a href="javascript:void(0);" id="PropertyIDSearchBtn"
-                                                class="btn btn-grey pdf-btn">View Scanned Files <i
-                                                    class="fas fa-file-pdf"></i>
-                                            </a>
-                                        </div>
-                                        <div class="btn-group">
-                                            <a href="#">
-                                                <button type="button" id="PropertyIDSearchBtn"
-                                                    class="btn btn-primary ml-2" disabled>Go to Property Details</button>
-                                            </a>
-                                        </div>
-                                        <div class="w-15">
-                                            <div class="d-flex justify-space-between items-end">
-                                                <label for="flatNumber" class="form-label">Flat Id</label>
-                                            </div>
-                                            <input type="text" name="uniqueFlatId" class="form-control"
-                                                id="uniqueFlatId" placeholder="Flat Id"
-                                                value="{{ $data['flatDetails']->unique_flat_id ?? '' }}" readonly
-                                                style="width: 169px;">
-
-                                        </div>
-                                        <div class="w-15">
-                                            <div class="d-flex justify-space-between items-end">
-                                                <label for="flatNumber" class="form-label">Flat Number</label>
-                                            </div>
-                                            <input type="text" name="flatNo" class="form-control" id="flatNo"
-                                                placeholder="Flat No" value="{{ $data['details']->flat_no ?? '' }}"
-                                                readonly style="width: 169px;">
-
-                                        </div>
-                                    @endif
-                                    <div class="btn-group">
-                                        @if (!$data['suggestedPropertyId'] || !$data['details']->is_property_flat)
-                                            @if (empty($data['suggestedPropertyId']))
-                                                <a href="{{ route('mis.index') }}" class="btn btn-warning ml-2"
-                                                    id="PropertyIDSearchBtn" target="_blank">Go to MIS</a>
+                                            @if (!$data['suggestedPropertyId'] || !$data['details']->is_property_flat)
+                                                @if (empty($data['suggestedPropertyId']))
+                                                    <a href="{{ route('mis.index') }}" class="btn btn-warning ml-2"
+                                                        id="PropertyIDSearchBtn" target="_blank">Go to MIS</a>
+                                                @endif
+                                            @else
+                                                @if (empty($data['flatDetails']->unique_flat_id))
+                                                    <a href="{{ route('create.flat.form', ['applicationMovementId' => $data['applicationMovementId'] ?? null]) }}"
+                                                        class="btn btn-warning ml-2" id="PropertyIDSearchBtn"
+                                                        target="_blank">Go to MIS</a>
+                                                @endif
                                             @endif
-                                        @else
-                                            @if (empty($data['flatDetails']->unique_flat_id))
-                                                <a href="{{ route('create.flat.form', ['applicationMovementId' => $data['applicationMovementId'] ?? null]) }}"
-                                                    class="btn btn-warning ml-2" id="PropertyIDSearchBtn"
-                                                    target="_blank">Go to MIS</a>
-                                            @endif
-                                        @endif
+                                        </div>
+
+
                                     </div>
-
-
-                                </div>
-                                {{-- @if (Auth::user()->hasRole('section-officer'))
-                                    @if ($data['details']->status !== getStatusName('RS_REJ'))
-                                        @if ($data['details']->status !== getStatusName('RS_APP'))
-                                            <div class="row pt-3">
-                                                <div class="col-lg-12 mt-4">
-                                                    <div class="checkbox-options">
-                                                        <div class="form-check form-check-success">
-                                                            <label class="form-check-label" for="isUnderReview">
-                                                                Send To Deputy L&DO For Review
-                                                            </label>
-                                                            <input class="form-check-inputs" type="checkbox"
-                                                                value="review" id="isUnderReview"
-                                                                @if ($data['details']->status == getStatusName('RS_UREW')) checked disabled @endif>
-                                                            <div class="text-danger required-error-message">This field is
-                                                                required.</div>
+                                    {{-- @if (Auth::user()->hasRole('section-officer'))
+                                        @if ($data['details']->status !== getStatusName('RS_REJ'))
+                                            @if ($data['details']->status !== getStatusName('RS_APP'))
+                                                <div class="row pt-3">
+                                                    <div class="col-lg-12 mt-4">
+                                                        <div class="checkbox-options">
+                                                            <div class="form-check form-check-success">
+                                                                <label class="form-check-label" for="isUnderReview">
+                                                                    Send To Deputy L&DO For Review
+                                                                </label>
+                                                                <input class="form-check-inputs" type="checkbox"
+                                                                    value="review" id="isUnderReview"
+                                                                    @if ($data['details']->status == getStatusName('RS_UREW')) checked disabled @endif>
+                                                                <div class="text-danger required-error-message">This field is
+                                                                    required.</div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            @endif
                                         @endif
+                                    @endif --}}
+
+                                    @if (isset($data['details']->remarks))
+                                        <div class="remark-container">
+                                            <h4 class="remark-title">Remark</h4>
+                                            <p class="remark-content">{{ $data['details']->remarks }}<span
+                                                    class="author-name"></p>
+                                        </div>
                                     @endif
-                                @endif --}}
-
-                                @if (isset($data['details']->remarks))
-                                    <div class="remark-container">
-                                        <h4 class="remark-title">Remark</h4>
-                                        <p class="remark-content">{{ $data['details']->remarks }}<span
-                                                class="author-name"></p>
-                                    </div>
-                                @endif
-                                <div class="row py-3">
-                                    <div class="col-lg-12 mt-4">
-                                        <div class="checkbox-options">
-                                            <div class="form-check form-check-success">
-                                                <label class="form-check-label" for="isMISCorrect">
-                                                    {{-- is MIS Checked --}}
-                                                    MIS Checked
-                                                </label>
-                                                <input class="form-check-input required-for-approve"
-                                                    @if ($checkList && $checkList->is_mis_checked == 1) checked disabled @endif
-                                                    @if ($checkList) disabled @endif
-                                                    name="is_mis_checked" type="checkbox" value="1"
-                                                    id="isMISCorrect">
-                                                <div class="text-danger required-error-message" id="misCheckedError">This
-                                                    field is required.
+                                    <div class="row py-3">
+                                        <div class="col-lg-12 mt-4">
+                                            <div class="checkbox-options">
+                                                <div class="form-check form-check-success">
+                                                    <label class="form-check-label" for="isMISCorrect">
+                                                        {{-- is MIS Checked --}}
+                                                        MIS Checked
+                                                    </label>
+                                                    <input class="form-check-input required-for-approve"
+                                                        @if ($checkList && $checkList->is_mis_checked == 1) checked disabled @endif
+                                                        @if ($checkList) disabled @endif
+                                                        name="is_mis_checked" type="checkbox" value="1"
+                                                        id="isMISCorrect">
+                                                    <div class="text-danger required-error-message" id="misCheckedError">This
+                                                        field is required.
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {{-- <div class="checkbox-options">
-                                            <div class="form-check form-check-success">
-                                                <label class="form-check-label" for="isScanningCorrect">
-                                                    Scanned File Checked
-                                                </label>
-                                                <input class="form-check-input required-for-approve"
-                                                    @if ($checkList && $checkList->is_scan_file_checked == 1) checked disabled @endif
-                                                    name="is_scan_file_checked" type="checkbox" value="1"
-                                                    id="isScanningCorrect">
-                                                <div class="text-danger required-error-message"
-                                                    id="isScanningCheckedError">This field is required.
+                                            {{-- <div class="checkbox-options">
+                                                <div class="form-check form-check-success">
+                                                    <label class="form-check-label" for="isScanningCorrect">
+                                                        Scanned File Checked
+                                                    </label>
+                                                    <input class="form-check-input required-for-approve"
+                                                        @if ($checkList && $checkList->is_scan_file_checked == 1) checked disabled @endif
+                                                        name="is_scan_file_checked" type="checkbox" value="1"
+                                                        id="isScanningCorrect">
+                                                    <div class="text-danger required-error-message"
+                                                        id="isScanningCheckedError">This field is required.
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div> --}}
+                                            </div> --}}
 
-                                        <div class="checkbox-options">
-                                            <div class="form-check form-check-success">
-                                                <label class="form-check-label" for="isDocumentCorrect">
-                                                    {{-- is Uploaded Documents Checked --}}
-                                                    Uploaded Documents Checked
-                                                </label>
-                                                <input class="form-check-input required-for-approve"
-                                                    @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif
-                                                    name="is_uploaded_doc_checked" type="checkbox" value="1"
-                                                    id="isDocumentCorrect">
-                                                <div class="text-danger required-error-message"
-                                                    id="isDocumentCorrectError">
-                                                    This field is required.
+                                            <div class="checkbox-options">
+                                                <div class="form-check form-check-success">
+                                                    <label class="form-check-label" for="isDocumentCorrect">
+                                                        {{-- is Uploaded Documents Checked --}}
+                                                        Uploaded Documents Checked
+                                                    </label>
+                                                    <input class="form-check-input required-for-approve"
+                                                        @if ($checkList && $checkList->is_uploaded_doc_checked == 1) checked disabled @endif
+                                                        name="is_uploaded_doc_checked" type="checkbox" value="1"
+                                                        id="isDocumentCorrect">
+                                                    <div class="text-danger required-error-message"
+                                                        id="isDocumentCorrectError">
+                                                        This field is required.
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        @if (
-                            $data['details']->status == getStatusName('RS_REW') ||
-                                $data['details']->status == getStatusName('RS_NEW') ||
-                                $data['details']->status == getStatusName('RS_PEN'))
-                            <div class="row">
-                                <div class="d-flex justify-content-end gap-4 col-lg-12">
-                                    <button type="button" class="btn btn-primary" id="approveBtn">Approve</button>
-                                    {{-- @if (Auth::user()->hasRole('section-officer') && Auth::user()->can('reject.register.user')) --}}
-                                    <button type="button" id="rejectButton" class="btn btn-danger">Reject</button>
-                                    {{-- @endif --}}
+                            @if (
+                                $data['details']->status == getStatusName('RS_REW') ||
+                                    $data['details']->status == getStatusName('RS_NEW') ||
+                                    $data['details']->status == getStatusName('RS_PEN'))
+                                <div class="row">
+                                    <div class="d-flex justify-content-end gap-4 col-lg-12">
+                                        <button type="button" class="btn btn-primary" id="approveBtn">Approve</button>
+                                        {{-- @if (Auth::user()->hasRole('section-officer') && Auth::user()->can('reject.register.user')) --}}
+                                        <button type="button" id="rejectButton" class="btn btn-danger">Reject</button>
+                                        {{-- @endif --}}
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
-                    </form>
-                </div>
+                            @endif
+                        </form>
+                    </div>
             @endif
-
             @if (in_array($roles, ['deputy-lndo', 'lndo']))
                 @if ($isApproved)
                     <div class="part-title mt-2">
@@ -1347,24 +1354,27 @@
                                                     <label for="PropertyID" class="form-label">Suggested Property
                                                         ID</label>
                                                 </div>
-                                                @if (!empty($data['splitedPropertyDetails']))
-                                                    <select class="form-control" id="splited_property_id"
-                                                        name="splited_property_id">
-                                                        <option value="">---Select Property Id ----</option>
-                                                        @foreach ($data['splitedPropertyDetails'] as $splitedObj)
-                                                            <option value="{{ $splitedObj->id }}">{{ $splitedObj->id }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+                                         {{--       <input type="text" name="suggestedPropertyId" class="form-control"
+                                                    id="SuggestedPropertyID" placeholder="Suggested Property ID"
+                                                    value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>   --}}
+@if (!empty($data['splitedPropertyDetails']))
+    <select class="form-control" id="splited_property_id"
+        name="splited_property_id">
+        <option value="">---Select Property Id ----</option>
+        @foreach ($data['splitedPropertyDetails'] as $splitedObj)
+            <option value="{{ $splitedObj->id }}">{{ $splitedObj->id }}
+            </option>
+        @endforeach
+    </select>
 
-                                                    <input type="hidden" name="suggestedPropertyId" class="form-control"
-                                                        id="SuggestedPropertyID" placeholder="Suggested Property ID"
-                                                        value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
-                                                @else
-                                                    <input type="text" name="suggestedPropertyId" class="form-control"
-                                                        id="SuggestedPropertyID" placeholder="Suggested Property ID"
-                                                        value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
-                                                @endif
+    <input type="hidden" name="suggestedPropertyId" class="form-control"
+        id="SuggestedPropertyID" placeholder="Suggested Property ID"
+        value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
+@else
+    <input type="text" name="suggestedPropertyId" class="form-control"
+        id="SuggestedPropertyID" placeholder="Suggested Property ID"
+        value="{{ $data['suggestedPropertyId'] ?? '' }}" readonly>
+@endif
 
                                             </div>
                                             <div class="btn-group">
@@ -1500,8 +1510,7 @@
                                                                 <input class="form-check-inputs" type="checkbox"
                                                                     value="review" id="isUnderReview"
                                                                     @if ($data['details']->status == getStatusName('RS_UREW')) checked disabled @endif>
-                                                                <div class="text-danger required-error-message">This field
-                                                                    is
+                                                                <div class="text-danger required-error-message">This field is
                                                                     required.</div>
                                                             </div>
                                                         </div>
@@ -1788,16 +1797,16 @@
 
 
 
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
     <!-- <div id="spinnerOverlay" style="display:none;">
-                                                                                                                                                                                                                                                                                                <div class="spinner"></div>
-                                                                                                                                                                                                                                                                                                <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
-                                                                                                                                                                                                                                                                                            </div> -->
+        <div class="spinner"></div>
+        <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
+    </div> -->
     <div id="spinnerOverlay" style="display:none;">
         <span class="loader"></span>
         <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
     </div>
-    <!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+    <!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
 @endsection
 @section('footerScript')
     <script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
@@ -1861,24 +1870,22 @@
                         $errorMsg.hide();
                     }
                 });
+              // Validate splited_property_id dropdown if it exists
+const $splitedPropertyDropdown = $('#splited_property_id');
+const $splitedPropertyError = $('#splited_property_error');
 
-                // Validate splited_property_id dropdown if it exists
-                const $splitedPropertyDropdown = $('#splited_property_id');
-                const $splitedPropertyError = $('#splited_property_error');
-
-                if ($splitedPropertyDropdown.length > 0) {
-                    if ($splitedPropertyDropdown.val() === "") {
-                        if ($splitedPropertyError.length === 0) {
-                            $splitedPropertyDropdown.before(
-                                '<div id="splited_property_error" class="text-danger mt-1">Please select a Property ID</div>'
-                            );
-                        }
-                        allChecked = false;
-                    } else {
-                        $splitedPropertyError && $splitedPropertyError.remove();
-                    }
-                }
-
+if ($splitedPropertyDropdown.length > 0) {
+    if ($splitedPropertyDropdown.val() === "") {
+        if ($splitedPropertyError.length === 0) {
+            $splitedPropertyDropdown.before(
+                '<div id="splited_property_error" class="text-danger mt-1">Please select a Property ID</div>'
+            );
+        }
+        allChecked = false;
+    } else {
+        $splitedPropertyError && $splitedPropertyError.remove();
+    }
+}
                 if (allChecked) {
                     console.log("inside if");
                     //Check Property link with other applicant.
@@ -2113,7 +2120,6 @@
                 spinnerOverlay.style.display = 'none';
             }
         });
-
 
         $(document).on('click', '.confirm-user-review-btn', function(event) {
             event.preventDefault();

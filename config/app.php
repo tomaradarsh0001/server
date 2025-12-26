@@ -195,9 +195,9 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
+       Mews\Captcha\CaptchaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
-        Mews\Captcha\CaptchaServiceProvider::class,
 
     ],
 
@@ -215,7 +215,6 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'PDF' => Barryvdh\DomPDF\Facade::class,
         'Captcha' => Mews\Captcha\Facades\Captcha::class,
     ])->toArray(),
 

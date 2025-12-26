@@ -3,7 +3,6 @@
 @section('title', 'Filter Report')
 
 @section('content')
-
 <style>
     .page-item.active a {
         color: #fff !important;
@@ -108,14 +107,19 @@
         font-size: 20px
     }
 </style>
-<!-- use version 0.20.3 -->
-<script lang="javascript" src="{{asset('assets/js/xlsx.full.min.js')}}"></script>
-
-
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
     <div class="breadcrumb-title pe-3">Reports</div>
-    @include('include.partials.breadcrumbs')
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                </li>
+                 <li class="breadcrumb-item active" aria-current="page">Reports</li>
+                <li class="breadcrumb-item active" aria-current="page">Filter Report</li>
+            </ol>
+        </nav>
+    </div>
 </div>
 <div class="row">
     <div class="col-xl-12">
@@ -139,9 +143,7 @@
                                 <select class="selectpicker propType multipleSelect" multiple aria-label="Land Use Type" data-live-search="true" title="Land Use Type" id="property-Type" name="property_type[]">
                                     <option value="">All</option>
                                     @foreach ($propertyTypes[0]->items as $propertyType)
-                                    @if(!isset($sectionPropertyTpes) || in_array($propertyType->id,$sectionPropertyTpes))
                                     <option value="{{$propertyType->id}}">{{ $propertyType->item_name }}</option>
-                                    @endif
                                     @endforeach
                                 </select>
                                 <button type="button" class="input-reset-icon" data-filter="property_type" data-targets='#property-Type'><i class="lni lni-cross-circle"></i></button>
@@ -218,13 +220,13 @@
                                                             </div>
                                                         </a>
                                                     </li>
-                                                    <li class="nav-item option" role="presentation">
+                                                    <!-- <li class="nav-item option" role="presentation">
                                                         <a class="nav-link" data-bs-toggle="tab" href="#GRRevision" role="tab" aria-selected="false">
                                                             <div class="d-flex align-items-center">
                                                                 <div class="tab-title">GR Revision</div>
                                                             </div>
                                                         </a>
-                                                    </li>
+                                                    </li> -->
                                                     <li class="nav-item option" role="presentation">
                                                         <a class="nav-link" data-bs-toggle="tab" href="#ReEnteredSince" role="tab" aria-selected="false">
                                                             <div class="d-flex align-items-center">
@@ -232,13 +234,13 @@
                                                             </div>
                                                         </a>
                                                     </li>
-                                                    <li class="nav-item option" role="presentation">
+                                                    <!-- <li class="nav-item option" role="presentation">
                                                         <a class="nav-link" data-bs-toggle="tab" href="#Revenue" role="tab" aria-selected="false">
                                                             <div class="d-flex align-items-center">
                                                                 <div class="tab-title">Revenue</div>
                                                             </div>
                                                         </a>
-                                                    </li>
+                                                    </li> -->
                                                     <li class="nav-item option" role="presentation">
                                                         <a class="nav-link" data-bs-toggle="tab" href="#OutstandingDues" role="tab" aria-selected="false">
                                                             <div class="d-flex align-items-center">
@@ -267,17 +269,11 @@
                                                             </div>
                                                         </a>
                                                     </li>
-                                                    {{-- <li class="nav-item option" role="presentation">
+
+                                                    <li class="nav-item option" role="presentation">
                                                         <a class="nav-link" data-bs-toggle="tab" href="#doarange" role="tab" aria-selected="false">
                                                             <div class="d-flex align-items-center">
                                                                 <div class="tab-title">Date of Allottment</div>
-                                                            </div>
-                                                        </a>
-                                                    </li> --}}
-                                                    <li class="nav-item option" role="presentation">
-                                                        <a class="nav-link" data-bs-toggle="tab" href="#doexprange" role="tab" aria-selected="false">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="tab-title">Date of Expiration</div>
                                                             </div>
                                                         </a>
                                                     </li>
@@ -518,6 +514,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <div class="tab-pane fade" id="doarange" role="tabpanel">
                                                     <div class="mt-5">
                                                         <div class="dual-input-label mt-5">
@@ -534,22 +531,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="tab-pane fade" id="doexprange" role="tabpanel">
-                                                    <div class="mt-5">
-                                                        <div class="dual-input-label mt-5">
-                                                            <div class="group-min-max">
-                                                                <div class="input-relative">
-                                                                    <input class="form-control doexpRange minValue" id="doexpMin" type="date" placeholder="Lease Execution Date from">
-                                                                </div>
-                                                                <div class="dash-icon"><i class="lni lni-minus"></i></div>
-                                                                <div class="input-relative ml-1 pe-5">
-                                                                    <input class="form-control doexpRange maxValue" id="doexpMax" type="date" placeholder="Lease Execution Date to">
-                                                                </div>
-                                                                <button type="button" class="input-reset-icon" data-filter="date_of_expiration" data-targets='.doexpRange'><i class="lni lni-cross-circle"></i></button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -577,22 +559,23 @@
                         <input class="form-control" type="text" placeholder="Search By Name" id="name_filter">
                         <button type="button" class="input-reset-icon" data-filter="name" data-targets="#name_filter"><i class="lni lni-cross-circle"></i></button>
                     </div>
-                    <div class="input-relative mr-2">
+                    <div class="input-relative mx-2">
                         <i class="lni lni-search-alt"></i>
                         <input class="form-control" type="text" placeholder="Search by Contact No." id="contact_filter">
                         <button type="button" class="input-reset-icon" data-filter="contact" data-targets="#contact_filter"><i class="lni lni-cross-circle"></i></button>
                     </div>
-                    <div class="input-relative mr-2">
+                    <div class="input-relative mx-2">
                         <i class="lni lni-search-alt"></i>
                         <input class="form-control" type="text" placeholder="Search by Property Id" id="propertyIdSearch">
                         <button type="button" class="input-reset-icon" data-filter="propertyId" data-targets="#propertyIdSearch"><i class="lni lni-cross-circle"></i></button>
                     </div>
-                    <div class="input-relative mr-2">
+                    <div class="input-relative ml-2">
                         <i class="lni lni-search-alt"></i>
                         <input class="form-control" type="text" placeholder="Search by Address" id="propertyAddressSearch">
                         <button type="button" class="input-reset-icon" data-filter="propertyAddress" data-targets="#propertyAddressSearch"><i class="lni lni-cross-circle"></i></button>
                     </div>
                     <div class="input-relative ml-2">
+                        <div class="buttons d-flex gap-x-2 justify-content-end">
                         <div class="buttons d-flex">
                             <button type="button" class="filter-btn export-btn mx-1">
                                 <!-- <i class="fa fa-envelope" aria-hidden="true"></i> -->
@@ -651,6 +634,7 @@
                                 </svg>
                             </button>
                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -658,7 +642,6 @@
     </div>
 </div>
 <!--end row-->
-{{-- @include('include.loader') --}}
 @include('include.alerts.ajax-alert')
 <div class="row align-data-height results d-none">
     <div class="col-xl-12 col-12">
@@ -722,53 +705,55 @@
         </div>
     </div>
 </div>
-<!-- added by swati mishra for displaying dues in filter report by Swati Mishra 11-04-2025 -->
-@include('report.due-demand')
 
+<div id="spinnerOverlay" style="display:none;">
+
+    <!-- <div class="spinner"></div> -->
+
+    <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
+
+</div>
+
+@include('report.due-demand')
 @endsection
 
 @section('footerScript')
 <script src="{{ asset('assets/js/bootstrap-select.min.js') }}"></script>
-<script src="{{ asset('assets/js/knobs.min.js') }}"></script>
-{{-- <script src="{{ asset('assets/js/map.js') }}"></script> --}}
 <script src="{{ asset('assets/js/property-type-subtype-dropdown.js') }}"></script>
-
-<!-- jsPDF (LEGACY BUILD - required) -->
-<!-- jsPDF UMD -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- AutoTable plugin -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<script src="{{ asset('assets/js/knobs.min.js') }}"></script>
+<script src="{{ asset('assets/js/map.js') }}"></script>
+<script src="{{ asset('assets/js/jspdf.umd.min.js') }}"></script>
+<script src="{{ asset('assets/js/jspdf.plugin.autotable.min.js') }}"></script>
+<script src="{{ asset('assets/js/xlsx.full.min.js') }}"></script>
 
 <script>
+        var streetViewUrl = "{{ route('streetview', ['id' => '__ID__']) }}";
+
     let filters = {};
     let pageNumber = 1;
     let totalPages;
-    let wsData = [];
+     let wsData = [];
     let downloadFormat = null;
     const optionMenu = document.querySelector(".select-menu"),
         selectBtn = optionMenu.querySelector(".select-btn"),
         options = optionMenu.querySelectorAll(".option"),
         sBtn_text = optionMenu.querySelector(".sBtn-text");
-    // start comment by anil for chagne the open the option hover to click on 23-05-2025
-    selectBtn.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent click from bubbling to document
-        optionMenu.classList.toggle("active")
-    });
-
-    // optionMenu.addEventListener("click", () => {
-    //     optionMenu.classList.remove("active");
+        // start comment by anil for chagne the open the option hover to click on 23-05-2025
+    // selectBtn.addEventListener("click", (e) => {
+    //     e.stopPropagation(); // Prevent click from bubbling to document
+    //     optionMenu.classList.toggle("active")
     // });
 
-    // Close menu when clicking outside
-    document.addEventListener("click", function(e) {
-        if (!optionMenu.contains(e.target)) {
-            optionMenu.classList.remove("active");
-        }
+    selectBtn.addEventListener("mouseenter", () =>  
+       optionMenu.classList.toggle("active")
+   );
+
+    optionMenu.addEventListener("mouseleave", () => {
+        optionMenu.classList.remove("active");
     });
-    // end comment by anil for chagne the open the option hover to click on 23-05-2025
+
     options.forEach((option) => {
-        option.addEventListener("click", () => {
+        option.addEventListener("mouseleave", () => {
             let selectedOption = option.querySelector(".option-text").innerText;
             sBtn_text.innerText = selectedOption;
 
@@ -783,7 +768,6 @@
             $(".range-controller2").fadeToggle();
         });
         getFilterData();
-        $('.preloader').remove();
     });
 
 
@@ -868,8 +852,7 @@
             max: maxVal
         }
     });
-
-    //date of execution filter added on 28-04-2025
+     //date of execution filter added on 28-04-2025
     $('.doeRange').change(() => {
         const minVal = $('#doeMin').val();
         const maxVal = $('#doeMax').val();
@@ -879,6 +862,7 @@
             max: maxVal
         }
     });
+
     //date of execution filter added on 28-04-2025
     $('.doaRange').change(() => {
         const minVal = $('#doaMin').val();
@@ -889,17 +873,6 @@
             max: maxVal
         }
     });
-    // date of expiration filter added by nitin on 27-06-2025
-    $('.doexpRange').change(() => {
-        const minVal = $('#doexpMin').val();
-        const maxVal = $('#doexpMax').val();
-
-        filters.date_of_expiration = {
-            min: minVal,
-            max: maxVal
-        }
-    });
-
     function debounce(func, delay) {
         let timeoutId;
         return function(...args) {
@@ -943,15 +916,21 @@
         var inputVal = $(this).val();
         if ($(this).is(':checked')) {
             if (inputVal == '') { //if All is selected -  then remove leasefilter
-                $('#LeaseDeed .form-check-input').prop('checked', false)
+                $('#LeaseDeed .form-check-input').prop('checked', true)
                 delete filters.leaseDeed;
             } else {
                 filters.leaseDeed.push(inputVal)
             }
         } else {
-            filters.leaseDeed = filters.leaseDeed.filter(filterVal => filterVal != inputVal);
-            if (filters.leaseDeed.length == 0) {
-                delete filters.leaseDeed
+            if (inputVal == '') { //if All is selected -  then remove leasefilter
+                $('#LeaseDeed .form-check-input').prop('checked', false)
+                delete filters.leaseDeed;
+            }
+            else{
+                filters.leaseDeed = filters.leaseDeed.filter(filterVal => filterVal != inputVal);
+                if (filters.leaseDeed.length == 0) {
+                    delete filters.leaseDeed
+                }
             }
         }
 
@@ -967,15 +946,21 @@
         var inputVal = $(this).val();
         if ($(this).is(':checked')) {
             if (inputVal == '') { //if All is selected -  then remove leasefilter
-                $('#LeaseTenure .form-check-input').prop('checked', false)
+                $('#LeaseTenure .form-check-input').prop('checked', true)
                 delete filters.leaseTenure;
             } else {
                 filters.leaseTenure.push(inputVal)
             }
         } else {
-            filters.leaseTenure = filters.leaseTenure.filter(filterVal => filterVal != inputVal);
-            if (filters.leaseTenure.length == 0) {
-                delete filters.leaseTenure
+            if (inputVal == '') { //if All is selected -  then remove leasefilter
+                $('#LeaseTenure .form-check-input').prop('checked', false)
+                delete filters.leaseTenure;
+            } 
+            else{
+                filters.leaseTenure = filters.leaseTenure.filter(filterVal => filterVal != inputVal);
+                if (filters.leaseTenure.length == 0) {
+                    delete filters.leaseTenure
+                }
             }
         }
 
@@ -992,7 +977,10 @@
         }
 
     })
+
+
     //property Id Search
+
     $('#propertyIdSearch').blur(function() {
         var val = $(this).val().trim();
         if (val.length > 2 && !isNaN(val)) {
@@ -1001,6 +989,7 @@
             if (filters.propertyId)
                 delete filters.propertyId
         }
+
     })
 
     //property Address Search
@@ -1052,15 +1041,21 @@
         var inputVal = $(this).val();
         if ($(this).is(':checked')) {
             if (inputVal == '') { //if All is selected -  then remove leasefilter
-                $('#ReEnteredSince .form-check-input').prop('checked', false)
+                $('#ReEnteredSince .form-check-input').prop('checked', true)
                 delete filters.reEnteredSince;
             } else {
                 filters.reEnteredSince.push(inputVal)
             }
         } else {
-            filters.reEnteredSince = filters.reEnteredSince.filter(filterVal => filterVal != inputVal);
-            if (filters.reEnteredSince.length == 0) {
-                delete filters.reEnteredSince
+            if (inputVal == '') { //if All is selected -  then remove leasefilter
+                $('#ReEnteredSince .form-check-input').prop('checked', false)
+                delete filters.reEnteredSince;
+            }
+            else{
+                filters.reEnteredSince = filters.reEnteredSince.filter(filterVal => filterVal != inputVal);
+                if (filters.reEnteredSince.length == 0) {
+                    delete filters.reEnteredSince
+                }
             }
         }
 
@@ -1129,10 +1124,10 @@
     }
 
     const propertyDetailsRoute = "{{ route('viewPropertyDetails', ['property' => '__ID__']) }}";
-    const streetviewRoute = "{{ route('streetview', ['id' => '__ID__']) }}";
-
+    const streetviewRoute = "{{ route('streetview', ['id' => '__ID__']) }}"; 
+    
     const getFilterData = () => {
-        const spinnerOverlay = document.getElementById('spinnerOverlay');
+    const spinnerOverlay = document.getElementById('spinnerOverlay');
         $('.results').addClass('d-none');
         if (spinnerOverlay) {
             spinnerOverlay.style.display = 'flex';
@@ -1148,15 +1143,11 @@
                 filters: filters
             },
             success: (results) => {
-                // $('.loader_container').addClass('d-none');
+                $('.loader_container').addClass('d-none');
                 if ($('.results').hasClass('d-none'))
                     $('.results').removeClass('d-none');
-                if (spinnerOverlay) {
-                    spinnerOverlay.style.display = 'none';
-                }
-
-
-
+                    const spinnerOverlay = document.getElementById('spinnerOverlay');
+                spinnerOverlay.style.display = 'none';
                 $('.property-data').html('');
                 let updatedListHTML = '';
                 let rowNum = 50 * (pageNumber - 1) + 1;
@@ -1167,7 +1158,7 @@
                             <i class="lni lni-map-marker text-danger" data-toggle="tooltip" title="View Mapview"></i>
                         </span>`;
                         const dynamicViewMoreRoute = propertyDetailsRoute.replace('__ID__', row.id);
-                        const viewMoreHtml = `<a href="${dynamicViewMoreRoute}" class="text-primary view_more_link">View More</a>`;
+                        const viewMoreHtml = `<a href="${dynamicViewMoreRoute}" target="_blank" class="text-primary view_more_link">View More</a>`;
                         const dynamicStreetviewRoute = streetviewRoute.replace('__ID__', row.old_propert_id);
                         const streetViewHtml = `<a href="${dynamicStreetviewRoute}" target="_blank" data-toggle="tooltip" title="View Streetview">
                             <span class="location_icon">
@@ -1175,6 +1166,7 @@
                             </span>
                         </a>`;
                         const duesHtml = `<a href="javascript:;" class="text-danger show-demand-modal" data-property-id="${row.old_propert_id}">Dues</a>`;
+                        
                         /** append row in result list */
                         updatedListHTML += `<div class="parent_table_container"><table class="table report-item">
                                <tr>
@@ -1184,17 +1176,16 @@
                                     <td>Property ID: <span class="highlight_value">${row.unique_propert_id}( ${row.old_propert_id} )</span></td>
                                     <td>Land Size: <span class="highlight_value">${row.area_in_sqm} Sq. Mtr.</span></td>
                                     <td>Land Value: <span class="highlight_value">₹${row.land_value ??'-'}</span></td>
-                                    <td>Present Lessee: <span class="highlight_value lessee_address">${row.lesse_name ? row.lesse_name: 'N/A'}</span></td>
+                                    <td>Present Lessee/Owner: <span class="highlight_value lessee_address">${row.lesse_name ? row.lesse_name: 'N/A'}</span></td>
                                 </tr>
                                 <tr>
                                     <td>Lease Tenure: <span class="highlight_value">${row.lease_tenure ? row.lease_tenure +' years' : 'N/A'}</span></td>
                                     <td>RGR: <span class="highlight_value">${row.gr}</span></td>
                                     <td><span class="highlight_value landtypeRehab">${row.land_type}</span> <span class="highlight_value landtypeFreeH mx-2">${row.status}</span> <span class="highlight_value landuseResid">${row.land_use}</span></td>
-                                    <td><span class="d-flex align-items-center border-l-w-0 map_view_location"> ${mapMarkerHtml} ${streetViewHtml}  ${viewMoreHtml} 
+                                       <td><span class="d-flex align-items-center border-l-w-0 map_view_location"> ${mapMarkerHtml} ${streetViewHtml}  ${viewMoreHtml} 
                                     &nbsp;|&nbsp; 
                                     ${duesHtml} <span></td>
-
-                                    </tr>
+                                </tr>
                         </table></div>`;
                         rowNum++;
                     })
@@ -1238,9 +1229,7 @@
 
             },
             error: response => {
-                if (spinnerOverlay) {
-                    spinnerOverlay.style.display = 'none';
-                }
+                $('.loader_container').addClass('d-none');
                 if ($('.results').hasClass('d-none'))
                     $('.results').removeClass('d-none');
                 if (response.responseJSON && response.responseJSON.message) {
@@ -1276,6 +1265,7 @@
                 responseType: 'blob' // Important
             }, */
             success: response => {
+                console.log(response);
                 $('.loader_container').addClass('d-none');
                 if ($('.results').hasClass('d-none'))
                     $('.results').removeClass('d-none');
@@ -1286,8 +1276,28 @@
                 $('.loader_container').addClass('d-none');
                 if ($('.results').hasClass('d-none'))
                     $('.results').removeClass('d-none');
+                // Create a blob object from the response
+
+                //not downloding file. Download Link will be sent to Email
+                /* var blob = new Blob([response], {
+                    type: (exportFormat == 'xls' || exportFormat == 'csv') ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "application/pdf",
+                });
+                var url = window.URL.createObjectURL(blob);
+
+                // Create a temporary anchor element
+                var downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.download = 'report.' + exportFormat; // Provide a filename here
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+
+                // Cleanup
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(downloadLink); */
             },
             error: response => {
+                console.log(response);
+                
                 $('.loader_container').addClass('d-none');
                 if ($('.results').hasClass('d-none'))
                     $('.results').removeClass('d-none');
@@ -1298,8 +1308,7 @@
         })
     });
 
-
-
+    
     $('.download').click(function() {
         downloadFormat = $(this).data('format')
         $('#spinnerOverlay').show();
@@ -1361,64 +1370,32 @@
     function appendToexcel(item) {
         if (wsData.length == 0) {
             wsData.push([
-                'PID - Old',
-                'PID - New',
-                'File no',
-                'PID - Sub-ID (Child)',
-                'Address (Known As)',
-                'Land - Nazul/ Rehab',
-                'Land Use Type',
-                'Land Use Sub-type',
-                'Land Status',
-                'Colony',
-                'Area',
-                'Unit',
-                'Area (In Sqm.)',
-                'Land Value',
-                'Present/Last GR',
-                'Re Entered',
-                'Re-Entered Date',
-                'Outstanding',
-                'Lease Deed Type',
+                'Old property id',
+                'Unique property id',
+                'Land Type',
+                'Status',
                 'Lease Tenure(Years)',
-                'Date of Execution',
-                /* 'Land Rate - Circle',
-                'Land Rate - L&DO', */
-                'Original Lessee/Owner Name',
-                'Present Lessee/Owner Name',
-                'Contact Details',
-                'Remarks'
+                'Land Use',
+                'Area (In Sqm.)',
+                'Address',
+                'Lesse name',
+                'GR in re rs',
+                'GR',
             ]);
         }
 
         wsData.push([
             item.old_propert_id,
             item.unique_propert_id,
-            item.file_no,
-            item.child_id,
-            item.address,
-            item.land_use,
             item.land_type,
-            item.land_sub_type,
             item.status,
-            item.colony,
-            item.input_area,
-            item.unit,
-            item.area_in_sqm,
-            item.land_value,
-            item.gr_in_re_rs,
-            item.is_re_rented == 1 ? 'Yes' : 'NO',
-            item.re_rented_date,
-            item.total_dues,
-            item.lease_type,
             item.lease_tenure,
-            item.doe,
-            /* item.circle_land_rate,
-            item.lndo_land_rate, */
-            item.original_lessee_name,
-            item.current_lessee_name,
-            item.phone_no,
-            item.remarks,
+            item.land_use,
+            item.area_in_sqm,
+            item.address,
+            item.lesse_name,
+            item.gr_in_re_rs,
+            item.gr,
         ]);
     }
 
@@ -1469,7 +1446,6 @@
             showError('Data not found');
         }
     }
-
     // Onscroll Sticky Filter
     // script.js
     $(document).ready(function() {
@@ -1485,43 +1461,88 @@
         });
     });
 
-    //added by swati mishra for displaying dues in filter report by Swati Mishra 11-04-2025
-    $(document).on('click', '.show-demand-modal', function() {
-        const propId = $(this).data('property-id');
-        const modalBody = $('#demandModalBody');
-        modalBody.html('<p>Loading...</p>'); // reset
+     //added by swati mishra for displaying dues in filter report by Swati Mishra 11-04-2025
 
-        $.ajax({
-            url: '{{ route("getDemandDetails") }}',
-            method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                property_id: propId
-            },
-            success: (response) => {
-                if (response.status) {
-                    const d = response.data;
-                    const html = `
-                    <table class="table table-bordered table-striped">
-                        <tr><th>Demand ID</th><td>${d.demand_id}</td></tr>
-                        <tr><th>Demand Date</th><td>${d.demand_date}</td></tr>
-                        <tr><th>Amount</th><td>₹${d.amount}</td></tr>
-                        <tr><th>Paid Amount</th><td>₹${d.paid}</td></tr>
-                        <tr><th>Outstanding Dues</th><td>₹${d.outstanding}</td></tr>
-                    </table>
-                `;
-                    modalBody.html(html);
-                } else {
-                    modalBody.html('<p>No demand records found.</p>');
-                }
+     $(document).on('click', '.show-demand-modal', function () {
 
-                $('#demandModal').modal('show');
-            },
-            error: () => {
-                modalBody.html('<p class="text-danger">Error fetching demand details.</p>');
-                $('#demandModal').modal('show');
-            }
-        });
-    });
+const propId = $(this).data('property-id');
+
+const modalBody = $('#demandModalBody');
+
+modalBody.html('<p>Loading...</p>'); // reset
+
+
+
+const spinnerOverlay = document.getElementById('spinnerOverlay');
+
+spinnerOverlay.style.display = 'flex';
+
+
+
+$.ajax({
+
+    url: '{{ route("getDemandDetails") }}',
+
+    method: 'POST',
+
+    data: {
+
+        _token: '{{ csrf_token() }}',
+
+        property_id: propId
+
+    },
+
+    success: (response) => {
+
+        spinnerOverlay.style.display = 'none';
+
+        if (response.status) {
+
+            const d = response.data;
+
+            const html = `
+
+                <table class="table table-bordered table-striped">
+
+                    <tr><th>Demand ID</th><td>${d.demand_id}</td></tr>
+
+                    <tr><th>Demand Date</th><td>${d.demand_date}</td></tr>
+
+                    <tr><th>Amount</th><td>₹${d.amount}</td></tr>
+
+                    <tr><th>Paid Amount</th><td>₹${d.paid}</td></tr>
+
+                    <tr><th>Outstanding Dues</th><td>₹${d.outstanding}</td></tr>
+
+                </table>
+
+            `;
+
+            modalBody.html(html);
+
+        } else {
+
+            modalBody.html('<p>No demand records found.</p>');
+
+        }
+
+
+
+        $('#demandModal').modal('show');
+
+    },
+
+    error: () => {
+
+        modalBody.html('<p class="text-danger">Error fetching demand details.</p>');
+
+        $('#demandModal').modal('show');
+
+    }
+
+});
+
+});
 </script>
 @endsection

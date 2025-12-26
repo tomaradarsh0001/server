@@ -10,8 +10,8 @@
                 <h4 class="modal-title mb-2" id="ModalDeleteLabel">Are you sure?</h4>
                 <p id="customConfirmationMessage">You want to delete this information permanently.</p>
                 <div class="modal-footer border-0 justify-content-center">
-                    <button type="button" class="btn btn-secondary btn-width" data-bs-dismiss="modal">No</button>
-                    <button type="button" id="confirmDelete" class="btn btn-danger btn-width">Yes</button>
+                    <button type="button" class="btn btn-secondary btn-width" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="confirmDelete" class="btn btn-danger btn-width">Confirm</button>
                 </div>
             </div>
         </div>

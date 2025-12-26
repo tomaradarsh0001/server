@@ -117,9 +117,10 @@
 
         <td>
             <!-- View Button -->
-            <a href="{{ url('register/user/' . $registrationDetail->id . '/view') }}">
+            <a href="{{ route('register.user.details', ['id' => $registrationDetail->id]) }}">
                 <button type="button" class="btn btn-success px-5">View</button>
             </a>
+            
 
         </td>
     </tr>

@@ -117,7 +117,7 @@
                                                                                 <li class="status__action action-type--recommend">
                         <div class="recommend-action">
                             <h6 class="action-type">Recommend</h6>
-                            <h5 class="officer-name">Rajeev Kumar Das (Deputy L&DO)
+                            <h5 class="officer-name">Rajeev Kumar Das (Deputy Lndo)
                             </h5>
                                                         <span class="application-date-time">2024-12-06 11:11:35</span>
                         </div>
@@ -133,7 +133,7 @@
                                                                                 <li class="status__action action-type--object">
                         <div class="recommend-action">
                             <h6 class="action-type">Object</h6>
-                            <h5 class="officer-name">Rajeev Kumar Das (Deputy L&DO)
+                            <h5 class="officer-name">Rajeev Kumar Das (Deputy Lndo)
                             </h5>
                              <p class="remarks"><span style="font-weight: 600;">Remarks:</span>
                                 Please check the details of documents</p>                            <span class="application-date-time">2024-12-09 16:37:55</span>
@@ -151,7 +151,7 @@
                                                                                 <li class="status__action action-type--">
                         <div class="recommend-action">
                             <h6 class="action-type"></h6>
-                            <h5 class="officer-name">Rajeev Kumar Das (Deputy L&DO)
+                            <h5 class="officer-name">Rajeev Kumar Das (Deputy Lndo)
                             </h5>
                              <p class="remarks"><span style="font-weight: 600;">Remarks:</span>
                                 Dear section please check the application documents</p>                            <span class="application-date-time">2024-12-13 13:34:14</span>
@@ -447,7 +447,7 @@
                                     <div class="upload-content">
                                         <i class="fas fa-cloud-upload-alt upload-icon"></i>
                                         <h5 class="mb-2">Choose a file or drag & drop it here</h5>
-                                        <p class="text-muted mb-0">JPEG, PNG, JPG, and PDF formats, up to 5MB</p>
+                                        <p class="text-muted mb-0">JPEG, PNG, JPG, and PDF formats, up to 2MB</p>
                                         <span class="browse-file mb-0">Browse File</span>
                                     </div>
                                 </label>

@@ -22,39 +22,47 @@ function toRoman($number) {
     <table class="table table-bordered mb-5">
         <thead>
             <tr class="table-success">
-                <th>S. No.</th>
-                <th>Demand Id</th>
+                <th>S. No. </th>
+                <th>Demand ID</th>
                 <th>Demand Date</th>           
-                <th>Property Id</th>
-                <th>File Number</th>
+                <th>Property ID</th>
+               <th>File Number</th>
                 <th>Known As</th>
                 <th>Financial Year</th>
                 <th>Demand Amount</th>
                 <th>Paid Amount</th>
                 <th>Outstanding Amount</th>
                 <th>Status</th>
-                <th>Action</th>
+                <!--<th>Action</th>-->
             </tr>
         </thead>
         <tbody>
             @forelse($queryResult as $demand)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $demand->unique_id }}</td>
+                    <td> <a href="{{route('ViewDemand',$demand->id)}}">{{ $demand->unique_id }}</a> <a href="{{route('demand.demand_letter_pdf', $demand->id) }}" target="_blank"><i class="lni lni-cloud-download text-danger" style="font-size: 25px; vertical-align: middle;"></i></a></td>
                     <td>{{ date('d-m-Y',strtotime($demand->created_at)) }}</td>
                     <td>{{ $demand->unique_propert_id }}<br><small>({{ $demand->old_property_id }})</small></td>
-                    <td>{{ $demand->unique_file_no }}</td>
+                    <td>{{ $demand->section_code }}</td>
                     <td>{{ $demand->property_known_as }}</td>
                     <td>{{ $demand->current_fy }}</td>
-                    <td>₹ {{ customNumFormat(round($demand->net_total, 2)) }}</td>                    
+                    <td>₹ {{ customNumFormat(round($demand->net_total, 2)) }}<br>
+                    	  <a href="javascript:void(0);" 
+       class="text-primary viewBreakup" 
+       data-id="{{ $demand->id }}" 
+       data-toggle="tooltip" 
+       title="View Breakup">
+        (View Breakup)
+    </a>
+                    </td>                    
                     <td>₹ {{ customNumFormat(round($demand->paid_amount, 2)) ?? 0 }}</td>
                     <td>₹ {{ customNumFormat(round($demand->balance_amount, 2)) ?? 0 }}</td>
                     <td>{{ getServiceNameById($demand->status) }}</td>
-                    <td>
-                        <a href="{{route('demand.demand_letter_pdf', $demand->id) }}" target="_blank"><i class="lni lni-cloud-download text-danger" style="font-size: 25px; vertical-align: middle;"></i></a>
-                        <a href="{{route('ViewDemand',$demand->id)}}" class="btn btn-sm btn-flat btn-primary">View</a>
+                    <!--<td>
                         
-                    </td>
+                        <a href="{{route('ViewDemand',$demand->id)}}" class="btn btn-sm btn-flat btn-primary">View</a>
+                       
+                    </td>-->
                 </tr>
             @empty
                 <tr>
@@ -68,24 +76,24 @@ function toRoman($number) {
         <th colspan="7" class="text-end">Total:</th>
         <th class="text-wrap" style="max-width: 200px; white-space: normal;">
             ₹ {{ customNumFormat(round(collect($queryResult)->sum('net_total'), 2)) }}<br>           
-            {{ collect($queryResult)->sum('net_total') > 0 
+           <!-- {{ collect($queryResult)->sum('net_total') > 0 
                 ? convertToIndianCurrencyWords(round(collect($queryResult)->sum('net_total'), 2)) 
                 : 'Zero Rupees Only' 
-            }}
+            }}-->
         </th>
         <th class="text-wrap" style="max-width: 200px; white-space: normal;">
             ₹ {{ customNumFormat(round(collect($queryResult)->sum('paid_amount'), 2)) }}<br>
-            {{ collect($queryResult)->sum('paid_amount') > 0 
+          <!--  {{ collect($queryResult)->sum('paid_amount') > 0 
                 ? convertToIndianCurrencyWords(round(collect($queryResult)->sum('paid_amount'), 2)) 
                 : 'Zero Rupees Only' 
-            }}
+            }}-->
         </th>
        <th class="text-wrap" style="max-width: 200px; white-space: normal;">
             ₹ {{ customNumFormat(round(collect($queryResult)->sum('balance_amount'), 2)) }}<br>            
-            {{ collect($queryResult)->sum('balance_amount') > 0 
+           <!-- {{ collect($queryResult)->sum('balance_amount') > 0 
                 ? convertToIndianCurrencyWords(round(collect($queryResult)->sum('balance_amount'), 2)) 
                 : 'Zero Rupees Only' 
-            }}
+            }}-->
         </th>
         <th colspan="2"></th>
     </tr>
@@ -134,16 +142,16 @@ function toRoman($number) {
 <tr class="table-secondary">
     <th colspan="2" class="text-end">Total:</th>
     <th>{{ collect($dySectionWiseSummary)->sum('total_demands') }}<br>
-    	{{ ucfirst(convertNumberToWords(collect($dySectionWiseSummary)->sum('total_demands'))) }}
+    	<!--{{ ucfirst(convertNumberToWords(collect($dySectionWiseSummary)->sum('total_demands'))) }}-->
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($dySectionWiseSummary)->sum('total_amount'), 2)) }}<br>
-    {{ collect($dySectionWiseSummary)->sum('total_amount') > 0 ? convertToIndianCurrencyWords(round(collect($dySectionWiseSummary)->sum('total_amount'), 2)) : 'Zero Rupees Only'}}    	
+   <!-- {{ collect($dySectionWiseSummary)->sum('total_amount') > 0 ? convertToIndianCurrencyWords(round(collect($dySectionWiseSummary)->sum('total_amount'), 2)) : 'Zero Rupees Only'}}  -->  	
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($dySectionWiseSummary)->sum('total_paid'), 2)) }}<br>
-    	{{ collect($dySectionWiseSummary)->sum('total_paid') > 0 ? convertToIndianCurrencyWords(round(collect($dySectionWiseSummary)->sum('total_paid'), 2)) : 'Zero Rupees Only'}}
+    <!--	{{ collect($dySectionWiseSummary)->sum('total_paid') > 0 ? convertToIndianCurrencyWords(round(collect($dySectionWiseSummary)->sum('total_paid'), 2)) : 'Zero Rupees Only'}}-->
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($dySectionWiseSummary)->sum('total_balance'), 2)) }}<br>
-    {{ collect($dySectionWiseSummary)->sum('total_balance') > 0 ? convertToIndianCurrencyWords(round(collect($dySectionWiseSummary)->sum('total_balance'), 2)) : 'Zero Rupees Only'}}    	
+   <!-- {{ collect($dySectionWiseSummary)->sum('total_balance') > 0 ? convertToIndianCurrencyWords(round(collect($dySectionWiseSummary)->sum('total_balance'), 2)) : 'Zero Rupees Only'}}   --> 	
     </th>
     <th></th>
 </tr>
@@ -169,7 +177,7 @@ function toRoman($number) {
             <tbody>
                 <tr> 
                 	<td>1.</td>
-                	<td>Land and Development Officer</td>
+                	<td>Land and Development Office</td>
                     <td>{{ $totalSummary->total_demands ?? 0 }}</td>
                     <td>₹ {{ customNumFormat(round($totalSummary->total_amount ?? 0, 2)) }}</td>
                     <td>₹ {{ customNumFormat(round($totalSummary->total_paid ?? 0, 2)) }}</td>
@@ -182,17 +190,17 @@ function toRoman($number) {
 <tr class="table-secondary">
     <th colspan="2" class="text-end">Total:</th>
     <th>{{ $totalSummary->total_demands ?? 0 }}<br>
-    	{{ ucfirst(convertNumberToWords($totalSummary->total_demands ?? 0)) }}
+    	<!--{{ ucfirst(convertNumberToWords($totalSummary->total_demands ?? 0)) }}-->
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round($totalSummary->total_amount ?? 0, 2)) }}<br>
-    {{ round($totalSummary->total_amount ?? 0, 2) > 0 ? convertToIndianCurrencyWords(round($totalSummary->total_amount ?? 0, 2)) : 'Zero Rupees Only'}}
+  <!--  {{ round($totalSummary->total_amount ?? 0, 2) > 0 ? convertToIndianCurrencyWords(round($totalSummary->total_amount ?? 0, 2)) : 'Zero Rupees Only'}}-->
     	
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round($totalSummary->total_paid ?? 0, 2)) }}<br>
-    	{{ round($totalSummary->total_paid ?? 0, 2) > 0 ? convertToIndianCurrencyWords(round($totalSummary->total_paid ?? 0, 2)) : 'Zero Rupees Only'}}
+    	<!--{{ round($totalSummary->total_paid ?? 0, 2) > 0 ? convertToIndianCurrencyWords(round($totalSummary->total_paid ?? 0, 2)) : 'Zero Rupees Only'}}-->
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round($totalSummary->total_balance ?? 0, 2)) }}<br>
-    {{ round($totalSummary->total_balance ?? 0, 2) > 0 ? convertToIndianCurrencyWords(round($totalSummary->total_balance ?? 0, 2)) : 'Zero Rupees Only'}}
+   <!-- {{ round($totalSummary->total_balance ?? 0, 2) > 0 ? convertToIndianCurrencyWords(round($totalSummary->total_balance ?? 0, 2)) : 'Zero Rupees Only'}}-->
     	
     </th>
     <th></th>
@@ -238,16 +246,16 @@ function toRoman($number) {
 <tr class="table-secondary">
     <th colspan="2" class="text-end">Total:</th>
     <th>{{ collect($dyLdoWiseSummary)->sum('total_demands') }}<br>
-    	{{ ucfirst(convertNumberToWords(collect($dyLdoWiseSummary)->sum('total_demands'))) }}
+    	<!--{{ ucfirst(convertNumberToWords(collect($dyLdoWiseSummary)->sum('total_demands'))) }}-->
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($dyLdoWiseSummary)->sum('total_amount'), 2)) }}<br>
-     {{ collect($dyLdoWiseSummary)->sum('total_amount') > 0 ? convertToIndianCurrencyWords(round(collect($dyLdoWiseSummary)->sum('total_amount'), 2)) : 'Zero Rupees Only'}}     	
+    <!-- {{ collect($dyLdoWiseSummary)->sum('total_amount') > 0 ? convertToIndianCurrencyWords(round(collect($dyLdoWiseSummary)->sum('total_amount'), 2)) : 'Zero Rupees Only'}} -->    	
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($dyLdoWiseSummary)->sum('total_paid'), 2)) }}<br>
-    	{{ collect($dyLdoWiseSummary)->sum('total_paid') > 0 ? convertToIndianCurrencyWords(round(collect($dyLdoWiseSummary)->sum('total_paid'), 2)) : 'Zero Rupees Only'}}
+    	<!--{{ collect($dyLdoWiseSummary)->sum('total_paid') > 0 ? convertToIndianCurrencyWords(round(collect($dyLdoWiseSummary)->sum('total_paid'), 2)) : 'Zero Rupees Only'}}-->
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($dyLdoWiseSummary)->sum('total_balance'), 2)) }}<br>
-    {{ collect($dyLdoWiseSummary)->sum('total_balance') > 0 ? convertToIndianCurrencyWords(round(collect($dyLdoWiseSummary)->sum('total_balance'), 2)) : 'Zero Rupees Only'}}    	
+   <!-- {{ collect($dyLdoWiseSummary)->sum('total_balance') > 0 ? convertToIndianCurrencyWords(round(collect($dyLdoWiseSummary)->sum('total_balance'), 2)) : 'Zero Rupees Only'}} -->   	
     </th>
     <th></th>
 </tr>
@@ -294,17 +302,17 @@ $sortedSections = collect($sectionWiseSummary)->sortBy('section_name');
 <tr class="table-secondary">
     <th colspan="2" class="text-end">Total:</th>
     <th>{{ collect($sectionWiseSummary)->sum('total_demands') }}<br>
-    	{{ucfirst(convertNumberToWords(collect($sectionWiseSummary)->sum('total_demands')))}}
+    	<!--{{ucfirst(convertNumberToWords(collect($sectionWiseSummary)->sum('total_demands')))}}-->
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($sectionWiseSummary)->sum('total_amount'), 2)) }}<br>
-    {{ collect($sectionWiseSummary)->sum('total_amount') > 0 ? convertToIndianCurrencyWords(round(collect($sectionWiseSummary)->sum('total_amount'), 2)) : 'Zero Rupees Only'}}    	
+   <!-- {{ collect($sectionWiseSummary)->sum('total_amount') > 0 ? convertToIndianCurrencyWords(round(collect($sectionWiseSummary)->sum('total_amount'), 2)) : 'Zero Rupees Only'}}  -->  	
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($sectionWiseSummary)->sum('total_paid'), 2)) }}<br>
-    	{{ collect($sectionWiseSummary)->sum('total_paid') > 0 ? convertToIndianCurrencyWords(round(collect($sectionWiseSummary)->sum('total_paid'), 2)) : 'Zero Rupees Only'}}
+    	<!--{{ collect($sectionWiseSummary)->sum('total_paid') > 0 ? convertToIndianCurrencyWords(round(collect($sectionWiseSummary)->sum('total_paid'), 2)) : 'Zero Rupees Only'}}-->
 
     </th>
     <th class="text-wrap" style="max-width: 200px; white-space: normal;">₹ {{ customNumFormat(round(collect($sectionWiseSummary)->sum('total_balance'), 2)) }}<br>
-    {{ collect($sectionWiseSummary)->sum('total_balance') > 0 ? convertToIndianCurrencyWords(round(collect($sectionWiseSummary)->sum('total_balance'), 2)) : 'Zero Rupees Only'}}
+   <!-- {{ collect($sectionWiseSummary)->sum('total_balance') > 0 ? convertToIndianCurrencyWords(round(collect($sectionWiseSummary)->sum('total_balance'), 2)) : 'Zero Rupees Only'}}-->
     	
     </th>
     <th></th>
@@ -314,3 +322,4 @@ $sortedSections = collect($sectionWiseSummary)->sortBy('section_name');
     </div>
 @endif
 </div>
+

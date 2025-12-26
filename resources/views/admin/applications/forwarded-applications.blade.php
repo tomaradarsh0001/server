@@ -557,8 +557,12 @@
                 success: function(response) {
                     console.log(response);
                     if (response.canView) {
-                        window.location.href = "{{ url('applications') }}" + '/' + applicationId + '?type=' +
-                            type;
+                        // window.location.href = "{{ url('applications') }}" + '/' + applicationId + '?type=' +
+                        //     type;
+
+                         const baseUrl = @json(route('applications.view', ['id' => '__ID__']));
+                        const finalUrl = baseUrl.replace('__ID__', applicationId) + '?type=' + encodeURIComponent(type);
+                        window.location.href = finalUrl;
                         spinnerOverlay.style.display = 'none';
                     } else {
                         showError(response.message);

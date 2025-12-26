@@ -45,12 +45,7 @@
                                                     <td>{{ ++$counter }}.</td>
                                                     <td>
                                                         <span class="doc-name">
-                                                        {{ $ud['title'] }} 
-                                                        @if(!isset($downloading))
-                                                        <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger">
-                                                            <i class="fa-solid fa-file-pdf ml-2"></i>
-                                                        </a>
-                                                        @endif
+                                                        {{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a>
                                                         </span>
 
 
@@ -128,11 +123,9 @@
 
                                                         @if($ud['office_file_path'])
                                                             <div class="doc-cdv">
-                                                                @if(!isset($downloading))
                                                                 <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name">
                                                                     <i class="fa-solid fa-file-pdf"></i>
                                                                 </a>
-                                                                @endif
                                                             </div>
                                                         @endif
                                                         </div>
@@ -167,10 +160,7 @@
                                                     <td>{{ ++$counter }}.</td>
                                                     <td>
                                                         <span class="doc-name">
-                                                        {{ $ud['title'] }} 
-                                                        @if(!isset($downloading))
-                                                        <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a>
-                                                        @endif
+                                                        {{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a>
                                                         </span>
 
                                                         @if($ud->documentKeys->count()> 0)
@@ -246,11 +236,9 @@
 
                                                         @if($ud['office_file_path'])
                                                             <div class="doc-cdv">
-                                                                @if(!isset($downloading))
                                                                 <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name">
                                                                     <i class="fa-solid fa-file-pdf"></i>
                                                                 </a>
-                                                                @endif
                                                             </div>
                                                         @endif
                                                         </div>
@@ -283,10 +271,7 @@
 
 
                                                     <td>
-                                                        <span class="doc-name">{{ $ud['title'] }} 
-                                                            @if(!isset($downloading))
-                                                                <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a>
-                                                            @endif</span>
+                                                        <span class="doc-name">{{ $ud['title'] }} <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}" target="_blank" class="text-danger"><i class="fa-solid fa-file-pdf ml-2"></i></a></span>
                                                         @if($ud->documentKeys->count()> 0)
                                                         <div class="required-doc">
                                                             <ul class="required-list">               
@@ -360,11 +345,9 @@
 
                                                         @if($ud['office_file_path'])
                                                             <div class="doc-cdv">
-                                                                @if(!isset($downloading))
                                                                 <a href="{{ asset('storage/' . $ud['office_file_path'] ?? '') }}" target="_blank" class="text-danger uploaded-doc-name">
                                                                     <i class="fa-solid fa-file-pdf"></i>
                                                                 </a>
-                                                                @endif
                                                             </div>
                                                         @endif
                                                         </div>
@@ -385,7 +368,7 @@
 
                                                 <tr>
                                                     <td colspan="5" class="document-type-row">
-                                                        <h4 class="doc-type-title">Additional Documents By CDV</h4>
+                                                        <h4 class="doc-type-title">Additional Documents By Section</h4>
                                                     </td>
                                                 </tr>
                                                     @php
@@ -895,7 +878,7 @@
 
                                                 <tr>
                                                     <td colspan="5" class="document-type-row">
-                                                        <h4 class="doc-type-title">Additional Documents By CDV</h4>
+                                                        <h4 class="doc-type-title">Additional Documents By Section</h4>
                                                     </td>
                                                 </tr>
                                                     @php

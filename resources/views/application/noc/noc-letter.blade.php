@@ -21,7 +21,7 @@
             position: relative;
         }
 
-        /* body::before {
+        body::before {
             content: "";
             position: absolute;
             width: 200%;
@@ -29,7 +29,20 @@
             top: -50%;
             left: -50%;
             z-index: -99;
-            background: url(assets/images/water-mark-emblem.png) center center no-repeat;
+            background: url("{{ public_path('assets/images/water-mark-emblem.png') }}") center center no-repeat;
+            opacity: 0.1;
+        }
+
+        /* body::after {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            z-index: -9;
+            background: url(assets/images/water-mark.png) 0 0 repeat;
+            transform: rotate(-30deg);
             opacity: 0.1;
         } */
         .watermark{
@@ -42,19 +55,6 @@
             transform: rotate(-30deg);
             opacity: 0.1;
             z-index: -99;
-        }
-
-        body::after {
-            content: "";
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            z-index: -9;
-            background: url(assets/images/water-mark.png) 0 0 repeat;
-            transform: rotate(-30deg);
-            opacity: 0.3;
         }
 
         .emblem-div {
@@ -130,7 +130,7 @@
         .bold{
             font-weight: bold;
         }
-        .hidden-table,
+         .hidden-table,
         .hidden-table th,
         .hidden-table td{
             border:0;
@@ -153,27 +153,31 @@
 
 <body>
     <div class="watermark"></div>
-
+    <!-- Login 8 section start -->
     <div class="content-wrap">
+
         <table class="hidden-table">
             <tr>
                 <td style="width: 100px;"></td>
                 <td>
                     <div class="emblem-div">
-                        <img src="assets/images/emblem.jpg" width="60" alt="Emblem" class="emblem">
+                        <img src="{{ public_path('assets/images/emblem.jpg') }}" width="40" alt="Emblem" class="emblem">
                     </div>
 
                     <!-- Main Title -->
-                     <h1 class="title-main">Government of India</h1>
-                     <h1 class="title-main">Ministry of Housing and Urban Affairs</h1>                    
-                     <h1 class="title-main">Land And Development Office</h1>
+                    <!-- <h1 class="title-main">Land And Development Office</h1>
+                    <h2 class="title-sub">Ministry of Housing and Urban Affairs</h2>
+                    <h2 class="title-sub">Government of India</h2> -->
+                    <h1 class="title-main">Government of India</h1>
+                    <h1 class="title-main">Ministry of Housing and Urban Affairs</h1>                    
+                    <h1 class="title-main">Land And Development Office</h1>
                 </td>
                 <!-- <td style="text-align: right;width: 100px;"><img src="assets/images/ldo_mohua_qr.png" width="100" alt="Emblem" class="emblem"></td> -->
                 <td><img src="qrcode/{{$filename}}" alt="QR Code" width="100" height="100"></td>
             </tr>
         </table>
          <div class="part-title">
-            NOC
+            {{$noticeData['showUploadSignedLetter'] == 1 ? 'NOC': 'DRAFT  NOC'}} 
         </div>
 
         <!-- Membership Details Table -->
@@ -183,7 +187,7 @@
                 <td style="width:50%"><b>Dated: {{$noticeData['date']}}</b></td>
             </tr>
             <tr>
-                <td style="width:50%"><b>Property ID:  {{$noticeData['propertyId']}}</b></td>
+                <td style="width:50%"><b>Property ID:  {{$noticeData['propertyId']}} ({{$noticeData['newPropertyId']}})</b></td>
                 <td style="width:50%"><b>Application ID: {{$noticeData['applicationNo']}}</b></td>
             </tr>
         </table>
@@ -218,7 +222,7 @@
                 </div>
             </div> -->
             <p class="uppercase fs18 bold" style="margin: 0px; text-align:right">({{$noticeData['deputyUserName']}})</p>
-            <p style="margin: 0px;text-align:right" class="bold fs16">Deputy Land & Development Office</p>            
+            <p style="margin: 0px;text-align:right" class="bold fs16">Deputy Land & Development Officer</p>            
         </div>
         <!-- for signature of admin by swati on 29052025 -->
         <!-- Undersignee Section -->

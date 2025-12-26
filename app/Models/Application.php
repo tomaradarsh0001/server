@@ -25,10 +25,8 @@ class Application extends Model
     {
         return $this->hasOne(ApplicationStatus::class, 'reg_app_no', 'application_no');
     }
-
-    public function serviceTypeItem()
+       public function serviceTypeItem()
     {
         return $this->belongsTo(Item::class, 'service_type', 'id');
     }
-
 }

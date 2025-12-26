@@ -53,7 +53,6 @@
         /* Ensure it covers other content */
     }
 
-    /* commented and adeed by anil for replace the new loader on 24-07-2025  */
     /* .spinner {
         border: 8px solid rgba(255, 255, 255, 0.3);
         border-radius: 50%;
@@ -98,7 +97,7 @@
         75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
         100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
     }
-    /* commented and adeed by anil for replace the new loader on 24-07-2025  */
+    /* commented and adeed by anil for replace the new loader on 08-08-2025  */
 
     /* for offic activity By Diwakar */
     div.dt-buttons {
@@ -157,7 +156,7 @@
 
 <!--breadcrumb-->
 <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">APPLICATION</div>
+    <div class="breadcrumb-title pe-3">Application</div>
     <div class="ps-3">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0 p-0">
@@ -269,7 +268,7 @@
             <div class="container-fluid">
                 <div class="row g-2">
                     <div class="col-lg-12">
-                        <p>Property Documents Not Available</p>
+                        <p>Documents Not Available.</p>
                     </div>
                 </div>
             </div>
@@ -279,7 +278,8 @@
 </div>
 
 @include('include.alerts.ajax-alert')
-<!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+
+<!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
 <!-- <div id="spinnerOverlay" style="display:none;">
     <img src="{{ asset('assets/images/chatbot_icongif.gif') }}">
 </div> -->
@@ -287,7 +287,7 @@
     <span class="loader"></span>
     <h1 style="color: white;font-size: 20px; margin-top:10px;">Loading... Please wait</h1>
 </div>
-<!-- commented and adeed by anil for replace the new loader on 01-08-2025  -->
+<!-- commented and adeed by anil for replace the new loader on 08-08-2025  -->
 
 <!-- Modal -->
 <div class="modal fade" id="remarkScrollableModal" tabindex="-1" aria-hidden="true">

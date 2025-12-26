@@ -6,10 +6,8 @@
                     <table class="table table-striped text-center" id="area-wise-details">
                         <thead>
                             <tr>
-                               <th>Area (Sqm)</th>
+                                <th>Area (Sqm)</th>
                                 <th>No. of Properties</th>
-                                <th>No. of Lease Hold Properties</th>
-                                <th>No. of Free Hold Properties</th>
                                 <th>Area of Properties</th>
                             </tr>
                         </thead>

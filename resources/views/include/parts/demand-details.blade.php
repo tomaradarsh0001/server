@@ -68,8 +68,7 @@
                 <input type="hidden" name="subhead_id[{{$i}}]" value="{{$detail->id}}">
                 <tr>
                     <td>{{$loop->iteration}}</td>
-                    <td>{{$detail->subhead_name.($detail->subhead_code == "DEM_MANUAL" ? '('. ($detail->subhead_keys['manual_title'] ??'No description').')' : '')}}</td>
-                    {{-- <td>{{$detail->subhead_code. '--'. json_encode($detail->subhead_keys)}}</td> --}}
+                    <td>{{$detail->subhead_name}}</td>
                     <td>₹{{customNumFormat($detail->net_total)}}</td>
                     <td>₹{{customNumFormat($detail->paid_amount ?? 0)}}</td>
                     @php

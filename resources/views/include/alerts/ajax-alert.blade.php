@@ -65,7 +65,7 @@
         }, 5000); */
         var displaySettings = {
             text: message,
-            duration: 1500,
+            duration: 3000,
             newWindow: true,
             close: true,
             gravity: "top", // `top` or `bottom`
@@ -88,7 +88,7 @@
 
         //manually redirect on hide toast
         console.log(redirectTo);
-
+        
         if (redirectTo) {
             setTimeout(() => {
                 window.location.href = redirectTo; // Reload or redirect after toast duration

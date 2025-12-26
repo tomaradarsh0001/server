@@ -7,16 +7,16 @@ use App\Models\SplitedPropertyDetail;
 use Illuminate\Support\Facades\Log;
 use App\Models\ApplicationCharge;
 use App\Models\Configuration;
-use App\Models\Country;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Template;
-use Illuminate\Support\Facades\DB;
 use App\Models\Section;
 use App\Models\ApplicationMovement;
 use App\Models\Payment;
+use App\Models\Application;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\PaymentService;
 
 if (!function_exists('customNumFormat')) {
     function customNumFormat($num)
@@ -66,7 +66,34 @@ if (!function_exists('dateDiffInYears')) {
         return $interval->y;
     }
 }
+if (!function_exists('getLoggedInUserSections')) {
+    function getLoggedInUserSections()
+    {
+        $user = Auth::user();
+        $sections = $user->sections->pluck('id')->toArray();
+        return $sections;
+    }
+}
 
+
+if (!function_exists('getApplicationTypeByApplicationNo')) {
+    function getApplicationTypeByApplicationNo($applicationNo)
+    {
+        $application = Application::where('application_no', $applicationNo)->first();
+        if ($application->service_type == getServiceType('SUB_MUT')) {
+            $applicationType = 'Mutation';
+        } else if ($application->service_type == getServiceType('DOA')) {
+            $applicationType = 'Deed Of Apartment';
+        } else if ($application->service_type == getServiceType('CONVERSION')) {
+            $applicationType = 'Conversion';
+        } else if ($application->service_type == getServiceType('LUC')) {
+            $applicationType = 'LUC';
+        } else if ($application->service_type == getServiceType('NOC')) {
+            $applicationType = 'NOC';
+        }
+        return $applicationType;
+    }
+}
 if (!function_exists('getServiceType')) {
     function getServiceType($code)
     {
@@ -200,6 +227,9 @@ if (!function_exists('getKnownAsThroughPlot')) {
         return array_unique($knownAs);
     }
 }
+
+
+
 if (!function_exists('getStatusDetailsById')) {
     function getStatusDetailsById($id)
     {
@@ -237,34 +267,6 @@ if (!function_exists('getItemsByGroupId')) {
         return Item::where('group_id', $id)->where('is_active', 1)->orderBy('item_order')->get();
     }
 }
-
-/** function added by Nitin */
-/*if (!function_exists('getApplicationStatusList')) {
-    function getApplicationStatusList($withDisposed = false, $removeDisposedStatusesFromList = false)
-    {
-        $applicationStatusList = getItemsByGroupId(1031);
-        if ($withDisposed) {
-            //remove aproved and rejected status
-            if ($removeDisposedStatusesFromList) {
-                $applicationStatusList = $applicationStatusList->whereNotIn('item_code', ['APP_APR', 'APP_REJ', 'APP_WD']); // APP_WD added as withrawn applications are not need to show to official
-            }
-
-            // Manually create a new Item model instance for "Disposed"
-            $disposedStatus = new Item();
-            $disposedStatus->item_code = 'APP_DES';
-            $disposedStatus->id = 0;
-            $disposedStatus->item_name = 'Disposed';
-            $disposedStatus->item_order = 4;
-
-            // Append the new model instance to the existing collection
-            $applicationStatusList = $applicationStatusList->push($disposedStatus);
-        }
-        return $applicationStatusList->sortBy('item_order')  // use sort by to get in ascending item order
-            ->values();  // Reset the keys again after push
-    }
-}*/
-
-// Comment above code To Get status option for Received & Disposed Application - Lalit tiwari (27/02/2025)
 if (!function_exists('getApplicationStatusList')) {
     function getApplicationStatusList($withDisposed = false, $removeDisposedStatusesFromList = false)
     {
@@ -276,6 +278,7 @@ if (!function_exists('getApplicationStatusList')) {
             } else {
                 $applicationStatusList = $applicationStatusList->whereIn('item_code', ['APP_APR', 'APP_REJ']); // Show only Approved & Reject
             }
+
             // Manually create a new Item model instance for "Disposed"
             $disposedStatus = new Item();
             $disposedStatus->item_code = 'APP_DES';
@@ -287,8 +290,8 @@ if (!function_exists('getApplicationStatusList')) {
             // Append the new model instance to the existing collection
             $applicationStatusList = $applicationStatusList->push($disposedStatus);
         }
-        $values = $applicationStatusList->sortBy('item_order')->values();
-        return $values;  // Reset the keys again after push
+        return $applicationStatusList->sortBy('item_order')  // use sort by to get in ascending item order
+            ->values();  // Reset the keys again after push
     }
 }
 
@@ -304,7 +307,105 @@ if (!function_exists('getApplicationTypeList')) {
     }
 }
 
+/** function added by Nitin */
+// if (!function_exists('getApplicationStatusList')) {
+//     function getApplicationStatusList($withDisposed = false)
+//     {
+//         $applicationStatusList = getItemsByGroupId(1031);
+//         if ($withDisposed) {
+//             //remove aproved and rejected status
+//             $applicationStatusList = $applicationStatusList->whereNotIn('item_code', ['APP_APR', 'APP_REJ', 'APP_WD']); // APP_WD added as withrawn applications are not need to show to official
 
+//             // Manually create a new Item model instance for "Disposed"
+//             $disposedStatus = new Item();
+//             $disposedStatus->item_code = 'APP_DES';
+//             $disposedStatus->item_name = 'Disposed';
+//             $disposedStatus->item_order = 4;
+
+//             // Append the new model instance to the existing collection
+//             $applicationStatusList = $applicationStatusList->push($disposedStatus);
+//         }
+//         return $applicationStatusList->sortBy('item_order')  // use sort by to get in ascending item order
+//             ->values();  // Reset the keys again after push
+//     }
+// }
+// //SwatiMishra Create and Update OTP functions 14-11-2024 Start
+
+// if (!function_exists('createOtp')) {
+//     function createOtp($type, $value, $serviceType, $action, $countryCode = null, CommunicationService $communicationService = null)
+//     {
+//         $generateOtp = app(GeneralFunctions::class)->generateUniqueRandomNumber(4);
+//         $otpData = [
+//             'service_type' => getServiceType($serviceType),
+//             "{$type}" => $value,
+//             "{$type}_otp" => $generateOtp,
+//             "{$type}_otp_sent_at" => now(),
+//         ];
+
+//         if ($type === 'mobile' /* && $countryCode */) {
+//             $otpData['country_code'] = $countryCode; // Include country code
+//         }
+
+//         $otp = Otp::create($otpData); 
+
+//         Log::info("OTP generated: " . $generateOtp);
+
+//         // Prepare data for sending the OTP
+//         $data = ['otp' => $generateOtp];
+
+//         // Use CommunicationService instance, or get it from the app container if not provided
+//         $communicationService = $communicationService ?? app(CommunicationService::class);
+
+//         // Handle sending OTP based on type
+//         if ($type === 'mobile') {
+//             $communicationService->sendSmsMessage($data, $value, $action);
+//             $communicationService->sendWhatsAppMessage($data, $value, $action);
+//         } elseif ($type === 'email') {
+//             app(SettingsService::class)->applyMailSettings($action); // Access SettingsService via app()
+//             Mail::to($value)->send(new CommonMail($data, $action));
+//         }
+
+//         return response()->json(['success' => true, 'message' => "OTP sent to {$type} " . $value . " successfully"]);
+//     }
+// }
+
+// if (!function_exists('updateOtp')) {
+//     function updateOtp($otpRecord, $type, $value, $action, $countryCode = null, CommunicationService $communicationService = null)
+//     {
+//         $generateOtp = app(GeneralFunctions::class)->generateUniqueRandomNumber(4);
+
+//         if ($type === 'mobile') {
+//             $otpRecord->country_code = $countryCode; // Update country code
+//             $otpRecord->mobile = $value;
+//             $otpRecord->mobile_otp = $generateOtp;
+//             $otpRecord->mobile_otp_sent_at = now();
+
+//         } else {
+//             $otpRecord->email = $value;
+//             $otpRecord->email_otp = $generateOtp;
+//             $otpRecord->email_otp_sent_at = now();
+//         }
+
+//         $otpRecord->save();
+
+//         Log::info("OTP updated: " . $generateOtp);
+
+//         $data = ['otp' => $generateOtp];
+//         $communicationService = $communicationService ?? app(CommunicationService::class);
+
+//         if ($type === 'mobile') {
+//             $communicationService->sendSmsMessage($data, $value, $action);
+//             $communicationService->sendWhatsAppMessage($data, $value, $action);
+//         } elseif ($type === 'email') {
+//             app(SettingsService::class)->applyMailSettings($action);
+//             Mail::to($value)->send(new CommonMail($data, $action));
+//         }
+
+//         return response()->json(['success' => true, 'message' => "OTP sent to {$type} " . $value . " successfully"]);
+//     }
+
+// }
+//SwatiMishra Create and Update OTP functions 14-11-2024 End
 
 if (!function_exists('getApplicationCharge')) {
     function getApplicationCharge($serviceType)
@@ -374,6 +475,25 @@ if (!function_exists('getUserRoleName')) {
     }
 }
 
+if (!function_exists('getUserAssignedSections')) {
+    function getUserAssignedSections()
+    {
+        $user = Auth::user();
+        $filterUserSections = $user->hasAnyRole('section-officer', 'deputy-lndo', 'super-admin', 'minister', 'lndo');
+        $userSectionIdList = $user->sections->where('has_property', 1)->pluck('id')->toArray();
+        return [$filterUserSections, $userSectionIdList];
+    }
+}
+
+if (!function_exists('getAssignedSections')) {
+    function getAssignedSections()
+    {
+        $user = Auth::user();
+        // return  $user->sections->where('has_property', 1);
+        return $user->sections()->where('has_property', 1)->orderBy('name')->get();
+    }
+}
+
 if (!function_exists('checkTemplateExists')) {
     function checkTemplateExists($type, $action)
     {
@@ -381,9 +501,26 @@ if (!function_exists('checkTemplateExists')) {
         if ($template) {
             return $template->id;
         } else {
-            Log::info("Template not available for Type :" . $type . " and Action: " . $action);
+            Log::info("Template not available for Type :" . $type . " and Action" . $action);
             return false;
         }
+    }
+}
+
+//This function is created to get the count of colonies in which MIS has been completed --Amita [15-01-2025]
+if (!function_exists('getMisDoneColoniesCount')) {
+    function getMisDoneColoniesCount()
+    {
+        $count_of_colonies = PropertyMaster::distinct('new_colony_name')->count('new_colony_name');
+       return $count_of_colonies ?? 0;
+    }
+}
+if (!function_exists('getAddressDropdownData')) {
+    function getAddressDropdownData()
+    {
+        $countries = DB::table('countries')->get();
+        $states = DB::table('states')->where('country_id', 101)->get();
+        return ['countries' => $countries, 'states' => $states];
     }
 }
 
@@ -397,78 +534,13 @@ if (!function_exists('getFinancialYear')) {
     }
 }
 
-if (!function_exists('getLoggedInUserSections')) {
-    function getLoggedInUserSections()
-    {
-        $user = Auth::user();
-        $sections = $user->sections->pluck('id')->toArray();
-        return $sections;
-    }
-}
-
-
-//This function is created to get the count of colonies in which MIS has been completed --Amita [15-01-2025]
-if (!function_exists('getMisDoneColoniesCount')) {
-    function getMisDoneColoniesCount()
-    {
-        $count_of_colonies = PropertyMaster::distinct('new_colony_name')->count('new_colony_name');
-        return $count_of_colonies ?? 0;
-    }
-}
-
-/*Created this function to break the lessees name in rows if string has more than two names 
-* We'll use this function in table view where we are going to show the lessee name. 
-* Reason to create this function is, it is increasing the width of the of column showing lessee name -- Amita Srivastava [15-01-2025]
-*/
-if (!function_exists('breakStringOfLesseeNameAfterTwoCommas')) {
-    function breakStringOfLesseeNameAfterTwoCommas($inputString)
-    {
-        $outputString = NULL;
-        // Check if the string has more than two commas
-        if (substr_count($inputString, ',') >= 2) {
-            // Split the string into an array using the commas
-            $parts = explode(',', $inputString);
-            $result = [];
-            // Group parts in chunks of two and add them to the result array
-            foreach (array_chunk($parts, 2) as $chunk) {
-                $result[] = implode(',', $chunk);
-            }
-
-            // Join the chunks with a new line
-            $outputString = implode(PHP_EOL, $result);
-        }
-        // If there are two or fewer commas, return the original string
-        return $outputString !== NULL ? $outputString : $inputString;
-    }
-}
-
-if (!function_exists('getAddressDropdownData')) {
-    function getAddressDropdownData()
-    {
-        $countries = DB::table('countries')->get();
-        $states = DB::table('states')->where('country_id', 101)->orderBy('name')->get();
-        return ['countries' => $countries, 'states' => $states];
-    }
-}
-/** this function is added by nitin to get assigned sections of logged in user - on 25-02-2025 */
-if (!function_exists('getUserAssignedSections')) {
-    function getUserAssignedSections()
-    {
-        $user = Auth::user();
-        $filterUserSections = $user->hasAnyRole('section-officer', 'deputy-lndo');
-        // $userSectionIdList = $user->sections->pluck('id')->toArray();
-        $userSectionIdList = $user->sections->where('has_property', 1)->pluck('id')->toArray();
-        return [$filterUserSections, $userSectionIdList];
-    }
-}
 
 /** this function is added by Swati to get lease and property sections- 20-03-2025 */
 if (!function_exists('getRequiredSections')) {
     function getRequiredSections()
     {
         $requiredSections = ['LS1', 'LS2A', 'LS2B', 'LS3', 'LS4', 'LS5', 'PS1', 'PS2', 'PS3', 'RPC'];
-        // return Section::whereIn('section_code', $requiredSections)->get();
-        return Section::whereIn('section_code', $requiredSections)->where('has_property', 1)->get();
+        return Section::whereIn('section_code', $requiredSections)->get();
     }
 }
 
@@ -480,7 +552,6 @@ if (!function_exists('isValidDate')) {
         return $d && $d->format($format) === $date;
     }
 }
-
 /** this function is added by nitin return the property status of a property - 26-03-2025 */
 if (!function_exists('getProperyStatusFromOldPropetyId')) {
     function getProperyStatusFromOldPropetyId($oldPropertyId)
@@ -497,51 +568,46 @@ if (!function_exists('getProperyStatusFromOldPropetyId')) {
         return $property_status;
     }
 }
-/** this function is added by nitin - 23-04-2025 */
-if (!function_exists('camelToTitle')) {
-    function camelToTitle($string)
-    {
-        return  ucwords(preg_replace('/([a-z])([A-Z])/', '$1 $2', $string));
-    }
-}
 
 
 //For checking is user can view the application - SOURAV CHAUHAN 01-05-2025
-if (!function_exists('isOfficeViewTheApplication')) {
+if(!function_exists('isOfficeViewTheApplication')){
     function isOfficeViewTheApplication($applicationNo)
     {
 
         $authuser = Auth::user();
         $userId = $authuser->id;
-        $allMovements = ApplicationMovement::where('service_type', '!=', 1370)->orderBy('created_at', 'desc')
-            ->get();
+        $allMovements = ApplicationMovement::whereNotIn('service_type',[1478,1479])->orderBy('created_at', 'desc')
+        ->get();
         $latestMovements = $allMovements->unique('application_no');
+        // dd($latestMovements);
         $userAssigned = $latestMovements->where('assigned_to', $userId);
-
         $canView = false;
         $currentApplicationDate = null;
 
         foreach ($userAssigned as $movement) {
             if ($movement->application_no == $applicationNo) {
                 $currentApplicationDate = $movement->created_at;
-                break;
-            }
+                break; 
+            } 
         }
+
 
         $otherApplicationDate = null;
         $currentApplicationNo = null;
         $currentActionableApplicationNo = null;
-        if (count($userAssigned) > 1) {
+        if(count($userAssigned) > 1){
             foreach ($userAssigned as $movement) {
                 if ($movement->application_no != $applicationNo) {
                     $otherApplicationDate = $movement->created_at;
                     $currentApplicationNo = $movement->application_no;
-                }
-                if ($currentApplicationDate < $otherApplicationDate) {
+                } 
+                if($currentApplicationDate < $otherApplicationDate){
                     $canView =  true;
                 } else {
                     $canView =  false;
                     $currentActionableApplicationNo = $currentApplicationNo;
+
                 }
             }
         } else {
@@ -558,17 +624,17 @@ if (!function_exists('isOfficeViewTheApplication')) {
 }
 
 
-if (!function_exists('userCurrentActionableApplication')) {
+if(!function_exists('userCurrentActionableApplication')){
     function userCurrentActionableApplication()
     {
 
         $authuser = Auth::user();
         $userId = $authuser->id;
-        $allMovements = ApplicationMovement::where('service_type', '!=', 1370)->orderBy('created_at', 'desc')->get();
+        $allMovements = ApplicationMovement::where('service_type','!=',1479)->orderBy('created_at', 'desc')->get();
         $latestMovements = $allMovements->unique('application_no');
         $userAssigned = $latestMovements->where('assigned_to', $userId);
         $latestAssigned = $userAssigned->sortBy('created_at')->first();
-        if (is_null($latestAssigned)) {
+        if(is_null($latestAssigned)){
             return null;
         }
         return $latestAssigned['application_no'];
@@ -577,11 +643,9 @@ if (!function_exists('userCurrentActionableApplication')) {
 if (!function_exists('decryptString')) {
     function decryptString($str)
     {
-        // dd($str);
         if (strlen($str) == 0)
             return $str;
-        // Check for valid Base64 encoding
-        $decoded = base64_decode($str, true);
+         $decoded = base64_decode($str, true);
         if ($decoded === false || strlen($decoded) < 16) {
             return $str; // not encrypted (too short or invalid base64)
         }
@@ -597,7 +661,6 @@ if (!function_exists('decryptString')) {
         return $decrypted;
     }
 }
-
 //Payment reciept function added by Swati Mishra on 14-07-2025
 
 if (!function_exists('downloadPaymentReceiptPdf')) {
@@ -742,46 +805,67 @@ if (!function_exists('convertNumberToWords')) {
 
         return $string;
     }
+
 }
+if (!function_exists('checkUpdatedPaymentStatus')) {
+     function checkUpdatedPaymentStatus($paymentId)
+        {
+
+            $payment = Payment::find($paymentId);
+            $orderId = $payment->unique_payment_id;
+            $purposeId = '15777';
+            // $url = "http://164.100.129.32/bharatkosh/getstatus";
+            $url = config('constants.paymentStatusURL');
+            $data = array("OrderId" => $orderId, "PurposeId" => $purposeId);
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            if (curl_errno($ch)) {
+                echo 'Curl error: ' . curl_error($ch);
+            } else {
+                $curl_output = trim(curl_exec($ch), '"');
+                $apiResponse = explode('|', $curl_output);
+                // dd($apiResponse);
+                curl_close($ch);
+                if (count($apiResponse) > 1) {
+                    list($orderId, $orderStatus, $transactionId) = $apiResponse;
+                    // dd($orderId, $orderStatus, $transactionId);
+                    if (strtoupper($orderStatus) == "SUCCESS") {
+                        $paymentData = Payment::where('unique_payment_id', $orderId)->first();
+                        if (!empty($paymentData)) {
+                            $paymentService = new PaymentService();
+                            $paymentService->processSuccessfulPayment($paymentData);
+                        }
+                    } else {
+                    }
+                } else {
+                    dd($curl_output, $apiResponse);
+                    /* print_r($response_api);
+                    echo "</pre>"; */
+                }
+            }
+        }
+    }
+
+
 function convertToIndianCurrencyWords($number)
 {
     $no = floor($number);
     $point = round($number - $no, 2) * 100;
 
     $words = [
-        '',
-        'One',
-        'Two',
-        'Three',
-        'Four',
-        'Five',
-        'Six',
-        'Seven',
-        'Eight',
-        'Nine',
-        'Ten',
-        'Eleven',
-        'Twelve',
-        'Thirteen',
-        'Fourteen',
-        'Fifteen',
-        'Sixteen',
-        'Seventeen',
-        'Eighteen',
-        'Nineteen'
+        '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six',
+        'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve',
+        'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen',
+        'Eighteen', 'Nineteen'
     ];
 
     $tens = [
-        '',
-        '',
-        'Twenty',
-        'Thirty',
-        'Forty',
-        'Fifty',
-        'Sixty',
-        'Seventy',
-        'Eighty',
-        'Ninety'
+        '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty',
+        'Sixty', 'Seventy', 'Eighty', 'Ninety'
     ];
 
     $digits = ['', 'Thousand', 'Lakh', 'Crore'];
@@ -840,9 +924,19 @@ function convertToIndianCurrencyWords($number)
 
     return $result . ' Only';
 }
-if (!function_exists('sqmToSqyard')) {
-    function sqmToSqyard($sqm)
+
+if (!function_exists('sqmToSqyard'))
+{
+function sqmToSqyard($sqm) {
+    return $sqm * 1.19599;
+}
+}
+
+/** this function is added by nitin - 23-04-2025 */
+if (!function_exists('camelToTitle')) {
+    function camelToTitle($string)
     {
-        return $sqm * 1.19599;
+        return  ucwords(preg_replace('/([a-z])([A-Z])/', '$1 $2', $string));
     }
 }
+

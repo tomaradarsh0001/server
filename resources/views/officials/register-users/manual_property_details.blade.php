@@ -36,7 +36,7 @@
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                     </li>
                     <li class="breadcrumb-item">Registration</li>
                     <li class="breadcrumb-item active" aria-current="page">Applicant Details</li>
@@ -135,7 +135,7 @@
                                         <tr>
                                             <th>Mobile:</th>
                                             <td>({{ '+ ' . $data['details']->country_code ?? 'Not Available' }})
-                                                {{ $data['details']->mobile /* ? substr($data['details']->mobile, 0, 3) . str_repeat('*', 4) . substr($data['details']->mobile, -3) : '' */ }}
+                                                {{ $data['details']->mobile /*? substr($data['details']->mobile, 0, 3) . str_repeat('*', 4) . substr($data['details']->mobile, -3) : ''*/ }}
                                             </td>
                                             <th>Email:</th>
                                             <td>
@@ -143,10 +143,10 @@
                                                     if ($data['details']->email) {
                                                         $useremail = $data['details']->email;
                                                         $position = strpos($useremail, '@');
-                                                        $email = $useremail;
-                                                            /* substr($useremail, 0, 2) .
+                                                        $email = $useremail /*
+                                                            substr($useremail, 0, 2) .
                                                             str_repeat('*', $position - 2) .
-                                                            substr($useremail, $position) */;
+                                                            substr($useremail, $position)*/;
                                                     } else {
                                                         $email = '';
                                                     }
@@ -158,27 +158,51 @@
                                         <tr>
                                             <th>{{ $data['details']->prefix ?? '' }} :</th>
                                             <td>{{ $data['details']->second_name ?? '' }}</td>
-                                            @php
-                                                $pan = $data['details']->pan_number ?? '';
-                                                $pan = preg_match('/[a-zA-Z]/', $pan) ? decryptString($pan) : $pan;
-                                            @endphp
-                                            <th>PAN:</th>
-                                            <td><?= $pan /* ? str_repeat('&bull;', 5) . substr($pan, -5) : '' */ ?>
-                                            </td>
+                                            @if ($data['details']->isIndian && $data['details']->isIndian == 1)
+                                                @php
+                                                    $pan = $data['details']->pan_number ?? '';
+                                                    $pan = preg_match('/[a-zA-Z]/', $pan) ? decryptString($pan) : $pan;
+                                                @endphp
+                                                <th>PAN:</th>
+                                                <td><?= $pan/* ? str_repeat('&bull;', 5) . substr($pan, -5) : ''*/ ?>
+                                                </td>
+                                            @else
+                                                <th>Document Type :</th>
+                                                <td>
+                                                    @if ($data['details']->documentType && $data['details']->documentType === 'pion')
+                                                        Person of Indian Origin Number
+                                                    @elseif ($data['details']->documentType && $data['details']->documentType === 'ocin')
+                                                        Overseas Citizen of India Number
+                                                    @else
+                                                        Passport Number
+                                                    @endif
+                                                </td>
+                                            @endif
+                                            
 
                                         </tr>
                                         <tr>
-                                            @php
-                                                $adhar = $data['details']->aadhar_number ?? '';
-                                                $adhar = preg_match('/[a-zA-Z]/', $adhar)
-                                                    ? decryptString($adhar)
-                                                    : $adhar;
-                                            @endphp
-                                            <th>Aadhar:</th>
-                                            <td> <?= $adhar
-                                                /* ? substr($adhar, 0, 4) . str_repeat('&bull;', 4) . substr($adhar, -4)
-                                                : '' */ ?>
-                                            </td>
+                                            @if ($data['details']->isIndian && $data['details']->isIndian == 1)
+                                                @php
+                                                    $adhar = $data['details']->aadhar_number ?? '';
+                                                    $adhar = preg_match('/[a-zA-Z]/', $adhar)
+                                                        ? decryptString($adhar)
+                                                        : $adhar;
+                                                @endphp
+                                                <th>Aadhar:</th>
+                                                <td> <?= $adhar
+                                                    /*? substr($adhar, 0, 4) . str_repeat('&bull;', 4) . substr($adhar, -4)
+                                                    : '' */?>
+                                                </td>
+                                            @else
+                                                <th>Document Type Number:</th>
+                                                @php
+                                                    $documentTypeNumber = $data['details']->documentTypeNumber ?? '';
+                                                @endphp
+                                                <td> {{ decryptString($documentTypeNumber) }}
+                                                </td>
+                                            @endif
+                                            
                                             <th>Address:</th>
                                             <td>{{ $data['details']->comm_address ?? '' }}</td>
                                         </tr>
@@ -266,7 +290,7 @@
                                             <td>{{ $data['details']->name ?? '' }}</td>
                                             <th>Mobile:</th>
                                             <td>({{ '+ ' . $data['details']->country_code ?? 'Not Available' }})
-                                                {{ $data['details']->mobile /* ? substr($data['details']->mobile, 0, 3) . str_repeat('*', 4) . substr($data['details']->mobile, -3) : '' */ }}
+                                                {{ $data['details']->mobile /*? substr($data['details']->mobile, 0, 3) . str_repeat('*', 4) . substr($data['details']->mobile, -3) : ''*/ }}
                                             </td>
 
                                         </tr>
@@ -279,10 +303,10 @@
                                                     if ($data['details']->email) {
                                                         $useremail = $data['details']->email;
                                                         $position = strpos($useremail, '@');
-                                                        $email = $useremail
-                                                           /*  substr($useremail, 0, 2) .
+                                                        $email = $useremail;
+                                                           /* substr($useremail, 0, 2) .
                                                             str_repeat('*', $position - 2) .
-                                                            substr($useremail, $position) */;
+                                                            substr($useremail, $position);*/
                                                     } else {
                                                         $email = '';
                                                     }
@@ -297,8 +321,8 @@
                                             @endphp
                                             <th>Aadhar:</th>
                                             <td> <?= $adhar
-                                                /* ? substr($adhar, 0, 4) . str_repeat('&bull;', 4) . substr($adhar, -4)
-                                                : ''  */?>
+                                               /* ? substr($adhar, 0, 4) . str_repeat('&bull;', 4) . substr($adhar, -4)
+                                                : '' */?>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -325,10 +349,8 @@
                                             $pan = preg_match('/[a-zA-Z]/', $pan) ? decryptString($pan) : $pan;
                                         @endphp
                                     <li><strong>Organization PAN: </strong>
-                                        <?= $pan /* ? str_repeat('&bull;', 5) . substr($pan, -5) : '' */ ?>
+                                        <?= $pan /*? str_repeat('&bull;', 5) . substr($pan, -5) : ''*/ ?>
                                             </li>
-                                    <li><strong>Organization Address: </strong>
-                                        {{ $data['details']->organization_address ?? '' }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -538,16 +560,16 @@
                         </tbody>
                     </table>
                     @if (getStatusDetailsById($data['details']->status ?? '')->item_code != 'RS_REJ')
-                        <div class="float-end">
-                            <a href="{{ route('mis.index', ['rId' => $data['details']->id]) }}"
-                                class="btn btn-primary ml-2" target="_blank">
-                                Create Property
-                            </a>
-                        </div>
-                    @endif
+                    <div class="float-end">
+                        <a href="{{ route('mis.index', ['rId' => $data['details']->id]) }}"
+                            class="btn btn-primary ml-2" target="_blank">
+                            Create Property
+                        </a>
+                    </div>
+                @endif
                 </div>
             </div>
-
+            
         </div>
     </div>
     </div>

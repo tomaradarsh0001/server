@@ -14,7 +14,6 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request): JsonResponse
     {
-       
         $user = User::where('email', $request->email)->first();
         if ($user && $user->status == '1') {
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {

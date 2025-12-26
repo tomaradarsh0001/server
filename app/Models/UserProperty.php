@@ -12,7 +12,6 @@ class UserProperty extends Model
     protected $guarded = [];
     use SoftDeletes; // ✅ Enable Soft Delete
     protected $dates = ['deleted_at']; // ✅ Define the soft delete column
-
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -28,7 +27,7 @@ class UserProperty extends Model
     {
         return $this->hasMany(Document::class, 'property_master_id', 'new_property_id');
     }
-    //Make user properties & flat relationship - Lalit (08/Nov/2024)
+     //Make user properties & flat relationship - Lalit (08/Nov/2024)
     public function flat()
     {
         return $this->belongsTo(Flat::class, 'flat_id', 'id');

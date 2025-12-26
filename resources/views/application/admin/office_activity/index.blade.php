@@ -1,12 +1,74 @@
 <div class="part-title mt-2">
-    <h5>Office Activity</h5>
+    <h5>Action Taken</h5>
 </div>
 <div class="part-details">
     @if ($application->Signed_letter)
     @else
         <div class="container-fluid pb-3">
             <div class="row">
-                <div class="col-lg-8">
+                <!-- For Showing Pending Dues START ******************************************************************************* -->
+                <div class="col-lg-12 mt-4">
+                    <div class="payment-due">
+                        <div class="pending-amount-group">
+                            <div class="pending-wrap">
+                                <h5 class="pending-title">Demand Amount</h5>
+                                <p class="pending-amount">₹ {{ customNumFormat($demandAmount) }}</p>
+                            </div>
+                            <div class="pending-wrap">
+                                <h5 class="pending-title">Paid Amount</h5>
+                                <p class="pending-amount">₹ {{ customNumFormat($paidAmount) }}</p>
+                            </div>
+                            <div class="pending-wrap">
+                                <h5 class="pending-title">Outstanding Dues</h5>
+                                <p class="pending-amount">₹ {{ customNumFormat($pendingAmount) }}</p>
+                            </div>
+                            @if($latestMovement->assigned_to == auth()->id() && $latestMovement->is_forwarded ==2)
+                                <div class="pending-amount-group">
+                                    <h4 class="pending-title">New Demand created. Please approve the demand</h4>
+                                </div>
+                            @endif
+                            <!-- <div class="other-pendings">
+                                <p class="other-pendings-titles">Demand Amount</p>
+                                <p class="other-pending-amount">₹ {{ customNumFormat($demandAmount) }}</p>
+                                <p class="other-pendings-titles">Paid Amount</p>
+                                <p class="other-pending-amount">₹ {{ customNumFormat($paidAmount) }}</p>
+                            </div> -->
+                            {{--<table class="table-bordered">
+                                <thead>
+                                    <tr>
+                                    <th>Payable Amount</th>
+                                    <th>Paid Amount</th>
+                                    <th>Outstanding</th>
+                                    </tr>
+                                </thead>
+                                <tbldy>
+                                    <tr>
+                                    <td>&#8377;{{customnumformat($demandAmount ?? 0)}}</td>
+                                    <td>&#8377;{{customnumformat($paidAmount ?? 0)}}</td>
+                                    <td>&#8377;{{customnumformat($pendingAmount)}}</td>
+                                    </tr>
+                                </tbldy>
+                            </table>--}}
+                        </div>
+                         @if($pendingAmount > 0)
+                            <div class="view-details">
+                                @if(!$isNewDemand)
+                                <div class="text-danger fw-semibold">Old demand is available. Create a new demand on eDharti 2.0 using the Create Demand Button.</div>
+                                @endif
+                            </div>
+                        @endif
+                        
+                        @if($pendingDemands->isNotEmpty())
+                        <div style="text-align:right">
+                            <a target="_blank" href="{{ route('ViewDemand', ['demandId' => $pendingDemands->first()->id ?? 0]) }}">
+                                View Details
+                            </a>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                <!-- For Showing Pending Dues END ******************************************************************************* -->
+                <div class="col-lg-12">
 
                     <!-- For View Scanned files an Go to Poperty Details Button START **************************************************************** -->
                     <div class="mis-view-group-btn">
@@ -38,16 +100,6 @@
                                     class="fas fa-file-pdf"></i>
                             </a>
                         </div>
-                        <!-- added on 06-11-2025 for scanned files -->
-                        @if(auth()->user()->getRoleNames()->first() === 'section-officer')
-                            <div class="btn-group">
-                                <a href="{{ route('property.scanning.create', ['property_id' => $oldPropertyId]) }}"
-                                class="btn btn-success ml-2">
-                                    + Upload Scanned Files
-                                </a>
-                            </div>
-                        @endif
-
                         <div class="btn-group">
                             <a
                                 href="{{ route('viewDetails', ['property' => $propertyMasterId]) }}?params={{ urlencode($additionalDataJson) }}">
@@ -145,29 +197,6 @@
 
                 </div>
 
-                <!-- For Showing Pending Dues START ******************************************************************************* -->
-                <div class="col-lg-4 mt-4">
-                    <div class="payment-due">
-                        <div class="pending-amount-group">
-                            <h4 class="pending-title">Outstanding Dues</h4>
-                            <p class="pending-amount">₹ {{ customNumFormat($pendingAmount) }}</p>
-                        </div>
-                        @if($latestMovement->assigned_to == auth()->id() && $latestMovement->is_forwarded ==2)
-                        <div class="pending-amount-group">
-                            <h4 class="pending-title">New Demand created. Please approve the demand</h4>
-                        </div>
-                        @endif
-                        @if($pendingAmount > 0)
-                           
-                        <div class="view-details">
-                            <a target="_blank" href="{{ route('ViewDemand', ['demandId' => $pendingDemands->first()->id ?? 0]) }}">
-                                View Details
-                            </a>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                <!-- For Showing Pending Dues END ******************************************************************************* -->
 
 
             </div>

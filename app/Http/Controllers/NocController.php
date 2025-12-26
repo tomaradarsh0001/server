@@ -28,12 +28,12 @@ class NocController extends Controller
             'statusofapplicant.required' => 'Please select the applicant status',
             'conveyanceDeedName.required' => 'Executed in favour of is required',
             'conveyanceExecutedOn.required' => 'Executed on is required',
-            'conveyanceRegnoDeed.required' => 'Registration No. is required',
-            'conveyanceBookNoDeed.required' => 'Book No. is required',
-            'conveyanceVolumeNo.required' => 'Volume No. is required',
-            'conveyancePagenoFrom.required' => 'Page No. From is required',
-            'conveyancePagenoTo.required' => 'Page No. To is required',
-            'conveyanceRegDate.required' => 'Registration Date is required',
+            'conveyanceRegnoDeed.required' => 'Registration no. is required',
+            'conveyanceBookNoDeed.required' => 'Book no. is required',
+            'conveyanceVolumeNo.required' => 'Volume no. is required',
+            'conveyancePagenoFrom.required' => 'Page no. From is required',
+            'conveyancePagenoTo.required' => 'Page no. To is required',
+            'conveyanceRegDate.required' => 'Registration date is required',
             // 'conveyanceConAppDate.required' => 'Date of Coversion Application is required',
         ];
 
@@ -52,7 +52,7 @@ class NocController extends Controller
 
         if ($validator->fails()) {
             // Log the error message if validation fails
-            Log::info("| " . Auth::user()->email . " | NOC step first all values not entered: " . json_encode($validator->errors()));
+            Log::info("| " . Auth::user()->email . " | Noc step first all values not entered: " . json_encode($validator->errors()));
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
         }
 
@@ -107,7 +107,7 @@ class NocController extends Controller
             });
         } catch (\Exception $e) {
             Log::info($e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'An error occurred while submitting NOC application.'], 500);
+            return response()->json(['status' => 'error', 'message' => 'An error occurred while submitting noc application'], 500);
         }
     }
 
@@ -126,19 +126,19 @@ class NocController extends Controller
                         $application = TempNoc::where('id', $appNocId)->first();
                         $application->undertaking = $request->agreeConsent;
                         if ($application->save()) {
-                            $tempModelName = config('applicationDocumentType.NOC.TempModelName');
+                            /* $tempModelName = config('applicationDocumentType.NOC.TempModelName');
                             $encodedModelName = base64_encode($tempModelName);
                             $encodedModelId = base64_encode($appNocId);
                             $redirectUrl = route('applicationPayment', [$encodedModelName, $encodedModelId]);
-                            return response()->json(['status' => true, 'url' => $redirectUrl]);
-                            /* $tempModelName = config('applicationDocumentType.NOC.TempModelName');
+                            return response()->json(['status' => true, 'url' => $redirectUrl]); */
+                            $tempModelName = config('applicationDocumentType.NOC.TempModelName');
                             $paymentComplete = GeneralFunctions::paymentComplete($appNocId, $tempModelName);
                             if ($paymentComplete) {
                                 $transactionSuccess = true;
                                 //Convert temp application to final application - Lalit Tiwari (19/March/2025)
                                 GeneralFunctions::convertTempAppToFinal($appNocId, $tempModelName, $paymentComplete);
                                 $response = ['status' => true, 'message' => 'Noc application submitted Successfully'];
-                            } */
+                            }
                         }
                     } else {
                         Log::info("| " . Auth::user()->email . " | Application not available in database");

@@ -5,8 +5,7 @@
     <title>Demand PDF</title>
     <style>
         body {
-            /* font-family: 'DejaVu Sans', sans-serif; */
-            font-family: sans-serif !important;
+            font-family: 'DejaVu Sans', sans-serif;
             margin: 0;
             padding: 0;
             position: relative;
@@ -24,7 +23,7 @@
             opacity: 0.1;
         }
 
-        /* body::after {
+        body::after {
             content: "";
             position: absolute;
             width: 200%;
@@ -35,17 +34,6 @@
             background: url({{ public_path('assets/images/water-mark.png') }}) 0 0 repeat;
             transform: rotate(-30deg);
             opacity: 0.1;
-        } */
-        .watermark{
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url("{{ public_path('assets/images/water-mark.png') }}") repeat;
-            transform: rotate(-30deg);
-            opacity: 0.1;
-            z-index: -99;
         }
 
         .emblem-div {
@@ -103,16 +91,11 @@
         th {
             background-color: #f4f4f4;
         }
-        img {
-            image-rendering: optimizeQuality;
-            -dompdf-image-resolution: 72dpi;
-        }
     </style>
 </head>
 
 <body>
 
-<div class="watermark"></div>
     <!-- Emblem Header -->
     <div class="emblem-div">
         <img src="{{ public_path('assets/images/emblem.png') }}" width="60" alt="Emblem" class="emblem">
@@ -140,7 +123,7 @@
     <!-- Demand Details Table -->
     <div class="part-title">DEMAND DETAILS BREAKUP</div>
 
-    <table> 
+    <table>
         <thead>
             <tr>
                 <th>Subhead Name</th>

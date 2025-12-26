@@ -1,3 +1,19 @@
+@if($application->Signed_letter =="" )
+    @switch($details->service_type->item_code)
+    @case('CONVERSION')
+        <button type="button" class="btn btn-success" onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Generate Finalized Deed</button>
+        @break
+    @case('NOC')
+        <button type="button" class="btn btn-success" onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Generate Finalized NOC</button>
+        @break
+    @case('SUB_MUT')
+        <button type="button" class="btn btn-success" onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Generate Finalized Mutation Letter</button>
+        @break
+    @default
+        <button type="button" class="btn btn-success" onclick="handleApplicationAction('LETTER_GEN','{{ $details->application_no }}',this)">Generate Finalized Letter</button>
+    @endswitch
+@endif
+<br><br>
 <form action="{{ route('uploadSignedLetter') }}" method="POST"
 enctype="multipart/form-data" id="signedLetterForm">
 @csrf

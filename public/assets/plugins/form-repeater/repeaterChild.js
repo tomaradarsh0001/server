@@ -40,7 +40,7 @@ class MultipleDivRepeater {
         <div class="row mb-3">
         <div class="col-12 col-lg-4 my-4">
             <label for="ProcessTransfer"
-                class="form-label">Process of transfer</label>
+                class="form-label">Process of transfer <small class="text-red">*</small></label>
             <select name="land_transfer_type[]" class="form-select processtransfer form-required" data-name="processtransfer"
                 id="ProcessTransfer"
                 aria-label="Type of Lease">
@@ -56,7 +56,7 @@ class MultipleDivRepeater {
         </div>
         <div class="col-12 col-lg-4 my-4">
             <label for="transferredDate"
-                class="form-label">Date</label>
+                class="form-label">Date <small class="text-red">*</small></label>
             <input type="date"
             name="transferDate[]"
                 class="form-control form-required"
@@ -172,7 +172,7 @@ class MultipleDivRepeater {
                     class="col-lg-4 mb-3">
                     <label
                         for="name"
-                        class="form-label">Name</label>
+                        class="form-label">Name <small class="text-red">*</small></label>
                     <input
                         type="text"
                         name="name${nearestDivId}[]"
@@ -200,7 +200,7 @@ class MultipleDivRepeater {
                     class="col-lg-4 mb-3">
                     <label
                         for="share"
-                        class="form-label">Share</label>
+                        class="form-label">Share <small class="text-red">*</small></label>
                     <input
                         type="text"
                         class="form-control form-required"

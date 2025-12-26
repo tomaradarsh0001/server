@@ -29,6 +29,8 @@ class RevertUserRegistrationToSection extends Command
      */
     public function handle()
     {
+        Log::info("Revert User registration to section Running at: " . Carbon::now());
+
         // Step 1: Get ID of RS_UREW from items table
         $rsNewStatusId = DB::table('items')->where('item_code', 'RS_NEW')->value('id');
         $rsUnderReviewStatusId = DB::table('items')->where('item_code', 'RS_UREW')->value('id');

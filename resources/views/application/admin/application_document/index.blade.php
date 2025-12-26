@@ -26,7 +26,7 @@
             <div class="container-fluid">
                 <div class="row g-2">
                     <div class="col-lg-12">
-                        <p>Property Documents Not Available</p>
+                        <p>Documents Not Available.</p>
                     </div>
                 </div>
             </div>

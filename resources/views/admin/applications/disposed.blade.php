@@ -8,8 +8,8 @@
         div.dt-buttons {
             float: none !important;
             /* width: 19%; */
-            width: 33%;
-            /* chagned by anil on 28-08-2025 to fix in resposive */
+             width: 33%; /* chagned by anil on 28-08-2025 to fix in resposive */
+
         }
 
         div.dt-buttons.btn-group {
@@ -72,7 +72,7 @@
         <div class="ps-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i class="bx bx-home-alt"></i></a>
+                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
                     </li>
                     <li class="breadcrumb-item" aria-current="page"><a
                             href="{{ route('admin.applications') }}">Applications</a></li>
@@ -89,7 +89,7 @@
             <div class="d-flex justify-content-end">
                 <ul class="d-flex gap-3 flex-wrap">
                     <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">
-                        <i class="lni lni-spellcheck fs-5" style="color:#6610f2"></i>
+                        <i class="fadeIn animated bx bx-list-ul fs-5" style="color:#6610f2"></i>
                         <span class="text-secondary">MIS Checked</span>
                     </li>
                     <li class="list-group-item d-flex gap-2 align-items-center flex-wrap">|</li>
@@ -110,14 +110,13 @@
                         <th>S.No</th>
                         <th>Applicant No.</th>
                         <th>Property ID</th>
-                        <th>Property Details</th>
-                        {{-- <th>Locality</th>
+                        <th>Locality</th>
                         <th>Block</th>
-                        <th>Plot No.</th> --}}
+                        <th>Plot No.</th>
                         <th>Flat No. (ID)</th>
                         <th>Known As</th>
                         <th>Section</th>
-                        <th>
+                         <th>
                             <select class="form-control form-select form-select-sm" name="filterByApplication"
                                 id="filterByApplication" style="font-weight: bold; width:109px;">
                                 <option value="">Applied For</option>
@@ -220,8 +219,8 @@
                                             ">(${item.assigned_by_role})</span></p>
                                             ${item.remark ? 
                                                 `<p class="card-text">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <b>Remark:-</b> <span>${item.remark}</span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </p>` 
+                                                                                                                                                                                                                                                                                                                                                                                        <b>Remark:-</b> <span>${item.remark}</span>
+                                                                                                                                                                                                                                                                                                                                                                                    </p>` 
                                                 : ""
                                             }
                                         </div>
@@ -292,15 +291,15 @@
                 serverSide: true,
                 // responsive: false,
                 ajax: {
-                    url: "{{ route('get.applications.disposed') }}",
+                       url: "{{ route('get.applications.disposed') }}",
                     data: function(d) {
                         d.status = $('#status').val(); // Add selected status to the request
                         d.applicationType =
                             "{{ $applicationType }}"; // Add application type to the request
                         d.filterByApplication = $('#filterByApplication')
                             .val(); // Add selected status to the request
-                        d.demandType = "{{ $demandType }}";
-                    }
+                         d.demandType = "{{ $demandType }}"; // Add application type to the request 
+                   }
                 },
                 columns: [{
                         data: 'id',
@@ -365,7 +364,7 @@
 
                             let misHtml = mis == 1 ?
                                 `<div class="list-inline-item d-flex align-items-center">
-            <i class="lni lni-spellcheck fs-5" style="color:${misColor}"></i> <span class="px-2 fst-italic">${misCheckedBy}</span></div>` :
+            <i class="fadeIn animated bx bx-list-ul fs-5" style="color:${misColor}"></i> <span class="px-2 fst-italic">${misCheckedBy}</span></div>` :
                                 '';
 
                             let scannedFilesHtml = scannedFiles == 1 ?

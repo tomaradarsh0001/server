@@ -11,10 +11,19 @@
     </style>
     {{-- <link rel="stylesheet" href="{{asset('assets/css/rgr.css')}}"> --}}
     <!--breadcrumb-->
-    <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Reports</div>
-        @include('include.partials.breadcrumbs')
+<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+    <div class="breadcrumb-title pe-3">Customized Report</div>
+    <div class="ps-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">Customized Report</li>
+
+            </ol>
+        </nav>
     </div>
+</div>
     <!--breadcrumb-->
     <!--end breadcrumb-->
     <hr>

@@ -12,7 +12,10 @@
                 <input type="hidden" id="masterId" name="masterId" value="{{$viewDetails->id}}">
                 <input type="hidden" id="sectionCode" name="sectionCode" value="{{ trim($viewDetails->section_code)}}">
                 <input type="hidden" id="flatId" name="flatId" value="{{isset($flatData['flatDetails']->flat_id) ? $flatData['flatDetails']->flat_id : ''}}">
-                
+                <div class="modal-header">
+                    <h5 class="modal-title">Are you sure?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
                     You want to approve this property also have you checked the complete details of this property?
                 </div>

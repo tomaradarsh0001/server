@@ -6,7 +6,6 @@ use App\Helpers\UserActionLogHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\RouteServiceProvider;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,12 +20,6 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthenticatedSessionController extends Controller
 {
-    protected $communicationService;
-
-    public function __construct(CommunicationService $communicationService)
-    {
-        $this->communicationService = $communicationService;
-    }
     /**
      * Display the login view.
      */
@@ -40,12 +33,32 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        if ($request->mobile) {
-            $user = User::where('mobile_no', $request->mobile)->first();
-            if (empty($user)) {
+        // $user = User::where('email', $request->email)->first();
+        // //Code added by Lalit on 08/01/2024 Like if user does not exist then redirect to login page with error
+        // if(empty($user)){
+        //     return redirect()->back()->with('failure','Your account does not exists.');
+        // }
+        // if ($user->status == 1) {
+        //     $request->authenticate();
+        //     $request->session()->regenerate();
+        //     // Retrieve authenticated user
+        //     $user = Auth::user();
+        //     $roleName = $user->roles->pluck('name')->first();
+        //     if (!empty($roleName) && $roleName != 'super-admin') {
+        //         //  Helper function to Manage User Activity / Action Logs
+        //         UserActionLogHelper::UserActionLog('login', url("/login"), 'login', "User " . Auth::user()->name . " login.");
+        //     }
+        //     return redirect()->intended(RouteServiceProvider::HOME);
+        // } else {
+        //     return redirect()->back()->with('failure', 'Your account is not activated yet.');
+        // }
+        
+        if($request->mobile){
+            $user = User::where('mobile_no',$request->mobile)->first();
+            if(empty($user)){
                 return response()->json(['success' => false, 'message' => 'Your account does not exists.']);
             }
-            if ($user->status == 1) {
+            if($user->status == 1){
                 $request->authenticate();
                 $request->session()->regenerate();
                 $user = Auth::user();
@@ -54,11 +67,12 @@ class AuthenticatedSessionController extends Controller
                     UserActionLogHelper::UserActionLog('login', url("/login"), 'login', "User " . Auth::user()->name . " login.");
                 }
                 return response()->json(['success' => true, 'message' => 'Login Successfully.']);
-            } else {
+            } else{
                 return response()->json(['success' => false, 'message' => 'Your account is not activated yet.']);
             }
-        } else if ($request->email) {
-            $request->validate([
+        } else if($request->email) {
+           
+           $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
                 'emailCaptcha' => 'required|captcha'
@@ -71,13 +85,13 @@ class AuthenticatedSessionController extends Controller
                 'emailCaptcha.required' => 'Captcha is required.',
                 'emailCaptcha.captcha' => 'Invalid captcha. Please try again.',
             ]);
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email',$request->email)->first();
             //Code added by Lalit on 08/01/2024 Like if user does not exist then redirect to login page with error
-            if (empty($user)) {
-                return redirect()->back()->with('failure', 'Your account does not exists.');
+            if(empty($user)){
+                return redirect()->back()->with('failure','Your account does not exists.');
             }
-            if ($user->status == 1) {
-                // dd($request->all(), decryptString($request->password));
+            if($user->status == 1){
+                // dd('Inside if');
                 $request->merge(['password' => decryptString($request->password)]);
                 $request->authenticate();
                 $request->session()->regenerate();
@@ -89,16 +103,19 @@ class AuthenticatedSessionController extends Controller
                     UserActionLogHelper::UserActionLog('login', url("/login"), 'login', "User " . Auth::user()->name . " login.");
                 }
                 return redirect()->intended(RouteServiceProvider::HOME);
-            } else {
+                    
+
+            } else{
                 // dd('Inside else');
-                return redirect()->back()->with('failure', 'Your account is not activated yet.');
+                return redirect()->back()->with('failure','Your account is not activated yet.');
             }
         } else {
             return response()->json(['success' => false, 'message' => 'Your account does not exists.']);
         }
+
     }
 
-	public function switchUser(Request $request)
+    public function switchUser(Request $request)
 	{
 		//dd($request->section);
 		//			   $results = DB::table('model_has_roles as mhr')
@@ -174,7 +191,8 @@ class AuthenticatedSessionController extends Controller
 		->with('success', "Restored back to {$originalUser->name}");
 	}
 
-    public function validateCaptcha(Request $request)
+
+ public function validateCaptcha(Request $request)
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
@@ -196,7 +214,6 @@ class AuthenticatedSessionController extends Controller
             'message' => 'Captcha validated successfully.',
         ]);
     }
-
     /**
      * Destroy an authenticated session.
      */
@@ -215,57 +232,103 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+         return redirect()->route('login');
+
     }
 
-
-    //To send and store the Login otp - Sourav Chauhan (13/Aug/2024)
-    public function sendLoginOtp(Request $request, CommunicationService $communicationService)
-    {
-        try {
-            if (isset($request->mobile)) {
-                $isUserExist = User::where('mobile_no', $request->mobile)->first();
-                if ($isUserExist) {
-                    $generateOtp = GeneralFunctions::generateUniqueRandomNumber(6);
-
-                    // Log the generated OTP
-                    Log::info("Generated OTP for mobile {$request->mobile}: {$generateOtp}");
-
-                    // Create or update OTP record for the mobile
-                    $otp = Otp::updateOrCreate(
-                        ['mobile' => $request->mobile],
-                        ['mobile_otp' => $generateOtp, 'service_type' => getServiceType('OTP_LOGIN')]
-                    );
-
-                    if ($otp) {
-                        $action = 'LOGIN_OTP';
-                        $data = [
-                            'otp' => $generateOtp
-                        ];
-
-                        $communicationService->sendSmsMessage($data, $request->mobile, $action);
-                        $communicationService->sendWhatsAppMessage($data, $request->mobile, $action);
-
-
-                        return response()->json(['success' => true, 'message' => 'OTP sent to mobile number ' . $request->mobile . ' successfully']);
-                    } else {
-                        return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
-                    }
-                } else {
-                    return response()->json(['success' => false, 'message' => 'Mobile number not registered with us']);
-                }
-            } else {
-                return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
-            }
-        } catch (\Exception $e) {
-            Log::info($e);
-            return response()->json(['success' => false, 'message' => $e->getMessage()]);
-        }
-    }
-
-
-    //To verify otp and make the user login - Sourav Chauhan (14/Aug/2024)
-    public function verifyLoginOtp(Request $request)
+     //To send and store the Login otp - Sourav Chauhan (13/Aug/2024)
+     public function sendLoginOtp(Request $request,CommunicationService $communicationService)
+     {
+         try {
+             if (isset($request->mobile)) {
+                 $isUserExist = User::where('mobile_no',$request->mobile)->first();
+                 if($isUserExist){
+                     $generateOtp = GeneralFunctions::generateUniqueRandomNumber(6);
+ 
+                     // Create or update OTP record for the mobile
+                     $otp = Otp::updateOrCreate(
+                         ['mobile' => $request->mobile],
+                         ['mobile_otp' => $generateOtp, 'service_type' => getServiceType('OTP_LOGIN')]
+                     );
+ 
+                     if ($otp) {
+                         $action = 'LOGIN_OTP';
+                         $data = [
+                             'otp' => $generateOtp
+                         ];
+ 
+                         $communicationService->sendSmsMessage($data,$request->mobile,$action);
+                         $communicationService->sendWhatsAppMessage($data,$request->mobile,$action);
+ 
+ 
+                         return response()->json(['success' => true, 'message' => 'OTP sent to mobile number ' . $request->mobile . ' successfully']);
+                     } else {
+                         return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
+                     }
+                 } else {
+                     return response()->json(['success' => false, 'message' => 'Invalid Credentials.']);
+                 }
+                 
+             } else {
+                 return response()->json(['success' => false, 'message' => 'Failed to send OTP']);
+             }
+         } catch (\Exception $e) {
+             Log::info($e);
+             return response()->json(['success' => false, 'message' => $e->getMessage()]);
+         }
+     }
+ 
+ 
+     //To verify otp and make the user login - Sourav Chauhan (14/Aug/2024)
+/*     public function verifyLoginOtp(Request $request)
+     {
+     $request->validate([
+            'mobile' => 'required|digits:10',
+            'otp' => 'required|digits:6',
+            'mobileCaptcha' => 'required|captcha',
+        ], [
+            'mobile.required' => 'Mobile number is required.',
+            'mobile.digits' => 'Mobile number must be 10 digits.',
+            'otp.required' => 'OTP is required.',
+            'otp.digits' => 'OTP must be 6 digits.',
+            'mobileCaptcha.required' => 'Captcha is required.',
+            'mobileCaptcha.captcha' => 'Invalid captcha. Please enter correct captcha.',
+        ]);
+         try {
+             if (isset($request->mobile) && isset($request->otp)) {
+                 $user = User::where('mobile_no', $request->mobile)->first();
+                 if($user){
+                     if($user->status == 1){
+                         $otpValid = Otp::where('mobile', $request->mobile)
+                             ->where('mobile_otp', $request->otp)
+                             ->exists();
+                         if($otpValid){
+                             Auth::login($user);
+                             $request->session()->regenerate();
+                             $roleName = $user->roles->pluck('name')->first();
+                             if (!empty($roleName) && $roleName != 'super-admin') {
+                                 UserActionLogHelper::UserActionLog('login', url("/login"), 'login', "User " . $user->name . " logged in.");
+                             }
+                             return response()->json(['success' => true, 'message' => 'Login Successfully.']);
+                         } else {
+                             return response()->json(['success' => false, 'message' => 'OTP not correct']);
+                         }
+                     } else {
+                         return response()->json(['success' => false, 'message' => 'Your account is not activated yet.']);
+                     }
+                 } else {
+                     return response()->json(['success' => false, 'message' => 'Invalid Credentials.']);
+                 }
+                 
+             } else {
+                 return response()->json(['success' => false, 'message' => 'Mobile / Otp are required']);
+             }
+         } catch (\Exception $e) {
+             Log::info($e);
+             return response()->json(['success' => false, 'message' => $e->getMessage()]);
+         }
+     } */
+public function verifyLoginOtp(Request $request)
     {
         $request->validate([
             'mobile' => 'required|digits:10',
@@ -308,7 +371,7 @@ class AuthenticatedSessionController extends Controller
             return response()->json(['success' => false, 'message' => 'Something went wrong.']);
         }
     }
-
+    
     //  added by Swati on 12092025 for resend otp
 
 public function resendLoginOtp(Request $request, CommunicationService $communicationService)
@@ -330,9 +393,9 @@ public function resendLoginOtp(Request $request, CommunicationService $communica
         if ((int)$user->status !== 1) {
             return response()->json(['success' => false, 'message' => 'Your account is not activated yet.']);
         }
-
+ 
         // Cooldown based on otps.updated_at (2 minutes = 120s)
-        $cooldownSeconds = 600;
+        $cooldownSeconds = 600; 
         $otpRow = Otp::where('mobile', $request->mobile)->latest()->first();
 
         if ($otpRow && $otpRow->updated_at) {
@@ -382,5 +445,4 @@ public function resendLoginOtp(Request $request, CommunicationService $communica
         return response()->json(['success' => false, 'message' => 'Failed to send OTP'], 500);
     }
 }
-
 }

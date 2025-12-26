@@ -145,7 +145,7 @@
             <div class="foot-left">
                 <span>419</span> PAGE EXPIRED
             </div>
-            <a class="action-btn" href="/"> <img src="../assets/images/arrow_back.svg" alt="Back arrow"/> Back To Login </a>
+            <a class="action-btn" href="{{route('login')}}"> <img src="../assets/images/arrow_back.svg" alt="Back arrow"/> Back To Login </a>
         </div>
     </div>
 </body>

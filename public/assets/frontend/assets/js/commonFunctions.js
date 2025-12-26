@@ -43,15 +43,3 @@ function decryptString(str) {
     return str; // decryption failed
   }
 }
-
-function daysInMonth(year, month) {
-  // month: 1-12
-  return new Date(year, month, 0).getDate();
-}
-
-function ymd(year, month, day) {
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
-    2,
-    "0"
-  )}`;
-}

@@ -8,8 +8,8 @@ class LandRateService
 {
     public function getLandRates($from, $propertyType, $colony_id, $fromDate)
     {
-        if (!in_array(strtolower($propertyType), ['residential', 'commercial', 'institutional', 'industrial'])) {
-            return ['error' => 'data not available for ' . $propertyType . ' properties'];
+        if (!in_array(strtolower($propertyType), ['residential', 'commercial'])) {
+            return ['error' => 'data not available for ' . $propertyType . ' properites'];
         }
         $modelName = ucfirst($from) . ucfirst($propertyType) . 'LandRate';
         $model = '\\App\\Models\\' . $modelName;

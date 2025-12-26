@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Mail\CommonMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\Country;
 use Carbon\Carbon;
 use App\Models\Otp;
@@ -122,7 +123,7 @@ class AppointmentDetailController extends Controller
             $nestedData['meeting_purpose'] = '<b>' . $appointmentDetail->meeting_purpose . '</b> <br>' . $appointmentDetail->meeting_description;
     
             $nestedData['meeting_date_time'] = [
-                'meeting_date' => $appointmentDetail->meeting_date->format('d-m-Y'),
+                'meeting_date' => $appointmentDetail->meeting_date->format('Y-m-d'),
                 'meeting_timeslot' => $appointmentDetail->meeting_timeslot,
                 'nature_of_visit' => $appointmentDetail->nature_of_visit,
             ];
@@ -227,8 +228,149 @@ class AppointmentDetailController extends Controller
 
         return view('appointment.vistor_form.create', compact(['colonyList', 'propertyTypes', 'countries', 'meetingPurposes']));
     }
+
+
+    // public function store(Request $request)
+    // {
+    //     DB::beginTransaction();
+    //     try {
+    //         // Ensure propertyId is set correctly based on checkbox
+    //         $request->merge(['propertyId' => $request->has('propertyId') ? 1 : 0]);
+
+    //         // dd($request->all());
+    //         // Validate request data
+    //         $validatedData = $request->validate([
+    //             'name' => 'required|string|max:255',
+    //             'countryCode' => 'required|numeric',
+    //             'mobile' => 'required|string|size:10',
+    //             'email' => 'required|email|max:255',
+    //             'pan_number' => 'required|string|size:10',
+    //             'locality' => 'nullable|string|max:255',
+    //             'block' => 'nullable|string|max:255',
+    //             'plot' => 'nullable|string|max:255',
+    //             'known_as' => 'nullable|string|max:255',
+    //             'propertyId' => 'nullable|boolean',
+    //             'localityFill' => 'nullable|string|max:255|required_if:propertyId,1',
+    //             'blocknoFill' => 'nullable|string|max:255|required_if:propertyId,1',
+    //             'plotnoFill' => 'nullable|string|max:255|required_if:propertyId,1',
+    //             'knownasFill' => 'nullable|string|max:255',
+    //             'isStakeholder' => 'nullable|boolean',
+    //             'stakeholderProof' => 'nullable|file|mimes:pdf|max:5120|required_if:isStakeholder,1',
+    //             'natureOfVisit' => 'required|in:Online,Offline',
+    //             'meetingPurpose' => 'required|string|max:255',
+    //             'meetingDescription' => 'required|string',
+    //             'appointmentDate' => 'required|date|after_or_equal:today',
+    //             'meetingTime' => 'required|string',
+    //         ]);
+
+    //         // Check if the OTP was verified for the given mobile or email
+    //         $otpRecord = Otp::where(function ($query) use ($request) {
+    //             $query->where(function ($subQuery) use ($request) {
+    //                 $subQuery->where('country_code', $request->countryCode)
+    //                          ->where('mobile', $request->mobile);
+    //             })
+    //             ->orWhere('email', $request->email);
+    //         })
+    //             ->where(function ($query) {
+    //                 $query->where('is_mobile_verified', '1')
+    //                     ->orWhere('is_email_verified', '1');
+    //             })
+    //             ->orderBy('created_at', 'desc')
+    //             ->first();
+
+    //         if (!$otpRecord) {
+    //             // If OTP is not verified, throw an exception or handle accordingly
+    //             return redirect()->back()->with('failure', 'OTP verification is required.');
+    //         }
+
+    //         // Check if an appointment already exists within the same week
+    //         $existingAppointment = AppointmentDetail::where(function ($query) use ($validatedData) {
+    //             $query->where(function ($subQuery) use ($validatedData) {
+    //                 $subQuery->where('country_code', $validatedData['countryCode'])
+    //                          ->where('mobile', $validatedData['mobile']);
+    //             })
+    //             ->orWhere('email', $validatedData['email']);
+    //         })
+    //             ->whereRaw('YEARWEEK(meeting_date, 1) = YEARWEEK(?, 1)', [$validatedData['appointmentDate']])
+    //             ->exists();
+
+    //         // If an appointment exists, prevent booking and handle it as a failure
+    //         if ($existingAppointment) {
+    //             // Rollback transaction and delete the OTP record since the appointment cannot be created
+    //             DB::rollBack();
+    //             $otpRecord->delete();
+    //             return redirect()->back()->with('failure', 'You have already booked an appointment in this week. Please book in the next available week.');
+    //         }
+
+    //         // Generate a unique ID for the appointment
+    //         $uniqueId = $this->commonService->getUniqueID(AppointmentDetail::class, 'AP', 'unique_id');
+
+    //         // Fetch the section_id from property_section_mappings table using colony_id
+    //         $colonyId = $validatedData['propertyId'] ? $validatedData['localityFill'] : $validatedData['locality'];
+    //         $sectionMapping = PropertySectionMapping::where('colony_id', $colonyId)->first();
+
+    //         if (!$sectionMapping) {
+    //             return redirect()->back()->withErrors(['message' => 'No section found for the selected colony.']);
+    //         }
+
+    //         $sectionId = $sectionMapping->section_id;
+
+    //         // Handle file upload if stakeholder proof is provided
+    //         $dateandtime = now()->format('YmdHis');
+    //         $filePath = null;
+    //         if ($request->hasFile('stakeholderProof')) {
+    //             $file = $request->file('stakeholderProof');
+    //             $fileName = "{$uniqueId}_{$dateandtime}." . $file->getClientOriginalExtension();
+    //             $filePath = $file->storeAs('stakeholder_docs', $fileName, 'public');
+    //         }
+    //         // Save the appointment details
+    //         $appointment = new AppointmentDetail();
+    //         $appointment->unique_id = $uniqueId;
+    //         $appointment->name = $validatedData['name'];
+    //         $appointment->country_code = $validatedData['countryCode'];
+    //         $appointment->mobile = $validatedData['mobile'];
+    //         $appointment->email = $validatedData['email'];
+    //         $appointment->pan_number = $validatedData['pan_number'];
+    //         $appointment->is_property_id_known = $validatedData['propertyId'];
+    //         $appointment->locality = $validatedData['propertyId'] ? $validatedData['localityFill'] : $validatedData['locality'];
+    //         $appointment->dealing_section_code = $sectionId;
+    //         $appointment->block = $validatedData['propertyId'] ? $validatedData['blocknoFill'] : $validatedData['block'];
+    //         $appointment->plot = $validatedData['propertyId'] ? $validatedData['plotnoFill'] : $validatedData['plot'];
+    //         $appointment->known_as = $validatedData['propertyId'] ? $validatedData['knownasFill'] : $validatedData['known_as'];
+    //         $appointment->is_stakeholder = $validatedData['isStakeholder'] ?? 0;
+    //         $appointment->stakeholder_doc = $filePath;
+    //         $appointment->nature_of_visit = $validatedData['natureOfVisit'];
+    //         $appointment->meeting_purpose = $validatedData['meetingPurpose'];
+    //         $appointment->meeting_description = $validatedData['meetingDescription'] ?? null;
+    //         $appointment->meeting_date = $validatedData['appointmentDate'];
+    //         $appointment->meeting_timeslot = $validatedData['meetingTime'];
+    //         $appointment->status = 'Approved';
+
+    //         $appointment->save();
+
+    //         DB::commit();
+
+
+    //         // Dispatch email notification jobs
+    //         UserAppointmentJob::dispatch($appointment);
+
+    //         return redirect()->back()->with('success', 'Appointment has been scheduled successfully, Appointment ID:-' . $uniqueId);
+    //     } catch (\Exception $e) {
+
+    //         DB::rollBack();
+
+    //         // Delete the OTP record since the appointment creation failed
+    //         if (isset($otpRecord)) {
+    //             $otpRecord->delete();
+    //         }
+
+    //         \Log::error('Failed to create appointment: ' . $e->getMessage());
+    //         return redirect()->route('appointmentDetail')->with('failure', 'Failed to create appointment. Please try again.');
+    //     }
+    // }
+
     
-    public function store(Request $request)
+    public function store(Request $request, CommunicationService $communicationService)
     {
         DB::beginTransaction();
         try {
@@ -340,7 +482,7 @@ class AppointmentDetailController extends Controller
             // Send Notification for Appointment Creation
             $notificationData = [
                 'appointment_id' => $appointment->unique_id,
-                'date' => $appointment->meeting_date,
+                'date' => carbon::parse($appointment->meeting_date)->format('d/m/Y'),
                 'time' => $appointment->meeting_timeslot,
                 'purpose' => $appointment->meeting_description,
             ];
@@ -348,12 +490,88 @@ class AppointmentDetailController extends Controller
             $action = 'APT_APP';
 
             // Apply mail settings and send email
-            $this->settingsService->applyMailSettings($action);
-            Mail::to($appointment->email)->send(new CommonMail($notificationData, $action));
+            // $this->settingsService->applyMailSettings($action);
+            // Mail::to($appointment->email)->send(new CommonMail($notificationData, $action));
+            // --- EMAIL ---
+            try {
+                $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                $mailResponse = $mailer->send($appointment->email, $mailSettings);
+
+                Log::info("Email sent successfully.", [
+                    'action' => $action,
+                    'email'  => $appointment->email,
+                    'data'   => $notificationData,
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Email sending failed.", [
+                    'action' => $action,
+                    'email'  => $appointment->email,
+                    'error'  => $e->getMessage(),
+                ]);
+            }
 
             // Send SMS and WhatsApp notifications
-            $this->communicationService->sendSmsMessage($notificationData, $appointment->mobile, $action);
-            $this->communicationService->sendWhatsAppMessage($notificationData, $appointment->mobile, $action);
+            // $this->communicationService->sendSmsMessage($notificationData, $appointment->mobile, $action);
+            // --- SMS ---
+            try {
+                $isSmsSuccess = $communicationService->sendSmsMessage(
+                    $notificationData,
+                    $appointment->mobile,
+                    $action
+                );
+
+                if ($isSmsSuccess) {
+                    Log::info("SMS sent successfully.", [
+                        'mobile'      => $appointment->mobile,
+                        'countryCode' => $appointment->country_code,
+                        'action'      => $action,
+                    ]);
+                } else {
+                    Log::warning("SMS sending failed.", [
+                        'mobile'      => $appointment->mobile,
+                        'countryCode' => $appointment->country_code,
+                        'action'      => $action,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error("SMS sending threw exception.", [
+                    'mobile'      => $appointment->mobile,
+                    'countryCode' => $appointment->country_code,
+                    'action'      => $action,
+                    'error'       => $e->getMessage(),
+                ]);
+            }
+            // $this->communicationService->sendWhatsAppMessage($notificationData, $appointment->mobile, $action);
+            // --- WHATSAPP ---
+            try {
+                $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                    $notificationData,
+                    $appointment->mobile,
+                    $action
+                );
+
+                if ($isWhatsAppSuccess) {
+                    Log::info("WhatsApp sent successfully.", [
+                        'mobile'      => $appointment->mobile,
+                        'countryCode' => $appointment->country_code,
+                        'action'      => $action,
+                    ]);
+                } else {
+                    Log::warning("WhatsApp sending failed.", [
+                        'mobile'      => $appointment->mobile,
+                        'countryCode' => $appointment->country_code,
+                        'action'      => $action,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error("WhatsApp sending threw exception.", [
+                    'mobile'      => $appointment->mobile,
+                    'countryCode' => $appointment->country_code,
+                    'action'      => $action,
+                    'error'       => $e->getMessage(),
+                ]);
+            }
 
             return redirect()->back()->with('success', 'Appointment has been scheduled successfully, Appointment ID:-' . $uniqueId);
         } catch (\Exception $e) {
@@ -445,33 +663,6 @@ class AppointmentDetailController extends Controller
     }
 
 
-
-    // public function updateStatus(Request $request, $id)
-    // {
-    //     try {
-    //         $appointment = AppointmentDetail::findOrFail($id);
-    //         $appointmentUniqueId = $appointment->unique_id; 
-
-    //         if ($request->status == 'Rejected') {
-    //             $appointment->status = 'Rejected';
-    //             $appointment->remark = $request->input('remark');
-    //             RejectionAppointmentJob::dispatch($appointment);
-    //         }
-
-    //         $appointment->save();
-
-    //         // Add user action logs rejected appointments - Lalit (28/Oct/2024)
-    //         $appointment_link = '<a href="' . url("/appointments") . '" target="_blank">' . $appointmentUniqueId . '</a>';
-    //         UserActionLogHelper::UserActionLog('appointment_rejected', url("/appointments"), 'appointments', "Appointment ".$appointment_link." has been rejected with remark (".$request->input('remark').") by user " . Auth::user()->name . ".");
-
-    //         return redirect()->back()->with('success', 'Appointment has been rejected successfully.');
-    //     } catch (\Exception $e) {
-    //         \Log::error('Failed to update appointment status: ' . $e->getMessage());
-
-    //         return redirect()->back()->with('failure', 'Failed to update status. Please try again.');
-    //     }
-    // }
-
     public function updateStatus(Request $request, $id)
     {
         try {
@@ -490,20 +681,92 @@ class AppointmentDetailController extends Controller
                 // Send Notification for Rejection
                 $notificationData = [
                     'appointment_id' => $appointment->unique_id,
-                    'date' => $appointment->meeting_date,
+                    // 'date' => $appointment->meeting_date,
+                    'date' => Carbon::parse($appointment->meeting_date)->format('d/m/Y'),
                     'time' => $appointment->meeting_timeslot,
                     'remark' => $appointment->remark,
                 ];
-
+                
                 $action = 'APT_REJ';
 
                 // Apply mail settings and send email
-                $this->settingsService->applyMailSettings($action);
-                Mail::to($appointment->email)->send(new CommonMail($notificationData, $action));
+                // $this->settingsService->applyMailSettings($action);
+                // Mail::to($appointment->email)->send(new CommonMail($notificationData, $action));
+                // --- EMAIL ---
+                try {
+                    $mailSettings = app(SettingsService::class)->getMailSettings($action);
+                    $mailer = new \App\Mail\CommonPHPMail($notificationData, $action, $communicationTrackingId ?? null);
+                    $mailResponse = $mailer->send($appointment->email, $mailSettings);
 
-                // Send SMS and WhatsApp notifications
-                $this->communicationService->sendSmsMessage($notificationData, $appointment->mobile, $action);
-                $this->communicationService->sendWhatsAppMessage($notificationData, $appointment->mobile, $action);
+                    Log::info("Email sent successfully.", [
+                        'action' => $action,
+                        'email'  => $appointment->email,
+                        'data'   => $notificationData,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error("Email sending failed.", [
+                        'action' => $action,
+                        'email'  => $appointment->email,
+                        'error'  => $e->getMessage(),
+                    ]);
+                }
+
+                try {
+                        $isSmsSuccess = $this->communicationService->sendSmsMessage($notificationData, $appointment->mobile, $action);
+
+                        if ($isSmsSuccess) {
+                            \Log::info("SMS sent successfully.", [
+                                'mobile'      => $appointment->mobile,
+                                'action'      => $action,
+                                'notificationData'      => $notificationData,
+                            ]);
+                        } else {
+                            Log::warning("SMS sending failed.", [
+                                'mobile'      => $appointment->mobile,
+                                'action'      => $action,
+                                'notificationData'      => $notificationData,
+                            ]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("SMS sending threw exception.", [
+                            'mobile'      => $appointment->mobile,
+                                'action'      => $action,
+                                'notificationData'      => $notificationData,
+                            'error'       => $e->getMessage(),
+                        ]);
+                    }
+
+                
+                // $this->communicationService->sendWhatsAppMessage($notificationData, $appointment->mobile, $action);
+                // --- WHATSAPP ---
+                try {
+                    $isWhatsAppSuccess = $communicationService->sendWhatsAppMessage(
+                        $notificationData,
+                        $appointment->mobile,
+                        $action
+                    );
+
+                    if ($isWhatsAppSuccess) {
+                        Log::info("WhatsApp sent successfully.", [
+                            'mobile'      => $appointment->mobile,
+                            'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                        ]);
+                    } else {
+                        Log::warning("WhatsApp sending failed.", [
+                            'mobile'      => $appointment->mobile,
+                            'countryCode' => $appointment->country_code,
+                            'action'      => $action,
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("WhatsApp sending threw exception.", [
+                        'mobile'      => $appointment->mobile,
+                        'countryCode' => $appointment->country_code,
+                        'action'      => $action,
+                        'error'       => $e->getMessage(),
+                    ]);
+                }
             }
 
             return redirect()->back()->with('success', 'Appointment has been rejected successfully.');

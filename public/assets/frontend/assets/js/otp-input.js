@@ -13,10 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
           e.metaKey ||
           e.preventDefault(),
           ("Delete" === e.key || "Backspace" === e.key) &&
-            t >= 0 &&
-            ("" === a[t].value
-              ? t > 0 && (a[t - 1].focus(), (a[t - 1].value = ""))
-              : (a[t].value = ""),
+          t >= 0 &&
+          ("" === a[t].value
+            ? t > 0 && (a[t - 1].focus(), (a[t - 1].value = ""))
+            : (a[t].value = ""),
             e.preventDefault());
       },
       l = (e) => {
@@ -197,7 +197,7 @@ $(document).ready(function () {
     return true;
   }
 
-  // Instant preview & validation on change
+  // ✅ Instant preview & validation on change
   $("#file-input").on("change", function () {
     validateImageUpload("#file-input", "#file-inputError", "#img-preview");
   }); // end added by anil new fucntion on 05-06-2025
@@ -208,11 +208,6 @@ $(document).ready(function () {
       ? e.attr("id", "propertyOwnerForm")
       : $("#organization").is(":checked") && e.attr("id", "organizationForm");
   }
-  // function d() {
-  //   $("#Yes").is(":checked")
-  //     ? ($("#ifyes").show(), $("#ifYesNotChecked").hide())
-  //     : ($("#ifyes").hide(), $("#ifYesNotChecked").show());
-  // }
   function d() {
     if ($("#Yes").is(":checked")) {
       $("#ifyes").show();
@@ -233,23 +228,23 @@ $(document).ready(function () {
   //   {
   //     id: "#IndSaleDeed",
   //     errorId: "#IndSaleDeedError",
-  //     checkbox: "#saleDeedAtorney",
+  //     checkbox: "#saleDeedAtorney"
   //   },
   //   {
   //     id: "#IndBuildAgree",
   //     errorId: "#IndBuildAgreeError",
-  //     checkbox: "#bbAgreement",
+  //     checkbox: "#bbAgreement"
   //   },
   //   {
   //     id: "#IndSubMut",
   //     errorId: "#IndSubMutError",
-  //     checkbox: "#subsMutationLetter",
+  //     checkbox: "#subsMutationLetter"
   //   },
   //   {
   //     id: "#IndOther",
   //     errorId: "#IndOtherError",
-  //     checkbox: "#diffDoc",
-  //   },
+  //     checkbox: "#diffDoc"
+  //   }
   // ];
 
   // g.forEach(function (item) {
@@ -277,7 +272,7 @@ $(document).ready(function () {
   //     }
 
   //     // Hide global section error if any box is checked
-  //     const anyChecked = g.some((x) => $(x.checkbox).is(":checked"));
+  //     const anyChecked = g.some(x => $(x.checkbox).is(":checked"));
   //     if (anyChecked) {
   //       $("#IndChooseOneError").hide();
   //     }
@@ -297,218 +292,53 @@ $(document).ready(function () {
     );
 
     // added by anil new fucntion on 10-11-2025
-    // if (!imageValid) {
-    //   formIsValid = false;
-    //   const imageInput = $("#file-input");
-    //   const imageError = $("#file-inputError");
+    if (!imageValid) {
+      formIsValid = false;
+      const imageInput = $("#file-input");
+      const imageError = $("#file-inputError");
 
-    //   // Make sure the error is visible and focus on input
-    //   imageError.show();
-    //   imageInput.focus();
+      // Make sure the error is visible and focus on input
+      imageError.show();
+      imageInput.focus();
 
-    //   console.log("Image validation failed - focusing on #file-input");
-    // }
+      console.log("Image validation failed - focusing on #file-input");
+    }
 
     const captchaIsValid = await captchaValidation("invRegisterCaptcha");
     if (!captchaIsValid) formIsValid = false;
 
-    if (!imageValid) formIsValid = false;
+    // if (!imageValid) formIsValid = false;
     // end added by anil new fucntion on 05-06-2025
 
     var l = e.attr("id"),
       i = $("#" + l);
     (function () {
+      // let e = null,
+      //   r = !0;
       let e = null,
         r = true;
       // #Start Modified by Lalit to manage aadhaar, pan, passport, oci card validation on NRI / OCI check box on 10-01-2025
       // const isIndian = $("#isIndian").is(":checked");
-      const baseFields = [
-        { id: "#indfullname", errorId: "#IndFullNameError" },
-        { id: "#Indgender", errorId: "#IndGenderError" },
-        { id: "#dateOfBirth", errorId: "#dateOfBirthError" },
-        { id: "#mobileInv", errorId: "#IndMobileError" },
-        { id: "#emailInv", errorId: "#IndEmailError" },
-        { id: "#IndSecondName", errorId: "#IndSecondNameError" },
-        { id: "#commAddress", errorId: "#IndCommAddressError" },
-      ];
+      // const baseFields = [
+      //   { id: "#indfullname", errorId: "#IndFullNameError" },
+      //   { id: "#Indgender", errorId: "#IndGenderError" },
+      //   { id: "#dateOfBirth", errorId: "#dateOfBirthError" },
+      //   { id: "#mobileInv", errorId: "#IndMobileError" },
+      //   { id: "#emailInv", errorId: "#IndEmailError" },
+      //   { id: "#IndSecondName", errorId: "#IndSecondNameError" },
+      //   { id: "#commAddress", errorId: "#IndCommAddressError" },
+      // ];
 
-      // Validate base required fields (name, gender, dob, mobile, email, second name, address)
-      baseFields.forEach(function (d) {
-          const l = $(d.id),
-                i = $(d.errorId),
-                val = l.val().trim();
-
-          if (val === "") {
-              l.addClass("required");
-              i.text("This field is required").show();
-              r = false;
-              // if (eField === null) eField = l;
-              null === e && (e = l);
-          } else {
-              l.removeClass("required");
-              i.hide();
-          }
-      });
-
-      // ===== Indian / Non-Indian Validation =====
-      // Determine if applicant is resident of India (radio value "1" => Yes)
-      const isIndian = $("input[name='isIndian']:checked").val() === "1";
-
-      if (isIndian) {
-          // -------------------------
-          // If Indian: clear Non-Indian fields/errors (because user may have switched)
-          // -------------------------
-          // Clear document type/number (values + error state)
-          $("#documentType").val("");
-          $("#documentTypeError").text("").hide();
-          $("#documentType").removeClass("required");
-
-          $("#documentTypeNumber").val("");
-          $("#documentTypeNumberError").text("").hide();
-          $("#documentTypeNumber").removeClass("required");
-          $("#documentTypeNumber").removeAttr("maxlength");
-
-          // ----- PAN -----
-          const pan = $("#IndPanNumber"),
-                panErr = $("#IndPanNumberError"),
-                panVal = pan.val().trim().toUpperCase();
-          pan.val(panVal);
-
-          if (panVal === "") {
-              pan.addClass("required");
-              panErr.text("This field is required").show();
-              r = false;
-              // if (eField === null) eField = pan;
-              null === e && (e = pan);
-          } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panVal)) {
-              pan.addClass("required");
-              panErr.text("Please enter a valid PAN (ABCDE1234F)").show();
-              r = false;
-              // if (eField === null) eField = pan;
-              null === e && (e = pan);
-          } else {
-              pan.removeClass("required");
-              panErr.hide();
-          }
-
-          // ----- Aadhaar -----
-          const aadhaar = $("#IndAadhar"),
-                aadErr = $("#IndAadharError"),
-                aadVal = aadhaar.val().trim();
-          if (aadVal === "") {
-              aadhaar.addClass("required");
-              aadErr.text("This field is required").show();
-              r = false;
-              // if (eField === null) eField = aadhaar;
-              null === e && (e = aadhaar);
-          } else if (!/^\d{12}$/.test(aadVal)) {
-              aadhaar.addClass("required");
-              aadErr.text("Please enter a valid 12-digit Aadhaar number").show();
-              r = false;
-              // if (eField === null) eField = aadhaar;
-              null === e && (e = aadhaar);
-          } else {
-              aadhaar.removeClass("required");
-              aadErr.hide();
-          }
-
-      } else {
-          // -------------------------
-          // If Non-Indian: clear Indian fields/errors (user requested clearing)
-          // -------------------------
-          // Clear PAN / Aadhaar values and errors as user requested "YES CLEAR"
-          $("#IndPanNumber").val("");
-          $("#IndPanNumberError").text("").hide();
-          $("#IndPanNumber").removeClass("required");
-
-          $("#IndAadhar").val("");
-          $("#IndAadharError").text("").hide();
-          $("#IndAadhar").removeClass("required");
-
-          // ----- Non-Indian: Document Type + Document Number -----
-          const docType = $("#documentType"),
-                docTypeErr = $("#documentTypeError"),
-                // normalize selected value to uppercase to handle 'pion','pion' etc.
-                docTypeValRaw = (docType.val() || "").trim(),
-                docTypeVal = docTypeValRaw.toUpperCase();
-
-          const docNum = $("#documentTypeNumber"),
-                docNumErr = $("#documentTypeNumberError"),
-                docNumValRaw = (docNum.val() || "").trim(),
-                docNumVal = docNumValRaw.toUpperCase();
-
-          // put uppercase value back into the input (helps regex)
-          docNum.val(docNumVal);
-
-          // ---- Dynamic maxlength based on document type ----
-          // Accept common synonyms: PIO / PION, OCI / OCIN, PASSPORT
-          if (["PIO","PION"].includes(docTypeVal)) {
-              docNum.attr("maxlength", 8);   // PIO / PION => 1 letter + 7 digits (8)
-          } else if (["OCI","OCIN"].includes(docTypeVal)) {
-              docNum.attr("maxlength", 10);  // OCI / OCIN => 1 letter + 9 digits (10)
-          } else if (docTypeVal === "PASSPORT") {
-              docNum.attr("maxlength", 12);  // Passport => up to 12
-          } else {
-              docNum.removeAttr("maxlength");
-          }
-
-          // ---- Validate Document Type ----
-          if (docTypeVal === "") {
-              docType.addClass("required");
-              docTypeErr.text("Please select a document type").show();
-              r = false;
-              // if (eField === null) eField = docType;
-              null === e && (e = docType);
-          } else {
-              docType.removeClass("required");
-              docTypeErr.hide();
-          }
-
-          // ---- Validate Document Number ----
-          if (docNumVal === "") {
-              docNum.addClass("required");
-              docNumErr.text("This field is required").show();
-              r = false;
-              // if (eField === null) eField = docNum;
-              null === e && (e = docNum);
-          } else {
-              // Reset previous error state before applying regex
-              docNum.removeClass("required");
-              docNumErr.hide();
-
-              // Determine regex and error message for all supported doc types
-              let regex = null,
-                  errMsg = "";
-
-              if (["PIO","PION"].includes(docTypeVal)) {
-                  // Person of Indian Origin Number (PION/PIO) => 1 letter + 7 digits
-                  regex = /^[A-Z]\d{7}$/;
-                  errMsg = "Invalid PIO/PION Number (1 letter + 7 digits)";
-              } else if (["OCI","OCIN"].includes(docTypeVal)) {
-                  // Overseas Citizen of India Number (OCI / OCIN) => 1 letter + 9 digits
-                  regex = /^[A-Z]\d{9}$/;
-                  errMsg = "Invalid OCI/OCIN Number (1 letter + 9 digits)";
-              } else if (docTypeVal === "PASSPORT") {
-                  // Passport: alpha-numeric, length between 6 and 12
-                  regex = /^[A-Z0-9]{6,12}$/;
-                  errMsg = "Invalid Passport Number (6-12 alphanumeric characters)";
-              }
-
-              // Only run regex if we identified one for the selected doc type
-              if (regex && !regex.test(docNumVal)) {
-                  docNum.addClass("required");
-                  docNumErr.text(errMsg).show();
-                  r = false;
-                  // if (eField === null) eField = docNum;
-                  null === e && (e = docNum);
-              } else if (regex) {
-                  // passes regex
-                  docNum.removeClass("required");
-                  docNumErr.hide();
-              }
-              // if no regex (unknown doc type) we already flagged docType above
-          }
-      }
+      // const conditionalFields = isIndian
+      //   ? [
+      //     { id: "#IndPanNumber", errorId: "#IndPanNumberError" },
+      //     { id: "#IndAadhar", errorId: "#IndAadharError" },
+      //   ]
+      //   : [
+      //     // anil nri validation
+      //     // { id: "#IndPassportNumber", errorId: "#IndPassportNumberError" },
+      //     // { id: "#IndOci", errorId: "#IndOciError" },
+      //   ];
 
       // const validationArray = [...baseFields, ...conditionalFields];
       // validationArray.forEach(function (d) {
@@ -524,6 +354,232 @@ $(document).ready(function () {
       //         null === e && (e = l))
       //       : (l.removeClass("required"), i.hide());
       // });
+
+      // ===== Base Fields =====
+      const baseFields = [
+        { id: "#indfullname", errorId: "#IndFullNameError" },
+        { id: "#Indgender", errorId: "#IndGenderError" },
+        { id: "#dateOfBirth", errorId: "#dateOfBirthError" },
+        { id: "#mobileInv", errorId: "#IndMobileError" },
+        { id: "#emailInv", errorId: "#IndEmailError" },
+        { id: "#IndSecondName", errorId: "#IndSecondNameError" },
+        { id: "#commAddress", errorId: "#IndCommAddressError" }
+      ];
+
+      // Validate base required fields (name, gender, dob, mobile, email, second name, address)
+      baseFields.forEach(function (d) {
+        const l = $(d.id),
+          i = $(d.errorId),
+          val = l.val().trim();
+
+        if (val === "") {
+          l.addClass("required");
+          i.text("This field is required").show();
+          r = false;
+          // if (eField === null) eField = l;
+          null === e && (e = l);
+        } else {
+          l.removeClass("required");
+          i.hide();
+        }
+      });
+
+      // ===== Indian / Non-Indian Validation =====
+      // Determine if applicant is resident of India (radio value "1" => Yes)
+      const isIndian = $("input[name='isIndian']:checked").val() === "1";
+
+      if (isIndian) {
+        // -------------------------
+        // If Indian: clear Non-Indian fields/errors (because user may have switched)
+        // -------------------------
+        // Clear document type/number (values + error state)
+        $("#documentType").val("");
+        $("#documentTypeError").text("").hide();
+        $("#documentType").removeClass("required");
+
+        $("#documentTypeNumber").val("");
+        $("#documentTypeNumberError").text("").hide();
+        $("#documentTypeNumber").removeClass("required");
+        $("#documentTypeNumber").removeAttr("maxlength");
+
+        // ----- PAN -----
+        const pan = $("#IndPanNumber"),
+          panErr = $("#IndPanNumberError"),
+          panVal = pan.val().trim().toUpperCase();
+        pan.val(panVal);
+
+        if (panVal === "") {
+          pan.addClass("required");
+          panErr.text("This field is required").show();
+          r = false;
+          // if (eField === null) eField = pan;
+          null === e && (e = pan);
+        } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panVal)) {
+          pan.addClass("required");
+          panErr.text("Please enter a valid PAN (ABCDE1234F)").show();
+          r = false;
+          // if (eField === null) eField = pan;
+          null === e && (e = pan);
+        } else {
+          pan.removeClass("required");
+          panErr.hide();
+        }
+
+        // ----- Aadhaar -----
+        const aadhaar = $("#IndAadhar"),
+          aadErr = $("#IndAadharError"),
+          aadVal = aadhaar.val().trim();
+        if (aadVal === "") {
+          aadhaar.addClass("required");
+          aadErr.text("This field is required").show();
+          r = false;
+          // if (eField === null) eField = aadhaar;
+          null === e && (e = aadhaar);
+        } else if (!/^\d{12}$/.test(aadVal)) {
+          aadhaar.addClass("required");
+          aadErr.text("Please enter a valid 12-digit Aadhaar number").show();
+          r = false;
+          // if (eField === null) eField = aadhaar;
+          null === e && (e = aadhaar);
+        } else {
+          aadhaar.removeClass("required");
+          aadErr.hide();
+        }
+
+      } else {
+        // -------------------------
+        // If Non-Indian: clear Indian fields/errors (user requested clearing)
+        // -------------------------
+        // Clear PAN / Aadhaar values and errors as user requested "YES CLEAR"
+        $("#IndPanNumber").val("");
+        $("#IndPanNumberError").text("").hide();
+        $("#IndPanNumber").removeClass("required");
+
+        $("#IndAadhar").val("");
+        $("#IndAadharError").text("").hide();
+        $("#IndAadhar").removeClass("required");
+
+        // ----- Non-Indian: Document Type + Document Number -----
+        const docType = $("#documentType"),
+          docTypeErr = $("#documentTypeError"),
+          // normalize selected value to uppercase to handle 'pion','pion' etc.
+          docTypeValRaw = (docType.val() || "").trim(),
+          docTypeVal = docTypeValRaw.toUpperCase();
+
+        const docNum = $("#documentTypeNumber"),
+          docNumErr = $("#documentTypeNumberError"),
+          docNumValRaw = (docNum.val() || "").trim(),
+          docNumVal = docNumValRaw.toUpperCase();
+
+        // put uppercase value back into the input (helps regex)
+        docNum.val(docNumVal);
+
+        // ---- Dynamic maxlength based on document type ----
+        // Accept common synonyms: PIO / PION, OCI / OCIN, PASSPORT
+        if (["PIO", "PION"].includes(docTypeVal)) {
+          docNum.attr("maxlength", 8);   // PIO / PION => 1 letter + 7 digits (8)
+        } else if (["OCI", "OCIN"].includes(docTypeVal)) {
+          docNum.attr("maxlength", 10);  // OCI / OCIN => 1 letter + 9 digits (10)
+        } else if (docTypeVal === "PASSPORT") {
+          docNum.attr("maxlength", 12);  // Passport => up to 12
+        } else {
+          docNum.removeAttr("maxlength");
+        }
+
+        // ---- Validate Document Type ----
+        if (docTypeVal === "") {
+          docType.addClass("required");
+          docTypeErr.text("Please select a document type").show();
+          r = false;
+          // if (eField === null) eField = docType;
+          null === e && (e = docType);
+        } else {
+          docType.removeClass("required");
+          docTypeErr.hide();
+        }
+
+        // ---- Validate Document Number ----
+        if (docNumVal === "") {
+          docNum.addClass("required");
+          docNumErr.text("This field is required").show();
+          r = false;
+          // if (eField === null) eField = docNum;
+          null === e && (e = docNum);
+        } else {
+          // Reset previous error state before applying regex
+          docNum.removeClass("required");
+          docNumErr.hide();
+
+          // Determine regex and error message for all supported doc types
+          let regex = null,
+            errMsg = "";
+
+          if (["PIO", "PION"].includes(docTypeVal)) {
+            // Person of Indian Origin Number (PION/PIO) => 1 letter + 7 digits
+            regex = /^[A-Z]\d{7}$/;
+            errMsg = "Invalid PIO/PION Number (1 letter + 7 digits)";
+          } else if (["OCI", "OCIN"].includes(docTypeVal)) {
+            // Overseas Citizen of India Number (OCI / OCIN) => 1 letter + 9 digits
+            regex = /^[A-Z]\d{9}$/;
+            errMsg = "Invalid OCI/OCIN Number (1 letter + 9 digits)";
+          } else if (docTypeVal === "PASSPORT") {
+            // Passport: alpha-numeric, length between 6 and 12
+            regex = /^[A-Z0-9]{6,12}$/;
+            errMsg = "Invalid Passport Number (6-12 alphanumeric characters)";
+          }
+
+          // Only run regex if we identified one for the selected doc type
+          if (regex && !regex.test(docNumVal)) {
+            docNum.addClass("required");
+            docNumErr.text(errMsg).show();
+            r = false;
+            // if (eField === null) eField = docNum;
+            null === e && (e = docNum);
+          } else if (regex) {
+            // passes regex
+            docNum.removeClass("required");
+            docNumErr.hide();
+          }
+          // if no regex (unknown doc type) we already flagged docType above
+        }
+      }
+
+      // ===== Focus first invalid field =====
+      // if (!r && eField !== null) eField.focus();
+
+      // // Keep console logs as requested
+      // if (r) {
+      //   console.log("Form is valid");
+      // } else {
+      //   console.log("Form has errors");
+      // }
+
+      // #End Modified by Lalit on 10-01-2025
+      /* [
+        { id: "#indfullname", errorId: "#IndFullNameError" },
+        { id: "#Indgender", errorId: "#IndGenderError" },
+        { id: "#dateOfBirth", errorId: "#dateOfBirthError" },
+        { id: "#mobileInv", errorId: "#IndMobileError" },
+        { id: "#emailInv", errorId: "#IndEmailError" },
+        { id: "#IndSecondName", errorId: "#IndSecondNameError" },
+        { id: "#IndPanNumber", errorId: "#IndPanNumberError" },
+        { id: "#IndAadhar", errorId: "#IndAadharError" },
+        { id: "#commAddress", errorId: "#IndCommAddressError" },
+        // { id: "#file-input", errorId: "#file-inputError" },
+      ].forEach(function (d) {
+        const l = $(d.id),
+          i = $(d.errorId);
+        l.on("input", function () {
+          "" !== l.val().trim() && (l.removeClass("required"), i.hide());
+        }),
+          "" === l.val().trim()
+            ? (l.addClass("required"),
+              i.text("This field is required").show(),
+              (r = !1),
+              null === e && (e = l))
+            : (l.removeClass("required"), i.hide());
+      }); */
+
       const d = $("#countryCode"),
         l = $("#countryCodeError");
       "" === d.val().trim()
@@ -542,16 +598,16 @@ $(document).ready(function () {
           (r = !1),
           null === e && (e = i))
         : 10 !== n.length
-        ? (o.text("Mobile Number must be exactly 10 digit"),
-          o.show(),
-          (r = !1),
-          null === e && (e = i))
-        : "0" === t
-        ? (o.text("Please verify your mobile number"),
-          o.show(),
-          (r = !1),
-          null === e && (e = i))
-        : o.hide();
+          ? (o.text("Mobile Number must be exactly 10 digit"),
+            o.show(),
+            (r = !1),
+            null === e && (e = i))
+          : "0" === t
+            ? (o.text("Please verify your mobile number"),
+              o.show(),
+              (r = !1),
+              null === e && (e = i))
+            : o.hide();
       const s = $("#emailInv"),
         a = $("#IndEmailError"),
         u = s.val().trim(),
@@ -573,7 +629,94 @@ $(document).ready(function () {
       } else {
         a.hide();
       }
-      if ($("#isIndian").is(":checked")) {
+      // commented by anil for adding new validation code on 01-10-2025
+      // if ($("#isNRI").is(":checked")) {
+      //   const c = $("#IndPassportNumber"),
+      //     f = $("#IndPassportNumberError"),
+      //     I = c.val().trim();
+      //   "" === I
+      //     ? (c.addClass("required"),
+      //       f.text("This field is required").show(),
+      //       (r = !1),
+      //       null === e && (e = c))
+      //     : 12 !== I.length
+      //     ? (c.addClass("required"),
+      //       f.text("Passport must be 12 characters maximum").show(),
+      //       (r = !1),
+      //       null === e && (e = c))
+      //     : (c.removeClass("required"), f.hide());
+
+      //   const m = $("#IndOci"),
+      //     v = $("#IndOciError"),
+      //     E = m.val().trim();
+
+      //   // Removed required validation, only keep length validation
+      //   if (E !== "" && 7 !== E.length) {
+      //     m.addClass("required"),
+      //       v.text("OCI card number must be 7 characters maximum").show(),
+      //       (r = !1),
+      //       null === e && (e = m);
+      //   } else {
+      //     m.removeClass("required"), v.hide();
+      //   }
+      /* if ($("#isNRI").is(":checked")) {
+       
+        const c = $("#IndPassportNumber"),
+          f = $("#IndPassportNumberError"),
+          I = c.val().trim();
+
+        if (I === "") {
+          c.addClass("required");
+          f.text("This field is required").show();
+          r = !1;
+          if (e === null) e = c;
+        } else if (!/^[A-Za-z0-9]+$/.test(I)) {
+          c.addClass("required");
+          f.text("Passport number must be alphanumeric").show();
+          r = !1;
+          if (e === null) e = c;
+        } else if (I.length > 9) {
+          c.addClass("required");
+          f.text("Passport number must be maximum 9 characters").show();
+          r = !1;
+          if (e === null) e = c;
+        } else {
+          c.removeClass("required");
+          f.hide();
+        }
+
+       
+        const m = $("#IndOci"),
+          v = $("#IndOciError"),
+          E = m.val().trim();
+
+        if (E !== "") {
+          if (E.length !== 8) {
+            m.addClass("required");
+            v.text("OCI card number must be exactly 8 characters").show();
+            r = !1;
+            if (e === null) e = m;
+          } else if (!/^[A-Za-z]/.test(E.charAt(0))) {
+            m.addClass("required");
+            v.text("First character must be alphabetic").show();
+            r = !1;
+            if (e === null) e = m;
+          } else if (!/^[0-9]{7}$/.test(E.substring(1))) {
+            m.addClass("required");
+            v.text("Last 7 characters must be digits").show();
+            r = !1;
+            if (e === null) e = m;
+          } else {
+            m.removeClass("required");
+            v.hide();
+          }
+        } else {
+          m.removeClass("required");
+          v.hide();
+        }
+
+        
+      } else {
         const c = $("#IndPanNumber"),
           f = $("#IndPanNumberError"),
           I = c.val().trim();
@@ -583,11 +726,11 @@ $(document).ready(function () {
             (r = !1),
             null === e && (e = c))
           : 10 !== I.length
-          ? (c.addClass("required"),
-            f.text("PAN Number must be exactly 10 characters").show(),
-            (r = !1),
-            null === e && (e = c))
-          : (c.removeClass("required"), f.hide());
+            ? (c.addClass("required"),
+              f.text("PAN Number must be exactly 10 characters").show(),
+              (r = !1),
+              null === e && (e = c))
+            : (c.removeClass("required"), f.hide());
 
         const m = $("#IndAadhar"),
           v = $("#IndAadharError"),
@@ -598,12 +741,44 @@ $(document).ready(function () {
             (r = !1),
             null === e && (e = m))
           : 12 !== E.length
+            ? (m.addClass("required"),
+              v.text("Aadhar Number must be exactly 12 digit").show(),
+              (r = !1),
+              null === e && (e = m))
+            : (m.removeClass("required"), v.hide());
+      } */
+      if ($("#isIndian").is(":checked")) {
+        const c = $("#IndPanNumber"),
+          f = $("#IndPanNumberError"),
+          I = c.val().trim();
+        "" === I
+          ? (c.addClass("required"),
+            f.text("This field is required").show(),
+            (r = !1),
+            null === e && (e = c))
+          : 10 !== I.length
+            ? (c.addClass("required"),
+              f.text("PAN Number must be exactly 10 characters").show(),
+              (r = !1),
+              null === e && (e = c))
+            : (c.removeClass("required"), f.hide());
+
+        const m = $("#IndAadhar"),
+          v = $("#IndAadharError"),
+          E = m.val().trim();
+        "" === E
           ? (m.addClass("required"),
-            v.text("Aadhar Number must be exactly 12 digit").show(),
+            v.text("This field is required").show(),
             (r = !1),
             null === e && (e = m))
-          : (m.removeClass("required"), v.hide());
+          : 12 !== E.length
+            ? (m.addClass("required"),
+              v.text("Aadhar Number must be exactly 12 digit").show(),
+              (r = !1),
+              null === e && (e = m))
+            : (m.removeClass("required"), v.hide());
       } else {
+        // anil nri validation
       }
 
       const C = $("#commAddress"),
@@ -618,46 +793,46 @@ $(document).ready(function () {
             (r = !1),
             null === e && (e = C))
           : b.length > 200
-          ? (C.addClass("required"),
-            q.text("Address cannot exceed 200 characters").show(),
-            (r = !1),
-            null === e && (e = C))
-          : y.test(b) ||
+            ? (C.addClass("required"),
+              q.text("Address cannot exceed 200 characters").show(),
+              (r = !1),
+              null === e && (e = C))
+            : y.test(b) ||
             (C.addClass("required"),
-            q
-              .text(
-                "Only letters, digits, hyphen (-), comma (,), dot (.), hash (#), parenthesis ( ), forward slash (/), and spaces are allowed"
-              )
-              .show(),
-            (r = !1),
-            null === e && (e = C));
+              q
+                .text(
+                  "Only letters, digits, hyphen (-), comma (,), dot (.), hash (#), parenthesis ( ), forward slash (/), and spaces are allowed"
+                )
+                .show(),
+              (r = !1),
+              null === e && (e = C));
 
       if ($("#Yes").is(":checked")) {
         ($("#isPropertyFlat").is(":checked")
           ? [
-              { id: "#localityFill", errorId: "#localityFillError" },
-              { id: "#blocknoInvFill", errorId: "#blocknoInvFillError" },
-              { id: "#plotnoInvFill", errorId: "#plotnoInvFillError" },
-              { id: "#landUseInvFill", errorId: "#landUseInvFillError" },
-              {
-                id: "#landUseSubtypeInvFill",
-                errorId: "#landUseSubtypeInvFillError",
-              },
-              {
-                id: "#flat_no_after_Checked_Address_notfound",
-                errorId: "#flat_no_after_Checked_Address_notfoundError",
-              },
-            ]
+            { id: "#localityFill", errorId: "#localityFillError" },
+            { id: "#blocknoInvFill", errorId: "#blocknoInvFillError" },
+            { id: "#plotnoInvFill", errorId: "#plotnoInvFillError" },
+            { id: "#landUseInvFill", errorId: "#landUseInvFillError" },
+            {
+              id: "#landUseSubtypeInvFill",
+              errorId: "#landUseSubtypeInvFillError",
+            },
+            {
+              id: "#flat_no_after_Checked_Address_notfound",
+              errorId: "#flat_no_after_Checked_Address_notfoundError",
+            },
+          ]
           : [
-              { id: "#localityFill", errorId: "#localityFillError" },
-              { id: "#blocknoInvFill", errorId: "#blocknoInvFillError" },
-              { id: "#plotnoInvFill", errorId: "#plotnoInvFillError" },
-              { id: "#landUseInvFill", errorId: "#landUseInvFillError" },
-              {
-                id: "#landUseSubtypeInvFill",
-                errorId: "#landUseSubtypeInvFillError",
-              },
-            ]
+            { id: "#localityFill", errorId: "#localityFillError" },
+            { id: "#blocknoInvFill", errorId: "#blocknoInvFillError" },
+            { id: "#plotnoInvFill", errorId: "#plotnoInvFillError" },
+            { id: "#landUseInvFill", errorId: "#landUseInvFillError" },
+            {
+              id: "#landUseSubtypeInvFill",
+              errorId: "#landUseSubtypeInvFillError",
+            },
+          ]
         ).forEach(function (d) {
           const l = $(d.id),
             i = $(d.errorId);
@@ -704,20 +879,21 @@ $(document).ready(function () {
                 null === e && (e = l))
               : (l.removeClass("required"), i.hide()),
             $("#isPropertyFlat").is(":checked") &&
-              ("FlatNotAvailable" === $("#flatAvailableInv").val() &&
-                "" !== $("#landUse").val() &&
-                "" !== $("#landUseSubtype").val() &&
-                o("#flat_no_rec_not_found", "#flat_no_rec_not_foundError", !0),
+            ("FlatNotAvailable" === $("#flatAvailableInv").val() &&
+              "" !== $("#landUse").val() &&
+              "" !== $("#landUseSubtype").val() &&
+              o("#flat_no_rec_not_found", "#flat_no_rec_not_foundError", !0),
               "FlatAvailable" === $("#flatAvailableInv").val() &&
-                "" !== $("#landUse").val() &&
-                "" !== $("#landUseSubtype").val() &&
-                (o(
-                  "#flat",
-                  "#flatError",
-                  !$("#isFlatNotInList").is(":checked")
-                ),
+              "" !== $("#landUse").val() &&
+              "" !== $("#landUseSubtype").val() &&
+              (o(
+                "#flat",
+                "#flatError",
+                !$("#isFlatNotInList").is(":checked")
+              ),
                 $("#isFlatNotInList").is(":checked") &&
-                  o("#flat_no", "#flat_noError", !0)));
+                o("#flat_no", "#flat_noError", !0)));
+
         });
         $("#isFlatNotInList").on("change", function () {
           if (!$(this).is(":checked")) {
@@ -726,90 +902,252 @@ $(document).ready(function () {
           }
         });
       }
-
-      // const _ = $("#IndOwnerLess"),
-      //       U = $("#IndOwnerLessError"),
-      //       O = $("#IndLeaseDeed"),
-      //       D = $("#IndLeaseDeedError"),
-      //       MAX_SIZE_MB = 20;
-
-      // _.removeClass("required"); U.hide();
-      // O.removeClass("required"); D.hide();
-
-      // let isValid = true;
-
-      // function checkFile(input, errorDiv, fileKey) {
-      //     const files = input[0].files;
-      //     errorDiv.text("").hide();
-      //     input.removeClass("required");
-
-      //     if (fileTooLargeMap[fileKey]) {
-      //         input.addClass("required");
-      //         errorDiv.text(`Maximum allowed size is upto ${MAX_SIZE_MB} MB.`).show();
-      //         null === e && (e = input); // ✅ fixed reference
-      //         return false;
+      // const g = [
+      //   { id: "#IndSaleDeed", errorId: "#IndSaleDeedError" },
+      //   { id: "#IndBuildAgree", errorId: "#IndBuildAgreeError" },
+      //   { id: "#IndSubMut", errorId: "#IndSubMutError" },
+      //   { id: "#IndOther", errorId: "#IndOtherError" },
+      // ];
+      // let x = !0,
+      //   A = null,
+      //   k = !1;
+      // g.forEach(function (e) {
+      //   const r = $(e.id),
+      //     d = $(e.errorId);
+      //   r.removeClass("required"),
+      //     d.hide(),
+      //     r.on("change", function () {
+      //       const e = r[0].files;
+      //       if (e.length > 0) {
+      //         let l = !0;
+      //         for (let r = 0; r < e.length; r++) {
+      //           if (!e[r].name.endsWith(".pdf")) {
+      //             l = !1;
+      //             break;
+      //           }
+      //         }
+      //         l
+      //           ? (r.removeClass("required"), d.hide())
+      //           : (r.addClass("required"),
+      //             d.text("Only PDF files are allowed").show(),
+      //             (x = !1),
+      //             null === A && (A = r));
+      //       }
+      //     });
+      // }),
+      //   g.forEach(function (e) {
+      //     const r = $(e.id),
+      //       d = $(e.errorId),
+      //       l = r[0].files;
+      //     if (l.length > 0) {
+      //       k = !0;
+      //       let e = !0;
+      //       for (let r = 0; r < l.length; r++) {
+      //         if (!l[r].name.endsWith(".pdf")) {
+      //           e = !1;
+      //           break;
+      //         }
+      //       }
+      //       e ||
+      //         (r.addClass("required"),
+      //         d.text("Only PDF files are allowed").show(),
+      //         (x = !1),
+      //         null === A && (A = r));
       //     }
+      //   }),
+      //   k ||
+      //     g.forEach(function (e) {
+      //       const r = $(e.id),
+      //         d = $(e.errorId);
+      //       r.addClass("required"),
+      //         d.text("At least one file is required").show(),
+      //         (x = !1),
+      //         null === A && (A = r);
+      //     });
+      // A && A.focus();  
 
-      //     if (!files || files.length === 0) return null; // RETURN NULL if empty
+      // const g = [
+      //   {
+      //     id: "#IndSaleDeed",
+      //     errorId: "#IndSaleDeedError",
+      //     checkbox: "#saleDeedAtorney"
+      //   },
+      //   {
+      //     id: "#IndBuildAgree",
+      //     errorId: "#IndBuildAgreeError",
+      //     checkbox: "#bbAgreement"
+      //   },
+      //   {
+      //     id: "#IndSubMut",
+      //     errorId: "#IndSubMutError",
+      //     checkbox: "#subsMutationLetter"
+      //   },
+      //   {
+      //     id: "#IndOther",
+      //     errorId: "#IndOtherError",
+      //     checkbox: "#diffDoc"
+      //   }
+      // ];
 
-      //     const file = files[0];
+      // ✅ Step 1: Check if any checkbox is checked
+      // let fileSectionValid = true;
+      // let fileSectionFirstError = null;
+      // const anyChecked = g.some(item => $(item.checkbox).is(":checked"));
 
-      //     if (!file.name.toLowerCase().endsWith(".pdf")) {
+      // if (!anyChecked) {
+      //   $("#IndChooseOneError").text("At least one file is required").show();
+      //   fileSectionValid = false;
+      // } else {
+      //   $("#IndChooseOneError").hide();
+      // }
+
+      // // ✅ Step 2 & 3: Loop over each item
+      // g.forEach(function (item) {
+      //   const fileInput = $(item.id);
+      //   const errorDiv = $(item.errorId);
+      //   const checkbox = $(item.checkbox);
+      //   const files = fileInput[0].files;
+
+      //   // Initial state cleanup
+      //   fileInput.removeClass("required");
+      //   errorDiv.hide();
+
+      // ✅ Bind change event to enable/disable input on checkbox toggle
+      // checkbox.off("change").on("change", function () {
+      //   if ($(this).is(":checked")) {
+      //     fileInput.prop("disabled", false);
+      //   } else {
+      //     fileInput.prop("disabled", true).val("");
+      //     errorDiv.hide();
+      //     fileInput.removeClass("required");
+      //   }
+
+      //   // Also hide #IndChooseOneError if any one is checked
+      //   const anyStillChecked = g.some(item => $(item.checkbox).is(":checked"));
+      //   if (anyStillChecked) {
+      //     $("#IndChooseOneError").hide();
+      //   }
+      // });
+
+      // ✅ Validate if checkbox is checked
+      //   if (checkbox.is(":checked")) {
+      //     fileInput.css("display", "block");
+
+      //     if (files.length === 0) {
+      //       fileInput.addClass("required");
+      //       errorDiv.text("This field is mandatory.").show();
+      //       fileSectionValid = false;
+      //       if (!fileSectionFirstError) fileSectionFirstError = fileInput;
+      //     } else {
+      //       let allPdf = true;
+      //       for (let i = 0; i < files.length; i++) {
+      //         if (!files[i].name.toLowerCase().endsWith(".pdf")) {
+      //           allPdf = false;
+      //           break;
+      //         }
+      //       }
+      //       if (!allPdf) {
+      //         fileInput.addClass("required");
       //         errorDiv.text("Only PDF files are allowed").show();
-      //         input.addClass("required");
-      //         null === e && (e = input); // ✅ fixed reference
-      //         return false;
+      //         fileSectionValid = false;
+      //         if (!fileSectionFirstError) fileSectionFirstError = fileInput;
+      //       }
       //     }
-
-      //     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      //         errorDiv.text(`Maximum allowed size is ${MAX_SIZE_MB} MB`).show();
-      //         input.addClass("required");
-      //         null === e && (e = input); // ✅ fixed reference
-      //         return false;
-      //     }
-
-      //     return true;
+      //   } else {
+      //     fileInput.css("display", "none").val("");
+      //     errorDiv.hide();
+      //   }
+      // });
+      // if (!fileSectionValid && fileSectionFirstError) {
+      //   fileSectionFirstError.focus();
       // }
+      // const _ = $("#IndOwnerLess"),
+      //   U = $("#IndOwnerLessError");
+      // _.removeClass("required"), U.hide();
+      // let N = !0,
+      //   P = null;
+      // function S() {
+      //   const e = _[0].files;
 
-      // const ownerValid = checkFile(_, U, "IndOwnerLess");
-      // const leaseValid = checkFile(O, D, "IndLeaseDeed");
+      //   //   debugger;
 
-      // // At least one document required ONLY if both are empty (null)
-      // if (ownerValid === null && leaseValid === null) {
+      //   // Case 1: File too large previously
+      //   // if (fileTooLargeMap["IndOwnerLess"]) {
+      //   //   _.addClass("required");
+      //   //   U.text("Maximum allowed size is upto 5 MB.").show();
+      //   //   return false;
+      //   // }
+
+      //   // Case 2: No file selected
+      //   if (!e || e.length === 0) {
       //     _.addClass("required");
+      //     U.text("This field is mandatory. Upload a PDF file").show();
+      //     return false;
+      //   }
+
+      //   // Case 3: Extension check
+      //   const file = e[0];
+      //   if (!file.name.toLowerCase().endsWith(".pdf")) {
+      //     _.addClass("required");
+      //     U.text("Only PDF files are allowed").show();
+      //     return false;
+      //   }
+
+      //   // ✅ All good
+      //   _.removeClass("required");
+      //   U.hide();
+      //   return true;
+      // }
+
+      // Change + focus handler
+      // _.on("focus", function () {
+      //   fileTooLargeMap["IndOwnerLess"] = false;
+      // }),
+
+      // _.on("change", function () {
+      //   validateFileSize("IndOwnerLess", "IndOwnerLessError", 5); // size
+      //   S(); // type and empty check
+      // }),
+      // S() || ((N = !1), (P = _));
+      // P && P.focus();
+      // const O = $("#IndLeaseDeed"),
+      //   D = $("#IndLeaseDeedError");
+      // O.removeClass("required"), D.hide();
+      // let T = !0,
+      //   L = null;
+      // function B() {
+      //   const files = O[0].files;
+
+      //   // Case 1: File was too large previously
+      //   // if (fileTooLargeMap["IndLeaseDeed"]) {
+      //   //   O.addClass("required");
+      //   //   D.text("Maximum allowed size is upto 5 MB.").show();
+      //   //   return false;
+      //   // }
+
+      //   // Case 2: No file selected
+      //   if (!files || files.length === 0) {
       //     O.addClass("required");
-      //     U.text("At least one document is required").show();
-      //     D.text("At least one document is required").show();
-      //     isValid = false;
-      //     null === e && (e = _); // ✅ fixed — reuses existing variable
+      //     D.text("This field is mandatory. Upload a PDF file").show();
+      //     return false;
+      //   }
+
+      //   // Case 3: Check extension
+      //   const file = files[0];
+      //   if (!file.name.toLowerCase().endsWith(".pdf")) {
+      //     O.addClass("required");
+      //     D.text("Only PDF files are allowed").show();
+      //     return false;
+      //   }
+
+      //   // ✅ All good — clear error
+      //   O.removeClass("required");
+      //   D.hide();
+      //   return true;
       // }
-
-      // // If any file is invalid type/size, prevent submit
-      // if ((ownerValid === false) || (leaseValid === false)) {
-      //     isValid = false;
-      //     // Track first invalid input (priority to first invalid)
-      //     if (ownerValid === false && e === null) e = _;
-      //     else if (leaseValid === false && e === null) e = O;
-      // }
-
-      // // added by anil new fucntion on 10-11-2025
-      // if (!isValid) {
-      //     if (ownerValid !== true && e === null) e = _;
-      //     else if (leaseValid !== true && e === null) e = O;
-
-      //     // 🔥 Move focus here before return
-      //     if (e !== null) {
-      //         if (e.is(":hidden")) e.closest(":hidden").show();
-      //         e.focus();
-      //         console.log("Focused on first invalid field:", e.attr("id"));
-      //     }
-
-      //     return false; // now safe to exit
-      // }
-
       const O = $("#IndLeaseDeed"),
-      D = $("#IndLeaseDeedError"),
-      MAX_SIZE_MB = 20;
+        D = $("#IndLeaseDeedError"),
+        MAX_SIZE_MB = 20;
 
       O.removeClass("required");
       D.hide();
@@ -817,45 +1155,45 @@ $(document).ready(function () {
       let isValid = true;   // keep this
 
       function checkFile(input, errorDiv, fileKey) {
-          const files = input[0].files;
-          errorDiv.text("").hide();
-          input.removeClass("required");
+        const files = input[0].files;
+        errorDiv.text("").hide();
+        input.removeClass("required");
 
-          // EMPTY FILE → show required error
-          if (!files || files.length === 0) {
-              errorDiv.text("This document is required").show();
-              input.addClass("required");
-              if (e === null) e = input;   // use existing variable
-              return false;
-          }
+        // EMPTY FILE → show required error
+        if (!files || files.length === 0) {
+          errorDiv.text("This document is required").show();
+          input.addClass("required");
+          if (e === null) e = input;   // use existing variable
+          return false;
+        }
 
-          const file = files[0];
+        const file = files[0];
 
-          // Too large from map
-          if (fileTooLargeMap[fileKey]) {
-              errorDiv.text(`Maximum allowed size is upto ${MAX_SIZE_MB} MB.`).show();
-              input.addClass("required");
-              if (e === null) e = input;
-              return false;
-          }
+        // Too large from map
+        if (fileTooLargeMap[fileKey]) {
+          errorDiv.text(`Maximum allowed size is upto ${MAX_SIZE_MB} MB.`).show();
+          input.addClass("required");
+          if (e === null) e = input;
+          return false;
+        }
 
-          // Not PDF
-          if (!file.name.toLowerCase().endsWith(".pdf")) {
-              errorDiv.text("Only PDF files are allowed").show();
-              input.addClass("required");
-              if (e === null) e = input;
-              return false;
-          }
+        // Not PDF
+        if (!file.name.toLowerCase().endsWith(".pdf")) {
+          errorDiv.text("Only PDF files are allowed").show();
+          input.addClass("required");
+          if (e === null) e = input;
+          return false;
+        }
 
-          // Size limit
-          if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-              errorDiv.text(`Maximum allowed size is ${MAX_SIZE_MB} MB`).show();
-              input.addClass("required");
-              if (e === null) e = input;
-              return false;
-          }
+        // Size limit
+        if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+          errorDiv.text(`Maximum allowed size is ${MAX_SIZE_MB} MB`).show();
+          input.addClass("required");
+          if (e === null) e = input;
+          return false;
+        }
 
-          return true;
+        return true;
       }
 
       // Validate only Lease Deed now
@@ -863,27 +1201,49 @@ $(document).ready(function () {
 
       // Final validation
       if (!leaseValid) {
-          isValid = false;
+        isValid = false;
       }
 
       if (!isValid) {
-          if (e !== null) {
-              if (e.is(":hidden")) e.closest(":hidden").show();
-              e.focus();
-              console.log("Focused on:", e.attr("id"));
-          }
-          return false;
+        if (e !== null) {
+          if (e.is(":hidden")) e.closest(":hidden").show();
+          e.focus();
+          console.log("Focused on:", e.attr("id"));
+        }
+        return false;
       }
-      
 
+      // if (!isValid) {
+      //   if (ownerValid !== true) {
+      //     _.focus();
+      //   } else {
+      //     O.focus();
+      //   }
+      //   return false;
+      // }
+      // O.on("focus", function () {
+      //   fileTooLargeMap["IndLeaseDeed"] = false;
+      // });
+
+
+      // if (!beforeSubmitFunction()) {
+      //   formIsValid = false;
+      // }
+
+      // O.on("change", function () {
+      //   B();
+      // }),
+      // B() || ((T = !1), (L = O));
+      // L && L.focus();
+      // null !== e && e.focus();
       const M = $("#IndConsent"),
         W = $("#IndConsentError");
       M.is(":checked")
-      ? (M.removeClass("required"), W.hide())
-      : (M.addClass("required"),
-         W.text("You must agree to the terms").show(),
-         r = false,
-         null === e && (e = M));
+        ? (M.removeClass("required"), W.hide())
+        : (M.addClass("required"),
+          W.text("You must agree to the terms").show(),
+          r = false,
+          null === e && (e = M));
       // null !== e && e.focus();
       // ✅ Final focus logic (only once)
       if (!r || !isValid || !formIsValid) {
@@ -898,13 +1258,15 @@ $(document).ready(function () {
         }
         return false; // stop form submission
       }
+      // null !== e && e.focus();
+      // if (eField !== null) eField.focus();
       // return r && x && N && T; commented and add below line to fixe issue in "Is Your Property Flat?" validation by anil on 12-06-2025
-      // return formIsValid && r && x && N && T; commented and add below line to fixe issue in "Is Your Property Flat?" validation by anil on 18-07-2025
-      // return formIsValid && r && fileSectionValid && N && T;
+      // return formIsValid && r && fileSectionValid && N && T; commented by anil on 07-11-2025
+      // return formIsValid && r;
       return formIsValid && r && isValid;
     })() &&
       ($("#IndsubmitButton").attr("disabled", !0).text("Submitting..."),
-      i[0].submit());
+        i[0].submit());
   }),
     d(),
     $("#Yes").change(function () {
@@ -968,11 +1330,6 @@ $(document).ready(function () {
       ? r.attr("id", "propertyOwnerForm")
       : $("#organization").is(":checked") && r.attr("id", "organizationForm");
   }
-  // function o() {
-  //   $("#YesOrg").is(":checked")
-  //     ? ($("#ifyesOrg").show(), $("#ifYesNotCheckedOrg").hide())
-  //     : ($("#ifyesOrg").hide(), $("#ifYesNotCheckedOrg").show());
-  // }
   function o() {
     if ($("#YesOrg").is(":checked")) {
       $("#ifyesOrg").show();
@@ -1001,26 +1358,26 @@ $(document).ready(function () {
   //   {
   //     id: "#OrgSaleDeedDoc",
   //     errorId: "#OrgSaleDeedDocError",
-  //     checkbox: "#saleDeedAtorneyOrg",
+  //     checkbox: "#saleDeedAtorneyOrg"
   //   },
   //   {
   //     id: "#OrgBuildAgreeDoc",
   //     errorId: "#OrgBuildAgreeDocError",
-  //     checkbox: "#bbAgreementOrg",
+  //     checkbox: "#bbAgreementOrg"
   //   },
   //   {
   //     id: "#OrgSubMutDoc",
   //     errorId: "#OrgSubMutDocError",
-  //     checkbox: "#subsMutationLetterOrg",
+  //     checkbox: "#subsMutationLetterOrg"
   //   },
   //   {
   //     id: "#OrgOther",
   //     errorId: "#OrgOtherError",
-  //     checkbox: "#diffDocOrg",
-  //   },
+  //     checkbox: "#diffDocOrg"
+  //   }
   // ];
 
-  // ✅ Show/hide on page load and checkbox change for Org section
+  // // ✅ Show/hide on page load and checkbox change for Org section
   // docGroup.forEach(function (item) {
   //   const fileInput = $(item.id);
   //   const checkbox = $(item.checkbox);
@@ -1043,7 +1400,7 @@ $(document).ready(function () {
   //       fileInput.removeClass("required");
   //     }
 
-  //     const anyChecked = docGroup.some((x) => $(x.checkbox).is(":checked"));
+  //     const anyChecked = docGroup.some(x => $(x.checkbox).is(":checked"));
   //     if (anyChecked) {
   //       $("#OrgChooseOneError").hide();
   //     }
@@ -1072,11 +1429,69 @@ $(document).ready(function () {
         { id: "#OrgNameAuthSign", errorId: "#OrgNameAuthSignError" },
         { id: "#authsignatory_mobile", errorId: "#authsignatory_mobileError" },
         { id: "#emailauthsignatory", errorId: "#emailauthsignatoryError" },
-        { id: "#orgAadharAuth", errorId: "#orgAadharAuthError" },
+        { id: "#orgAadharAuth", errorId: "#orgAadharAuthError" }
       ]; */
 
       // const isIndianOrg = $("#isIndianOrg").is(":checked");
-      // ===== Residency-based Conditional Validation =====
+      // const baseFieldsOrg = [
+      //   { id: "#OrgName", errorId: "#OrgNameError" },
+      //   { id: "#OrgPAN", errorId: "#OrgPANError" },
+      //   { id: "#orgAddressOrg", errorId: "#orgAddressOrgError" },
+      //   { id: "#OrgNameAuthSign", errorId: "#OrgNameAuthSignError" },
+      //   { id: "#authsignatory_mobile", errorId: "#authsignatory_mobileError" },
+      //   { id: "#emailauthsignatory", errorId: "#emailauthsignatoryError" },
+      // ];
+
+      // const conditionalFieldsOrg = isIndianOrg
+      //   ? [{ id: "#orgAadharAuth", errorId: "#orgAadharAuthError" }]
+      //   : [
+      //     // { id: "#IndPassportNumber", errorId: "#IndPassportNumberError" },
+      //     // { id: "#IndOci", errorId: "#IndOciError" },
+      //   ];
+
+      // const validationArrayOrg = [...baseFieldsOrg, ...conditionalFieldsOrg];
+
+      // requiredFields.forEach(function (field) {
+      //   const $input = $(field.id);
+      //   const $error = $(field.errorId);
+      //   $input.on("input", function () {
+      //     if ($input.val().trim() !== "") {
+      //       $input.removeClass("required");
+      //       $error.hide();
+      //     }
+      //   });
+      //   if ($input.val().trim() === "") {
+      //     $input.addClass("required");
+      //     $error.text("This field is required").show();
+      //     allRequiredValid = false;
+      //     if (firstInvalid === null) firstInvalid = $input;
+      //   } else {
+      //     $input.removeClass("required");
+      //     $error.hide();
+      //   }
+      // });
+
+      // validationArrayOrg.forEach(function (field) {
+      //   const $input = $(field.id);
+      //   const $error = $(field.errorId);
+
+      //   $input.off("input.org").on("input.org", function () { // ✅ UPDATED: prevent multiple listeners
+      //     if ($input.val().trim() !== "") {
+      //       $input.removeClass("required");
+      //       $error.hide();
+      //     }
+      //   });
+
+      //   if ($input.val().trim() === "") {
+      //     $input.addClass("required");
+      //     $error.text("This field is required").show();
+      //     allRequiredValid = false;
+      //     if (firstInvalid === null) firstInvalid = $input;
+      //   } else {
+      //     $input.removeClass("required");
+      //     $error.hide();
+      //   }
+      // });
       const isIndianOrg = $("input[name='isIndianOrg']:checked").val() === "1" || $("#isIndianOrgYes").is(":checked");
       const baseFieldsOrg = [
         { id: "#OrgName", errorId: "#OrgNameError" },
@@ -1090,9 +1505,9 @@ $(document).ready(function () {
       const conditionalFieldsOrg = isIndianOrg
         ? [{ id: "#orgAadharAuth", errorId: "#orgAadharAuthError" }]
         : [
-            // { id: "#IndPassportNumber", errorId: "#IndPassportNumberError" },
-            // { id: "#IndOci", errorId: "#IndOciError" },
-          ];
+          // { id: "#IndPassportNumber", errorId: "#IndPassportNumberError" },
+          // { id: "#IndOci", errorId: "#IndOciError" },
+        ];
 
       const validationArrayOrg = [...baseFieldsOrg, ...conditionalFieldsOrg];
 
@@ -1113,105 +1528,105 @@ $(document).ready(function () {
       });
 
 
-    if (isIndianOrg) {
-  // --- Aadhaar only for Indian ---
-  const $aad = $("#orgAadharAuth"),
-    $aadErr = $("#orgAadharAuthError"),
-    aadValRaw = $aad.val().trim(),
-    aadVal = aadValRaw.replace(/\D/g, ""); // digits only
- 
-  if (aadVal === "") {
-    $aad.addClass("required");
-    $aadErr.text("This field is required").css("display", "block");
-    allValid = false;
-    if (!firstInvalid) firstInvalid = $aad;
-  } else if (!/^\d{12}$/.test(aadVal)) {
-    $aad.addClass("required");
-    $aadErr.text("Please enter a valid 12-digit Aadhaar number").css("display", "block");
-    allValid = false;
-    if (!firstInvalid) firstInvalid = $aad;
-  } else {
-    $aad.removeClass("required");
-    $aadErr.text("").css("display", "none");
-  }
+      if (isIndianOrg) {
+        // --- Aadhaar only for Indian ---
+        const $aad = $("#orgAadharAuth"),
+          $aadErr = $("#orgAadharAuthError"),
+          aadValRaw = $aad.val().trim(),
+          aadVal = aadValRaw.replace(/\D/g, ""); // digits only
 
-      // Hide and reset non-Indian fields
-      $("#documentTypeOrg").removeClass("required");
-      $("#documentTypeOrgError").text("").css("display", "none");
-      $("#documentTypeNumberOrg").removeClass("required");
-      $("#documentTypeNumberOrgError").text("").css("display", "none");
-    } else {
-    // --- Non-Indian: Document Type + Number ---
-    const $docTypeOrg = $("#documentTypeOrg"),
-      $docTypeOrgErr = $("#documentTypeOrgError"),
-      docTypeValRaw = $docTypeOrg.val().trim(),
-      docTypeVal = (docTypeValRaw || "").toUpperCase();
+        if (aadVal === "") {
+          $aad.addClass("required");
+          $aadErr.text("This field is required").css("display", "block");
+          allValid = false;
+          if (!firstInvalid) firstInvalid = $aad;
+        } else if (!/^\d{12}$/.test(aadVal)) {
+          $aad.addClass("required");
+          $aadErr.text("Please enter a valid 12-digit Aadhaar number").css("display", "block");
+          allValid = false;
+          if (!firstInvalid) firstInvalid = $aad;
+        } else {
+          $aad.removeClass("required");
+          $aadErr.text("").css("display", "none");
+        }
 
-    const $docNumOrg = $("#documentTypeNumberOrg"),
-      $docNumOrgErr = $("#documentTypeNumberOrgError"),
-      docNumRaw = $docNumOrg.val().trim(),
-      docNumVal = docNumRaw.toUpperCase();
-
-    $docNumOrg.val(docNumVal);
-
-    // Dynamic maxlength setup
-    if (["PIO", "PION"].includes(docTypeVal)) {
-      $docNumOrg.attr("maxlength", 8);
-    } else if (["OCI", "OCIN"].includes(docTypeVal)) {
-      $docNumOrg.attr("maxlength", 10);
-    } else if (docTypeVal === "PASSPORT") {
-      $docNumOrg.attr("maxlength", 12);
-    } else {
-      $docNumOrg.removeAttr("maxlength");
-    }
-
-    // Validate document type selection
-    if (!docTypeValRaw) {
-      $docTypeOrg.addClass("required");
-      $docTypeOrgErr.text("Please select a document type").css("display", "block");
-      allValid = false;
-      if (!firstInvalid) firstInvalid = $docTypeOrg;
-    } else {
-      $docTypeOrg.removeClass("required");
-      $docTypeOrgErr.text("").css("display", "none");
-    }
-
-    // Validate document number
-    if (docNumVal === "") {
-      $docNumOrg.addClass("required");
-      $docNumOrgErr.text("This field is required").css("display", "block");
-      allValid = false;
-      if (!firstInvalid) firstInvalid = $docNumOrg;
-    } else {
-      let regex = null,
-        errMsg = "";
-      if (["PIO", "PION"].includes(docTypeVal)) {
-        regex = /^[A-Z]\d{7}$/;
-        errMsg = "Invalid PIO/PION Number (1 letter + 7 digits)";
-      } else if (["OCI", "OCIN"].includes(docTypeVal)) {
-        regex = /^[A-Z]\d{9}$/;
-        errMsg = "Invalid OCI/OCIN Number (1 letter + 9 digits)";
-      } else if (docTypeVal === "PASSPORT") {
-        regex = /^[A-Z0-9]{6,12}$/;
-        errMsg = "Invalid Passport Number (6-12 alphanumeric characters)";
-      }
-
-      if (regex && !regex.test(docNumVal)) {
-        $docNumOrg.addClass("required");
-        $docNumOrgErr.text(errMsg).css("display", "block");
-        allValid = false;
-        if (!firstInvalid) firstInvalid = $docNumOrg;
+        // Hide and reset non-Indian fields
+        $("#documentTypeOrg").removeClass("required");
+        $("#documentTypeOrgError").text("").css("display", "none");
+        $("#documentTypeNumberOrg").removeClass("required");
+        $("#documentTypeNumberOrgError").text("").css("display", "none");
       } else {
-        $docNumOrg.removeClass("required");
-        $docNumOrgErr.text("").css("display", "none");
-      }
-    }
+        // --- Non-Indian: Document Type + Number ---
+        const $docTypeOrg = $("#documentTypeOrg"),
+          $docTypeOrgErr = $("#documentTypeOrgError"),
+          docTypeValRaw = $docTypeOrg.val().trim(),
+          docTypeVal = (docTypeValRaw || "").toUpperCase();
 
-    // Reset Aadhaar field when non-Indian
-    $("#orgAadharAuth").removeClass("required");
-    $("#orgAadharAuthError").text("").css("display", "none");
-  }
-      
+        const $docNumOrg = $("#documentTypeNumberOrg"),
+          $docNumOrgErr = $("#documentTypeNumberOrgError"),
+          docNumRaw = $docNumOrg.val().trim(),
+          docNumVal = docNumRaw.toUpperCase();
+
+        $docNumOrg.val(docNumVal);
+
+        // Dynamic maxlength setup
+        if (["PIO", "PION"].includes(docTypeVal)) {
+          $docNumOrg.attr("maxlength", 8);
+        } else if (["OCI", "OCIN"].includes(docTypeVal)) {
+          $docNumOrg.attr("maxlength", 10);
+        } else if (docTypeVal === "PASSPORT") {
+          $docNumOrg.attr("maxlength", 12);
+        } else {
+          $docNumOrg.removeAttr("maxlength");
+        }
+
+        // Validate document type selection
+        if (!docTypeValRaw) {
+          $docTypeOrg.addClass("required");
+          $docTypeOrgErr.text("Please select a document type").css("display", "block");
+          allValid = false;
+          if (!firstInvalid) firstInvalid = $docTypeOrg;
+        } else {
+          $docTypeOrg.removeClass("required");
+          $docTypeOrgErr.text("").css("display", "none");
+        }
+
+        // Validate document number
+        if (docNumVal === "") {
+          $docNumOrg.addClass("required");
+          $docNumOrgErr.text("This field is required").css("display", "block");
+          allValid = false;
+          if (!firstInvalid) firstInvalid = $docNumOrg;
+        } else {
+          let regex = null,
+            errMsg = "";
+          if (["PIO", "PION"].includes(docTypeVal)) {
+            regex = /^[A-Z]\d{7}$/;
+            errMsg = "Invalid PIO/PION Number (1 letter + 7 digits)";
+          } else if (["OCI", "OCIN"].includes(docTypeVal)) {
+            regex = /^[A-Z]\d{9}$/;
+            errMsg = "Invalid OCI/OCIN Number (1 letter + 9 digits)";
+          } else if (docTypeVal === "PASSPORT") {
+            regex = /^[A-Z0-9]{6,12}$/;
+            errMsg = "Invalid Passport Number (6-12 alphanumeric characters)";
+          }
+
+          if (regex && !regex.test(docNumVal)) {
+            $docNumOrg.addClass("required");
+            $docNumOrgErr.text(errMsg).css("display", "block");
+            allValid = false;
+            if (!firstInvalid) firstInvalid = $docNumOrg;
+          } else {
+            $docNumOrg.removeClass("required");
+            $docNumOrgErr.text("").css("display", "none");
+          }
+        }
+
+        // Reset Aadhaar field when non-Indian
+        $("#orgAadharAuth").removeClass("required");
+        $("#orgAadharAuthError").text("").css("display", "none");
+      }
+
 
       validationArrayOrg.forEach(function (field) {
         const $input = $(field.id);
@@ -1243,7 +1658,7 @@ $(document).ready(function () {
       //   } else {
       //     $mobileError.hide();
       //   }
-      // }
+      // } 
 
       if (mobileVal === "") {
         $mobile.addClass("required");
@@ -1266,22 +1681,22 @@ $(document).ready(function () {
       }
 
       // Email Verification
-      // const $email = $("#emailauthsignatory");
-      // const $emailError = $("#OrgEmailAuthSignError");
-      // const emailVerified = $email.attr("data-id");
-
-      // if ($email.val().trim() !== "" && emailVerified === "0") {
-      //   $emailError.text("Please verify your email").show();
-      //   allRequiredValid = false;
-      //   if (firstInvalid === null) firstInvalid = $email;
-      // } else {
-      //   $emailError.hide();
-      // }
       const $email = $("#emailauthsignatory");
       const $emailError = $("#OrgEmailAuthSignError");
       const emailVal = $email.val().trim();
       const emailVerified = $email.attr("data-id");
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      /* const $email = $("#emailauthsignatory");
+       const $emailError = $("#OrgEmailAuthSignError");
+       const emailVerified = $email.attr("data-id");
+   
+       if ($email.val().trim() !== "" && emailVerified === "0") {
+         $emailError.text("Please verify your email").show();
+         allRequiredValid = false;
+         if (firstInvalid === null) firstInvalid = $email;
+       } else {
+         $emailError.hide();
+       }  */
 
       if (emailVal === "") {
         $email.addClass("required");
@@ -1303,7 +1718,7 @@ $(document).ready(function () {
         $emailError.hide();
       }
 
-      // PAN Validation
+      // PAN Validation + ➕ OPTIONAL format check
       const $pan = $("#OrgPAN");
       const $panError = $("#OrgPANError");
       const panVal = $pan.val().trim();
@@ -1327,6 +1742,23 @@ $(document).ready(function () {
         }
       }
 
+      // Aadhaar Validation + ➕ OPTIONAL format check
+      // const $aadhaar = $("#orgAadharAuth");
+      // const $aadhaarError = $("#orgAadharAuthError");
+      // const aadhaarVal = $aadhaar.val().trim();
+      // const aadhaarRegex = /^\d{12}$/; // ➕ OPTIONAL
+
+      // if (aadhaarVal !== "") {
+      //   if (aadhaarVal.length !== 12 || !aadhaarRegex.test(aadhaarVal)) {
+      //     $aadhaar.addClass("required");
+      //     $aadhaarError.text("Aadhar Number must be exactly 12 digits").show();
+      //     allRequiredValid = false;
+      //     if (firstInvalid === null) firstInvalid = $aadhaar;
+      //   } else {
+      //     $aadhaar.removeClass("required");
+      //     $aadhaarError.hide();
+      //   }
+      // }
       if ($("#isIndianOrg").is(":checked")) {
         // Aadhaar Validation
         const $aadhaar = $("#orgAadharAuth");
@@ -1426,36 +1858,36 @@ $(document).ready(function () {
       const conditionalFields = yesOrgChecked
         ? isFlat
           ? [
-              { id: "#localityOrgFill", errorId: "#localityOrgFillError" },
-              { id: "#blocknoOrgFill", errorId: "#blocknoOrgFillError" },
-              { id: "#plotnoOrgFill", errorId: "#plotnoOrgFillError" },
-              { id: "#landUseOrgFill", errorId: "#landUseOrgFillError" },
-              {
-                id: "#landUseSubtypeOrgFill",
-                errorId: "#landUseSubtypeOrgFillError",
-              },
-              {
-                id: "#flat_no_org_after_checked_Address_notfound",
-                errorId: "#flat_no_org_after_checked_Address_notfoundError",
-              },
-            ]
+            { id: "#localityOrgFill", errorId: "#localityOrgFillError" },
+            { id: "#blocknoOrgFill", errorId: "#blocknoOrgFillError" },
+            { id: "#plotnoOrgFill", errorId: "#plotnoOrgFillError" },
+            { id: "#landUseOrgFill", errorId: "#landUseOrgFillError" },
+            {
+              id: "#landUseSubtypeOrgFill",
+              errorId: "#landUseSubtypeOrgFillError",
+            },
+            {
+              id: "#flat_no_org_after_checked_Address_notfound",
+              errorId: "#flat_no_org_after_checked_Address_notfoundError",
+            },
+          ]
           : [
-              { id: "#localityOrgFill", errorId: "#localityOrgFillError" },
-              { id: "#blocknoOrgFill", errorId: "#blocknoOrgFillError" },
-              { id: "#plotnoOrgFill", errorId: "#plotnoOrgFillError" },
-              { id: "#landUseOrgFill", errorId: "#landUseOrgFillError" },
-              {
-                id: "#landUseSubtypeOrgFill",
-                errorId: "#landUseSubtypeOrgFillError",
-              },
-            ]
+            { id: "#localityOrgFill", errorId: "#localityOrgFillError" },
+            { id: "#blocknoOrgFill", errorId: "#blocknoOrgFillError" },
+            { id: "#plotnoOrgFill", errorId: "#plotnoOrgFillError" },
+            { id: "#landUseOrgFill", errorId: "#landUseOrgFillError" },
+            {
+              id: "#landUseSubtypeOrgFill",
+              errorId: "#landUseSubtypeOrgFillError",
+            },
+          ]
         : [
-            { id: "#locality_org", errorId: "#locality_orgError" },
-            { id: "#block_org", errorId: "#block_orgError" },
-            { id: "#plot_org", errorId: "#plot_orgError" },
-            { id: "#landUse_org", errorId: "#landUse_orgError" },
-            { id: "#landUseSubtype_org", errorId: "#landUseSubtype_orgError" },
-          ];
+          { id: "#locality_org", errorId: "#locality_orgError" },
+          { id: "#block_org", errorId: "#block_orgError" },
+          { id: "#plot_org", errorId: "#plot_orgError" },
+          { id: "#landUse_org", errorId: "#landUse_orgError" },
+          { id: "#landUseSubtype_org", errorId: "#landUseSubtype_orgError" },
+        ];
 
       conditionalFields.forEach(function (field) {
         const $input = $(field.id);
@@ -1478,10 +1910,9 @@ $(document).ready(function () {
 
       // Section: Flat Available / Not Available
       if ($("#isPropertyFlatOrg").is(":checked")) {
-        // Case: isPropertyDetailsNotFoundUnCheckedOrg
-        if (
-          $(".isPropertyDetailsNotFoundUnCheckedOrg").css("display") !== "none"
-        ) {
+
+        // 🔹 Case: isPropertyDetailsNotFoundUnCheckedOrg
+        if ($(".isPropertyDetailsNotFoundUnCheckedOrg").css("display") !== "none") {
           const isNotInList = $("#isFlatNotInListOrg").is(":checked");
 
           const $flatSelect = $("#flatOrg");
@@ -1531,11 +1962,8 @@ $(document).ready(function () {
           });
         }
 
-        // Case: isPropertyDetailsRecordNotFoundUnCheckedOrg
-        if (
-          $(".isPropertyDetailsRecordNotFoundUnCheckedOrg").css("display") !==
-          "none"
-        ) {
+        // 🔹 Case: isPropertyDetailsRecordNotFoundUnCheckedOrg
+        if ($(".isPropertyDetailsRecordNotFoundUnCheckedOrg").css("display") !== "none") {
           const $flatRecField = $("#flat_no_org_rec_not_found");
           const $flatRecError = $("#flat_no_org_rec_not_foundError");
 
@@ -1555,98 +1983,61 @@ $(document).ready(function () {
         }
       }
 
-      // At least one of 4 Org documents is required and must be .pdf
-      // const docGroup = [
-      //   { id: "#OrgSaleDeedDoc", errorId: "#OrgSaleDeedDocError" },
-      //   { id: "#OrgBuildAgreeDoc", errorId: "#OrgBuildAgreeDocError" },
-      //   { id: "#OrgSubMutDoc", errorId: "#OrgSubMutDocError" },
-      //   { id: "#OrgOther", errorId: "#OrgOtherError" }
-      // ];
+      /* const docGroup = [
+            { id: "#OrgSaleDeedDoc", errorId: "#OrgSaleDeedDocError" },
+            { id: "#OrgBuildAgreeDoc", errorId: "#OrgBuildAgreeDocError" },
+            { id: "#OrgSubMutDoc", errorId: "#OrgSubMutDocError" },
+            { id: "#OrgOther", errorId: "#OrgOtherError" }
+          ];
+      
+          function validateDocGroup() {
+            let oneUploaded = false;
+            fileValidationPassed = true;
+            let firstInvalid = null;
+      
+            docGroup.forEach(doc => {
+              const $input = $(doc.id);
+              const $error = $(doc.errorId);
+              const files = $input[0].files;
+      
+              if (files.length > 0) {
+                oneUploaded = true;
+      
+                // ✅ Check if the uploaded file is a PDF
+                const file = files[0];
+                const fileName = file.name.toLowerCase();
+                if (!fileName.endsWith(".pdf")) {
+                  $error.text("Only PDF files are allowed").show();
+                  fileValidationPassed = false;
+                  if (!firstInvalid) firstInvalid = $input;
+                } else {
+                  $error.hide();
+                }
+              } else {
+                $error.hide();
+              }
+            });
+      
+            docGroup.forEach(doc => {
+              const $input = $(doc.id);
+              const $error = $(doc.errorId);
+              const files = $input[0].files;
+      
+              if (oneUploaded) {
+                $input.removeClass("required");
+                if (files.length === 0) $error.hide(); // hide others' errors
+              } else {
+                $input.addClass("required");
+                $error.text("At least one file is required").show();
+                fileValidationPassed = false;
+                if (!firstInvalid) firstInvalid = $input;
+              }
+            });
+          } */
 
-      // function validateDocGroup() {
-      //   let oneUploaded = false;
-      //   docGroup.forEach(doc => {
-      //     const $input = $(doc.id);
-      //     const $error = $(doc.errorId);
-      //     const files = $input[0].files;
-      //     if (files.length > 0) oneUploaded = true;
-      //   });
+      // 🟡 At least one of 4 Org documents is required and must be .pdf
 
-      //   docGroup.forEach(doc => {
-      //     const $input = $(doc.id);
-      //     const $error = $(doc.errorId);
-      //     const files = $input[0].files;
-
-      //     if (oneUploaded) {
-      //       $input.removeClass("required");
-      //       $error.hide();
-      //     } else {
-      //       $input.addClass("required");
-      //       $error.text("At least one file is required").show();
-      //       fileValidationPassed = false;
-      //       if (!firstInvalid) firstInvalid = $input;
-      //     }
-
-      //     // $input.off("change.docgroup").on("change.docgroup", function () {
-      //     //   validateDocGroup();
-      //     // });
-      //   });
-      // }
-      // const docGroup = [
-      //   { id: "#OrgSaleDeedDoc", errorId: "#OrgSaleDeedDocError" },
-      //   { id: "#OrgBuildAgreeDoc", errorId: "#OrgBuildAgreeDocError" },
-      //   { id: "#OrgSubMutDoc", errorId: "#OrgSubMutDocError" },
-      //   { id: "#OrgOther", errorId: "#OrgOtherError" }
-      // ];
-
-      // function validateDocGroup() {
-      //   let oneUploaded = false;
-      //   fileValidationPassed = true;
-      //   let firstInvalid = null;
-
-      //   docGroup.forEach(doc => {
-      //     const $input = $(doc.id);
-      //     const $error = $(doc.errorId);
-      //     const files = $input[0].files;
-
-      //     if (files.length > 0) {
-      //       oneUploaded = true;
-
-      //       // ✅ Check if the uploaded file is a PDF
-      //       const file = files[0];
-      //       const fileName = file.name.toLowerCase();
-      //       if (!fileName.endsWith(".pdf")) {
-      //         $error.text("Only PDF files are allowed").show();
-      //         fileValidationPassed = false;
-      //         if (!firstInvalid) firstInvalid = $input;
-      //       } else {
-      //         $error.hide();
-      //       }
-      //     } else {
-      //       $error.hide();
-      //     }
-      //   });
-
-      //   docGroup.forEach(doc => {
-      //     const $input = $(doc.id);
-      //     const $error = $(doc.errorId);
-      //     const files = $input[0].files;
-
-      //     if (oneUploaded) {
-      //       $input.removeClass("required");
-      //       if (files.length === 0) $error.hide(); // hide others' errors
-      //     } else {
-      //       $input.addClass("required");
-      //       $error.text("At least one file is required").show();
-      //       fileValidationPassed = false;
-      //       if (!firstInvalid) firstInvalid = $input;
-      //     }
-      //   });
-      // }
-
-      // validateDocGroup();
-
-      // const docGroup = [
+      //     const docGroup = [
       //   {
       //     id: "#OrgSaleDeedDoc",
       //     errorId: "#OrgSaleDeedDocError",
@@ -1672,9 +2063,7 @@ $(document).ready(function () {
       // ✅ Step 1: Check if any checkbox is checked
       // let orgFileSectionValid = true;
       // let orgFileSectionFirstError = null;
-      // const anyOrgChecked = docGroup.some((item) =>
-      //   $(item.checkbox).is(":checked")
-      // );
+      // const anyOrgChecked = docGroup.some(item => $(item.checkbox).is(":checked"));
 
       // if (!anyOrgChecked) {
       //   $("#OrgChooseOneError").text("At least one file is required").show();
@@ -1690,71 +2079,69 @@ $(document).ready(function () {
       //   const checkbox = $(item.checkbox);
       //   const files = fileInput[0].files;
 
-        // Initial cleanup
-        // fileInput.removeClass("required");
-        // errorDiv.hide();
+      //   // Initial cleanup
+      //   fileInput.removeClass("required");
+      //   errorDiv.hide();
 
-        // ✅ Bind change event to enable/disable input
-        // checkbox.off("change").on("change", function () {
-        //   if ($(this).is(":checked")) {
-        //     fileInput.css("display", "block");
-        //   } else {
-        //     fileInput.css("display", "none").val("");
-        //     errorDiv.hide();
-        //     fileInput.removeClass("required");
-        //   }
-
-        //   // Hide general error if any one is now checked
-        //   const anyStillChecked = docGroup.some(item => $(item.checkbox).is(":checked"));
-        //   if (anyStillChecked) {
-        //     $("#OrgChooseOneError").hide();
-        //   }
-        // });
-
-        // ✅ Validate if checkbox is checked
-      //   if (checkbox.is(":checked")) {
-      //     fileInput.css("display", "block");
-
-      //     if (files.length === 0) {
-      //       fileInput.addClass("required");
-      //       errorDiv.text("This field is mandatory.").show();
-      //       orgFileSectionValid = false;
-      //       if (!orgFileSectionFirstError) orgFileSectionFirstError = fileInput;
-      //     } else {
-      //       let allPdf = true;
-      //       for (let i = 0; i < files.length; i++) {
-      //         if (!files[i].name.toLowerCase().endsWith(".pdf")) {
-      //           allPdf = false;
-      //           break;
-      //         }
-      //       }
-      //       if (!allPdf) {
-      //         fileInput.addClass("required");
-      //         errorDiv.text("Only PDF files are allowed").show();
-      //         orgFileSectionValid = false;
-      //         if (!orgFileSectionFirstError)
-      //           orgFileSectionFirstError = fileInput;
-      //       }
-      //     }
+      // ✅ Bind change event to enable/disable input
+      // checkbox.off("change").on("change", function () {
+      //   if ($(this).is(":checked")) {
+      //     fileInput.prop("disabled", false);
       //   } else {
-      //     fileInput.css("display", "none").val("");
+      //     fileInput.prop("disabled", true).val("");
       //     errorDiv.hide();
+      //     fileInput.removeClass("required");
+      //   }
+
+      //   // Hide general error if any one is now checked
+      //   const anyStillChecked = docGroup.some(item => $(item.checkbox).is(":checked"));
+      //   if (anyStillChecked) {
+      //     $("#OrgChooseOneError").hide();
       //   }
       // });
 
-      // ✅ Focus on first invalid input if needed
+      // ✅ Validate if checkbox is checked
+      // if (checkbox.is(":checked")) {
+      //   fileInput.css("display", "block");
+
+      //   if (files.length === 0) {
+      //     fileInput.addClass("required");
+      //     errorDiv.text("This field is mandatory.").show();
+      //     orgFileSectionValid = false;
+      //     if (!orgFileSectionFirstError) orgFileSectionFirstError = fileInput;
+      //   } else {
+      //     let allPdf = true;
+      //     for (let i = 0; i < files.length; i++) {
+      //       if (!files[i].name.toLowerCase().endsWith(".pdf")) {
+      //         allPdf = false;
+      //         break;
+      //       }
+      //     }
+      //     if (!allPdf) {
+      //       fileInput.addClass("required");
+      //       errorDiv.text("Only PDF files are allowed").show();
+      //       orgFileSectionValid = false;
+      //       if (!orgFileSectionFirstError) orgFileSectionFirstError = fileInput;
+      //     }
+      //   }
+      // } else {
+      //   fileInput.css("display", "none").val("");
+      //   errorDiv.hide();
+      // }
+      // });
+
+      // // ✅ Focus on first invalid input if needed
       // if (!orgFileSectionValid && orgFileSectionFirstError) {
       //   orgFileSectionFirstError.focus();
       // }
-
       // Other required file inputs with PDF check
       const otherFiles = [
         { id: "#OrgSignAuthDoc", errorId: "#OrgSignAuthDocError" },
         // { id: "#scannedIDOrg", errorId: "#scannedIDOrgError" },
-        { id: "#OrgLeaseDeedDoc", errorId: "#OrgLeaseDeedDocError" },
+        { id: "#OrgLeaseDeedDoc", errorId: "#OrgLeaseDeedDocError" }
       ];
 
-      otherFiles.forEach((group) => {
+      otherFiles.forEach(group => {
         const $input = $(group.id);
         const $error = $(group.errorId);
         const files = $input[0].files;
@@ -1812,10 +2199,11 @@ $(document).ready(function () {
 
       if (firstInvalid) firstInvalid.focus();
 
+      //  return allRequiredValid && fileValidationPassed && formIsValid;
       return (
         allRequiredValid &&
         fileValidationPassed &&
-        formIsValid 
+        formIsValid
         // orgFileSectionValid
       );
     })();

@@ -65,7 +65,6 @@ class LandUseChangeController extends Controller
 
     public function step1Submit(Request $request, PropertyMasterService $pms)
     {
-        // dd($request->all());
         try {
             return
                 DB::transaction(function () use ($request, $pms) {
@@ -101,9 +100,6 @@ class LandUseChangeController extends Controller
                             'property_subtype_change_from' => $request->propertySubtypeFrom,
                             'property_type_change_to' => $request->propertyTypeTo,
                             'property_subtype_change_to' => $request->propertySubtypeTo,
-                            'mixed_use' => $request->mixedUse == 'true',
-                            'total_built_up_area' => $request->totalBUiltUpArea,
-                            'commercial_area' => $request->commercialArea,
                             'applicant_status' => $request->applicantStatus,
                             'created_by' => Auth::id(),
                             'updated_by'  => Auth::id(),
@@ -160,13 +156,13 @@ class LandUseChangeController extends Controller
                 // redirect to payemnt page after data saved
                 $redirectUrl = route('applicationPayment', [$encodedModelName, $encodedModelId]);
                 // return redirect()->route('applicationPayment', [$encodedModelName, $encodedModelId]);
-                // return response()->json(['status' => 'success', 'url' => $redirectUrl]);
-                $paymentComplete = GeneralFunctions::paymentComplete($request->id, $tempModelName);
+                return response()->json(['status' => 'success', 'url' => $redirectUrl]);
+                /* $paymentComplete = GeneralFunctions::paymentComplete($request->id, $tempModelName);
                 if ($paymentComplete) {
                     $submitted = GeneralFunctions::convertTempAppToFinal($request->id, $tempModelName, $paymentComplete);
 
                     return $submitted;
-                }
+                } */
             } else {
                 return response()->json(['status' => 'error', 'message' => ('messages.general.error.tryAgain')]);
             }
@@ -199,7 +195,6 @@ class LandUseChangeController extends Controller
             }
         }
     } */
-
     private function getAllowedOptions($propertyType, $propertySubtype)
     {
         return DB::table('property_type_sub_type_mapping as ptsm')

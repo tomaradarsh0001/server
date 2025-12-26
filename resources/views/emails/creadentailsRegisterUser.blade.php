@@ -40,7 +40,7 @@
                 color: #1f1f1f;
               "
             >
-              Hi {{$userDetails['name']}},
+              Hi {{$userDetails['name']}}, Given below is your password & sign in name is your registered email for Edharti Portal 
             </h1>
             <p
               style="
@@ -50,7 +50,9 @@
                 letter-spacing: 0.56px;
               "
             >
-              Your application has been successfully approved by Edharti Administrator.
+              Thank you for register with us. Use the following given below creadentials
+              to sign in Edharti portal. Please Do not share this creadentials with any one, including eDharti
+              employees.
             </p>
             <p
               style="

@@ -60,7 +60,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-end">
                         @haspermission('create role')
-                            <a href="{{ url('roles/create') }}"><button class="btn btn-primary">+ Add Role</button></a>
+                            <a href="{{ url('edharti/roles/create') }}"><button class="btn btn-primary">+ Add Role</button></a>
                         @endhaspermission
                     </div>
                     <h6 class="mb-0 text-uppercase tabular-record_font pb-4">Roles</h6>

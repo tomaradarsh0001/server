@@ -119,14 +119,6 @@
     }
 </style>
 
-
-
-
-
-
-
-
-
 <body id="top" class="page">
     <!-- Login 8 section start -->
     <nav class="navbar">

@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/dashboard';
+    public const HOME = 'edharti/dashboard';
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
@@ -32,6 +32,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
+               
                 ->group(base_path('routes/web.php'));
         });
     }
@@ -44,11 +45,15 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
-        RateLimiter::for('otp-resend', function (Request $request) {
+
+  RateLimiter::for('otp-resend', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip());
         });
         RateLimiter::for('otp-verify', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip()); // You can change the limit
         });
+		/* RateLimiter::for('otp-resend', function (Request $request) { //Commented, need to check it's usage --Amita []
+            return Limit::perMinute(2)->by($request->ip());
+        }) */
     }
 }

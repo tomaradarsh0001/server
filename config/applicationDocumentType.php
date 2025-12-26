@@ -2,23 +2,23 @@
 return [
     'MUTATION' => [
         'Required' => [
-            'affidavits' => [
-                'label' => 'Affidavits',
-                'id' => 'affidavits',
-                'multiple' => true,
-                'inputs' => [
-                    'affidavitsDateOfAttestation' => [
-                        'label' => 'Date of Attestation',
-                        'type' => 'date',
-                        'id' => 'affidavitsDateOfAttestation'
-                    ],
-                    'affidavitAttestedBy' => [
-                        'label' => 'Attested by',
-                        'type' => 'text',
-                        'id' => 'affidavitAttestedBy'
-                    ],
-                ]
-            ],
+            // 'affidavits' => [
+            //     'label' => 'Affidavits',
+            //     'id' => 'affidavits',
+            //     'multiple' => true,
+            //     'inputs' => [
+            //         'affidavitsDateOfAttestation' => [
+            //             'label' => 'Date of Attestation',
+            //             'type' => 'date',
+            //             'id' => 'affidavitsDateOfAttestation'
+            //         ],
+            //         'affidavitAttestedBy' => [
+            //             'label' => 'Attested by',
+            //             'type' => 'text',
+            //             'id' => 'affidavitAttestedBy'
+            //         ],
+            //     ]
+            // ],
             'indemnity_bond' => [
                 'label' => 'Indemnity Bond',
                 'id' => 'indemnityBond',
@@ -36,23 +36,23 @@ return [
                     ],
                 ]
             ],
-            'lease_conveyance_deed' => [
-                'label' => 'Lease Deed/Conveyance Deed',
-                'id' => 'leaseconyedeed',
-                'multiple' => false,
-                'inputs' => [
-                    // 'leaseConvDeedDateOfExecution' => [
-                    //     'label' => 'Date of execution',
-                    //     'type' => 'date',
-                    //     'id' => 'leaseConvDeedDateOfExecution'
-                    // ],
-                    // 'leaseConvDeedLesseename' => [
-                    //     'label' => 'Lessee Name',
-                    //     'type' => 'text',
-                    //     'id' => 'leaseConvDeedLesseename'
-                    // ],
-                ]
-            ],
+            // 'lease_conveyance_deed' => [
+            //     'label' => 'Lease Deed/Conveyance Deed',
+            //     'id' => 'leaseconyedeed',
+            //     'multiple' => false,
+            //     'inputs' => [
+            //         // 'leaseConvDeedDateOfExecution' => [
+            //         //     'label' => 'Date of execution',
+            //         //     'type' => 'date',
+            //         //     'id' => 'leaseConvDeedDateOfExecution'
+            //         // ],
+            //         // 'leaseConvDeedLesseename' => [
+            //         //     'label' => 'Lessee Name',
+            //         //     'type' => 'text',
+            //         //     'id' => 'leaseConvDeedLesseename'
+            //         // ],
+            //     ]
+            // ],
             'pan_number' => [
                 'label' => 'Upload PAN of Registered Applicant',
                 'id' => 'panNumber',
@@ -77,42 +77,48 @@ return [
                     // ]
                 ]
             ],
-            'public_notice_english' => [
-                'label' => 'Public Notice in National Daily (English)',
-                'id' => 'publicNoticeEnglish',
+            // 'public_notice_english' => [
+            //     'label' => 'Public Notice in National Daily (English)',
+            //     'id' => 'publicNoticeEnglish',
+            //     'multiple' => false,
+            //     'inputs' => [
+            //         'newspaperNameEnglish' => [
+            //             'label' => 'Name of Newspaper (English)',
+            //             'type' => 'text',
+            //             'id' => 'newspaperNameEnglish'
+            //         ],
+            //         'publicNoticeDateEnglish' => [
+            //             'label' => 'Date of Public Notice',
+            //             'type' => 'date',
+            //             'id' => 'publicNoticeDateEnglish'
+            //         ],
+            //     ]
+            // ],
+            // 'public_notice_hindi' => [
+            //     'label' => 'Public Notice in National Daily (Hindi)',
+            //     'id' => 'publicNoticeHindi',
+            //     'multiple' => false,
+            //     'inputs' => [
+            //         'newspaperNameHindi' => [
+            //             'label' => 'Name of Newspaper (Hindi)',
+            //             'type' => 'text',
+            //             'id' => 'newspaperNameHindi'
+            //         ],
+            //         'publicNoticeDateHindi' => [
+            //             'label' => 'Date of Public Notice',
+            //             'type' => 'date',
+            //             'id' => 'publicNoticeDateHindi'
+            //         ],
+            //     ]
+            // ],
+            'payment_reciept' => [
+                'label' => 'Payment Receipt',
+                'id' => 'paymentReciept',
                 'multiple' => false,
-                'inputs' => [
-                    'newspaperNameEnglish' => [
-                        'label' => 'Name of Newspaper (English)',
-                        'type' => 'text',
-                        'id' => 'newspaperNameEnglish'
-                    ],
-                    'publicNoticeDateEnglish' => [
-                        'label' => 'Date of Public Notice',
-                        'type' => 'date',
-                        'id' => 'publicNoticeDateEnglish'
-                    ],
-                ]
-            ],
-            'public_notice_hindi' => [
-                'label' => 'Public Notice in National Daily (Hindi)',
-                'id' => 'publicNoticeHindi',
-                'multiple' => false,
-                'inputs' => [
-                    'newspaperNameHindi' => [
-                        'label' => 'Name of Newspaper (Hindi)',
-                        'type' => 'text',
-                        'id' => 'newspaperNameHindi'
-                    ],
-                    'publicNoticeDateHindi' => [
-                        'label' => 'Date of Public Notice',
-                        'type' => 'date',
-                        'id' => 'publicNoticeDateHindi'
-                    ],
-                ]
+                'inputs' => []
             ],
             'property_photo' => [
-                'label' => 'Property Photo',
+                'label' => 'Color Photograph of the Property (to establish the purpose for which it is being used)',
                 'id' => 'propertyPhoto',
                 'multiple' => false,
                 'inputs' => []
@@ -148,7 +154,7 @@ return [
                 ]
             ],
             'sale_deed' => [
-                'label' => 'Sale Deed',
+                'label' => 'Sale Deed / Sale Certificate (Auction)',
                 'id' => 'saleDeed',
                 'multiple' => false,
                 'inputs' => [
@@ -190,7 +196,7 @@ return [
                 ]
             ],
             'regd_will_deed' => [
-                'label' => 'Regd. Will/Codicil',
+                'label' => 'Registered/ Unregistered Will/ Codicil',
                 'id' => 'regdWillDeed',
                 'multiple' => false,
                 'inputs' => [
@@ -236,25 +242,25 @@ return [
                     ]
                 ]
             ],
-            'unregd_will_codocil' => [
-                'label' => 'Unregd. Will/Codicil',
-                'id' => 'unregdWillCodocil',
-                'multiple' => false,
-                'inputs' => [
-                    'unregWillCodicilTestatorName' => [
-                        'label' => 'Name of Testator',
-                        'type' => 'text',
-                        'id' => 'unregWillCodicilTestatorName'
-                    ],
-                    'unregWillCodicilDateOfWillCodicil' => [
-                        'label' => 'Date of Will/Codicil',
-                        'type' => 'date',
-                        'id' => 'unregWillCodicilDateOfWillCodicil'
-                    ]
-                ]
-            ],
+            // 'unregd_will_codocil' => [
+            //     'label' => 'Unregd. Will/Codicil',
+            //     'id' => 'unregdWillCodocil',
+            //     'multiple' => false,
+            //     'inputs' => [
+            //         'unregWillCodicilTestatorName' => [
+            //             'label' => 'Name of Testator',
+            //             'type' => 'text',
+            //             'id' => 'unregWillCodicilTestatorName'
+            //         ],
+            //         'unregWillCodicilDateOfWillCodicil' => [
+            //             'label' => 'Date of Will/Codicil',
+            //             'type' => 'date',
+            //             'id' => 'unregWillCodicilDateOfWillCodicil'
+            //         ]
+            //     ]
+            // ],
             'relinquishment_deed' => [
-                'label' => 'Registered Relinquishment Deed',
+                'label' => 'Gift/ Relinquishment Deed',
                 'id' => 'relinquishmentDeed',
                 'multiple' => false,
                 'inputs' => [
@@ -300,48 +306,48 @@ return [
                     ]
                 ]
             ],
-            'gift_deed' => [
-                'label' => 'Gift Deed',
-                'id' => 'giftDeed',
-                'multiple' => false,
-                'inputs' => [
-                    'giftdeedRegno' => [
-                        'label' => 'Registration Number',
-                        'type' => 'text',
-                        'id' => 'giftdeedRegno'
-                    ],
-                    'giftdeedVolume' => [
-                        'label' => 'Volume Number',
-                        'type' => 'text',
-                        'id' => 'giftdeedVolume'
-                    ],
-                    'giftdeedBookno' => [
-                        'label' => 'Book Number',
-                        'type' => 'text',
-                        'id' => 'giftdeedBookno'
-                    ],
-                    'giftdeedFrom' => [
-                        'label' => 'From',
-                        'type' => 'text',
-                        'id' => 'giftdeedFrom'
-                    ],
-                    'giftdeedTo' => [
-                        'label' => 'To',
-                        'type' => 'text',
-                        'id' => 'giftdeedTo'
-                    ],
-                    'giftdeedRegdate' => [
-                        'label' => 'Registration Date',
-                        'type' => 'date',
-                        'id' => 'giftdeedRegdate'
-                    ],
-                    'giftdeedRegOfficeName' => [
-                        'label' => 'Registration Office Name',
-                        'type' => 'text',
-                        'id' => 'giftdeedRegOfficeName'
-                    ]
-                ]
-            ],
+            // 'gift_deed' => [
+            //     'label' => 'Gift Deed',
+            //     'id' => 'giftDeed',
+            //     'multiple' => false,
+            //     'inputs' => [
+            //         'giftdeedRegno' => [
+            //             'label' => 'Registration Number',
+            //             'type' => 'text',
+            //             'id' => 'giftdeedRegno'
+            //         ],
+            //         'giftdeedVolume' => [
+            //             'label' => 'Volume Number',
+            //             'type' => 'text',
+            //             'id' => 'giftdeedVolume'
+            //         ],
+            //         'giftdeedBookno' => [
+            //             'label' => 'Book Number',
+            //             'type' => 'text',
+            //             'id' => 'giftdeedBookno'
+            //         ],
+            //         'giftdeedFrom' => [
+            //             'label' => 'From',
+            //             'type' => 'text',
+            //             'id' => 'giftdeedFrom'
+            //         ],
+            //         'giftdeedTo' => [
+            //             'label' => 'To',
+            //             'type' => 'text',
+            //             'id' => 'giftdeedTo'
+            //         ],
+            //         'giftdeedRegdate' => [
+            //             'label' => 'Registration Date',
+            //             'type' => 'date',
+            //             'id' => 'giftdeedRegdate'
+            //         ],
+            //         'giftdeedRegOfficeName' => [
+            //             'label' => 'Registration Office Name',
+            //             'type' => 'text',
+            //             'id' => 'giftdeedRegOfficeName'
+            //         ]
+            //     ]
+            // ],
             'surviving_member_certificate' => [
                 'label' => 'Surviving Member Certificate(SMC)',
                 'id' => 'survivingMemberCertificate',
@@ -372,19 +378,19 @@ return [
                 ]
             ],
             'any_other_document' => [
-                'label' => 'Other Document',
+                'label' => 'Other Document ( like Surviving Member Certificate)',
                 'id' => 'anyOtherDocument',
                 'multiple' => false,
                 'inputs' => [
-                    'otherDocumentRemark' => [
-                        'label' => 'Remarks',
-                        'type' => 'textarea',
-                        'id' => 'otherDocumentRemark'
-                    ]
+                    // 'otherDocumentRemark' => [
+                    //     'label' => 'Remarks',
+                    //     'type' => 'textarea',
+                    //     'id' => 'otherDocumentRemark'
+                    // ]
                 ]
             ],
             'propate_loa_court_decree_order' => [
-                'label' => 'Propate/LOA/Court Decree/ Court Order',
+                'label' => 'Probate/ Letter of Administration/ Court Order/ Decree',
                 'id' => 'propateLoaCourtDecreeOrder',
                 'multiple' => false,
                 'inputs' => [
@@ -401,7 +407,7 @@ return [
                 ]
             ],
             'power_of_attorney_given_by_owner' => [
-                'label' => 'Document of Power of Attorney',
+                'label' => 'General/ Special Power of Attorney',
                 'id' => 'documentpowerofattorney',
                 'multiple' => false,
                 'inputs' => [
@@ -413,7 +419,7 @@ return [
                 ]
             ],
             'other_document_by_applicant' => [
-                'label' => 'Other Document',
+                'label' => 'Any Other Document',
                 'id' => 'otherDocumentbyApplicant',
                 'multiple' => false,
                 'inputs' => []
@@ -455,13 +461,13 @@ return [
                 'required' => 1
             ],
             'power_of_attorney_given_by_owner' => [
-                'label' => 'Document of Power of Attorney',
+                'label' => 'General/ Special Power of Attorney',
                 'id' => 'documentpowerofattorney',
                 'rowOrder' => 5,
                 'required' => 0
             ],
             'other_document_by_applicant' => [
-                'label' => 'Other Document (Permission from municipal authority, electricity bill, court order etc.)',
+                'label' => 'Other Document',
                 'id' => 'otherDocumentbyApplicant',
                 'rowOrder' => 6,
                 'required' => 0
@@ -473,7 +479,7 @@ return [
         'documents' => [
             'BuilderBuyerAgreement' => [
                 'id' => 'BuilderBuyerAgreement',
-                'label' => 'Builder Buyer Agreement / Ownership Chain Documents',
+                'label' => 'Builder Buyer Agreement',
                 'rowOrder' => 1,
                 'required' => 1,
                 'options' => [],
@@ -495,36 +501,36 @@ return [
             'PaymentReceipt' => [
                 'id' => 'PaymentReceipt',
                 'label' => 'Payment Receipt',
-                'rowOrder' => 3,
+                'rowOrder' => 2,
                 'required' => 1,
                 'options' => [],
             ],
             'ColoredPhotographOfProperty' => [
                 'id' => 'ColoredPhotographOfProperty',
-                'label' => 'Colored Photograph of the Property',
-                'rowOrder' => 4,
+                'label' => 'Color Photograph of the Property (to establish the purpose for which it is being used)',
+                'rowOrder' => 3,
                 'required' => 1,
                 'options' => [],
             ],
             'IndemnityBond' => [
                 'id' => 'IndemnityBond',
-                'label' => 'Indemnity Bond (Annexure-F)',
-                'rowOrder' => 5,
+                'label' => 'Indemnity Bond',
+                'rowOrder' => 4,
                 'required' => 1,
                 'options' => [],
             ],
             'power_of_attorney_given_by_owner' => [
-                'label' => 'Document of Power of Attorney',
+                'label' => 'General/ Special Power of Attorney',
                 'id' => 'power_of_attorney_given_by_owner',
                 'multiple' => false,
-                'rowOrder' => 6,
+                'rowOrder' => 5,
                 'required' => 0,
                 'inputs' => []
             ],
             'OtherDocument' => [
                 'id' => 'OtherDocument',
                 'label' => 'Other Document',
-                'rowOrder' => 7,
+                'rowOrder' => 6,
                 'required' => 0,
                 'options' => [],
             ],
@@ -534,7 +540,7 @@ return [
     'CONVERSION' => [
         'Required' => [
             'indemnity_bond' => [
-                'label' => 'Indemnity Bond (Annexure-F)',
+                'label' => 'Indemnity Bond',
                 'id' => 'convDocIndemnityBond',
                 'multiple' => true,
                 'inputs' => [
@@ -551,7 +557,7 @@ return [
                 ]
             ],
             // 'convUndertaking' => [
-            //     'label' => 'Undertaking (Annexure-G)',
+            //     'label' => 'Undertaking',
             //     'id' => 'convDocUndertaking',
             //     'multiple' => true,
             //     'inputs' => [
@@ -637,7 +643,7 @@ return [
                 ]
             ],
             'convLeaseDeed' => [
-                'label' => 'Original Registered Lease Deed',
+                'label' => 'Registered Lease Deed',
                 'id' => 'convDocLeaseDeed',
                 'multiple' => false,
                 'inputs' => [
@@ -651,18 +657,6 @@ return [
                             'type' => 'text',
                             'id' => 'leaseConvDeedLesseename'
                         ], */
-                ]
-            ],
-            'convGpaSpa' => [
-                'label' => 'General/ Special Power of Attorney',
-                'id' => 'convDocGpaSpa',
-                'multiple' => false,
-                'inputs' => [
-                    // 'convApplicantAahaarNo' => [
-                    //     'label' => 'Aadhaar Number',
-                    //     'type' => 'text',
-                    //     'id' => 'convApplicantAahaarNo'
-                    // ]
                 ]
             ],
             'convApplicantAadhaar' => [
@@ -740,30 +734,30 @@ return [
         ],
         'optional' => [
             'groups' => [
-                [
-                    'documents' => [
-                        'lesseeAliveAffidevit' => [
-                            'label' => 'Affidavit Confirming That the Lessee is Alive', //title changed by anil on 25-03-2025 according swati testing report
-                            'id' => 'convOptLesseeAliveAffidevit',
-                            'inputs' => [
-                                'convOptLesseeAliveAffidevitDocumentDate' =>  [
-                                    'label' => 'Date of Document',
-                                    'type' => 'date',
-                                    'id' => 'convOptLesseeAliveAffidevitDocumentDate'
-                                ],
-                                'convOptLesseeAliveAffidevitAttestedby' =>  [
-                                    'label' => 'Attested by',
-                                    'type' => 'text',
-                                    'id' => 'convOptLesseeAliveAffidevitAttestedby'
-                                ],
-                            ]
-                        ],
-                    ]
-                ],
+                // [
+                //     'documents' => [
+                //         // 'lesseeAliveAffidevit' => [
+                //         //     'label' => 'Affidavit Confirming That the Lessee is Alive', //title changed by anil on 25-03-2025 according swati testing report
+                //         //     'id' => 'convOptLesseeAliveAffidevit',
+                //         //     'inputs' => [
+                //         //         'convOptLesseeAliveAffidevitDocumentDate' =>  [
+                //         //             'label' => 'Date of Document',
+                //         //             'type' => 'date',
+                //         //             'id' => 'convOptLesseeAliveAffidevitDocumentDate'
+                //         //         ],
+                //         //         'convOptLesseeAliveAffidevitAttestedby' =>  [
+                //         //             'label' => 'Attested by',
+                //         //             'type' => 'text',
+                //         //             'id' => 'convOptLesseeAliveAffidevitAttestedby'
+                //         //         ],
+                //         //     ]
+                //         // ],
+                //     ]
+                // ],
                 [
                     'documents' => [
                         'power_of_attorney_given_by_owner' => [
-                            'label' => 'Document of Power of Attorney', //title changed by anil on 25-03-2025 according swati testing report
+                            'label' => 'General/ Special Power of Attorney', //title changed by anil on 25-03-2025 according swati testing report
                             'id' => 'documentpowerofattorney',
                             'multiple' => false,
                             'inputs' => [
@@ -802,52 +796,52 @@ return [
                         ],
                     ]
                 ],
-                [
-                    'input' => [
-                        'type' => 'radio',
-                        'name' => 'isLeaseDeedLost',
-                        'label' => 'Whether the Lease Deed is Lost',
-                        'options' => [
-                            [
-                                'value' => 1,
-                                'label' => 'Yes'
-                            ],
-                            [
-                                'value' => 0,
-                                'label' => 'No'
-                            ]
-                        ]
-                    ],
-                    'documents' => [
-                        'leaseeDeedLostAffidevit' => [
-                            'label' => 'Affidavit for Lease Deed is Lost',
-                            'id' => 'convOptLeaseLostAffidevit',
-                            'inputs' => [
-                                'convLeaseLostAffidevitDocumentDate' =>  [
-                                    'label' => 'Date of Document',
-                                    'type' => 'date',
-                                    'id' => 'convLeaseLostAffidevitDocumentDate'
-                                ],
-                                'convLeaseLostAffidevitAttestedBy' =>  [
-                                    'label' => 'Attested by',
-                                    'type' => 'text',
-                                    'id' => 'convLeaseLostAffidevitAttestedBy'
-                                ],
-                            ]
-                        ],
-                        'leaseeDeedLostPublicNotice' => [
-                            'label' => 'Public Notice in National Daily (English & Hindi)',
-                            'id' => 'convOptLeaseLostPublicNotice',
-                            'inputs' => [
-                                'convOptLeaseLostPublicNoticeNameOfNewspaper' =>  [
-                                    'label' => 'Name of Newspaper (English or Hindi)',
-                                    'type' => 'text',
-                                    'id' => 'convOptLeaseLostPublicNoticeNameOfNewspaper'
-                                ],
-                            ]
-                        ]
-                    ]
-                ]
+                // [
+                //     'input' => [
+                //         'type' => 'radio',
+                //         'name' => 'isLeaseDeedLost',
+                //         'label' => 'Whether the Lease Deed is Lost',
+                //         'options' => [
+                //             [
+                //                 'value' => 1,
+                //                 'label' => 'Yes'
+                //             ],
+                //             [
+                //                 'value' => 0,
+                //                 'label' => 'No'
+                //             ]
+                //         ]
+                //     ],
+                //     'documents' => [
+                //         'leaseeDeedLostAffidevit' => [
+                //             'label' => 'Affidavit for Lease Deed is Lost',
+                //             'id' => 'convOptLeaseLostAffidevit',
+                //             'inputs' => [
+                //                 'convLeaseLostAffidevitDocumentDate' =>  [
+                //                     'label' => 'Date of Document',
+                //                     'type' => 'date',
+                //                     'id' => 'convLeaseLostAffidevitDocumentDate'
+                //                 ],
+                //                 'convLeaseLostAffidevitAttestedBy' =>  [
+                //                     'label' => 'Attested by',
+                //                     'type' => 'text',
+                //                     'id' => 'convLeaseLostAffidevitAttestedBy'
+                //                 ],
+                //             ]
+                //         ],
+                //         'leaseeDeedLostPublicNotice' => [
+                //             'label' => 'Public Notice in National Daily (English & Hindi)',
+                //             'id' => 'convOptLeaseLostPublicNotice',
+                //             'inputs' => [
+                //                 'convOptLeaseLostPublicNoticeNameOfNewspaper' =>  [
+                //                     'label' => 'Name of Newspaper (English or Hindi)',
+                //                     'type' => 'text',
+                //                     'id' => 'convOptLeaseLostPublicNoticeNameOfNewspaper'
+                //                 ],
+                //             ]
+                //         ]
+                //     ]
+                // ]
 
             ]
         ],
@@ -856,54 +850,54 @@ return [
     'NOC' => [
         'Required' => [
             'lease_deed' => [
-                'label' => 'Registered Lease deed',
+                'label' => 'Registered Lease Deed',
                 'id' => 'leasedeed',
                 'multiple' => false,
                 'inputs' => []
             ],
             'conveyance_deed' => [
-                'label' => 'Registered Conveyance deed',
+                'label' => 'Registered Conveyance Deed',
                 'id' => 'conveyancedeed',
                 'multiple' => false,
                 'inputs' => []
             ],
             'sale_deed' => [
-                'label' => 'Registered Sale deed(if any)',
+                'label' => 'Registered Sale Deed',
                 'id' => 'saledeed',
                 'multiple' => false,
                 'inputs' => []
             ],
             'owndership_document' => [
-                'label' => 'Chain of title documentscourt orders, decree, Relinquishment deed, Will etc. (if any)',
+                'label' => 'Chain of Title Documents - Court Orders, Decrees, Relinquishment Deeds, Wills etc.',
                 'id' => 'conveyanceownershipdoc',
                 'multiple' => false,
                 'inputs' => []
             ],
             'sub_mut_done' => [
-                'label' => 'Substitution/Mutation done, if any (after freehold)',
+                'label' => 'Substitution/Mutation Done, (after freehold)',
                 'id' => 'submutdone',
                 'multiple' => false,
                 'inputs' => []
             ],
             'property_photo' => [
-                'label' => 'Photo of the property (to establish the purpose for which it is being used) ',
+                'label' => 'Color Photograph of the Property (to establish the purpose for which it is being used)',
                 'id' => 'conveyancepropPhotodoc',
                 'multiple' => false,
                 'inputs' => []
             ],
             'latest_electricity_bill' => [
-                'label' => 'Latest electricity bill',
+                'label' => 'Latest Electricity Bill (not older than last 6 months)',
                 'id' => 'latestelectricitybill',
                 'multiple' => false,
                 'inputs' => []
             ],
             'undertaking_reg_land' => [
-                'label' => 'Undertaking regarding land use of the property on Rs. 10 non judicial stamp paper',
+                'label' => 'Undertaking Regarding Land Use of the Property on Rs. 10 Non-Judicial Stamp Paper',
                 'id' => 'undertakingregland',
                 'multiple' => false,
                 'inputs' => []
             ],
-
+            
             'aadhar_number' => [
                 'label' => 'Upload Aadhaar of Registered Applicant',
                 'id' => 'conveyanceaadhardoc',
@@ -917,7 +911,7 @@ return [
                 'inputs' => []
             ],
             'power_of_attorney_given_by_owner' => [
-                'label' => 'Document of Power of Attorney',
+                'label' => 'General/ Special Power of Attorney',
                 'id' => 'documentpowerofattorney',
                 'multiple' => false,
                 'inputs' => []

@@ -407,7 +407,7 @@
                                         <td id="executedOn">{{ $details->executed_on ?? '' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Registration No.:</th>
+                                        <th>Regn. No.:</th>
                                         <td>{{ $details->reg_no_as_per_lease_conv_deed ?? '' }}</td>
                                         <th>Book No.:</th>
                                         <td>{{ $details->book_no_as_per_lease_conv_deed ?? '' }}</td>
@@ -419,7 +419,7 @@
                                         <td>{{ $details->page_no_as_per_lease_conv_deed ?? $details->page_no_as_per_deed }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Registration Date:</th>
+                                        <th>Regn. Date:</th>
                                         <td id="regnDate">{{ $details->reg_date_as_per_lease_conv_deed ?? '' }}</td>
                                     </tr>
                                 </tbody>
@@ -453,7 +453,7 @@
                                         <td>{{ $details->executed_on ?? '' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Registration No.:</th>
+                                        <th>Regn. No.:</th>
                                         <td>{{ $details->reg_no ?? '' }}</td>
                                         <th>Book No.:</th>
                                         <td>{{ $details->book_no ?? '' }}</td>
@@ -465,7 +465,7 @@
                                         <td>{{ $details->page_no ?? '' }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Registration Date:</th>
+                                        <th>Regn. Date:</th>
                                         <td>{{ $details->reg_date ?? '' }}</td>
                                     </tr>
                                 </tbody>
@@ -650,12 +650,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="viewScannedFilesLabel">View Scanned Files</h5>
-                @dd($scannedFiles)
-                @if ($scannedFiles)
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @if ($roles == 'section-officer') onclick='checkScannedFiles()' @endif></button>
-                @else
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                @endif
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @if ($roles == 'section-officer') onclick='checkScannedFiles()' @endif></button>
             </div>
             <div class="modal-body">
                 @if ($scannedFiles)
@@ -671,11 +666,6 @@
             </div>
             <div class="modal-footer justify-content-end">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @if ($roles == 'section-officer') onclick='checkScannedFiles()' @endif>Close</button>
-                 @if ($scannedFiles)
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @if ($roles == 'section-officer') onclick='checkScannedFiles()' @endif>Close</button>
-                @else
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                @endif
             </div>
         </div>
     </div>

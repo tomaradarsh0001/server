@@ -17,26 +17,26 @@ class GroupItemSeeder extends Seeder
     {
         // Define the groups to be created
         $groups = [
-            // [
-            //     'group_id' => 17012,
-            //     'group_name' => 'Club Membership Status',
-            //     'is_active' => 1,
-            // ],
-            // [
-            //     'group_id' => 17013,
-            //     'group_name' => 'IHC Categories',
-            //     'is_active' => 1,
-            // ],
-            // [
-            //     'group_id' => 17014,
-            //     'group_name' => 'DGC Categories',
-            //     'is_active' => 1,
-            // ],
-            // [
-            //     'group_id' => 17015,
-            //     'group_name' => 'Club Membership Designation',
-            //     'is_active' => 1,
-            // ],
+            [
+                'group_id' => 17012,
+                'group_name' => 'Club Membership Status',
+                'is_active' => 1,
+            ],
+            [
+                'group_id' => 17013,
+                'group_name' => 'IHC Categories',
+                'is_active' => 1,
+            ],
+            [
+                'group_id' => 17014,
+                'group_name' => 'DGC Categories',
+                'is_active' => 1,
+            ],
+            [
+                'group_id' => 17015,
+                'group_name' => 'Club Membership Designation',
+                'is_active' => 1,
+            ],
         ];
 
         // Insert or update groups in the database
@@ -53,7 +53,7 @@ class GroupItemSeeder extends Seeder
         }
 
         $items = [
-            [
+           [
                 'group_id' => 1031,
                 'item_code' => 'APP_NEW',
                 'item_name' => 'New',
@@ -107,14 +107,14 @@ class GroupItemSeeder extends Seeder
                 'item_name' => 'Withdrawn',
             ],
 
-            // for forgot password otps
-            [
-                'group_id' => 17002,
-                'item_code' => 'PASS_FORGET',
-                'item_name' => 'Forgot Password',
-            ],
-            
-            [
+            //for forgot password otps
+            // [
+            //     'group_id' => 17002,
+            //     'item_code' => 'PASS_FORGET',
+            //     'item_name' => 'Forgot Password',
+            // ],
+            //
+            /* [
                 'group_id' => 17007,
                 'item_code' => 'RECOMMENDED',
                 'item_name' => 'Recommended',
@@ -143,7 +143,7 @@ class GroupItemSeeder extends Seeder
                 'group_id' => 17007,
                 'item_code' => 'FOR_TO_DEP',
                 'item_name' => 'Forward To Department',
-            ],
+            ],*/
             //Demand status 
             [
                 'group_id' => 17008,
@@ -171,7 +171,7 @@ class GroupItemSeeder extends Seeder
                 'item_name' => 'Carried Forward',
             ],
             /** demand status */
-            [
+            /* [
                 'group_id' => 7003,
                 'item_code' => 'DEM_UEI',
                 'item_name' => 'Unearned Increase',
@@ -216,6 +216,30 @@ class GroupItemSeeder extends Seeder
                 'item_order' => 0,
                 'is_active' => 0,
                 'additional_data' => ['duration' => true],
+            ],*/
+           [
+                'group_id' => 17016,
+                'item_code' => 'SCAN_NEW',
+                'item_name' => 'New',
+                'item_order' => 1,
+            ],
+            [
+                'group_id' => 17016,
+                'item_code' => 'SEND_TO_SCAN',
+                'item_name' => 'Send to Scan',
+                'item_order' => 2,
+            ],
+            [
+                'group_id' => 17016,
+                'item_code' => 'SCAN_CLOSED',
+                'item_name' => 'Closed',
+                'item_order' => 3,
+            ],
+            [
+                'group_id' => 17016,
+                'item_code' => 'RETURN_TO_RECORD',
+                'item_name' => 'Return to Record',
+                'item_order' => 4,
             ],
             [
                 'group_id' => 7003,
@@ -225,7 +249,7 @@ class GroupItemSeeder extends Seeder
                 'is_active' => 1,
                 'additional_data' => ['remarks' => true],
             ],
-            [
+            /*[
                 'group_id' => 7003,
                 'item_code' => 'RGR_LUC_CHG',
                 'item_name' => 'Revised Ground Rent for Land Use Change',
@@ -239,13 +263,13 @@ class GroupItemSeeder extends Seeder
                 'item_order' => 1,
                 'additional_data' => ['remarks' => true],
             ],
-            [
+            /* [
                 'group_id' => 7003,
                 'item_code' => 'LIC_FEE',
                 'item_name' => 'Licence Fees',
                 'item_order' => 1,
                 'additional_data' => ['duration' => true],
-            ],
+            ], */
             [
                 'group_id' => 7003,
                 'item_code' => 'DEM_SLET_CHG',
@@ -258,7 +282,7 @@ class GroupItemSeeder extends Seeder
                 'item_name' => 'Standard Penalty for violation other than non-payment of demand',
                 'item_order' => 1,
             ],
-            [
+            /*[
                 'group_id' => 7003,
                 'item_code' => 'PREV_DUE',
                 'item_name' => 'Previous Dues',
@@ -278,7 +302,6 @@ class GroupItemSeeder extends Seeder
                 'item_name' => 'Penalty',
                 'item_order' => 1,
                 'additional_data' => ['duration' => true, 'remarks' => true],
-                'is_active' => 0 //active only for cron job
             ],
             [
                 'group_id' => 7003,
@@ -286,7 +309,7 @@ class GroupItemSeeder extends Seeder
                 'item_name' => 'Others',
                 'item_order' => 1,
                 'additional_data' => ['remarks' => true],
-            ], 
+            ], */
 
             [
                 'group_id' => 7003,
@@ -299,9 +322,9 @@ class GroupItemSeeder extends Seeder
             [
                 'group_id' => 7003,
                 'item_code' => 'DEM_MANUAL',
-                'item_name' => 'Others',
-                'is_active' => 0,
+                'item_name' => 'Manual Demand',
                 'item_order' => 99,
+                'is_active' => 0,
             ],
             [
                 'group_id' => 7003,
@@ -335,7 +358,7 @@ class GroupItemSeeder extends Seeder
             [
                 'group_id' => 17010,
                 'item_code' => 'PAY_OFFLINE',
-                'item_name' => 'OffLine',
+                'item_name' => 'ALL',
             ],
 
             /** Payment types */
@@ -400,30 +423,6 @@ class GroupItemSeeder extends Seeder
                 'item_name' => 'Approved',
                 'item_order' => 5,
             ],
-            [
-                'group_id' => 17014,
-                'item_code' => 'SCAN_NEW',
-                'item_name' => 'New',
-                'item_order' => 1,
-            ],
-            [
-                'group_id' => 17014,
-                'item_code' => 'SEND_TO_SCAN',
-                'item_name' => 'Send to Scan',
-                'item_order' => 2,
-            ],
-            [
-                'group_id' => 17014,
-                'item_code' => 'SCAN_CLOSED',
-                'item_name' => 'Closed',
-                'item_order' => 3,
-            ],
-            [
-                'group_id' => 17014,
-                'item_code' => 'RETURN_TO_RECORD',
-                'item_name' => 'Return to Record',
-                'item_order' => 4,
-            ]
         ];
 
 
@@ -437,7 +436,7 @@ class GroupItemSeeder extends Seeder
                 ],
                 [
                     'item_name' => $item['item_name'],
-                    'color_code' => $item['color_code'] ?? null,
+                    'color_code' => null,
                     'item_order' => $item['item_order'] ?? 1,
                     'additional_data' => isset($item['additional_data']) ? json_encode($item['additional_data']) : null,
                     'is_active' => $item['is_active'] ?? 1, //manually set is_active
@@ -448,19 +447,5 @@ class GroupItemSeeder extends Seeder
                 ]
             );
         }
-
-        Item::where('item_code', 'CM_PEN')
-            ->where('group_id', 17012)
-            ->update([
-                'item_name' => 'Club_Pending',
-                'updated_at' => Carbon::now(),
-            ]);
-
-        Item::where('item_code', 'CM_INP')
-            ->where('group_id', 17012)
-            ->update([
-                'item_name' => 'Waiting',
-                'updated_at' => Carbon::now(),
-            ]);
     }
 }

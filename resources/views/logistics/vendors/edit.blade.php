@@ -3,13 +3,21 @@
 @section('title', 'Edit Supplier Vendor')
 
 @section('content')
-{{-- breadcrumb  --}}
-<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-    <div class="breadcrumb-title pe-3">Logistics</div>
-    @include('include.partials.breadcrumbs')
-</div>
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="breadcrumb-title pe-3">Logistic</div>
+        <div class="ps-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 p-0">
+                    <li class="breadcrumb-item">
+                        <a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit Vendors/Suppliers</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
 
+    <div>
         <div class="col pt-3">
             <div class="card">
                 <div class="card-body m-3">
@@ -91,6 +99,7 @@
                 </div>
             </div>
         </div>
+    </div>
     <script>
         // Real-time check for contact number
         async function checkContactNo() {

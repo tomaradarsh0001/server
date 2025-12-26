@@ -92,7 +92,7 @@
         th {
             background-color: #f4f4f4;
         }
-        .watermark {
+        /* .watermark {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -102,7 +102,7 @@
             z-index: -1;
             white-space: nowrap;
             pointer-events: none;
-        }
+        } */
         .name-to{
             margin-left: 50px;
             margin-bottom: 20px;
@@ -120,9 +120,6 @@
         .foot-table tr td:last-child{
             text-align:right;
         }
-        .page-break {
-            page-break-before: always;
-        }
         img {
             image-rendering: optimizeQuality;
             -dompdf-image-resolution: 72dpi;
@@ -134,9 +131,11 @@
     <!-- Optional watermark -->
     <!-- <div class="watermark">Land and Development Office</div> -->
 
+    <div class="watermark"></div>
+
     <!-- Emblem Header -->
     <div class="emblem-div">
-        <img src="{{ public_path('assets/images/emblem.jpg') }}" width="60" alt="Emblem" class="emblem">
+        <img src="{{ public_path('assets/images/emblem.png') }}" width="60" alt="Emblem" class="emblem">
     </div>
     <!-- <h1 class="title-main">Land And Development Office</h1>
     <h2 class="title-sub">Ministry of Housing and Urban Affairs</h2>
@@ -153,25 +152,24 @@
     <table>
         <tbody>
             <tr>
-                <td style="font-size:14px"><strong>Demand ID:</strong> {{ $demand->unique_id }}</td>
-                <td style="font-size:14px"><strong>Demand Date:</strong> {{ \Carbon\Carbon::parse($demand->approved_at)->format('d-m-Y') }}</td>
+                <td><strong>Demand ID:</strong> {{ $demand->unique_id }}</td>
+                <td><strong>Demand Date:</strong> {{ \Carbon\Carbon::parse($demand->approved_at)->format('d-m-Y') }}</td>
             </tr>
             <tr>
-                <td style="font-size:14px"><strong>Property ID:</strong>  {{ $demand->splited_property_detail_id !== null ? $demand->splited_property_detail_id : $demand->old_property_id }}</td>
-                <td style="font-size:14px"><strong>Inspection ID:</strong> N/A </td>
+                <td><strong>Property ID:</strong>  {{ $demand->splited_property_detail_id !== null ? $demand->splited_property_detail_id : $demand->old_property_id }} ({{$uniquePropertyId}})</td>
+                <td><strong>Inspection ID:</strong> N/A </td>
             </tr>
         </tbody>
     </table>
 
     <!-- <p>इंस्पेक्शन आई.डी. / Inspection ID:</p> -->
-     <br/>
     <p>To,</p>
     <div class="name-to">{{ $name }}</div>
 
     <p> Only Demand / Terms for temporary Regularisation of Breaches / NOC / Extension of time for Completion / Execution of Lease Deed / Withdrawl of Re-Entry in respect of <b>property no. {{ $address }}</b></p>
         <p>
             <!-- Dear Sir/Madam:<br/> -->
-            I am to refer to your Application / Letter number _____________ dated _____________ on the subject cited above and to inform you that the lessor will be pleased to regularise the breaches in the premises temporarily upto____________ and withdraw the right of Re-Entry of the premises subject to the
+            I am to refer to your Application / Letter number {{$applicationNo}} dated {{$applicationDate?->format('d-m-Y')}} on the subject cited above and to inform you that the lessor will be pleased to regularise the breaches in the premises temporarily upto____________ and withdraw the right of Re-Entry of the premises subject to the
             following conditions being fulfilled by you within 30 days from the date of issue of this letter:-
         </p>
         <p>
@@ -215,8 +213,6 @@
             9.
             It may please be clearly noted that this regularisation is without prejudice to the rights of DDA under DDA Act, 1957 or the right of local body to take action for misuse / unauthorised construction.
         </p>
-
-        <div class="page-break"></div>
 
         <div class="part-title">DEMAND DETAILS BREAKUP</div>
 

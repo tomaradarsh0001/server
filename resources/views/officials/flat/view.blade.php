@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'MIS Form Details')
+@section('title', 'Flat Details')
 
 @section('content')
     <style>
@@ -11,15 +11,17 @@
     </style>
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">MIS</div>
+        <div class="breadcrumb-title pe-3">Properties</div>
         <div class="ps-3">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 p-0">
-                    <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page">Flat Details</li>
-                </ol>
-            </nav>
+            <ol class="breadcrumb mb-0 p-0">
+                <li class="breadcrumb-item"><a href="{{route('dashboard')}}"><i class="bx bx-home-alt"></i></a></li>
+                <li class="breadcrumb-item active" aria-current="page">Properties</li>
+                <li class="breadcrumb-item active" aria-current="page">Views</li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="{{route('flats')}}">Flats</a></li>
+                <li class="breadcrumb-item active" aria-current="page">details</li>
+            </ol>
+        </nav>
         </div>
     </div>
     <!-- <div class="ms-auto"><a href="#" class="btn btn-primary">Button</a></div> -->
@@ -72,14 +74,15 @@
                         <tbody>
                             <tr>
                                 <td><b>Id : </b> {{ $flatData->unique_flat_id }}</td>
-                                {{-- Add new column floor - Lalit tiwari (19/march/2025) --}}
-                                <td>
+                                 {{-- Add new column floor - Lalit tiwari (19/march/2025) --}}
+                                 <td>
                                     <b>Flat No. : </b>
                                     {{ $flatData->flat_number }}
                                     @if (!empty($flatData->floor))
                                         ({{ $flatData->floor }} floor)
                                     @endif
                                 </td>
+                                {{-- <td><b>No. : </b> {{ $flatData->flat_number }}</td> --}}
                                 <td><b>File no. : </b> {{ $flatData->unique_file_no }} </td>
                             </tr>
                             <tr>
@@ -101,18 +104,18 @@
                                 <td><b>Present Occupent Name : </b> {{ $flatData->present_occupant_name }} </td>
                             </tr>
                             <!--
-                                                                                                    <tr>
-                                                                                                        <td><b>Block No.: </b> {{ $flatData->block }}</td>
-                                                                                                        <td><b>Plot No.: </b> {{ $flatData->plot }} </td>
-                                                                                                    </tr>
-                                                                                                    <tr>
-                                                                                                        <td><b>Presently Known As: </b>{{ $flatData->property_known_as }}
-                                                                                                        </td>
-                                                                                                        <td><b>Area: <span class="text-secondary">({{ $flatData->area_in_sqm }}
-                                                                                                                Sq
-                                                                                                                Meter)</span>
-                                                                                                        </td>
-                                                                                                    </tr>  -->
+                                                <tr>
+                                                    <td><b>Block No.: </b> {{ $flatData->block }}</td>
+                                                    <td><b>Plot No.: </b> {{ $flatData->plot }} </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>Presently Known As: </b>{{ $flatData->property_known_as }}
+                                                    </td>
+                                                    <td><b>Area: <span class="text-secondary">({{ $flatData->area_in_sqm }}
+                                                            Sq
+                                                            Meter)</span>
+                                                    </td>
+                                                </tr>  -->
                         </tbody>
                     </table>
                 </div>

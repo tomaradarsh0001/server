@@ -7,9 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Jobs\CreatePdfForProperty;
 use App\Jobs\SendRGRDraft;
 use App\Models\CarriedDemandDetail;
+use App\Models\CircleLandRate;
 use App\Models\Demand;
 use App\Models\DemandDetail;
 use App\Models\Item;
+use App\Models\LndoLandRate;
 use App\Models\PropertyLeaseDetail;
 use App\Models\PropertyLeaseDetailHistory;
 use App\Services\ColonyService;
@@ -27,7 +29,6 @@ use App\Services\LandRateService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class RgrController extends Controller
 {
@@ -68,6 +69,7 @@ class RgrController extends Controller
     public function propertyBasicdetail(Request $request, PropertyMasterService $propertyMasterService)
     {
         $propertyId = $request->property_id;
+        $returnSplitedProp = false;
         $splitedPropId = null;
         $searchIncolumn = 'old_propert_id'; // for non splited property property is found by old property id when selected from colony block plot dropdown
         $statusColumn = "status";
@@ -75,6 +77,7 @@ class RgrController extends Controller
             $idArr = explode('_', $propertyId);
             $propertyId = $idArr[0];
             $splitedPropId = $idArr[1];
+            $returnSplitedProp = true;
 
             $searchIncolumn = 'id';
         }
@@ -87,6 +90,7 @@ class RgrController extends Controller
                 return ['status' => 'error', 'message' => 'given property not found'];
             }
             $splitedPropId = $property->id;
+            $returnSplitedProp = true;
             $propertyMasterId = $property->property_master_id;
             $statusColumn = 'property_status';
         } else {
@@ -215,7 +219,6 @@ class RgrController extends Controller
             /** get ground rent rate */
 
             $proprtyTypeName = Item::itemNameById($propertyMaster->property_type);
-            // dd($proprtyTypeName);
 
             $lndoGroundRentRow = $this->landRateService->getLandRates('lndo', $proprtyTypeName, $colony_id, $fromDate);
             if (isset($lndoGroundRentRow['error'])) {
@@ -335,7 +338,6 @@ class RgrController extends Controller
         $data['rgrCircle'] = $rgrCircle;
         $data['rgrDoneArea'] = $rgrDoneArea;
         $data['shouldEdit'] = Self::getEditableRGR();
-        // dd($data);
         return $data;
     }
 
@@ -400,14 +402,10 @@ class RgrController extends Controller
             $lndoRates = [
                 'residential' => $this->landRateService->getLandRates('lndo', 'residential', $colonyId, $startDate),
                 'commercial' => $this->landRateService->getLandRates('lndo', 'commercial', $colonyId, $startDate),
-                'institutional' => $this->landRateService->getLandRates('lndo', 'institutional', $colonyId, $startDate),
-                'industrial' => $this->landRateService->getLandRates('lndo', 'industrial', $colonyId, $startDate),
             ];
             $circleRates =  [
                 'residential' => $this->landRateService->getLandRates('circle', 'residential', $colonyId, $startDate),
                 'commercial' => $this->landRateService->getLandRates('circle', 'commercial', $colonyId, $startDate),
-                'institutional' => $this->landRateService->getLandRates('circle', 'institutional', $colonyId, $startDate),
-                'industrial' => $this->landRateService->getLandRates('circle', 'industrial', $colonyId, $startDate),
             ];
 
             return response()->json([
@@ -452,37 +450,7 @@ class RgrController extends Controller
                         $insertData['data']['status'] = 'draft';
                         $insertData['data']['created_by'] = Auth::id();
                         $insertData['data']['updated_by'] = Auth::id();
-                        //dd($insertData);
-
-                        /** This code is added by Nitin to avoid conflict in case 
-                         * given rate l&do or circle rate is selected by user and land rate data is not avaiable for that country
-                         * 
-                         * on 12-06-2025
-                         */
-                        $landRateFound = true;
-
-                        switch ($request->calculation_rate) {
-                            case 'L':
-                                if ((int)($insertData['data']['lndo_land_rate']) <= 0)
-                                    $landRateFound = false;
-                                $missingLandRate = "L&DO land rate";
-                                break;
-                            case 'C':
-                                if ((int)($insertData['data']['circle_land_rate']) <= 0)
-                                    $landRateFound = false;
-                                $missingLandRate = "circle land rate";
-                                break;
-                            default:
-                                # code...
-                                break;
-                        }
-                        if ($landRateFound) {
-                            $added = PropertyRevivisedGroundRent::create($insertData['data']);
-                        } else {
-                            $added =  false;
-                            $skipped++;
-                            Log::info('Skipped RGR for property master id ' . $insertData['data']['property_master_id'] . " becase $missingLandRate is not available");
-                        }
+                        $added = PropertyRevivisedGroundRent::create($insertData['data']);
                         if ($added) {
                             $done++;
                             $done_array[] = ['target' => $prop->id . (!is_null($prop->is_joint_property) ? '-' . $prop->splited_id : ''), 'id' => $added->id];
@@ -809,8 +777,8 @@ class RgrController extends Controller
         } else {
             $contactDetails = $rgr->contactDetails;
             if (!is_null($contactDetails) && !empty($contactDetails)) { //checking contact details in controller else it may fail in job or email
-                $email = $contactDetails->email;
-                // $email = 'nitinrag@gmail.com';
+                // $email = $contactDetails->email;
+                $email = 'nitinrag@gmail.com';
                 if (!is_null($email) && strlen($email) > 0) {
                     // $emailJob = (new SendRGRDraft($rgr))->delay(Carbon::now()->addMinute());
                     $emailJob = new SendRGRDraft($rgr, $email, Auth::id());

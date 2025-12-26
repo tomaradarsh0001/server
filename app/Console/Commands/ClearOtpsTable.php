@@ -34,16 +34,15 @@ class ClearOtpsTable extends Command
     public function handle()
     {
         // Log the start time when job is start
-        Log::info("Start# :- Clear otp schedule job start at " . Carbon::now());
+        Log::info("Start# :- Clear otp schedule job start at ". Carbon::now());
         // Log the where clause to delete records older then 24 hours
-        Log::info("created_at <  " . Carbon::now()->subHours(24));
+        Log::info("created_at <  ".Carbon::now()->subHours(24));
         // Delete records older than 24 hours
-        // $deleted = Otp::where('created_at', '<', Carbon::now()->subHours(24))->delete();
         $deleted = Otp::where('created_at', '<', Carbon::now()->subHours(24))->delete();
         // Log the deletion information
         Log::info("Deleted $deleted expired OTP records.");
         // Log the stop time when job is stop
-        Log::info("End# :- Clear otp schedule job end at " . Carbon::now());
+        Log::info("End# :- Clear otp schedule job end at ". Carbon::now());
         $this->info("Deleted $deleted expired OTP records.");
     }
 }

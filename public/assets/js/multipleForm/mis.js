@@ -1176,7 +1176,7 @@ TextControlID3.each(function() {
           (i + 1) +
           '" style="display: none"><div class="col-12 col-lg-4"><label class="form-label" for="ConveyanceDate' +
           (i + 1) +
-          '">Date of Conveyance Deed</label> <input class="form-control" id="ConveyanceDate' +
+          '">Date of Conveyance Deed</label> <small class="text-red">*</small> <input class="form-control" id="ConveyanceDate' +
           (i + 1) +
           '" name="conveyanc_date[' +
           (i + 1) +
@@ -1186,7 +1186,7 @@ TextControlID3.each(function() {
           (i + 1) +
           '">In favour of</label> <button class="btn btn-outline-primary repeater-add-btn"data-placement="bottom" data-toggle="tooltip" title="Click on Add More to add more options below"type="button"><i class="bx bx-plus me-0"></i></button></div><div class="duplicate-field-tab"><div class="items" data-group="stepFour' +
           (i + 1) +
-          '"><div class="row item-content"><div class="col-12 col-lg-12 mb-3"><label class="form-label" for="inputName1">Name</label> <input class="form-control alpha-only" id="inputName1" name="free_hold_in_favour_name[' +
+          '"><div class="row item-content"><div class="col-12 col-lg-12 mb-3"><label class="form-label" for="inputName1">Name <small class="text-red">*</small></label> <input class="form-control alpha-only" id="inputName1" name="free_hold_in_favour_name[' +
           (i + 1) +
           ']" placeholder="Name" data-name="name"><span class="text-danger"></span></div></div><div class="repeater-remove-btn"><button type="button" class="btn btn-danger px-4 remove-btn" data-placement="bottom" data-toggle="tooltip" title="Click on delete this form"><i class="bx animated bx-trash fadeIn"></i></button></div></div></div></div></div></div></div></div></div><script>$("#repeater4' +
           (i + 1) +
@@ -1237,7 +1237,7 @@ TextControlID3.each(function() {
           (i + 1) +
           '" style="display:none"><div class="col-12 col-lg-4"><label class="form-label" for="GRrevisedDate' +
           (i + 1) +
-          '">Date</label><input class="form-control form-required" id="GRrevisedDate' +
+          '">Date <small class="text-red">*</small></label><input class="form-control form-required" id="GRrevisedDate' +
           (i + 1) +
           '" name="gr_revised_date[' +
           (i + 1) +
@@ -1257,7 +1257,7 @@ TextControlID3.each(function() {
           (i + 1) +
           '" style="display: none;"><div class="row"><div class="col-12 col-lg-6"><label for="SupplementaryDate' +
           (i + 1) +
-          '" class="form-label">Date</label><input type="date" min="1600-01-01" max="2050-12-31" class="form-control form-required" name="supplementary_date[' +
+          '" class="form-label">Date <small class="text-red">*</small></label><input type="date" min="1600-01-01" max="2050-12-31" class="form-control form-required" name="supplementary_date[' +
           (i + 1) +
           ']" id="SupplementaryDate' +
           (i + 1) +
@@ -1298,7 +1298,7 @@ TextControlID3.each(function() {
           '" name="Reentered[' + (i + 1) + ']" type="radio" value="0" checked><label class="form-check-label" for="ReenteredFormNo' +
           (i + 1) + '"><h6 class="mb-0">No</h6></label></div></div></div><div class="col-lg-12"><div class="row Reentered-container" id="ReenteredContainer' +
           (i + 1) + '" style="display:none"><div class="col-12 col-lg-4"><label class="form-label" for="reentryDate' +
-          (i + 1) + '">Date of re-entry</label><input class="form-control form-required" id="reentryDate' + (i + 1) + '" name="date_of_reentry[' + (i + 1) + ']" type="date"><div class="text-danger"></div></div></div></div>';
+          (i + 1) + '">Date of re-entry <small class="text-red">*</small></label><input class="form-control form-required" id="reentryDate' + (i + 1) + '" name="date_of_reentry[' + (i + 1) + ']" type="date"><div class="text-danger"></div></div></div></div>';
 
         plotcontactDetails =
           plotcontactDetails +
@@ -1382,16 +1382,16 @@ TextControlID3.each(function() {
       $("#jointPropertyPlot_title").show();
       // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| Begin Validation Remove For Step 3 |||||||||||||||||||||||||||||||||||||||||||||||||||
       // Class Name Removed
-      $("select.processtransfer").removeClass("form-required");
-      $("input.transferredDate").removeClass("form-required");
-      $("input.lesseeName").removeClass("form-required");
-      $("input.lesseeShare").removeClass("form-required");
-      // Error Msg Element Removed
-      $("#ProcessTransferError").html("");
-      $("#transferredDateError").html("");
-      $("#addLesseeBtnError").html("");
-      $("#nameError").html("");
-      $("#shareError").html("");
+//      $("select.processtransfer").removeClass("form-required");
+//      $("input.transferredDate").removeClass("form-required");
+//      $("input.lesseeName").removeClass("form-required");
+//      $("input.lesseeShare").removeClass("form-required");
+//      // Error Msg Element Removed
+//      $("#ProcessTransferError").html("");
+//      $("#transferredDateError").html("");
+//      $("#addLesseeBtnError").html("");
+//      $("#nameError").html("");
+//      $("#shareError").html("");
       // ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| End Validation Remove For Step 3 |||||||||||||||||||||||||||||||||||||||||||||||||||
       // stepper3.next();
     } else {

@@ -210,7 +210,7 @@
                                             @else
                                                 <tr>
                                                     <td colspan="4" class="">
-                                                        <p class="">No Documents Available</p>
+                                                        <p class="">No Documents Available.</p>
                                                     </td>
                                                 </tr>
                                             @endif

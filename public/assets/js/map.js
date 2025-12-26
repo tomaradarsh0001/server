@@ -10,7 +10,7 @@ var google = L.tileLayer(
 );
 
 var googlestreet = L.tileLayer(
-  "http://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}",
+  "https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}",
   {
     zIndex: 50,
     opacity: 1,
@@ -280,17 +280,24 @@ map.eachLayer(function (layer) {
 });
 // });
 
+
+function getBaseURLMap() {
+  const { protocol, hostname, port } = window.location;
+  return `${protocol}//${hostname}${port ? ":" + port : ""}`;
+}
+
+
 var iconLayersControl = new L.Control.IconLayers(
   [
     {
       title: "Map",
       layer: googlestreet,
-      icon: "./assets/MIS/street.png",
+      icon: getBaseURLMap() + "/assets/MIS/street.png",
     },
     {
       title: "Satellite",
       layer: google,
-      icon: "./assets/MIS/sattelite.png",
+      icon: getBaseURLMap() + "/assets/MIS/sattelite.png",
     },
   ],
   {

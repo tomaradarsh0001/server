@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Colony Wise Filter Report')
+@section('title', 'Colony-Wise Filter Report')
 
 @section('content')
 
@@ -114,7 +114,7 @@
 
     <!--breadcrumb-->
     <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-        <div class="breadcrumb-title pe-3">Colony Wise Reports</div>
+        <div class="breadcrumb-title pe-3">Colony-Wise Report</div>
         <style>
             .breadcrumb-item.active span {
                 font-weight: 500;
@@ -129,7 +129,7 @@
                         <span>Reports</span>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
-                        <span>Colony Wise Filter Report</span>
+                        <span>Colony-Wise Filter Report</span>
                     </li>
                 </ol>
             </nav>
@@ -143,6 +143,7 @@
                         <div class="group-row-filters">
                             <!-- added class colony-form by anil on 06-10-2025 -->
                             <div class="d-flex align-items-start flex-wrap colony-form">
+                                <!-- added class flex-wrap by anil on 04-09-2025 -->
                                 <div class="d-flex align-items-start mb-2">
                                     <!-- added class div by anil on 04-09-2025 -->
                                     <div class="select-menu form-select mx-2" style="display: none;">
@@ -179,7 +180,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="btn-group-filter"> <!-- added calss ms-auto by anil on 04-09-2025 -->
+                                <div class="btn-group-filter ms-auto"> <!-- added calss ms-auto by anil on 04-09-2025 -->
                                     <button type="button" class="btn btn-secondary px-5 filter-btn"
                                         onclick="resetColonyWiseFilters()">Reset</button>
                                     <button type="button" class="btn btn-primary px-5 filter-btn"
@@ -300,11 +301,10 @@
                                             </svg>
                                         </button>
                                     </div>
-                                </div>                                    
+                                </div>                                
                             </div>
                         </div>
-                    </form>
-                    
+                    </form>                    
                 </div>
             </div>
 

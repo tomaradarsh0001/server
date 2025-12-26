@@ -86,7 +86,7 @@ class DeedOfApartmentController extends Controller
             $splitedId = !is_null($childProperty) ? $childProperty->id : null;
 
             if ($updateId == 0) {
-                if (!empty($request->flatId)) {
+                if(!empty($request->flatId)){
                     $recordExists = TempDeedOfApartment::where('property_master_id', $masterProperty->id)->where('flat_id', $request->flatId)->where(function ($query) use ($childProperty) {
                         if (is_null($childProperty))
                             return $query->whereNull('splited_property_detail_id');
@@ -108,10 +108,10 @@ class DeedOfApartmentController extends Controller
                         return $query->where('splited_property_detail_id', $childProperty->id);
                 })->exists();
                 if ($recordExists) {
-                    return response()->json(['status' => false, 'message' => config('messages.doa.error.applicationAlreadyExist')]);
+                       return response()->json(['status' => false, 'message' => config('messages.doa.error.applicationAlreadyExist')]);
                 }
             }
-
+          
             // Check if record is coming for update with updateId Lalit tiwari (09/Oct/2024)
             if ($updateId != '0') {
                 DB::transaction(function () use ($request, &$transactionSuccess, &$updateId, &$tempDOA, &$propertyStatus) {
@@ -198,25 +198,13 @@ class DeedOfApartmentController extends Controller
     {
 
         // Check if all document has been uploaded. Lalit Tiwari (09/Oct/2024)
-        /* $documentsRequired = array_keys(config('applicationDocumentType.DOA.documents'));
+        $documentsRequired = array_keys(config('applicationDocumentType.DOA.documents'));
         foreach ($documentsRequired as $document) {
             $serviceType = getServiceType('DOA');
             $isDocUploaded = TempDocument::where('service_type', $serviceType)->where('model_id', $request->updateId)->where('document_type', $document)->first();
             if (empty($isDocUploaded)) {
                 Log::info("| " . Auth::user()->email . " | All documents not uploaded");
                 return response()->json(['status' => false, 'message' => 'Please provide all required documents.']);
-            }
-        } */
-
-        $documentsRequired = config('applicationDocumentType.DOA.documents');
-        foreach ($documentsRequired as $key => $document) {
-            if (isset($document['required']) && $document['required']) {
-                $serviceType = getServiceType('DOA');
-                $isDocUploaded = TempDocument::where('service_type', $serviceType)->where('model_id', $request->updateId)->where('document_type', $document['id'])->first();
-                if (empty($isDocUploaded)) {
-                    Log::info("| " . Auth::user()->email . " | All documents not uploaded");
-                    return response()->json(['status' => false, 'message' => 'Please provide all required documents.']);
-                }
             }
         }
 
@@ -225,42 +213,43 @@ class DeedOfApartmentController extends Controller
             return response()->json(['status' => false, 'message' => 'Please agree to terms & conditions']);
         }
 
-        // try {
-        return DB::transaction(function () use ($request) {
-            $appDoaId = $request->updateId;
-            if (isset($appDoaId)) { //if hidden ID available
-                $serviceType = getServiceType('DOA');
-                $apllication = TempDeedOfApartment::where('id', $appDoaId)->first();
-                $apllication->undertaking = $request->agreeConsent;
-                // $apllication->undertaking = $request->has('agreeConsent') ? 1 : 0;
-                if ($apllication->save()) {
-                    $tempModelName = config('applicationDocumentType.DOA.TempModelName');
-                    $encodedModelName = base64_encode($tempModelName);
-                    $encodedModelId = base64_encode($appDoaId);
-                    // redirect to payemnt page after data saved
-                    // $redirectUrl = route('applicationPayment', [$encodedModelName, $encodedModelId]);
-                    // return response()->json(['status' => true, 'url' => $redirectUrl]);
-                    $paymentComplete = GeneralFunctions::paymentComplete($request->updateId, $tempModelName);
-                    if ($paymentComplete) {
-                        $transactionSuccess = true;
-                        //to convert temp application to fina application - Lalit tiwari (10/Oct/2024)
-                        GeneralFunctions::convertTempAppToFinal($request->updateId, $tempModelName, $paymentComplete);
-                        return response()->json(['status' => true, 'message' => 'Doa application have been submitted successfully']);
+        try {
+            return DB::transaction(function () use ($request) {
+                $appDoaId = $request->updateId;
+                if (isset($appDoaId)) { //if hidden ID available
+                    $serviceType = getServiceType('DOA');
+                    $apllication = TempDeedOfApartment::where('id', $appDoaId)->first();
+                    $apllication->undertaking = $request->agreeConsent;
+                    // $apllication->undertaking = $request->has('agreeConsent') ? 1 : 0;
+                    if ($apllication->save()) {
+                        $tempModelName = config('applicationDocumentType.DOA.TempModelName');
+                        $encodedModelName = base64_encode($tempModelName);
+                        $encodedModelId = base64_encode($appDoaId);
+                        // redirect to payemnt page after data saved
+                        $redirectUrl = route('applicationPayment', [$encodedModelName, $encodedModelId]);
+                        return response()->json(['status' => 'success', 'url' => $redirectUrl]);
+
+                        /* $paymentComplete = GeneralFunctions::paymentComplete($request->updateId, $tempModelName);
+                        if ($paymentComplete) {
+                            $transactionSuccess = true;
+                            //to convert temp application to fina application - Lalit tiwari (10/Oct/2024)
+                            GeneralFunctions::convertTempAppToFinal($request->updateId, $tempModelName,$paymentComplete);
+                            $response = ['status' => true, 'message' => 'Details have been saved successfully'];
+                        } */
                     }
                 } else {
-                    return response()->json(['status' => false, 'message' => ('messages.general.error.tryAgain')]);
+                    Log::info("| " . Auth::user()->email . " | Application ID not available in hidden");
+                    $response = ['status' => false, 'message' => 'Something went wrong'];
                 }
-            } else {
-                return response()->json(['status' => false, 'message' => 'Please provide id to update records.']);
-            }
-        });
-        /* } catch (\Exception $e) {
+                return json_encode($response);
+            });
+        } catch (\Exception $e) {
             Log::info($e->getMessage());
             return response()->json(['status' => false, 'message' => 'An error occurred while storing appliation documents'], 500);
-        } */
+        }
     }
 
-
+    
 
     public function getProperty(Request $request)
     {

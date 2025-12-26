@@ -1,6 +1,6 @@
 {{-- Commented Old Design for Property Document for DOA Lalit (13/March/2025) --}}
 {{-- <div class="part-title mt-2">
-    <h5>Property Document Details</h5>
+    <h5>Details of Documents</h5>
 </div>
 <div class="part-details">
     <div class="container-fluid">
@@ -188,13 +188,10 @@
                                         <td>{{ $key + 1 }}</td>
                                         <td>
                                             <span class="doc-name">
-                                                {{ $document['title'] }} 
-                                                @if(!isset($downloading))
-                                                <a
+                                                {{ $document['title'] }} <a
                                                     href="{{ asset('storage/' . $document['file_path'] ?? '') }}"
                                                     target="_blank" class="text-danger"><i
                                                         class="fa-solid fa-file-pdf ml-2"></i></a>
-                                                @endif
                                             </span>
                                         </td>
                                         @if ($roles != 'applicant')
@@ -232,13 +229,10 @@
                                 @foreach ($applicantAdditionalDocuments as $ud)
                                     <tr>
                                         <td>{{ ++$counter }}</td>
-                                        <td><span class="doc-name">{{ $ud['title'] }} 
-                                            @if(!isset($downloading))
-                                            <a href="{{ asset('storage/' . $ud['file_path'] ?? '') }}"
+                                        <td><span class="doc-name">{{ $ud['title'] }} <a
+                                                    href="{{ asset('storage/' . $ud['file_path'] ?? '') }}"
                                                     target="_blank" class="text-danger"><i
-                                                        class="fa-solid fa-file-pdf ml-2"></i></a>
-                                            @endif
-                                        </span>
+                                                        class="fa-solid fa-file-pdf ml-2"></i></a></span>
                                         </td>
                                         @if ($roles != 'applicant')
                                             <td>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Download Requested Report Processed - L&DO</title>
+    <title>Static Template</title>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
@@ -33,18 +33,9 @@
                 <div style="width: 100%; max-width: 489px; margin: 0 auto; background: rgb(255 240 182 / 70%);">
 
                     <p style="margin: 0; margin-top: 17px; font-weight: 500; letter-spacing: 0.56px;">
-                        Dear User,
+                        Your report is ready for download.
                     </p>
-                    <p style="margin: 0; margin-top: 10px; font-weight: 400;">
-                        We have successfully processed your request for the report.
-                    </p>
-                    <p style="margin: 0; margin-top: 10px; font-weight: 400;">
-                        Please find the requested Excel file attached to this email. The report contains data based on the
-                        filters you applied, ensuring it meets your specific requirements.
-                    </p>
-                    <p style="margin: 0; margin-top: 10px; font-weight: 400;">
-                        <a href="{{$link}}">Click to download the report</a>
-                    </p>
+                    <h5><a href="{{$link}}" target="_blank" rel="noopener noreferrer">Download</a></h5>
                 </div>
             </div>
 
@@ -57,8 +48,15 @@
             font-weight: 500;
             color: #8c8c8c;
           ">
-                Best regards,<br>
-                Land and Development Office
+                Need help? Ask at
+                <a
+                    href="mailto:edharti@gmail.com"
+                    style="color: #499fb6; text-decoration: none;">edharti@gmail.com</a>
+                or visit our
+                <a
+                    href=""
+                    target="_blank"
+                    style="color: #499fb6; text-decoration: none;">Help Center</a>
             </p>
         </main>
     </div>

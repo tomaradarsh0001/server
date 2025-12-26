@@ -61,17 +61,26 @@
         .card-body{
                 margin: 1% 2%;
         }
+        .pdfTitle{
+            text-align:center;
+            font-size:20px;
+        }
         .part-title {
             background-color: #1fa1a2;
             color: white;
-            font-size: 16px;
-            padding: 5px;
+            font-size: 18px;
+            line-height:24px;
             font-weight: bold;
             margin-top: 30px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: center;
+            height:35px;
+            vertical-align:center;
         }
 
+        .part-title h5{
+            margin-bottom:0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -98,20 +107,22 @@
     <div class="card">
         <div class="card-body">
             <div>
+                <div>
+                    <h4 class="pdfTitle">{{$applicationType == 'Noc'?'NOC':$applicationType}} Application</h4>
+                </div>
                 <div class="parent_table_container pb-3">
                     <table class="table table-bordered">
                         <tbody>
-
                             <tr>
-                                <td>Application No.: <span
+                                <td><strong>Application No.:</strong> <span
                                         class="highlight_value">{{ $details->application_no ?? '' }}</span></td>
-                                <td>Application Type: <span class="highlight_value">
+                                <td><strong>Application Type:</strong> <span class="highlight_value">
                                         <span
                                             class="ml-2 badge rounded-pill text-info bg-light-info p-2 text-uppercase px-3">
-                                            {{ $applicationType }}
+                                            {{$applicationType == 'Noc'?'NOC':$applicationType}}
                                         </span>
                                     </span></td>
-                                <td>Application Current Status: <span class="highlight_value">
+                                <td><strong>Application Current Status:</strong> <span class="highlight_value">
                                         <!-- spelling correction by anil on 04-03-2025 -->
                                         @switch(getStatusDetailsById( $details->status ?? '' )->item_code)
                                             @case('APP_REJ')
@@ -156,7 +167,7 @@
                                                 </span>
                                         @endswitch
                                     </span></td>
-                                <td>Status of Applicant: <span
+                                <td><strong>Status of Applicant:</strong> <span
                                         class="highlight_value">{{ getServiceNameById($details->status_of_applicant ?? ($details->applicant_status ?? '')) }}</span>
                                 </td>
                             </tr>
@@ -187,7 +198,7 @@
                                         <th>Lease Type:</th>
                                         <td>{{ $propertyCommonDetails['leaseType'] ?? '' }}</td>
                                         <th>Lease Execution Date:</th>
-                                        <td id="leaseExecutionDate"></td>
+                                        <td id="leaseExecutionDate">{{ \Carbon\Carbon::parse($details->executed_on)->format('d-m-Y') }}</td>
                                     </tr>
                                     <tr>
                                         <th>Property Type:</th>
@@ -221,9 +232,22 @@
                                         <td>{{ $user->applicantUserDetails->applicant_number ?? '' }}</td>
                                         <th>User Type:</th>
                                         <td class="text-uppercase">{{ $user->applicantUserDetails->user_sub_type ?? '' }}
-                                        </td>
-                                        <td rowspan="5" class="text-center"><img style="width: 120px;"
-                                                src="{{ $user->applicantUserDetails ? public_path('storage/' . $user->applicantUserDetails->profile_photo) : '' }}">
+                                        </td>   
+                                        <td rowspan="5" class="text-center">
+                                            @if($user->applicantUserDetails && $user->applicantUserDetails->profile_photo)
+                                                @php
+                                                    $imagePath = public_path('storage/' . $user->applicantUserDetails->profile_photo);
+                                                    if (file_exists($imagePath)) {
+                                                        $imageData = base64_encode(file_get_contents($imagePath));
+                                                        $imageSrc = 'data:image/' . pathinfo($imagePath, PATHINFO_EXTENSION) . ';base64,' . $imageData;
+                                                    } else {
+                                                        $imageSrc = public_path('images/default-avatar.png');
+                                                    }
+                                                @endphp
+                                                <img style="width: 120px;" src="{{ $imageSrc }}">
+                                            @else
+                                                <img style="width: 120px;" src="{{ public_path('images/default-avatar.png') }}">
+                                            @endif
                                         </td>
                                     </tr>
                                     <tr>
@@ -324,9 +348,21 @@
                                                     <td>{{ $coapplicant->prefix }}: <span
                                                             class="highlight_value">{{ $coapplicant->co_applicant_father_name }}</span>
                                                     </td>
-                                                    <td rowspan="2" class="text-center"><img
-                                                            style="width: 120px;height: 120px"
-                                                            src="{{ public_path('storage/' . $coapplicant->image_path ?? '') }}">
+                                                    <td rowspan="2" class="text-center">
+                                                        @if($coapplicant->image_path && $coapplicant->image_path)
+                                                            @php
+                                                                $imagePath = public_path('storage/' . $coapplicant->image_path);
+                                                                if (file_exists($imagePath)) {
+                                                                    $imageData = base64_encode(file_get_contents($imagePath));
+                                                                    $imageSrc = 'data:image/' . pathinfo($imagePath, PATHINFO_EXTENSION) . ';base64,' . $imageData;
+                                                                } else {
+                                                                    $imageSrc = public_path('images/default-avatar.png');
+                                                                }
+                                                            @endphp
+                                                            <img style="width: 120px;" src="{{ $imageSrc }}">
+                                                        @else
+                                                            <img style="width: 120px;" src="{{ public_path('images/default-avatar.png') }}">
+                                                        @endif
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -384,7 +420,7 @@
                                                 <th>Executed In Favour of:</th>
                                                 <td>{{ $details->name_as_per_lease_conv_deed ?? '' }}</td>
                                                 <th>Executed On:</th>
-                                                <td id="executedOn">{{ $details->executed_on ?? '' }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($doe)->format('d-m-Y') }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Regn. No.:</th>
@@ -401,7 +437,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Regn. Date:</th>
-                                                <td id="regnDate" colspan="3">{{ $details->reg_date_as_per_lease_conv_deed ?? '' }}
+                                                <td id="regnDate" colspan="3">{{ \Carbon\Carbon::parse($details->reg_date_as_per_lease_conv_deed)->format('d-m-Y') }}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -432,7 +468,7 @@
                                                 <th>Executed In Favour of:</th>
                                                 <td>{{ $details->applicant_name ?? '' }}</td>
                                                 <th>Executed On:</th>
-                                                <td id="executedOn">{{ $details->executed_on ?? '' }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($details->executed_on)->format('d-m-Y') }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Regn. No.:</th>
@@ -448,7 +484,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Regn. Date:</th>
-                                                <td id="leaseDeedRegnDateNoc" colspan="3">{{ $details->reg_date ?? '' }}</td>
+                                                <td id="leaseDeedRegnDateNoc" colspan="3">{{ \Carbon\Carbon::parse($details->reg_date)->format('d-m-Y') }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -479,7 +515,7 @@
                                                 <td>{{ $details->name_as_per_noc_conv_deed ?? '' }}</td>
                                                 <th>Executed On:</th>
                                                 <td id="executedOnNoc">
-                                                    {{ $details->executed_on_as_per_noc_conv_deed ?? '' }}
+                                                    {{ \Carbon\Carbon::parse($details->executed_on_as_per_noc_conv_deed)->format('d-m-Y') }}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -497,7 +533,7 @@
                                             </tr>
                                             <tr>
                                                 <th>Regn. Date:</th>
-                                                <td id="regnDateNoc" colspan="3">{{ $details->reg_date_as_per_noc_conv_deed ?? '' }}
+                                                <td id="regnDateNoc" colspan="3">{{ \Carbon\Carbon::parse($details->reg_date_as_per_noc_conv_deed)->format('d-m-Y') }}
                                                 </td>
                                             </tr>
                                         </tbody>
